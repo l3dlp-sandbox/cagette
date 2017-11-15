@@ -54,11 +54,9 @@
 		<!-- font awesome -->
 		<script src="https://use.fontawesome.com/97d97e0dab.js"></script>
 		
-		<!-- Haxe JS
-		<script type="text/javascript" src="/js/::getVariable('js')::/app.js"></script>-->
-		
-		<!-- bundled js with browserify -->
-		<script type="text/javascript" src="/js/::getVariable('js')::/bundle.js"></script>
+		<!-- Haxe JS -->
+		<script type="text/javascript" src="/js/::getVariable('js')::/libs.js"></script>
+		<script type="text/javascript" src="/js/::getVariable('js')::/app.js"></script>
 	</head>
 
 	::if container==null:: ::set container="container":: ::end::
