@@ -13,6 +13,7 @@
 		
 		<!-- Cagette CSS -->
 		<link rel="stylesheet" type="text/css" href="/css/::getVariable('css')::/style.css"/>
+		<link rel="stylesheet" type="text/css" href="/css/::getVariable('css')::/newShop.css"/>
 		<link href='//fonts.googleapis.com/css?family=Cantora+One&subset=latin,latin-ext' rel='stylesheet' type='text/css' />
 		
 		<!-- React 
