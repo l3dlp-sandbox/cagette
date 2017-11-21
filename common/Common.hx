@@ -47,7 +47,7 @@ typedef ProductInfo = {
 	?qt:Float,
 	?unitType:UnitType,
 	organic:Bool,
-	#if js
+	#if (js && !test)
 	element:js.JQuery,
 	#end
 }
@@ -251,7 +251,6 @@ enum TutoPlacement {
 	TPRight;
 }
 
-
 class TutoDatas {
 
 	public static var TUTOS;
@@ -259,13 +258,14 @@ class TutoDatas {
 	#if js
 	//async 
 	public static function get(tuto:String, callback:Dynamic->Void){
-		
+		#if !test
 		sugoi.i18n.Locale.init(App.instance.LANG, function(t:sugoi.i18n.GetText){			
 			App.instance.t = t;
 			init(t);
 			var tuto = TUTOS.get(tuto);
 			callback(tuto);			
 		});
+		#end
 	}
 	#else
 	//sync 

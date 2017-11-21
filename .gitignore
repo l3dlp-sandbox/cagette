@@ -18,3 +18,4 @@ MakeFile
 html
 .temp
 www/css/*.css
+js/test/tests.js
