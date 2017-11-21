@@ -5,6 +5,15 @@
 
 //A temporary order, before being paid and recorded in DB.
 @:keep
+typedef OrderSimple = {
+	products:Array <{
+		productId:ProductInfoSummary,
+		quantity:Float
+	} > ,
+	total:Float, 	//price to pay
+}
+
+@:keep
 typedef OrderInSession = {
 	products:Array <{
 		productId:Int,
@@ -17,6 +26,13 @@ typedef OrderInSession = {
 	?userId:Int,
 	total:Float, 	//price to pay
 	?paymentOp:Int, //payment operation ID
+}
+
+
+@:keep
+typedef ProductInfoSummary = {
+	id : Int,
+	name : String
 }
 
 @:keep
