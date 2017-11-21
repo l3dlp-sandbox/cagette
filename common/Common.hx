@@ -2,15 +2,13 @@
  * Shared entities between server and client
  */
 
-
-//A temporary order, before being paid and recorded in DB.
 @:keep
 typedef OrderSimple = {
-	products:Array <{
+	products: Array<{
 		product:ProductInfo,
-		quantity:Float
-	} > ,
-	total:Float, 	//price to pay
+		quantity:Int
+	}>,
+	total:Float
 }
 
 @:keep
@@ -54,7 +52,11 @@ typedef ProductInfo = {
 	#end
 }
 
-
+@:keep
+typedef ProductWithQuantity = {
+	product: ProductInfo,
+	quantity: Int
+}
 
 enum UnitType{
 	Piece;
