@@ -17,3 +17,4 @@ MakeFile
 .haxelib
 html
 .temp
+www/css/*.css
