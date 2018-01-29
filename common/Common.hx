@@ -2,8 +2,15 @@
  * Shared entities between server and client
  */
 
+@:keep
+typedef OrderSimple = {
+	products: Array<{
+		product:ProductInfo,
+		quantity:Int
+	}>,
+	total:Float
+}
 
-//A temporary order, before being paid and recorded in DB.
 @:keep
 typedef OrderInSession = {
 	products:Array <{
@@ -14,7 +21,7 @@ typedef OrderInSession = {
 		?distributionId:Int,
 		#end
 	} > ,
-	userId:Int,
+	?userId:Int,
 	total:Float, 	//price to pay
 	?paymentOp:Int, //payment operation ID
 }
@@ -42,12 +49,16 @@ typedef ProductInfo = {
 	?unitType:UnitType,
 	organic:Bool,
 	variablePrice:Bool,
-	#if js
+	#if (js && !test)
 	element:js.JQuery,
 	#end
 }
 
-
+@:keep
+typedef ProductWithQuantity = {
+	product: ProductInfo,
+	quantity: Int
+}
 
 enum UnitType{
 	Piece;
@@ -159,6 +170,9 @@ enum OrderFlags {
 	Canceled;			//flag for cancelled orders, qt should always be 0
 }
 
+typedef OrderByProduct = {quantity:Float,pid:Int,pname:String,ref:String,price:Float,total:Float};
+typedef OrderByEndDate = {date: String,contracts: Array<String>};
+
 /**
 	Event enum used for plugins.
 	
@@ -167,9 +181,6 @@ enum OrderFlags {
 	to perform an action or modifiy data carried by the event.
 	
 **/
-	
-typedef OrderByProduct = {quantity:Float,pid:Int,pname:String,ref:String,priceHT:Float,priceTTC:Float,vat:Float,total:Float};
-	
 enum Event {
 
 	Page(uri:String);							//a page is displayed
@@ -245,7 +256,6 @@ enum TutoPlacement {
 	TPRight;
 }
 
-
 class TutoDatas {
 
 	public static var TUTOS;
@@ -253,13 +263,14 @@ class TutoDatas {
 	#if js
 	//async 
 	public static function get(tuto:String, callback:Dynamic->Void){
-		
+		#if !test
 		sugoi.i18n.Locale.init(App.instance.LANG, function(t:sugoi.i18n.GetText){			
 			App.instance.t = t;
 			init(t);
 			var tuto = TUTOS.get(tuto);
 			callback(tuto);			
 		});
+		#end
 	}
 	#else
 	//sync 

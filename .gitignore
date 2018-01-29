@@ -17,6 +17,7 @@ lang/es/tmp/*.n
 
 www/file/*
 www/js/app.js
+www/js/libs.js
 tmp/*
 *node_modules*
 MakeFile
@@ -24,3 +25,6 @@ MakeFile
 .haxelib
 html
 www/css/.sass-cache
+.temp
+www/css/*.css
+js/test/tests.js

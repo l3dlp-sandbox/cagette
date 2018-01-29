@@ -1,5 +1,6 @@
 import react.ReactMacro.jsx;
 import react.*;
+import react.store.*;
 
 //require bootstrap JS since it's bundled with browserify
 @:jsRequire('bootstrap') extern class Bootstrap{}
@@ -167,6 +168,10 @@ class App {
 		untyped m.modal();
 		ReactDOM.render(jsx('<$RegisterBox redirectUrl="$redirectUrl" phoneRequired="$phoneRequired"/>'),  js.Browser.document.querySelector('#myModal .modal-body'));
 		return false;
+	}
+
+	public function shop(place:Int, date:String) {
+		ReactDOM.render(jsx('<$Store date=$date place=$place/>'),  js.Browser.document.querySelector('#shop'));
 	}
 
 	/**

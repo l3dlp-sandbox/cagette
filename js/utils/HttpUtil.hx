@@ -104,5 +104,4 @@ class HttpUtil
     }
     return str;
   }
-
 }
