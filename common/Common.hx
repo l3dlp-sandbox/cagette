@@ -170,7 +170,7 @@ enum OrderFlags {
 	Canceled;			//flag for cancelled orders, qt should always be 0
 }
 
-typedef OrderByProduct = {quantity:Float,pid:Int,pname:String,ref:String,price:Float,total:Float};
+typedef OrderByProduct = {quantity:Float,pid:Int,pname:String,ref:String,priceTTC:Float,priceHT:Float,vat:Float,total:Float};
 typedef OrderByEndDate = {date: String,contracts: Array<String>};
 
 /**

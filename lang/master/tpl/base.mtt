@@ -51,13 +51,9 @@
 		<!-- font awesome -->
 		<script src="https://use.fontawesome.com/97d97e0dab.js"></script>
 		
-<<<<<<< HEAD
-		
-=======
 		<!-- Haxe JS -->
 		<script type="text/javascript" src="/js/::getVariable('js')::/libs.js"></script>
 		<script type="text/javascript" src="/js/::getVariable('js')::/app.js"></script>
->>>>>>> b09bff8f169791e483404aec1f436e2689a467e2
 	</head>
 
 	::if container==null:: ::set container="container":: ::end::
