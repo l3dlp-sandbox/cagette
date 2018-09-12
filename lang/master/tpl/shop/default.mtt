@@ -102,7 +102,7 @@
 								
 								::if p.variablePrice::
 								<div style="font-size:0.8em;font-weight:bold;">									
-									<div class="vat">::raw pricePerUnit(p.price,p.qt,p.unitType)::</div>
+									<div class="vat">::raw pricePerUnit(p.price,p.qt,p._unitType)::</div>
 								</div>
 								::end::
 								

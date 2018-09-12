@@ -151,19 +151,23 @@
 </div>
 <div class="col-md-4">
 	
-	
+		<div id="react">
+
+			</div>
+			<script>
+				$(function(){
+					console.log("MUI !");
+					_.mui();
+				});
+			
+			</script>
 	
 	
 	<div class="block" >
-		
-		                           
-                        Le Lorem Ipsum est simplement du <strong>faux texte</strong> employé dans <a href="/">la composition</a>
-                        et la mise en page avant impression. Le Lorem Ipsum est le faux texte standard de l'imprimerie depuis les années 1500, 
-                        quand un peintre anonyme assembla ensemble des morceaux de texte pour réaliser un livre spécimen de polices de texte.
-                        Il n'a pas fait que survivre cinq siècles, mais s'est aussi adapté à la bureautique informatique, sans que son contenu n'en soit modifié.
-                      
-                    
-		
+		Le Lorem Ipsum est simplement du <strong>faux texte</strong> employé dans <a href="/">la composition</a>
+		et la mise en page avant impression. Le Lorem Ipsum est le faux texte standard de l'imprimerie depuis les années 1500, 
+		quand un peintre anonyme assembla ensemble des morceaux de texte pour réaliser un livre spécimen de polices de texte.
+		Il n'a pas fait que survivre cinq siècles, mais s'est aussi adapté à la bureautique informatique, sans que son contenu n'en soit modifié.
 	</div>
 	
 	<div class="block">
@@ -188,6 +192,8 @@
 	$$today(Mercredi,15,Décembre,19,90,::user._amap._mainPlace::)
 	
 	$$date(Mercredi,15,Décembre,19,::user._amap._mainPlace::)
+	
+
 	
 	
 </div>

@@ -53,8 +53,8 @@ class ProductInput extends react.ReactComponentOfPropsAndState<ProductInputProps
 					<AsyncTypeahead placeholder="Saisissez un nom de produit" options=$options onSearch=$onSearch minLength={3} style={{width:"350px"}} onChange=$onChange onInputChange=$onInputChange selected={["${props.productName}"]} />				
 					<div className = "txpProduct" > ${state.breadcrumb}</div>				
 					
-					<input className="txpProduct" type="hidden" name="$txpProductInputName" value="${state.txpProductId}" />
-					<input className="txpProduct" type="hidden" name="$inputName" value="${state.productName}" />
+					<input className="txpProduct" type="hidden" name="$txpProductInputName" defaultValue="${state.txpProductId}" />
+					<input className="txpProduct" type="hidden" name="$inputName" defaultValue="${state.productName}" />
 				</div>
 				
 				<div className="col-md-4">

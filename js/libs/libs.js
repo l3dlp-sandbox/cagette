@@ -17,7 +17,9 @@
     'react-places-autocomplete': require('react-places-autocomplete'),
     'geolib': require('geolib'),
     'react-router':require('react-router'),
-    'react-router-dom':require('react-router-dom'),
+	'react-router-dom':require('react-router-dom'),
+	'@material-ui/core':require('@material-ui/core'),
+	//'@material-ui/icons':require('@material-ui/icons'), //make an error, too many open files
   });
 
   if (process.env.NODE_ENV !== 'production') {

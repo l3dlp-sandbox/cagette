@@ -9,6 +9,7 @@ import react.product.*;
 import react.store.*;
 import react.map.*;
 import react.user.*;
+import react.mui.*;
 
 //require bootstrap JS since it's bundled with browserify
 //@:jsRequire('bootstrap') extern class Bootstrap{}
@@ -81,6 +82,17 @@ class App {
 		ReactDOM.render(jsx('<$VATBox ttc="$ttcprice" currency="$currency" vatRates="$rates" vat="$vat" formName="$formName"/>'),  input.parentElement);
 		
 		//remove(input);
+		
+	}
+
+	
+
+	public function mui(){
+		
+		var input = js.Browser.document.querySelector('#react');
+		ReactDOM.render(jsx('<div>
+			<$Button variant="contained" color="primary">Hello Material-ui !</$Button>
+		</div>'),  input);
 		
 	}
 
