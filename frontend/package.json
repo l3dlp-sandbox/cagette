@@ -7,7 +7,7 @@
   "dependencies": {
     "@material-ui/core": "3.6.2",
     "@material-ui/icons": "3.0.1",
-    "bootstrap": "^3.4.0",
+    "bootstrap": "^3.4.1",
     "bowser": "^2.1.0",
     "eonasdan-bootstrap-datetimepicker": "^4.7.14",
     "geolib": "^2.0.24",
