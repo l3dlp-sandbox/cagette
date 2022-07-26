@@ -1,6 +1,8 @@
 package controller.admin;
-import service.BridgeService;
+import haxe.Json;
 import pro.db.VendorStats;
+import service.BridgeService;
+import sugoi.apis.linux.Curl;
 
 /**
  * Vendor admin
@@ -23,6 +25,7 @@ class Vendor extends controller.Controller
 		var total = 0;
 		var totalCpros = 0;
 		var totalActive = 0;
+		var defaultType = VTCproSubscriberYearly;
 
 		// form
 		var f = new sugoi.form.Form("vendors");
@@ -32,13 +35,14 @@ class Vendor extends controller.Controller
 			{label: "Tous", value: "all"},
 			{label: "Gratuit", value: VTFree.string()},
 			{label: "Invité", value: VTInvited.string()},
-			{label: "Invité dans un Cagette pro", value: VTInvitedPro.string()},
-			{label: "Offre Pro formé", value: VTCpro.string()},
-			{label: "Cagette Pro test", value: VTCproTest.string()},
+			{label: "Invité dans un compte producteur", value: VTInvitedPro.string()},
+			{label: "Formule Membre (formé)", value: VTCpro.string()},
 			{label: "Compte pédagogique", value: VTStudent.string()},
-			{label: "Offre Découverte", value: VTDiscovery.string()},
+			{label: "Formule Découverte", value: VTDiscovery.string()},
+			{label: "Formule Pro (abo annuel)", value: VTCproSubscriberYearly.string()},
+			{label: "Formule Pro (abo mensuel)", value: VTCproSubscriberMontlhy.string()},
 		];
-		f.addElement(new sugoi.form.elements.StringSelect("type", "Type de producteur", data, VTDiscovery.string(), true, ""));
+		f.addElement(new sugoi.form.elements.StringSelect("type", "Type de producteur", data, defaultType.string(), true, ""));
 		f.addElement(new sugoi.form.elements.StringInput("zipCodes", "Saisir des numéros de département séparés par des virgules ou laisser vide."));
 		f.addElement(new sugoi.form.elements.StringSelect("country", "Pays", db.Place.getCountries(), "FR", true, ""));
 		var data = [
@@ -96,8 +100,9 @@ class Vendor extends controller.Controller
 
 		} else {
 			// default settings
-			sql_where_and.push("active=1");
-			sql_where_and.push("type=" + Type.enumIndex(VTDiscovery));
+			sql_where_and.push('active=1');
+			sql_where_and.push('type=${Type.enumIndex(defaultType)}');
+			sql_where_and.push('country="FR"');
 		}
 
 		// QUERY
@@ -171,12 +176,7 @@ class Vendor extends controller.Controller
 							case true: "OUI";
 							case false: "NON";
 						},
-						type: switch (type) {
-							case 0: "cpro";
-							case 1: "gratuit";
-							case 2: "invité";
-							default: "?";
-						},
+						type: Std.string(Type.createEnumIndex(VendorType,type)),
 					});
 				}
 
@@ -196,7 +196,7 @@ class Vendor extends controller.Controller
 			BridgeService.syncVendorToHubspot(v);
 		}
 
-		if (app.params["disableAccess"] != null) {
+		/*if (app.params["disableAccess"] != null) {
 			var user = db.User.manager.get(Std.parseInt(app.params["disableAccess"]), false);
 			var uc = pro.db.PUserCompany.get(user, cpro, true);
 			uc.disabled = true;
@@ -207,7 +207,12 @@ class Vendor extends controller.Controller
 			var uc = pro.db.PUserCompany.get(user, cpro, true);			
 			uc.disabled = false;
 			uc.update();
-		}
+		}*/
+
+		/*var req = new Curl();
+		req.setPostData("body",Json.stringify(v.getInfos()));
+		req.call("POST","https://hooks.zapier.com/hooks/catch/6566570/b868f9v/");
+		*/
 
 		view.stats = pro.db.VendorStats.getOrCreate(v);
 		view.courses = hosted.db.CompanyCourse.manager.search($company == cpro, false);
@@ -229,11 +234,6 @@ class Vendor extends controller.Controller
 			return false;
 		};
 
-		view.editLink = "https://app.cagette.net/vendorNoAuthEdit/"
-			+ v.id
-			+ "/"
-			+ haxe.crypto.Md5.encode(App.config.KEY + "_updateWithoutAuth_" + v.id);
-		
 		var res = sys.db.Manager.cnx.request('select * from TmpVendor where vendorId = ${v.id}').results();
 		var tmpVendor = res.first();
 		view.tmpVendor = tmpVendor;

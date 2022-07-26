@@ -1,7 +1,7 @@
 import bootstrap.Modal;
 import js.Browser;
 import Common;
-import thx.semver.Version;
+// import thx.semver.Version;
 
 //React lib
 import react.ReactMacro.jsx;
@@ -33,7 +33,7 @@ import react.ReactComponent;
 class App {
 
     public static var instance : App;    
-    public static var VERSION = ([0,14]  : Version).withPre(GitMacros.getGitShortSHA(), GitMacros.getGitCommitDate());
+    // public static var VERSION = ([0,14]  : Version).withPre(GitMacros.getGitShortSHA(), GitMacros.getGitCommitDate());
     	
 	public var currency : String; //currency symbol like &euro; or $
 	public var t : sugoi.i18n.GetText;//gettext translator
@@ -42,6 +42,7 @@ class App {
     public var userId : Int;
     public var userName : String;
     public var userEmail : String;
+    public var theme : Theme;
     
 
 	function new(?lang="fr",?currency="&euro;") {
@@ -153,7 +154,21 @@ class App {
         });
 	}
 	
-	public function initOrderBox(userId : Int, multiDistribId : Int, catalogId : Int, catalogType : Int, date : String, place : String, userName : String, currency : String, hasPayments : Bool, callbackUrl : String, hasCagette2 : Bool, groupId : Int) {
+	public function initOrderBox(
+        userId : Int,
+        multiDistribId : Int,
+        catalogId : Int,
+        catalogType : Int,
+        date : String,
+        place : String,
+        userName : String,
+        currency : String,
+        hasPayments : Bool,
+        callbackUrl : String,
+        hasCagette2 : Bool,
+        groupId : Int,
+        ?basketId : Int
+    ) {
         var node = js.Browser.document.createDivElement();
         node.id = "ordersdialog-container";
         js.Browser.document.body.appendChild(node);
@@ -183,8 +198,8 @@ class App {
                 place: place,
                 userName: userName,
                 callbackUrl: callbackUrl,
-                currency: currency,
                 hasPayments: hasPayments,
+                basketId: basketId
             });
         }
 	}

@@ -37,6 +37,8 @@ enum VendorBetaFlags{
 /**
  * Vendor (farmer/producer/vendor)
  */
+@:index(stripeCustomerId)
+@:index(companyNumber,companySubNumber,country,unique)
 class Vendor extends Object
 {
 	public var id : SId;
@@ -64,13 +66,13 @@ class Vendor extends Object
 
 	//legal infos
 	@hideInForms public var companyNumber : SNull<SString<128>>; //SIRET
-	@hideInForms public var companySubNumber : SNull<SString<128>>; 
+	@hideInForms public var companySubNumber : SNull<STinyInt>; 
 	@hideInForms public var vatNumber : SNull<SString<128>>; //VAT number
 	@hideInForms public var legalStatus : SNull<SInt>; //statut juridique
 	@hideInForms public var companyCapital : SNull<SInt>; //capital social
 	@hideInForms public var activityCode:SNull<SString<8>>;//code NAF (NAFRev2)
 	
-	@hideInForms public var vendorPolicy:SBool; //charte producteurs
+	// @hideInForms public var vendorPolicy:SBool; //charte producteurs
 	@hideInForms public var tosVersion: SNull<SInt>; //CGV version checked
 	
 	public var linkText:SNull<SString<256>>;
@@ -85,12 +87,14 @@ class Vendor extends Object
 	@hideInForms public var status : SNull<SString<32>>; //temporaire , pour le dédoublonnage
 	@hideInForms public var disabled : SNull<SEnum<DisabledReason>>; // vendor is disabled
 	
-	@hideInForms public var isTest : SBool; //cpro test account
+	// @hideInForms public var isTest : SBool; //cpro test account
 
 	@hideInForms public var lat:SNull<SFloat>;
 	@hideInForms public var lng:SNull<SFloat>;
 
 	@hideInForms public var betaFlags:SFlags<VendorBetaFlags>;
+
+	@hideInForms public var stripeCustomerId:SNull<SString<255>>;
 
 	public function new() 
 	{
@@ -102,17 +106,14 @@ class Vendor extends Object
 
 	public function checkIsolate(){
 	
-		if(this.betaFlags.has(VendorBetaFlags.Cagette2)){
-
+		/*if(this.betaFlags.has(VendorBetaFlags.Cagette2)){
 			var cpro = pro.db.CagettePro.getCurrentCagettePro();
-
 			var noCagette2Groups = cpro.getGroups().filter(v->!v.hasCagette2());
 			if ( noCagette2Groups.length>0 ){
 				var name = noCagette2Groups.map(v -> v.name).join(", ");
-				throw sugoi.ControllerAction.ControllerAction.ErrorAction("/user/choose",'Le producteur "${this.name}" a l\'option Cagette2 activée et ne peut pas fonctionner avec des groupes qui n\'ont pas activé cette option ($name). Contactez nous sur <b>support@cagette.net</b> pour régler le problème.');
+				throw sugoi.ControllerAction.ControllerAction.ErrorAction("/user/choose",'Le producteur "${this.name}" a l\'option Cagette2 activée et ne peut pas fonctionner avec des groupes qui n\'ont pas activé cette option ($name). Contactez nous sur <b>'+App.current.theme.supportEmail+'</b> pour régler le problème.');
 			}
-			
-		} 
+		}*/
 	}
 
 	public function hasCagette2(){

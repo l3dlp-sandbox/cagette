@@ -12,7 +12,7 @@
 		
 			<div class="row">
 				<div class="col-md-6 text-center">	
-					<img src="/img/infos.png" />
+					<!--<img src="/img/infos.png" />-->
 					<p>
 						<a href="https://formation.alilo.fr/course/view.php?id=7" class="btn btn-warning" target="_blank">
 							<i class="icon icon-youtube"></i> Guide Découverte
@@ -20,12 +20,12 @@
 					</p>				
 					<p><b>Pour prendre en main l’outil c’est par ici !</b><br/>
 						C’est l’espace où vous trouverez tous les tutoriels 
-						pour vous lancer sur Cagette.net. 
+						pour vous lancer sur ::theme.name::. 
 					</p>	
 				</div>
 				
 				<div class="col-md-6 text-center">
-					<img src="/img/question.png" />
+					<!--<img src="/img/question.png" />-->
 					<p>											
 						<!--<b>Visio d'aide aux Producteurs :</b><br/>
 						<a href="https://us02web.zoom.us/meeting/register/tZAkfu-oqTgvGdBOeJj3JGssxcH9HiFXdu5R" target="_blank" title="">1er lundi du mois à 18h</a><br/>
@@ -53,7 +53,7 @@
 		
 			<div class="row">
 				<div class="col-md-6 text-center">
-					<img src="/img/infos.png" />
+					<!--<img src="/img/infos.png" />-->
 					<p>
 						<a href="https://formation.alilo.fr/course/view.php?id=8" class="btn btn-warning" target="_blank">
 							<i class="icon icon-youtube"></i> Guide Coordinateur
@@ -63,13 +63,13 @@
 					<p>
 						<b>Pour prendre en main l’outil c’est par ici !</b><br/>
 						C’est l’espace où vous trouverez tous les tutoriels<br/> 
-						pour vous lancer sur Cagette.net.
+						pour vous lancer sur ::theme.name::.
 					</p>
 					
 				</div>
 				
 				<div class="col-md-6 text-center">
-					<img src="/img/question.png" />
+					<!--<img src="/img/question.png" />-->
 					<p>
 						<!--<a href="https://us02web.zoom.us/meeting/register/tZEuf-6vqzwpGtTYCjqRtCfGyaqxSLl5gzvq" target="_blank" data-toggle="tooltip" title="Tous les 3e lundi du mois à 18h">Visio d'aide aux Coordinateurs</a><br/>
 						<b>Webinaire thématiques :</b><br/>
@@ -83,6 +83,17 @@
 		</div>
 	</div>
 	::end::
+
+	<div class="col-md-12">
+		<div id="news-neo-container"></div>
+	</div>
+	<script>
+		document.addEventListener("DOMContentLoaded", function(event) {
+			neo.createNeoModule("news-neo-container", "newsFeed", {
+				userId: ::user.id::
+			});
+		});
+	</script>
 
 	<div class="col-md-12">
 		<h2>::_("Hello")::
@@ -106,7 +117,7 @@
 	
 	<div class="col-md-12" ::cond cagettePros!=null || tmpVendors.length>0:: >
 		<div class="row">
-		<!-- cagette pro -->
+		<!-- cpro -->
 		::foreach cp cagettePros::
 			::set v = cp._vendor::
 			<div class="col-md-4">
@@ -133,7 +144,7 @@
 				<h4>::tmp.farmName::</h4>
 				<p class="disabled">
 					<i class="icon icon-clock"></i>
-					Demande d'ouverture de compte producteur en attente de validation par l'équipe Cagette.net
+					Demande d'ouverture de compte producteur en attente de validation par l'équipe ::theme.name::
 				</p>
 			</a>
 		</div>
@@ -144,7 +155,7 @@
 	</div>
 	
 	<div class="col-md-12" >
-		<p>Vous êtes membre des <b>groupes Cagette</b> suivants :</p>
+		<p>Vous êtes membre des <b>groupes ::theme.name::</b> suivants :</p>
 	</div>
 
 	<!-- groups -->
@@ -179,12 +190,13 @@
 		::if session.lang!="de"::
 			<a class="btn btn-default btn-lg" href="/group/map">
 				<i class="icon icon-search"></i> ::_("Find other groups near me")::
-			</a>	
+			</a>
 		::end::
-		<a class="btn btn-default btn-lg" href="/group/create/">
-			<i class="icon icon-plus"></i> Créer un groupe
-		</a>	
-		
+		::if settings.onlyVendorsCanCreateGroup==null || settings.onlyVendorsCanCreateGroup==false || (settings.onlyVendorsCanCreateGroup==true && cagettePros!=null && cagettePros.length>0)::
+			<a class="btn btn-default btn-lg" href="/group/create/">
+				<i class="icon icon-plus"></i> Créer un groupe
+			</a>
+		::end::
 	</div>
 
 		
@@ -240,16 +252,12 @@
 				});
 			};
 			
-			::if(discovery)::
-				displayPopup("formules2",1);
-			::elseif(cagetteProTest)::	
-				displayPopup("formules3",1);	
-			::elseif(isGroupAdmin || memberVendor)::		
-				displayPopup("formules1",1);
-			::end::
+			/*::if(discovery)::
+				displayPopup("offre-formation-2022-01-A",1);							
+			::elseif(isGroupAdmin)::		
+				displayPopup("offre-formation-2022-01-B",1);
+			::end::*/
 			
-			
-
 			//]]>
 	</script>
 	

@@ -66,14 +66,22 @@ class Company extends controller.Controller
 		view.nav.push("users");
 		
 		var f = new sugoi.form.Form("user");
-		f.addElement( new sugoi.form.elements.StringInput("firstName","Prénom",null,true));
-		f.addElement( new sugoi.form.elements.StringInput("lastName","Nom",null,true));
+		// f.addElement( new sugoi.form.elements.StringInput("firstName","Prénom",null,true));
+		// f.addElement( new sugoi.form.elements.StringInput("lastName","Nom",null,true));
 		f.addElement( new sugoi.form.elements.StringInput("email","Email",null,true));
 		f.addElement( new sugoi.form.elements.Checkbox("legalRepresentative","Représentant légal",null,true));
 		
 		if (f.isValid()){
 			var v = new pro.db.PUserCompany();
-			var u = service.UserService.getOrCreate(f.getValueOf("firstName"),f.getValueOf("lastName"), f.getValueOf("email"));
+			var u = service.UserService.get(f.getValueOf("email"));
+			if(u==null){
+				throw Error('/p/pro/company/users','Il n\'y a aucun compte avec l\'email "${f.getValueOf("email")}". Cette personne doit s\'inscrire avant que vous puissiez lui donner accès à votre compte producteur.');
+			}
+
+			if(company.getUsers().find(uc -> uc.id==u.id)!=null){
+				throw Error('/p/pro/company/users','Cet utilisateur a déjà accès à votre compte producteur.');
+			}
+
 			v.company = company;
 			v.user = u;			
 			v.legalRepresentative = f.getValueOf("legalRepresentative");
@@ -88,7 +96,7 @@ class Company extends controller.Controller
 			
 			throw Ok("/p/pro/company/users", "Nouvel utilisateur ajouté");
 		}
-		view.title = "Ajouter un nouvel utilisateur à mon compte Cagette Pro";
+		view.title = "Ajouter un nouvel utilisateur à mon compte producteur";
 		view.form = f;
 	}
 
@@ -99,14 +107,21 @@ class Company extends controller.Controller
 		var uc = pro.db.PUserCompany.manager.select( $company==company && $user==user, true );
 		
 		var f = new sugoi.form.Form("user");
-		f.addElement( new sugoi.form.elements.StringInput("firstName","Prénom",uc.user.firstName,true));
-		f.addElement( new sugoi.form.elements.StringInput("lastName","Nom",uc.user.lastName,true));
+		// f.addElement( new sugoi.form.elements.StringInput("firstName","Prénom",uc.user.firstName,true));
+		// f.addElement( new sugoi.form.elements.StringInput("lastName","Nom",uc.user.lastName,true));
 		f.addElement( new sugoi.form.elements.StringInput("email","Email",uc.user.email,true));
 		f.addElement( new sugoi.form.elements.Checkbox("legalRepresentative","Représentant légal",uc.legalRepresentative,true));
 		
 		if (f.isValid()){
 			
-			var u = service.UserService.getOrCreate(f.getValueOf("firstName"),f.getValueOf("lastName"), f.getValueOf("email"));
+			var u = service.UserService.get(f.getValueOf("email"));
+			if(u==null){
+				throw Error('/p/pro/company/users','Il n\'y a aucun compte avec l\'email "${f.getValueOf("email")}". Cette personne doit s\'inscrire avant que vous puissiez lui donner accès à votre compte producteur.');
+			}
+
+			if(company.getUsers().find(uc -> uc.id==u.id)!=null){
+				throw Error('/p/pro/company/users','Cet utilisateur a déjà accès à votre compte producteur.');
+			}
 			
 			uc.company = company;
 			uc.user = u;			
@@ -122,19 +137,23 @@ class Company extends controller.Controller
 			
 			throw Ok("/p/pro/company/users", "Utilisateur mis à jour");
 		}
-		view.title = "Gérer un utilisateur de mon compte Cagette Pro";
+		view.title = "Gérer un utilisateur de mon compte producteur";
 		view.form = f;
 	}
 	
-	public function doDeleteUser(u:db.User){
+	public function doDeleteUser(userToDelete:db.User){
 		
 		if (checkToken()){
 			
-			if (u.id == app.user.id && !app.user.isAdmin() ) {
+			if (userToDelete.id == app.user.id && !app.user.isAdmin() ) {
 				throw Error("/p/pro/company/users", "Vous ne pouvez pas vous retirer l'accès à vous même");
 			}
+
+			if(company.getUsers().count(user -> return userToDelete.id!=user.id)==0){
+				throw Error("/p/pro/company/users", "Vous ne pouvez pas supprimer cet utilisateur. Au moins une personne doit avoir accès à un compte producteur.");
+			}
 			
-			var uc = pro.db.PUserCompany.get(u, company);			
+			var uc = pro.db.PUserCompany.get(userToDelete, company);			
 			if (uc != null){
 				uc.lock();
 				uc.delete();
@@ -329,7 +348,7 @@ class Company extends controller.Controller
 		f.addElement(new sugoi.form.elements.Checkbox("directory","Référencer ma page sur les annuaires partenaires de Cagette.net",vendor.directory));
 		f.getElement("directory").description = "Etre référencé sur <a href='https://www.118712.fr' target='_blank'>118712.fr</a> pour augmenter votre visibilité sur le web.";
 		f.addElement(new sugoi.form.elements.TextArea("longDesc","Description longue de votre exploitation",vendor.longDesc));
-		f.addElement(new sugoi.form.elements.TextArea("offCagette","En dehors de Cagette.net, où peut on trouver vos produits ?",vendor.offCagette));
+		f.addElement(new sugoi.form.elements.TextArea("offCagette","En dehors de "+App.current.theme.name+", où peut on trouver vos produits ?",vendor.offCagette));
 
 		view.images = company.vendor.getImages();
 		view.farmImagesNum = [0,1,2,3];
