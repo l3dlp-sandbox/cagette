@@ -26,7 +26,7 @@
                             ::md.getGroup().name::
                         </td>
                         
-                        ::if md.isConfirmed()::
+                        ::if md.isValidated()::
                             <td>
                                 ::set amount = getMangopayECTotal(md)::
                                 ::formatNum(amount):: &euro;

@@ -69,7 +69,7 @@ td.userRow a{ color:white; }
 					<td>
 						::if(!catalog.isConstantOrdersCatalog())::
 						<a class="btn btn-default btn-xs"
-							onclick="_Cagette.initOrderBox(::basket.userId::,::multiDistribId::,::distribution._catalog.id::,::distribution._catalog.type::,'::escapeJS(hDate(distribution.date))::','::escapeJS(distribution._place.toString())::','::escapeJS(basket._user.getName())::','::user.getGroup().currency::', ::catalog._group.hasPayments()::, '/p/pro/delivery/orders/::distribution.id::', ::catalog._group.hasCagette2()::, ::catalog._group.id::, ::basket.id::)">
+							onclick="_Cagette.initOrderBox(::basket.userId::,::multiDistribId::,::distribution._catalog.id::,::distribution._catalog.type::,'::escapeJS(hDate(distribution.date))::','::escapeJS(distribution._place.toString())::','::escapeJS(basket._user.getName())::','::catalog._group.currency::', ::catalog._group.hasPayments()::, '/p/pro/delivery/orders/::distribution.id::', ::catalog._group.hasCagette2()::, ::catalog._group.id::, ::basket.id::)">
 							<i class="icon icon-edit"></i>
 							::_("Edit")::
 						</a>
