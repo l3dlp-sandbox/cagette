@@ -459,7 +459,12 @@ class MultiDistrib extends Object
 		get non open baskets
 	**/
 	public function getBaskets():Array<db.Basket>{
-		return db.Basket.manager.search($multiDistrib==this && $status!=Std.string(BasketStatus.OPEN),false).array();
+		var baskets = db.Basket.manager.search($multiDistrib==this && $status!=Std.string(BasketStatus.OPEN),false).array();
+
+		//sort by user lastname
+		baskets.sort((a,b)-> a.user.lastName > b.user.lastName ? 1 : -1 );
+
+		return baskets;
 	}
 
 	/**
