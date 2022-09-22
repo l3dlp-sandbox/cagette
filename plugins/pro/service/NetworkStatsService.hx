@@ -36,15 +36,15 @@ class NetworkStatsService{
     }
 
     public function getBasketNumber() {
-        var dids = multiDistribs.map(d -> d.id);
-        return Basket.manager.count( $multiDistribId in dids );        
+        var dids = multiDistribs.map(d -> d.id);        
+        return Basket.manager.count( ($multiDistribId in dids) && $status!=Std.string(db.Basket.BasketStatus.OPEN) );        
     }
     
     public function getSalesAmount(){
         var amount = 0.0;
         
         var dids = multiDistribs.map(d -> d.id);
-        var baskets = Basket.manager.search( $multiDistribId in dids );
+        var baskets = Basket.manager.search( ($multiDistribId in dids) && $status!=Std.string(db.Basket.BasketStatus.OPEN) );
         for ( b in baskets){
             if(b.total==null){
                 b.lock();
