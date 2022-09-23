@@ -462,7 +462,10 @@ class MultiDistrib extends Object
 		var baskets = db.Basket.manager.search($multiDistrib==this && $status!=Std.string(BasketStatus.OPEN),false).array();
 
 		//sort by user lastname
-		baskets.sort((a,b)-> a.user.lastName > b.user.lastName ? 1 : -1 );
+		baskets.sort((a,b)-> {
+			if(a.user==null || b.user==null) return -1;
+			return a.user.lastName > b.user.lastName ? 1 : -1 ;
+		});
 
 		return baskets;
 	}
