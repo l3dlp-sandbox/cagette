@@ -90,7 +90,7 @@
 		::set ordersEndDate = d.getOrdersEndDate(false)::
 		::set vdistribs = d.getDistributions(1)::
 		::set cdistribs = d.getDistributions(0)::
-		::set cagette2OrdersRecapUrl = "/distribution/ordersRecap/"+d.id::
+		::set cagette2OrdersRecapUrl = "/distribution/cagette2#/"+d.id::
 		::set validateUrl = "/distribution/validate/"+d.id::
 		::if hasCagette2::
 			::set validateUrl = cagette2OrdersRecapUrl::
