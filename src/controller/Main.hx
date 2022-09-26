@@ -1,5 +1,6 @@
 package controller;
 
+import db.Basket;
 import Common;
 import db.Distribution;
 import db.MultiDistrib;
@@ -310,10 +311,11 @@ class Main extends Controller {
 	}
 
 	@logged
-	function doValidate(multiDistrib:db.MultiDistrib, user:db.User, d:haxe.web.Dispatch) {
+	function doValidate(basket:db.Basket, d:haxe.web.Dispatch) {
 		var v = new controller.Validate();
-		v.multiDistrib = multiDistrib;
-		v.user = user;
+		v.basket = basket;
+		v.user = basket.user;
+		v.multiDistrib = basket.multiDistrib;
 		d.dispatch(v);
 	}
 
