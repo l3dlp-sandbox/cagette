@@ -454,7 +454,7 @@ class Distribution extends Controller {
 	/**
 		Insert a distribution
 	**/
-	@tpl("form.mtt")
+	/*@tpl("form.mtt")
 	public function doInsert(contract:db.Catalog) {
 		if (!app.user.isContractManager(contract))
 			throw Error('/', t._('Forbidden action'));
@@ -509,7 +509,7 @@ class Distribution extends Controller {
 
 		view.form = form;
 		view.title = t._("Create a distribution");
-	}
+	}*/
 
 	/**
 		Invite farmers to a single distrib
@@ -977,15 +977,8 @@ class Distribution extends Controller {
 			throw Redirect('/distribution/ordersRecap/'+multiDistrib.id);
 		}
 		checkToken();
-		// view.users = multiDistrib.getUsers(db.Catalog.TYPE_VARORDER);
 
 		var baskets = multiDistrib.getBaskets();
-		baskets.sort(function(a, b) {
-			if (a.user.lastName > b.user.lastName)
-				return 1
-			else
-				return -1;
-		});
 		view.baskets = baskets;
 		view.distribution = multiDistrib;
 	}

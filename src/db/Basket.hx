@@ -1,6 +1,7 @@
 package db;
 import sys.db.Object;
 import sys.db.Types;
+import db.Operation;
 import Common;
 
 
@@ -70,21 +71,22 @@ class Basket extends Object
 	
 	/**
 	 * Get a Basket or create it if it doesn't exists.
-	 * Also link existing orders to this basket
 	 */
-	public static function getOrCreate(user, distrib:db.MultiDistrib){
-		var b = get(user, distrib, true);
+	public static function getOrCreate(user:db.User, multiDistrib:db.MultiDistrib){
+		var b = get(user, multiDistrib, true);
 			
 		if (b == null || b.status == Std.string(OPEN)){
 			//compute basket number
 			b = new Basket();
-			var max : Int = sys.db.Manager.cnx.request("select max(num) from Basket where multiDistribId="+distrib.id).getIntResult(0);
+			var max : Int = sys.db.Manager.cnx.request("select max(num) from Basket where multiDistribId="+multiDistrib.id).getIntResult(0);
+			if( max < 0 ) max = 0;
 			b.num = max + 1;
-			b.multiDistrib = distrib;
+			b.multiDistrib = multiDistrib;
 			b.user = user;
 			b.status = Std.string(BasketStatus.CONFIRMED);
 			b.insert();
-		}		
+		}
+
 		return b;		
 	}
 	
@@ -130,7 +132,7 @@ class Basket extends Object
 		if (op == null){
 			return [];
 		}else{			
-			return Lambda.array(op.getRelatedPayments());
+			return op.getRelatedPayments().array();
 		}
 	}
 
@@ -178,7 +180,13 @@ class Basket extends Object
 		/* var order = Lambda.find(getOrders(),function(o) return o.distribution!=null );
         if(order==null) return null;*/
 
-		return service.PaymentService.findVOrderOperation(this.multiDistrib,this.user, onlyPending );
+		// return service.PaymentService.findVOrderOperation(this.multiDistrib,this.user, onlyPending );
+
+		if (onlyPending) {
+			return db.Operation.manager.select($basket == this && $type == VOrder && $pending == true, true);
+		} else {
+			return db.Operation.manager.select($basket == this && $type == VOrder, true);
+		}
 	}
 	
 	public function isValidated() {

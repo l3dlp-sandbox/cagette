@@ -397,7 +397,7 @@ class MultiDistrib extends Object
 
 		}else{
 			//after distrib
-			if(isConfirmed()){
+			if(isValidated()){
 				return "validated";
 			}else{
 				return "distributed";
@@ -409,34 +409,10 @@ class MultiDistrib extends Object
 		return getState();
 	}
 	
-	
-	public function isConfirmed():Bool{
-				
+	public function isValidated():Bool{
 		//return Lambda.count( distributions , function(d) return d.validated) == distributions.length;
 		return validated == true;
 	}
-
-	public function isValidated(){
-		return isConfirmed();
-	}
-	
-	/*public function checkConfirmed():Bool{
-		
-		for ( d in getDistributions(db.Catalog.TYPE_VARORDER)){
-			if(!d.validated){
-				var orders = d.getOrders();
-				var allOrdersPaid = Lambda.count( orders , function(d) return d.paid) == orders.length;		
-
-				if (allOrdersPaid){
-					d.lock();
-					d.validated = true;
-					d.update();
-				}
-			}
-		}
-		
-		return isConfirmed();
-	}*/
 
 	/**
 		retrocomp
@@ -483,7 +459,15 @@ class MultiDistrib extends Object
 		get non open baskets
 	**/
 	public function getBaskets():Array<db.Basket>{
-		return db.Basket.manager.search($multiDistrib==this && $status!=Std.string(BasketStatus.OPEN),false).array();
+		var baskets = db.Basket.manager.search($multiDistrib==this && $status!=Std.string(BasketStatus.OPEN),false).array();
+
+		//sort by user lastname
+		baskets.sort((a,b)-> {
+			if(a.user==null || b.user==null) return -1;
+			return a.user.lastName > b.user.lastName ? 1 : -1 ;
+		});
+
+		return baskets;
 	}
 
 	/**

@@ -243,8 +243,8 @@ class Distribution extends Object
 			vendorId				: this.catalog.vendor.id,
 			distributionStartDate	: date==null ? multiDistrib.distribStartDate : date,
 			distributionEndDate		: end==null ? multiDistrib.distribEndDate : end,
-			orderStartDate			: orderStartDate==null ? multiDistrib.orderStartDate : orderStartDate,
-			orderEndDate			: orderEndDate==null ? multiDistrib.orderEndDate : orderEndDate,
+			orderStartDate			: orderStartDate==null ? this.catalog.startDate : orderStartDate,
+			orderEndDate			: orderEndDate, //never null
 			place 					: multiDistrib.place.getInfos()
 		};
 	}

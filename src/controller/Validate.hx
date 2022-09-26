@@ -1,4 +1,5 @@
 package controller;
+import db.Basket.BasketStatus;
 import db.Operation.OperationType;
 using Lambda;
 import Common;
@@ -29,7 +30,7 @@ class Validate extends controller.Controller
 		
 		var ug = db.UserGroup.get(user, place.group);
 		view.balance = ug==null ? null : ug.balance;
-		var b = db.Basket.get(user, multiDistrib);			
+		var b = db.Basket.manager.select($user == user && $multiDistrib==multiDistrib && $status!=Std.string(BasketStatus.OPEN));			
 		view.orders = service.OrderService.prepare(b.getOrders());
 		view.place = place;
 		view.date = date;

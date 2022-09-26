@@ -33,6 +33,12 @@ class Admin extends Controller {
 	function doDefault() {
 		view.now = Date.now();
 		view.ip = Web.getClientIP();
+
+		//tmp deploiement de l'option cagette2
+		var groups = db.Group.manager.unsafeCount('SELECT COUNT(g.id) FROM `Group` g, GroupStats gs WHERE gs.groupId=g.id AND gs.active=1');
+		var cg2groups = db.Group.manager.unsafeCount('SELECT COUNT(g.id) FROM `Group` g, GroupStats gs WHERE betaFlags & 2 != 0 AND gs.groupId=g.id AND gs.active=1');
+		view.groups = groups;
+		view.cg2groups = cg2groups;
 		
 		if(app.params.get("reloadSettings")=="1"){
 			app.setSettings();
