@@ -68,7 +68,7 @@ class MangopayGroupController extends controller.Controller
 				throw Error(pageUrl, "Vous devez définir votre IBAN.");
 			}
 
-			if(!md.isConfirmed()){
+			if(!md.isValidated()){
 				throw Error(pageUrl, "Cette distribution doit être validée avant de demander un virement.");
 			}
 

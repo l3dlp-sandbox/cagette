@@ -43,7 +43,7 @@
 					<div style="color:green">
 						<b>Panier en cours #::basket.id::</b>
 						<ul>
-						::foreach o basket.getOrders()::
+						::foreach o basket.getOrders(null)::
 							::if(o.product!=null)::
 							<li>::o.quantity:: x ::o.product.getName()::</li>
 							::else::

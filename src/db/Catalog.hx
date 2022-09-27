@@ -193,7 +193,7 @@ class Catalog extends Object
 	 * @param	large = false	Si true, montre les contrats terminés depuis moins d'un mois
 	 * @param	lock = false
 	 */
-	public static function getActiveContracts(group:db.Group,?large = false, ?lock = false) {
+	public static function getActiveContracts(group:db.Group,?large = false, ?lock = false):List<db.Catalog> {
 		var now = Date.now();
 		var end = Date.now();	
 		if (large) {

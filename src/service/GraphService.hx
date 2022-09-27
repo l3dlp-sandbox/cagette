@@ -1,4 +1,5 @@
 package service;
+import db.Basket.BasketStatus;
 import sugoi.apis.google.GeoCode.GeoCodingData;
 import db.Operation;
 import pro.payment.MangopayECPayment;
@@ -59,10 +60,8 @@ class GraphService{
     /**
         compute basket numbers by period
     **/
-    public static function baskets(from:Date,to:Date):Int {
-        
-		return db.Basket.manager.count($cdate>=from && $cdate<=to);
-        
+    public static function baskets(from:Date,to:Date):Int {        
+		return db.Basket.manager.count($status!=Std.string(BasketStatus.OPEN) && $cdate>=from && $cdate<=to);        
     }
 
     public static  function turnover(from:Date,to:Date):Int{

@@ -970,15 +970,8 @@ class Distribution extends Controller {
 			throw Redirect('/distribution/ordersRecap/'+multiDistrib.id);
 		}
 		checkToken();
-		// view.users = multiDistrib.getUsers(db.Catalog.TYPE_VARORDER);
 
 		var baskets = multiDistrib.getBaskets();
-		baskets.sort(function(a, b) {
-			if (a.user.lastName > b.user.lastName)
-				return 1
-			else
-				return -1;
-		});
 		view.baskets = baskets;
 		view.distribution = multiDistrib;
 	}

@@ -20,9 +20,10 @@
 		<td>Votre IP</td>
 		<th>::ip::</th>
 	</tr>
-	
-
-
+	<tr>
+		<td>Déploiement Cagette2</td>
+		<th>::cg2groups::/::groups::</th>
+	</tr>
 </table>
 
 <p>
