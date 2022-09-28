@@ -314,6 +314,12 @@ class PCatalogService{
 			throw new tink.core.Error("Ce catalogue existe déjà dans ce groupe. Il n'est pas nécéssaire d'importer plusieurs fois le même catalogue dans un groupe.");
 		}
 
+		if(clientGroup.isDispatchReady()){
+			if(!pcatalog.company.vendor.isDispatchReady()){
+				throw new tink.core.Error("Ce catalogue ne peut pas être relié à ce groupe car le producteur n'a pas de compte Stripe (Obligatoire afin de pouvoir accepter le paiement en ligne).");
+			}
+		}
+
 		//coordinator
 		var contact = db.User.manager.get(remoteUserId);
 		

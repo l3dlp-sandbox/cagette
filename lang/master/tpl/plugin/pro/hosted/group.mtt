@@ -42,7 +42,18 @@
 		::end::
 		</p>
 		<hr/>
+		<h3>Fonctionnalités en beta</h3>
 		
+		Cagette2 : $$bool(::group.hasCagette2()::)<br/>
+		Dispatch : $$bool(::group.isDispatchReady()::)<br/>
+
+		<p>
+		::if(!group.isDispatchReady())::
+			<a href="?dispatch=1" class="btn btn-default">Passer en Dispatch</a>
+		::end::
+		</p>
+		
+		<hr/>
 		<h3>Lieux de livraison</h3>		
 		<p>
 			<ul>

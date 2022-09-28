@@ -1,4 +1,5 @@
 package hosted.controller;
+import tools.ObjectListTool;
 import Common;
 import db.Operation;
 import hosted.HostedPlugIn;
@@ -49,6 +50,30 @@ class Main extends controller.Controller
 				md.update();
 			}
 		}
+
+		if( app.params.get("dispatch")=="1" ){
+			//ENABLE DISPATCH
+			group.lock();
+			group.betaFlags.set(Dispatch);
+			group.betaFlags.set(Cagette2);
+			
+			group.setAllowedPaymentTypes(["stripe"]);
+			group.flags.set(HasPayments);
+			
+			//get active and non disabled vendors
+			var vendors = group.getActiveContracts(false).map(c -> c.vendor).filter(v -> !v.isDisabled()).array();
+			vendors = ObjectListTool.deduplicate(vendors);
+
+			if( vendors.length > vendors.filter(v -> v.isDispatchReady()).length){
+				var badVendors = vendors.filter(v -> !v.isDispatchReady());
+				throw Error("/p/hosted/group/"+group.id,"Les producteurs suivants ne sont pas prêts pour le dispatch : <b>"+badVendors.map(v-> "#"+v.id+"-"+v.name).join(", ")+"</b>");
+			}
+
+			group.update();
+
+			throw Ok("/p/hosted/group/"+group.id,"Le groupe est configuré pour le dispatch");
+		}
+
 
 		view.vendors = group.getActiveVendors();
 		var gs = GroupStats.getOrCreate(group.id,true);
