@@ -74,6 +74,15 @@ class Main extends controller.Controller
 			throw Ok("/p/hosted/group/"+group.id,"Le groupe est configuré pour le dispatch");
 		}
 
+		if( app.params.get("cagette2")=="1" ){
+			group.lock();
+			group.betaFlags.set(Cagette2);
+			group.flags.set(HasPayments);
+			group.update();
+
+			throw Ok("/p/hosted/group/"+group.id,"Le groupe est configuré en cagette2");
+		}
+
 
 		view.vendors = group.getActiveVendors();
 		var gs = GroupStats.getOrCreate(group.id,true);
