@@ -11,8 +11,10 @@ class Timeframe {
         var params = App.current.params;
         if(webParamsOverride){
             //take web params in priority
-            this.from = params.get("_from")==null   ? _from : Date.fromString(params.get("_from")); 
-		    this.to = 	params.get("_to")==null     ? _to : Date.fromString(params.get("_to")); 
+            from = params.get("_from")==null   ? _from : Date.fromString(params.get("_from")); 
+		    to = 	params.get("_to")==null     ? _to : Date.fromString(params.get("_to")); 
+            from = new Date(from.getFullYear(),from.getMonth(),from.getDate(),0,0,0);
+            to = new Date(to.getFullYear(),to.getMonth(),to.getDate(),0,0,0);
         }else{
             this.from = _from;
             this.to = _to;

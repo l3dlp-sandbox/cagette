@@ -289,6 +289,8 @@ if (App.current.getSettings().noCourse==true) {
 				v.disabled = null;
 				v.update();
 
+				VendorStats.getOrCreate(v);
+
 				//create default catalog
 				var catalog = new pro.db.PCatalog();
 				catalog.company = c;
@@ -301,7 +303,6 @@ if (App.current.getSettings().noCourse==true) {
 					var rc = pro.service.PCatalogService.linkCatalogToGroup(catalog, group, u.id);
 					service.DistributionService.participate(distrib,rc.getContract());
 				}
-				
 
 				//add user + teacher
 				pro.db.PUserCompany.make(u,c);
