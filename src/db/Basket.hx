@@ -191,12 +191,13 @@ class Basket extends Object
 	
 	public function isValidated() {
 
-		var ordersPaid = Lambda.count(getOrders(), function(o) return !o.paid) == 0;
+		/*var ordersPaid = Lambda.count(getOrders(), function(o) return !o.paid) == 0;
 		var op = getOrderOperation(false);
 		var orderOperationNotPending = op!=null ? op.pending == false : true;
 		var paymentOperationsNotPending = Lambda.count(getPaymentsOperations(), function(p) return p.pending) == 0;
 
-		return ordersPaid && orderOperationNotPending && paymentOperationsNotPending;			
+		return ordersPaid && orderOperationNotPending && paymentOperationsNotPending;			*/
+		return status==Std.string(BasketStatus.VALIDATED);
 	}
 
 	public function getGroup() : db.Group {
