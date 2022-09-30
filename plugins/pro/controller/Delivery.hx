@@ -35,7 +35,7 @@ class Delivery extends controller.Controller
 		
 		view.getCatalog = function(d:db.Distribution){			
 			var rc = connector.db.RemoteCatalog.getFromContract(d.catalog);
-			return rc.getCatalog();			
+			return rc.getPCatalog();			
 		};
 
 		if(company.captiveGroups){
@@ -161,7 +161,7 @@ class Delivery extends controller.Controller
 		var catalogs = company.getCatalogs();			
 		var remoteContracts = [];
 		for ( c in catalogs){
-			for ( rc in connector.db.RemoteCatalog.getFromCatalog(c) ){
+			for ( rc in connector.db.RemoteCatalog.getFromPCatalog(c) ){
 				remoteContracts.push( rc.getContract() );
 			}	
 		}
@@ -202,7 +202,7 @@ class Delivery extends controller.Controller
 		var catalogs = company.getCatalogs();			
 		var remoteContracts = [];
 		for ( c in catalogs){
-			for ( rc in connector.db.RemoteCatalog.getFromCatalog(c) ){
+			for ( rc in connector.db.RemoteCatalog.getFromPCatalog(c) ){
 				remoteContracts.push( rc.getContract() );
 			}	
 		}
@@ -402,7 +402,7 @@ class Delivery extends controller.Controller
 		
 		var contracts = [];
 		for ( c in company.getCatalogs()){
-			for ( r in connector.db.RemoteCatalog.getFromCatalog(c)){
+			for ( r in connector.db.RemoteCatalog.getFromPCatalog(c)){
 				contracts.push({contract:r.getContract(),catalog:c});
 			}
 		}
@@ -495,7 +495,7 @@ class Delivery extends controller.Controller
 		
 		var contracts = [];
 		for ( c in company.getCatalogs()){
-			for ( r in connector.db.RemoteCatalog.getFromCatalog(c)){
+			for ( r in connector.db.RemoteCatalog.getFromPCatalog(c)){
 				contracts.push({contract:r.getContract(),catalog:c});
 			}
 		}

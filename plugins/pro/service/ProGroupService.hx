@@ -71,7 +71,7 @@ class ProGroupService
 				var rc = connector.db.RemoteCatalog.getFromContract(c);
 				if (rc == null) continue;
 				//copy contract
-				var rc = pro.service.PCatalogService.linkCatalogToGroup(rc.getCatalog(), d, App.current.user.id);
+				var rc = pro.service.PCatalogService.linkCatalogToGroup(rc.getPCatalog(), d, App.current.user.id);
 				var ct = rc.getContract();
 									
 				//need to sync categories
@@ -79,7 +79,7 @@ class ProGroupService
 				
 				//add cpro members to group
 				if (this.company == null){
-					for (u in rc.getCatalog().company.getUsers()) u.makeMemberOf(d);
+					for (u in rc.getPCatalog().company.getUsers()) u.makeMemberOf(d);
 				}
 			}
 			
@@ -87,7 +87,7 @@ class ProGroupService
 			//copy my cpro contracts
 			var rcs = new Array<connector.db.RemoteCatalog>();
 			for ( c in company.getCatalogs() ){
-				for (rc in connector.db.RemoteCatalog.getFromCatalog(c)){
+				for (rc in connector.db.RemoteCatalog.getFromPCatalog(c)){
 					rcs.push(rc);
 				}
 			}
@@ -95,7 +95,7 @@ class ProGroupService
 				var c = rc.getContract();
 				if ( c.group.id == g.id) {
 					//copy contract
-					var rc = pro.service.PCatalogService.linkCatalogToGroup(rc.getCatalog(), d, App.current.user.id);
+					var rc = pro.service.PCatalogService.linkCatalogToGroup(rc.getPCatalog(), d, App.current.user.id);
 					var ct = rc.getContract();
 					
 					//need to sync categories

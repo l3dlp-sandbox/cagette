@@ -24,7 +24,7 @@ class PCatalogService{
 			
 			var contract = rc.getContract();
 			if (contract == null) continue;
-			var catalog = rc.getCatalog();			
+			var catalog = rc.getPCatalog();			
 			if( catalog==null ) continue;
 			
 			
@@ -87,8 +87,6 @@ class PCatalogService{
 	/**
 	 * Synchro from catalog offer -> product.
 	 * Manages also new products
-	 * @param	off
-	 * @param	product
 	 */
 	public static function syncProduct(co:pro.db.PCatalogOffer, ?groupProduct:db.Product, contract:db.Catalog, fullUpdate:Bool, ?isLocallyDisabled=false){
 		
@@ -165,7 +163,7 @@ class PCatalogService{
 		var rc = RemoteCatalog.getFromContract(catalog);
 		if(rc != null){
 			//just move products and catalog
-			var pcatalog = rc.getCatalog();
+			var pcatalog = rc.getPCatalog();
 			pcatalog.lock();
 
 			for (p in pcatalog.getProducts()) {
@@ -239,7 +237,7 @@ class PCatalogService{
 	/**
 	 *  Create or sync a catalog ( from a vendor catalog (PCatalog) to a group catalog (Catalog) )
 	 */
-	public static function syncCatalog(groupCatalog:db.Catalog,proCatalog:pro.db.PCatalog, ?contact:db.User,?group:db.Group){
+	public static function syncCatalog(groupCatalog:db.Catalog, proCatalog:pro.db.PCatalog, ?contact:db.User, ?group:db.Group){
 
 		if(proCatalog==null) throw "catalog cannot be null";
 		if(groupCatalog==null){

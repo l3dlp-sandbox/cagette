@@ -281,10 +281,10 @@ class Main extends controller.Controller
 					if(rc!=null){
 						status = "cpro";
 						active = false;
-						var company = rc.getCatalog().company;
+						var company = rc.getPCatalog().company;
 						for( cata in company.getCatalogs()){
 							if(active) break;
-							for( rc in connector.db.RemoteCatalog.getFromCatalog(cata)){
+							for( rc in connector.db.RemoteCatalog.getFromPCatalog(cata)){
 								var c = rc.getContract();
 								active = db.Distribution.manager.count($catalogId==c.id && $date >= from && $date <= to) > 0;
 								//Sys.println("------ catalogue "+cata.name+": "+c.name+" de "+c.amap.name+" = "+active);

@@ -66,7 +66,7 @@ class Product extends controller.Controller
 				var cats = company.getCatalogs();
 				var rcs = connector.db.RemoteCatalog.manager.search($remoteCatalogId in Lambda.map(cats, function(x) return x.id ));
 				for (rc in rcs){
-					var offs = rc.getCatalog().getOffers();
+					var offs = rc.getPCatalog().getOffers();
 					for ( o in offs){
 						if ( o.offer.product.id == d.id) throw Error(baseUrl, "Vous ne pouvez pas changer la référence de ce produit car il est déjà visible dans la boutique de vos clients.");
 					}

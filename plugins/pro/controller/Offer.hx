@@ -1,4 +1,6 @@
 package pro.controller;
+import connector.db.RemoteCatalog;
+import tools.ObjectListTool;
 import Common;
 import form.CagetteForm;
 import sugoi.form.Form;
@@ -18,8 +20,7 @@ class Offer extends controller.Controller
 	{
 		super();
 		view.company = company = pro.db.CagettePro.getCurrentCagettePro();
-		view.category = "product";
-		
+		view.category = "product";		
 	}
 	
 	/**
@@ -67,7 +68,9 @@ class Offer extends controller.Controller
 		var el = new sugoi.form.elements.CheckboxGroup("catalogs", "Mettre à jour le prix dans les catalogues", data, checked);
 		f.addElement(el);		
 
-		if (f.isValid()) {			
+		if (f.isValid()) {
+			
+			var vatChanged = o.vat!=f.getValueOf("vat");
 			
 			f.toSpod(o); 
 
@@ -83,10 +86,10 @@ class Offer extends controller.Controller
 				throw Error("/p/pro/product", "Cette référence existe dejà dans votre catalogue");
 			}
 			
-			var catalogsToUpdate : Array<Int> = f.getValueOf("catalogs");
+			var catalogsToUpdate:Array<Int> = f.getValueOf("catalogs");
 
 			//if offers are in catalogs, update the lastUpdate field of the catalog (for synch purpose)			
-			for( coffer in coffers){
+			for(coffer in coffers){
 				
 				//update price directly in catalog
 				if( Lambda.exists(catalogsToUpdate,function(x) {return Std.string(x)==Std.string(coffer.catalog.id);}  ) ){					
@@ -96,6 +99,21 @@ class Offer extends controller.Controller
 
 				//need sync
 				coffer.catalog.toSync();
+			}
+
+			//cannot change VAT if product is already sold.
+			if(vatChanged){
+				var pcatalogs = ObjectListTool.deduplicate(coffers.map(co->co.catalog));
+				var rcs = pcatalogs.map( cat -> RemoteCatalog.getFromPCatalog(cat) ).flatten();
+				var catalogs = rcs.map( rc -> rc.getContract() );
+				var products = catalogs.map( c -> c.getProducts(false) ).flatten();
+				products = products.filter(p -> p.ref==o.ref);
+
+				//check if product is in orders
+				var userOrders = products.map(p -> db.UserOrder.manager.search($product==p,false)).flatten();
+				if(userOrders.length>0){
+					throw Error(sugoi.Web.getURI(),"Vous ne pouvez plus changer le taux de TVA de ce produit car il a déjà été commandé. Pour utiliser un nouveau taux de TVA, créez un nouveau produit.");
+				}
 			}
 
 			o.update();

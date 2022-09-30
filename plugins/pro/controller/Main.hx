@@ -121,7 +121,7 @@ class Main extends controller.Controller
 		
 		view.getCatalog = function(d:db.Distribution){			
 			var rc = connector.db.RemoteCatalog.getFromContract(d.catalog);
-			return rc.getCatalog();			
+			return rc.getPCatalog();			
 		};
 		
 		//find unlinked catalogs		
