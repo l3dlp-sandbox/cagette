@@ -12,6 +12,7 @@ enum VendorType {
 	VTDiscovery; 		// 6 Offre Découverte
 	VTCproSubscriberMontlhy; 	// 7 Offre Pro abonné mensuel
 	VTCproSubscriberYearly; 	// 8 Offre Pro abonné annuel
+	VTMarketplace; // producteur au %
 }
 
 /**
@@ -96,10 +97,17 @@ class VendorStats extends sys.db.Object
 			}else if(cpro.offer==Pro){
 				// Get subscription plan
 				var result:Dynamic = BridgeService.call('/subscriptions/plan/${vendor.stripeCustomerId}');
-				if (result!=null && result.plan=='year'){
-					vs.type = VTCproSubscriberYearly;
-				} else {
-					vs.type = VTCproSubscriberMontlhy;
+				if (result!=null){
+					if(result.plan=='year'){
+						vs.type = VTCproSubscriberYearly;
+					} else if(result.plan=='month'){
+						vs.type = VTCproSubscriberMontlhy;
+					}else{
+						vs.type = VTMarketplace;
+					}
+
+				}else{
+					throw "unable to get stripe subscription status";
 				}
 			}
 			

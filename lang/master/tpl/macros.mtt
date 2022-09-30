@@ -666,6 +666,8 @@
 			Formule Pro (abo mensuel)
 		::elseif(s==8)::
 			Formule Pro (abo annuel)	
+		::elseif(s==9)::
+			Formule Marketplace
 		::end::
 	</macro>
     

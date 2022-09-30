@@ -345,7 +345,6 @@ class PCatalogService{
 		return rc;
 	}
 	
-
 	public static function makeCatalogOffer(offer:pro.db.POffer,catalog:pro.db.PCatalog,price:Float){
 		var cp = new pro.db.PCatalogOffer();
 		cp.catalog = catalog;
