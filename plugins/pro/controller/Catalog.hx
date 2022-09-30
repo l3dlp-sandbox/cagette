@@ -338,8 +338,7 @@ class Catalog extends controller.Controller
 			pro.service.PCatalogService.linkCatalogToGroup(catalog, notif.group , content.userId, content.catalogType );
 		}catch(e:tink.core.Error){
 			throw Error('/p/pro/',e.message);
-		}
-		
+		}		
 		
 		notif.delete();
 		
@@ -383,14 +382,12 @@ class Catalog extends controller.Controller
 		if( notif.sender!=null){
 			var title = "Votre invitation à la distribution du " + app.view.hDate(distrib.getDate()) + " a été acceptée par " + company.vendor.name;
 			App.quickMail(notif.sender.email, title, title, distrib.getGroup());
-		}
-		
+		}		
 		
 		//delete notif
 		notif.delete();
 		
-		throw Ok("/p/pro", "Vous avez accepté l'invitation à participer à la distribution du "+distrib.getDate());
-		
+		throw Ok("/p/pro", "Vous avez accepté l'invitation à participer à la distribution du "+distrib.getDate());		
 	}
 	
 	/**
