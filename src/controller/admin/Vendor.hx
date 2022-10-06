@@ -41,6 +41,7 @@ class Vendor extends controller.Controller
 			{label: "Formule Découverte", value: VTDiscovery.string()},
 			{label: "Formule Pro (abo annuel)", value: VTCproSubscriberYearly.string()},
 			{label: "Formule Pro (abo mensuel)", value: VTCproSubscriberMontlhy.string()},
+			{label: "Formule Marketplace", value: VTMarketplace.string()},
 		];
 		f.addElement(new sugoi.form.elements.StringSelect("type", "Type de producteur", data, defaultType.string(), true, ""));
 		f.addElement(new sugoi.form.elements.StringInput("zipCodes", "Saisir des numéros de département séparés par des virgules ou laisser vide."));

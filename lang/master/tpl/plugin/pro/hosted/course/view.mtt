@@ -43,6 +43,8 @@
 					Formule Pro
 					::elseif(c._company.offer==3)::
 					Compte pédagogique
+					::elseif(c._company.offer==4)::
+					Formule Marketplace
 					::end::
 
 					::if(c._company.getUsers().length==0)::<span  class="glyphicon glyphicon-ban-circle" style="color:#666"></span>::end::					
