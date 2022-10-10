@@ -46,6 +46,15 @@ class Main extends Controller {
 	function doHome() {
 		addBc("home", "Commandes", "/home");
 
+		// If the session has been closed, Neko has been logged out while Nest might still be logged in
+		if (app.user == null){
+			var cookies = Web.getCookies();
+			var authSidCookie = cookies["Auth_sid"];
+			if (authSidCookie != null && authSidCookie != view.sid){
+				throw Redirect('/user/logout');
+			}
+		}
+
 		var group = app.getCurrentGroup();
 		if (app.user != null && group == null) {
 			throw Redirect("/user/choose");
