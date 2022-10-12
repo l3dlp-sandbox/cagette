@@ -520,8 +520,7 @@ class Group extends Object
 		
 	}
 
-	public function isDispatchReady():Bool{
-
+	public function isDispatch():Bool{
 		return betaFlags.has(Dispatch);
 	}
 

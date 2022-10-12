@@ -44,8 +44,7 @@ class VendorStats extends sys.db.Object
 		if(vs==null){
 			vs = new VendorStats();
 			vs.vendor = vendor;
-			vs.insert();
-			
+			vs.insert();			
 		}
 		return vs;
 	}

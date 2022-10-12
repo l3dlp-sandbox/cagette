@@ -45,10 +45,10 @@
 		<h3>Fonctionnalités en beta</h3>
 		
 		Cagette2 : $$bool(::group.hasCagette2()::)<br/>
-		Dispatch : $$bool(::group.isDispatchReady()::)<br/>
+		Dispatch : $$bool(::group.isDispatch()::)<br/>
 
 		<p>
-		::if(!group.isDispatchReady())::
+		::if(!group.isDispatch())::
 			<a href="?dispatch=1" class="btn btn-default">Passer en Dispatch</a>
 		::end::
 		::if(!group.hasCagette2())::

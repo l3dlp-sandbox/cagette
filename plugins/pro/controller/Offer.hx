@@ -112,7 +112,7 @@ class Offer extends controller.Controller
 				//check if product is in orders
 				var userOrders = products.map(p -> db.UserOrder.manager.search($product==p,false)).flatten();
 				if(userOrders.length>0){
-					throw Error(sugoi.Web.getURI(),"Vous ne pouvez plus changer le taux de TVA de ce produit car il a déjà été commandé. Pour utiliser un nouveau taux de TVA, créez un nouveau produit.");
+					throw Error(sugoi.Web.getURI(),"Vous ne pouvez plus changer le taux de TVA de ce produit car il a déjà été commandé. Pour utiliser un nouveau taux de TVA, créez une nouvelle offre.");
 				}
 			}
 
