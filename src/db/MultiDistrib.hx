@@ -27,8 +27,8 @@ class MultiDistrib extends Object
 	
 	public var distribStartDate : SDateTime; 
 	public var distribEndDate : SDateTime;	
-	public var orderStartDate : SNull<SDateTime>; 
-	public var orderEndDate : SNull<SDateTime>;
+	public var orderStartDate : SDateTime; 
+	public var orderEndDate : SDateTime;
 
 	//time slots management
 	@hideInForms public var timeSlots : SNull<SText>; // IN JSON
