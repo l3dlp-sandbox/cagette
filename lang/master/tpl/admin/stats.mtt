@@ -10,6 +10,19 @@
 		$$timeframe(::tf::)
 		
 		<p>
+			<h4>Paniers</h4>
+			<table class="table table-bordered table-striped">				
+				<tr>
+					<td class="col-md-6">Nbre de paniers (MARKET)</td>
+					<td class="col-md-6">::marketBasketsNum::</td>
+				</tr>
+				<tr>
+					<td class="col-md-6">Nbre de paniers (AMAP)</td>
+					<td class="col-md-6">::amapBasketsNum::</td>
+				</tr>		
+			</table>
+
+
 			<h4>Producteurs</h4>
 			<table class="table table-bordered table-striped">				
 				<tr>
@@ -48,7 +61,7 @@
 				</tr>		
             </table>
             
-			<h4>Groupes</h4>
+			<h4>Consommateurs</h4>
 
 			<table class="table table-bordered table-striped">				
 				<tr>
@@ -85,10 +98,7 @@
 						</table>
 					</td>
 				</tr>
-				<tr>
-					<td>Nouveaux foyers</td>
-					<td>::newUsers::</td>
-				</tr>
+				
 				<tr>
 					<td>Groupes actifs (maintenant)</td>
 					<td>
@@ -112,6 +122,10 @@
 					<td>Foyers actifs (maintenant)</td>
 					<td>::activeUsers::</td>
 				</tr>	
+				<tr>
+					<td>Nouveaux foyers</td>
+					<td>::newUsers::</td>
+				</tr>
 			
             </table>
 			
