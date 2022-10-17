@@ -18,6 +18,14 @@ class Shop extends Controller
 		if( app.getCurrentGroup()==null || app.getCurrentGroup().id!=md.getGroup().id){
 			throw  Redirect("/group/"+md.getGroup().id);
 		}
+		// If the session has been closed, Neko has been logged out while Nest might still be logged in
+		if (app.user == null){
+			var cookies = Web.getCookies();
+			var authSidCookie = cookies["Auth_sid"];
+			if (authSidCookie != null && authSidCookie != view.sid){
+				throw Redirect('/user/logout');
+			}
+		}
 		if(args!=null){
 			if(!args.continueShopping){
 				service.OrderService.checkTmpBasket(app.user,app.getCurrentGroup());
