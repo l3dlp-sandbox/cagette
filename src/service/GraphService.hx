@@ -62,6 +62,8 @@ class GraphService{
     **/
     public static function baskets(from:Date,to:Date):Int {        
 		return db.Basket.manager.count($status!=Std.string(BasketStatus.OPEN) && $cdate>=from && $cdate<=to);        
+
+        //select * from MultiDistrib where id in ()
     }
 
     public static  function turnover(from:Date,to:Date):Int{
