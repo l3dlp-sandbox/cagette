@@ -113,6 +113,14 @@ class Admin extends Controller {
 		d.dispatch(new controller.admin.Vendor());
 	}
 
+	function doUser(d:haxe.web.Dispatch) {
+		d.dispatch(new controller.admin.User());
+	}
+
+	function doGroup(d:haxe.web.Dispatch) {
+		d.dispatch(new controller.admin.Group());
+	}
+
 	/**
 		export taxo as CSV
 	**/
@@ -566,6 +574,9 @@ class Admin extends Controller {
 	@tpl('admin/news.mtt')
 	function doNews() {}
 
+
+
+
 	function doTestMails(?args:{tpl:String}){
 
 		//list existing mail templates
@@ -630,5 +641,10 @@ class Admin extends Controller {
 	@tpl('admin/superadmins.mtt')
 	function doSuperadmins(){
 		view.superadmins = db.User.manager.search($rights.has(Admin),false);
+	}
+
+	@tpl('admin/stripe.mtt')
+	function doStripe(){
+
 	}
 }

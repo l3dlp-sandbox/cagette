@@ -1,0 +1,11 @@
+::use 'admin/design.mtt'::
+
+<div id="stripe-dashboard-div"></div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function(event) {
+    neo.createNeoModule("stripe-dashboard", "stripe-dashboard-div");
+  });
+</script>
+
+::end::
