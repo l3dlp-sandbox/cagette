@@ -250,7 +250,11 @@ class Admin extends Controller {
 		//find next monday
 		while(to.getDay()!=1) to = DateTools.delta(to, 1000*60*60*24);
 		
-		view.tf = new Timeframe(from,to);
+		var tf = new Timeframe(from,to);
+		view.tf = tf;
+
+		from = tf.from;
+		to = tf.to;
 
 		view.newVendors = db.Vendor.manager.count($cdate >= from && $cdate < to);
 		view.newVendorsByType = sys.db.Manager.cnx.request('SELECT count(v.id) as count, vs.type
@@ -267,8 +271,6 @@ class Admin extends Controller {
 		WHERE vs.vendorId=v.id AND active=1
 		group by vs.type
 		order by type').results();
-
-		
 
 		view.activeGroups = GroupStats.manager.count($active);
 		view.activeUsers = sys.db.Manager.cnx.request('SELECT sum(gs.membersNum) FROM `Group` g, GroupStats gs where gs.groupId=g.id and gs.active=1')
@@ -291,6 +293,39 @@ class Admin extends Controller {
 		and gs.active=1
 		group by contactType
 		order by count desc').results();
+
+		// db.Group.manager.search($flags.has(ShopMode));
+		// db.Group.manager.search(!$flags.has(ShopMode));
+
+
+		//BASKETS
+		var marketBaskets = db.Basket.manager.unsafeObjects('
+			select * from Basket where cdate >= "${from.toString()}" and cdate < "${to.toString()}"
+			and multiDistribId in (
+			select id from MultiDistrib where groupId in (
+				#group AVEC shopMode
+				SELECT id FROM `Group` WHERE flags & 2 != 0 
+			) and distribStartDate > NOW() )',false);
+
+
+		view.marketBasketsNum = marketBaskets.length;
+
+		var amapBaskets = db.Basket.manager.unsafeObjects('
+			select * from Basket where cdate >= "${from.toString()}" and cdate < "${to.toString()}"
+			and multiDistribId in (
+			select id from MultiDistrib where groupId in (
+				#group SANS shopMode
+				SELECT id FROM `Group` WHERE !(flags & 2 != 0) 
+			) and distribStartDate > NOW() )',false);
+
+
+		view.amapBasketsNum = amapBaskets.length;
+
+		
+
+
+
+
 
 	}
 

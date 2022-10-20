@@ -23,6 +23,7 @@ enum GroupFlags {
 enum BetaFlags{
 	___ShopV2; 		//shop V2 @deprecated
 	Cagette2;		//BETA Cagette 2.0
+	Dispatch;		//BETA DIspatch enabled group
 }
 
 //user registration options
