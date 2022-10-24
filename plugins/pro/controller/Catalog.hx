@@ -36,7 +36,7 @@ class Catalog extends controller.Controller
 
 		view.catalogs = company.getCatalogs();
 		view.getLinkages = function(catalog:pro.db.PCatalog){
-			return connector.db.RemoteCatalog.getFromCatalog(catalog);				
+			return connector.db.RemoteCatalog.getFromPCatalog(catalog);				
 		}
 		checkToken();
 	}
@@ -359,7 +359,7 @@ class Catalog extends controller.Controller
 		var content : pro.db.PNotif.DeliveryRequestContent = haxe.Json.parse(notif.content);
 		var catalog = pro.db.PCatalog.manager.get(content.pcatalogId,false);
 		var distrib = db.MultiDistrib.manager.get(content.distribId,false);
-		var rcs = connector.db.RemoteCatalog.getFromCatalog(catalog);
+		var rcs = connector.db.RemoteCatalog.getFromPCatalog(catalog);
 		var rc = Lambda.find(rcs,function(rc) return rc.getContract().group.id==notif.group.id );
 		if(rc==null){
 			throw Error("/p/pro","Vous n'êtes plus reliés à ce catalogue, vous pouvez supprimer cette demande.");

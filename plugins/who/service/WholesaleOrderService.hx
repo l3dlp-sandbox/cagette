@@ -69,7 +69,7 @@ class WholesaleOrderService {
 
 		//populate a map by productId containing related offers
 		var catOffers = new Map<Int,Array<pro.db.POffer>>(); 
-		for( o in rc.getCatalog().getOffers()){
+		for( o in rc.getPCatalog().getOffers()){
 			var arr = catOffers[o.offer.product.id];
 			if(arr==null) arr = [];
 			if(o.offer.quantity!=null){
@@ -97,7 +97,7 @@ class WholesaleOrderService {
 				bigOffer.product.bulk = true;
 				bigOffer.product.wholesale = true;
 				bigOffer.product.update();
-				var cat = rc.getCatalog();
+				var cat = rc.getPCatalog();
 				cat.toSync();
 			}
 			

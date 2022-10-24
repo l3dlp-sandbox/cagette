@@ -34,11 +34,16 @@ class Admin extends Controller {
 		view.now = Date.now();
 		view.ip = Web.getClientIP();
 
+		// db.Group.manager.count($betaFlags.has(Cagette2));
+		// db.Group.manager.count($betaFlags.has(Dispatch));
+
 		//tmp deploiement de l'option cagette2
 		var groups = db.Group.manager.unsafeCount('SELECT COUNT(g.id) FROM `Group` g, GroupStats gs WHERE gs.groupId=g.id AND gs.active=1');
 		var cg2groups = db.Group.manager.unsafeCount('SELECT COUNT(g.id) FROM `Group` g, GroupStats gs WHERE betaFlags & 2 != 0 AND gs.groupId=g.id AND gs.active=1');
+		var dispatchGroups = db.Group.manager.unsafeCount('SELECT COUNT(g.id) FROM `Group` g, GroupStats gs WHERE betaFlags & 4 != 0 AND gs.groupId=g.id AND gs.active=1');
 		view.groups = groups;
 		view.cg2groups = cg2groups;
+		view.dispatchGroups = dispatchGroups;
 		
 		if(app.params.get("reloadSettings")=="1"){
 			app.setSettings();
@@ -106,6 +111,14 @@ class Admin extends Controller {
 	
 	function doVendor(d:haxe.web.Dispatch) {
 		d.dispatch(new controller.admin.Vendor());
+	}
+
+	function doUser(d:haxe.web.Dispatch) {
+		d.dispatch(new controller.admin.User());
+	}
+
+	function doGroup(d:haxe.web.Dispatch) {
+		d.dispatch(new controller.admin.Group());
 	}
 
 	/**
@@ -598,6 +611,9 @@ class Admin extends Controller {
 	@tpl('admin/news.mtt')
 	function doNews() {}
 
+
+
+
 	function doTestMails(?args:{tpl:String}){
 
 		//list existing mail templates
@@ -662,5 +678,10 @@ class Admin extends Controller {
 	@tpl('admin/superadmins.mtt')
 	function doSuperadmins(){
 		view.superadmins = db.User.manager.search($rights.has(Admin),false);
+	}
+
+	@tpl('admin/stripe.mtt')
+	function doStripe(){
+
 	}
 }

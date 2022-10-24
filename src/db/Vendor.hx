@@ -92,6 +92,7 @@ class Vendor extends Object
 	@hideInForms public var betaFlags:SFlags<VendorBetaFlags>;
 
 	@hideInForms public var stripeCustomerId:SNull<SString<255>>;
+	@hideInForms public var stripeAccountId:SNull<SString<255>>;
 
 	public function new() 
 	{
@@ -362,4 +363,11 @@ class Vendor extends Object
 	public function getImageId(){
         return this.imageId;
     }
+
+	public function isDispatchReady():Bool{
+
+		if(stripeAccountId==null) return false;
+		return sys.db.Manager.cnx.request('SELECT count(id) FROM stripeAccount where id="+${this.stripeAccountId}" and details_submitted=1 and charges_enabled=1').getIntResult(0) > 0;
+
+	}
 }

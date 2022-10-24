@@ -84,7 +84,7 @@ class PCatalog extends Object
 		this.lastUpdate = Date.now();
 		this.update();
 		
-		for ( rc in connector.db.RemoteCatalog.getFromCatalog(this,true)){
+		for ( rc in connector.db.RemoteCatalog.getFromPCatalog(this,true)){
 			
 			rc.needSync = true;
 			rc.update();
