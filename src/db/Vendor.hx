@@ -32,6 +32,7 @@ typedef SiretInfos = {
 
 enum VendorBetaFlags{
 	Cagette2;		//BETA Cagette 2.0
+	CanOpenStripeAccount; //Can Open Stripe Account
 }
 
 /**
@@ -364,10 +365,19 @@ class Vendor extends Object
         return this.imageId;
     }
 
+	/**
+		has a valid Stripe account
+	**/
 	public function isDispatchReady():Bool{
 
 		if(stripeAccountId==null) return false;
 		return sys.db.Manager.cnx.request('SELECT count(id) FROM stripeAccount where id="+${this.stripeAccountId}" and details_submitted=1 and charges_enabled=1').getIntResult(0) > 0;
 
 	}
+
+	public function canOpenStripeAccount():Bool{
+		return betaFlags.has(CanOpenStripeAccount);
+	}
+
+	
 }

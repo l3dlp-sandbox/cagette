@@ -12,8 +12,6 @@
 			::end::
 			<!--Charte Producteurs : $$check(::vendor.vendorPolicy::)-->
 			Profession : ::if(profession!=null)::<b>::profession.name::</b>::else:: ??? ::end::<br/>
-
-			
 		</p>
 	</div>
 	<div class="col-md-4">
@@ -95,7 +93,18 @@
 		</p>
 
 		<p>
-			Actif $$bool(::stats.active::)
+			Actif $$bool(::stats.active::)<br/>
+
+			::if(vendor.canOpenStripeAccount())::
+				Peut ouvrir un compte Stripe $$bool(::true::)  <a href="?canOpenStripeAccount=0" class="btn btn-default btn-xs">désactiver</a><br/>
+				A un compte Stripe valide : $$bool(::vendor.isDispatchReady()::) 
+				::if(vendor.isDispatchReady())::  #::vendor.stripeAccountId:: ::end::
+
+			::else::
+				Peut ouvrir un compte Stripe $$bool(::false::) <a href="?canOpenStripeAccount=1" class="btn btn-default btn-xs">Activer</a>
+			::end::
+
+			
 		</p>
 		
 
