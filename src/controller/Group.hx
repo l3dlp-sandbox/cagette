@@ -2,6 +2,7 @@ package controller;
 import Common;
 import db.Group;
 import payment.Cash;
+import payment.Cash;
 import service.BridgeService;
 import service.DistributionService;
 import service.OrderService;
@@ -20,6 +21,10 @@ class Group extends controller.Controller
 	 */
 	@tpl('group/view.mtt')
 	function doDefault( group : db.Group ) {
+
+		if(group.disabled!=null){
+			throw Redirect("/group/disabled/"+group.id);
+		}
 		
 		if ( group.regOption == db.Group.RegOption.Open ) {
 
@@ -110,14 +115,14 @@ class Group extends controller.Controller
 	@tpl("form.mtt")
 	function doCreate() {
 		var cagettePros = service.VendorService.getCagetteProFromUser(App.current.user);
-		if (!(App.current.settings.onlyVendorsCanCreateGroup==null
-			 || App.current.settings.onlyVendorsCanCreateGroup==false 
-			 || (App.current.settings.onlyVendorsCanCreateGroup==true && cagettePros!=null && cagettePros.length>0))
+		if (!(App.current.getSettings().onlyVendorsCanCreateGroup==null
+			 || App.current.getSettings().onlyVendorsCanCreateGroup==false 
+			 || (App.current.getSettings().onlyVendorsCanCreateGroup==true && cagettePros!=null && cagettePros.length>0))
 			 ) {
 			throw Redirect("/");
 		}
 
-		view.title = "Créer un nouveau groupe " + App.current.theme.name;
+		view.title = "Créer un nouveau groupe " + App.current.getTheme().name;
 
 		var p = new db.Place();
 		var f = form.CagetteForm.fromSpod(p);
@@ -125,7 +130,7 @@ class Group extends controller.Controller
 		f.addElement(new StringInput("groupName", t._("Name of your group"), "", true),1);
 		
 		//group type
-		if (App.current.settings.noCsa != true) {
+		if (App.current.getSettings().noCsa != true) {
 			var data = [
 				{
 					label:"Mode marché",
@@ -157,7 +162,7 @@ class Group extends controller.Controller
 			g.contact = user;
 			
 			var type:GroupType;
-			if (App.current.settings.noCsa == true) {
+			if (App.current.getSettings().noCsa == true) {
 				type = GroupType.ProducerDrive;
 			}else {
 				type = Type.createEnumIndex(GroupType, Std.parseInt(f.getValueOf("type")) );
@@ -272,18 +277,15 @@ class Group extends controller.Controller
 
 		view.container = "container-fluid";
 		
-		//if no param is sent, focus on Paris
-		if (args == null || ((args.address == null || args.address == "") && args.lat == null && args.lng == null)){
-			args = {lat:48.855675, lng:2.3472365};
-		}
-		
 		view.lat = args.lat;
 		view.lng = args.lng;
-		view.address = args.address;		
+		view.address = args.address;
 	}
 
 	@tpl("group/disabled.mtt")
-	public function doDisabled(){
-		view.group = App.current.getCurrentGroup();
+	public function doDisabled(?group: db.Group){
+		var group = group != null ? group : App.current.getCurrentGroup();
+		if (group == null) throw Redirect("/");
+		view.group = group;
 	}
 }

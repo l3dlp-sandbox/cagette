@@ -12,7 +12,7 @@ class ConnectorPlugIn extends PlugIn implements IPlugIn{
 		file = sugoi.tools.Macros.getFilePath();
 		
 		//suscribe to events
-		App.current.eventDispatcher.add(onEvent);
+		App.eventDispatcher.add(onEvent);
 		
 		//add i18n strings
 		//var i18n = App.t.getStrings();
@@ -199,7 +199,7 @@ class ConnectorPlugIn extends PlugIn implements IPlugIn{
 				var remoteCata = getRemoteCatalog(c.id, true);				
 				if (remoteCata != null){
 					
-					var cata = remoteCata.getCatalog();
+					var cata = remoteCata.getPCatalog();
 					var offers = cata.getOffers();
 					
 					if (data.enable){
@@ -260,7 +260,7 @@ class ConnectorPlugIn extends PlugIn implements IPlugIn{
 					form.removeElementByName("endDate");
 					form.removeElementByName("name");
 					form.removeElementByName("vendorId");					
-					form.removeElementByName("description");
+					// form.removeElementByName("description"); //desc can be edited in group.
 
 					var text = "Ce catalogue est géré par un producteur depuis son compte producteur, vous n'avez donc accès qu'à un nombre restreint de paramètres.";
 					form.addElement(new sugoi.form.elements.Html("info","<div class='alert alert-info'>"+text+"</div>"),0);

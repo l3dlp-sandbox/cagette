@@ -36,7 +36,7 @@ class Catalog extends controller.Controller
 
 		view.catalogs = company.getCatalogs();
 		view.getLinkages = function(catalog:pro.db.PCatalog){
-			return connector.db.RemoteCatalog.getFromCatalog(catalog);				
+			return connector.db.RemoteCatalog.getFromPCatalog(catalog);				
 		}
 		checkToken();
 	}
@@ -199,8 +199,8 @@ class Catalog extends controller.Controller
 		catalog.endDate = DateTools.delta(catalog.startDate, 1000.0 * 60 * 60 * 24 * 365 * 5);
 		
 		var f = CagetteForm.fromSpod(catalog);
-		var e : sugoi.form.elements.IntSelect = cast f.getElement("vendorId");
-		e.nullMessage = company.vendor.name;
+		// var e : sugoi.form.elements.IntSelect = cast f.getElement("vendorId");
+		// e.nullMessage = company.vendor.name;
 		f.getElement("contractName").value = "Commande "+company.vendor.name;
 
 		f.addElement(new sugoi.form.elements.StringSelect("visible","Visibilité",[{label:"Public",value:"public"},{label:"Privé",value:"private"}],(catalog.visible?"public":"private"),true ));
@@ -232,8 +232,8 @@ class Catalog extends controller.Controller
 		checkRights(catalog);
 		view.nav.push("edit");
 		var f = CagetteForm.fromSpod(catalog);
-		var e : sugoi.form.elements.IntSelect = cast f.getElement("vendorId");
-		e.nullMessage = company.vendor.name;
+		// var e : sugoi.form.elements.IntSelect = cast f.getElement("vendorId");
+		// e.nullMessage = company.vendor.name;
 		f.addElement(new sugoi.form.elements.StringSelect("visible","Visibilité",[{label:"Public",value:"public"},{label:"Privé",value:"private"}],(catalog.visible?"public":"private"),true ));
 
 		if(catalog.contractName==null){
@@ -338,8 +338,7 @@ class Catalog extends controller.Controller
 			pro.service.PCatalogService.linkCatalogToGroup(catalog, notif.group , content.userId, content.catalogType );
 		}catch(e:tink.core.Error){
 			throw Error('/p/pro/',e.message);
-		}
-		
+		}		
 		
 		notif.delete();
 		
@@ -360,7 +359,7 @@ class Catalog extends controller.Controller
 		var content : pro.db.PNotif.DeliveryRequestContent = haxe.Json.parse(notif.content);
 		var catalog = pro.db.PCatalog.manager.get(content.pcatalogId,false);
 		var distrib = db.MultiDistrib.manager.get(content.distribId,false);
-		var rcs = connector.db.RemoteCatalog.getFromCatalog(catalog);
+		var rcs = connector.db.RemoteCatalog.getFromPCatalog(catalog);
 		var rc = Lambda.find(rcs,function(rc) return rc.getContract().group.id==notif.group.id );
 		if(rc==null){
 			throw Error("/p/pro","Vous n'êtes plus reliés à ce catalogue, vous pouvez supprimer cette demande.");
@@ -383,14 +382,12 @@ class Catalog extends controller.Controller
 		if( notif.sender!=null){
 			var title = "Votre invitation à la distribution du " + app.view.hDate(distrib.getDate()) + " a été acceptée par " + company.vendor.name;
 			App.quickMail(notif.sender.email, title, title, distrib.getGroup());
-		}
-		
+		}		
 		
 		//delete notif
 		notif.delete();
 		
-		throw Ok("/p/pro", "Vous avez accepté l'invitation à participer à la distribution du "+distrib.getDate());
-		
+		throw Ok("/p/pro", "Vous avez accepté l'invitation à participer à la distribution du "+distrib.getDate());		
 	}
 	
 	/**

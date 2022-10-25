@@ -8,13 +8,13 @@ class App extends sugoi.BaseApp {
 	public static var current : App = null;
 	public static var t : sugoi.i18n.translator.ITranslator;
 	public static var config = sugoi.BaseApp.config;
-
+	public static var eventDispatcher : hxevents.Dispatcher<Event>;	
+	public static var plugins : Array<sugoi.plugin.IPlugIn>;
 	
-	public var eventDispatcher :hxevents.Dispatcher<Event>;	
-	public var plugins : Array<sugoi.plugin.IPlugIn>;
+
 	public var breadcrumb : Array<Link>;
-	public var theme	: Theme;
-	public var settings	: Settings;
+	public static var theme	: Theme;
+	public static var settings	: Settings;
 
 	/**
 	 * Version management
@@ -43,34 +43,42 @@ class App extends sugoi.BaseApp {
 	 * Init plugins and event dispatcher just before launching the app
 	 */
 	override public function mainLoop() {
-		eventDispatcher = new hxevents.Dispatcher<Event>();
-		plugins = [];
-		//internal plugins
-		// plugins.push(new plugin.Tutorial());
-		
-		//optionnal plugins
-		#if plugins
-		plugins.push( new hosted.HostedPlugIn() );				
-		plugins.push( new pro.ProPlugIn() );		
-		plugins.push( new connector.ConnectorPlugIn() );				
-		plugins.push( new mangopay.MangopayPlugin() );
-		plugins.push( new who.WhoPlugIn() );
-		#end
-
-		setTheme();
-
-		setSettings();
-
 		super.mainLoop();
 	}
 
-	private function setTheme(){
+	override function init(){
+		var i = super.init();
+
+		if(eventDispatcher==null){
+			eventDispatcher = new hxevents.Dispatcher<Event>();
+			plugins = [];
+			
+			//internal plugins
+			// plugins.push(new plugin.Tutorial());
+			
+			//optionnal plugins
+			#if plugins
+			plugins.push( new hosted.HostedPlugIn() );				
+			plugins.push( new pro.ProPlugIn() );		
+			plugins.push( new connector.ConnectorPlugIn() );				
+			plugins.push( new mangopay.MangopayPlugin() );
+			plugins.push( new who.WhoPlugIn() );
+			#end
+
+			setTheme();
+			setSettings();
+		}
+
+		return i;
+
+	}
+
+	public function setTheme(){
 		var cagetteTheme: Theme = {
 			id: "cagette",
 			name: "Cagette.net",
 			url: "https://www.cagette.net",
-			supportEmail: "support@cagette.net",
-			cguLink: "https://www.cagette.net/wp-content/uploads/2020/11/cgu-.pdf",
+			supportEmail: "support@cagette.net",			
 			footer: {
 				bloc1: '<a href="https://www.cagette.net" target="_blank">
 							<img src="/theme/cagette/logo.png" alt="logo Cagette.net" style="width:166px;"/>
@@ -134,26 +142,51 @@ class App extends sugoi.BaseApp {
 						Cagette.net est réalisé <br/>
 						par la <a href="https://www.alilo.fr" "target="_blank">SCOP Alilo</a>'
 			},
-			brandedEmailLayoutFooter:  '<p>Cagette.net - ALILO SCOP, 4 impasse Durban, 33000 Bordeaux</p>
-										<div style="display: flex; justify-content: center; align-items: center;">
-											<a href="https://www.cagette.net" target="_blank" rel="noreferrer noopener notrack" class="bold-green" style="text-decoration:none !important; padding: 8px; display: flex; align-items: center;">
-												<img src="http://'+ App.config.HOST+'/img/emails/website.png" alt="Site web" height="25" style="width:auto!important; height:25px!important; vertical-align:middle" valign="middle" width="auto"/>Site web
-											</a>
-											<a href="https://www.facebook.com/cagette" target="_blank" rel="noreferrer noopener notrack" class="bold-green" style="text-decoration:none !important; padding: 8px; display: flex; align-items: center;">
-												<img src="http://'+ App.config.HOST+'/img/emails/facebook.png" alt="Facebook" height="25" style="width:auto!important; height:25px!important; vertical-align:middle" valign="middle" width="auto"/>Facebook
-											</a>
-											<a href="https://www.youtube.com/channel/UC3cvGxAUrbN9oSZmr1oZEaw" target="_blank" rel="noreferrer noopener notrack" class="bold-green" style="text-decoration:none !important; padding: 8px; display: flex; align-items: center;">
-												<img src="http://'+ App.config.HOST+'/img/emails/youtube.png" alt="YouTube" height="25" style="width:auto!important; height:25px!important; vertical-align:middle" valign="middle" width="auto"/>YouTube
-											</a>
-										</div>'
+			email:{
+				senderEmail : 'noreply@mj.cagette.net',
+				brandedEmailLayoutFooter:  '<p>Cagette.net - ALILO SCOP, 4 impasse Durban, 33000 Bordeaux</p>
+				<div style="display: flex; justify-content: center; align-items: center;">
+					<a href="https://www.cagette.net" target="_blank" rel="noreferrer noopener notrack" class="bold-green" style="text-decoration:none !important; padding: 8px; display: flex; align-items: center;">
+						<img src="http://'+ App.config.HOST+'/img/emails/website.png" alt="Site web" height="25" style="width:auto!important; height:25px!important; vertical-align:middle" valign="middle" width="auto"/>Site web
+					</a>
+					<a href="https://www.facebook.com/cagette" target="_blank" rel="noreferrer noopener notrack" class="bold-green" style="text-decoration:none !important; padding: 8px; display: flex; align-items: center;">
+						<img src="http://'+ App.config.HOST+'/img/emails/facebook.png" alt="Facebook" height="25" style="width:auto!important; height:25px!important; vertical-align:middle" valign="middle" width="auto"/>Facebook
+					</a>
+					<a href="https://www.youtube.com/channel/UC3cvGxAUrbN9oSZmr1oZEaw" target="_blank" rel="noreferrer noopener notrack" class="bold-green" style="text-decoration:none !important; padding: 8px; display: flex; align-items: center;">
+						<img src="http://'+ App.config.HOST+'/img/emails/youtube.png" alt="YouTube" height="25" style="width:auto!important; height:25px!important; vertical-align:middle" valign="middle" width="auto"/>YouTube
+					</a>
+				</div>'
+			},
+			terms: {
+				termsOfServiceLink: "https://www.cagette.net/wp-content/uploads/2020/11/cgu-.pdf",
+				termsOfSaleLink: "https://www.cagette.net/wp-content/uploads/2020/11/cgv.pdf",
+				platformTermsLink: "",
+			}
+			
 		}
-		var whiteLabelStringified = sugoi.db.Variable.get("whiteLabel");
-		this.theme = whiteLabelStringified != null ? haxe.Json.parse(whiteLabelStringified) : cagetteTheme;
+		var res = this.cnx.request("SELECT value FROM Variable WHERE name='whiteLabel'").results();
+		var whiteLabelStringified = res.first()==null ? null : res.first().value;
+		App.theme = whiteLabelStringified != null ? haxe.Json.parse(whiteLabelStringified) : cagetteTheme;
 	}
 
-	private function setSettings(){
-		var settingsStringified = sugoi.db.Variable.get("settings");
-		this.settings = settingsStringified != null ? haxe.Json.parse(settingsStringified) : {};
+	public function setSettings(){
+		var res = this.cnx.request("SELECT value FROM Variable WHERE name='settings'").results();
+		var settingsStringified = res.first()==null ? null : res.first().value;
+		App.settings = settingsStringified != null ? haxe.Json.parse(settingsStringified) : {};
+	}
+
+	/**
+		Theme is stored as static var, thus it's inited only one time at app startup
+	**/
+	public function getTheme():Theme{
+		return App.theme;
+	}
+
+	/**
+		Settings is stored as static var, thus it's inited only one time at app startup
+	**/
+	public function getSettings():Settings{
+		return App.settings;
 	}
 	
 	public function getCurrentGroup(){		
@@ -193,7 +226,7 @@ class App extends sugoi.BaseApp {
 	
 	public function event(e:Event) {
 		if(e==null) return null;
-		this.eventDispatcher.dispatch(e);
+		App.eventDispatcher.dispatch(e);
 		return e;
 	}
 	
@@ -288,7 +321,7 @@ class App extends sugoi.BaseApp {
 		out.set("HidePhone", "Masquer le téléphone du responsable sur la page publique");
 		out.set("PhoneRequired", "Saisie du numéro de téléphone obligatoire");
 		out.set("AddressRequired", "Saisie de l'adresse obligatoire");
-		out.set("CagetteNetwork", "Lister ce groupe sur la carte Cagette.net et sur les annuaires partenaires");
+		out.set("CagetteNetwork", "Lister ce groupe sur la carte et sur les annuaires partenaires");
 		out.set("HasPayments", "Gestion des paiements");
 		out.set("Show3rdCategoryLevel", "Classer les produits de la boutique par catégorie de troisième niveau");	
 
@@ -378,7 +411,7 @@ class App extends sugoi.BaseApp {
 	public static function sendMail(m:sugoi.mail.Mail, ?group:db.Group, ?sender:{email: String, ?name: String,?userId: Int}){
 		
 		if (group == null) group = App.current.user == null ? null:App.current.user.getGroup();
-		if (group != null) m.setSender(group.contact == null ? App.config.get("default_email") : group.contact.email, group.name);
+		if (group != null) m.setSender(group.contact == null ? App.current.getTheme().email.senderEmail : group.contact.email, group.name);
 		if (sender != null) m.setSender(sender.email, sender.name, sender.userId);
 		current.event(SendEmail(m));
 		var params = group==null ? null : {remoteId:group.id};
@@ -389,7 +422,7 @@ class App extends sugoi.BaseApp {
 		var e = new sugoi.mail.Mail();		
 		e.setSubject(subject);
 		e.setRecipient(to);			
-		e.setSender(App.config.get("default_email"), App.current.theme.name);				
+		e.setSender(App.current.getTheme().email.senderEmail, App.current.getTheme().name);				
 		var html = App.current.processTemplate("mail/message.mtt", {text:html,group:group});		
 		e.setHtmlBody(html);
 		App.sendMail(e, group);
@@ -403,7 +436,7 @@ class App extends sugoi.BaseApp {
 		
 		//inject usefull vars in view
 		Reflect.setField(ctx, 'HOST', App.config.HOST);
-		Reflect.setField(ctx, 'theme', this.theme);
+		Reflect.setField(ctx, 'theme', this.getTheme());
 		Reflect.setField(ctx, 'hDate', date -> return Formatting.hDate(date) );
 
 		ctx._ = App.current.view._;

@@ -5,6 +5,8 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>Compte producteur</title>
 
+		$$favicons()
+
 		<!-- Cagette CSS -->
 		::if(DEBUG)::
 			<link rel="stylesheet" type="text/css" href="/theme/::theme.id::/css/::getVariable('css')::/style.css" />
@@ -73,6 +75,16 @@
 				}
 			</script>
 		::end::
+
+		 <script type="text/javascript">
+
+			_Cagette.theme = {
+				id: "::theme.id::",
+				name: "::theme.name::",
+				supportEmail: "::theme.supportEmail::"
+			}
+			
+		</script>
 
 		::foreach script getNeoModuleScripts()::
 			<script src="::script::"></script>

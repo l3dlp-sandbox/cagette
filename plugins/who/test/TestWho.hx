@@ -49,7 +49,7 @@ class TestWho extends utest.Test
 
 	function testProductLinks(){
 		
-		var rcs = connector.db.RemoteCatalog.getFromCatalog(pro.test.ProTestSuite.CATALOG1);
+		var rcs = connector.db.RemoteCatalog.getFromPCatalog(pro.test.ProTestSuite.CATALOG1);
 		var contract = rcs.first().getContract();
 
 		//we got a contract with 4 products
@@ -95,7 +95,7 @@ class TestWho extends utest.Test
 
 	function testConfirmFails(){
 
-		var rcs = connector.db.RemoteCatalog.getFromCatalog(pro.test.ProTestSuite.CATALOG1);
+		var rcs = connector.db.RemoteCatalog.getFromPCatalog(pro.test.ProTestSuite.CATALOG1);
 		var contract = rcs.first().getContract();
 		var s = new who.service.WholesaleOrderService(contract);
 		var placeId = test.TestSuite.LOCAVORES.getPlaces().first().id;
@@ -146,7 +146,7 @@ class TestWho extends utest.Test
 	**/
 	function testConfirm(){
 
-		var rcs = connector.db.RemoteCatalog.getFromCatalog(pro.test.ProTestSuite.CATALOG1);
+		var rcs = connector.db.RemoteCatalog.getFromPCatalog(pro.test.ProTestSuite.CATALOG1);
 		var contract = rcs.first().getContract();
 		var s = new who.service.WholesaleOrderService(contract);
 		var placeId = test.TestSuite.LOCAVORES.getPlaces().first().id;
@@ -204,7 +204,7 @@ class TestWho extends utest.Test
 
 	function testBalancingSummary(){
 
-		var rcs = connector.db.RemoteCatalog.getFromCatalog(pro.test.ProTestSuite.CATALOG1);
+		var rcs = connector.db.RemoteCatalog.getFromPCatalog(pro.test.ProTestSuite.CATALOG1);
 		var contract = rcs.first().getContract();
 		var s = new who.service.WholesaleOrderService(contract);
 		var placeId = test.TestSuite.LOCAVORES.getPlaces().first().id;

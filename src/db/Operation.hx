@@ -120,8 +120,6 @@ class Operation extends sys.db.Object
 		return db.Operation.manager.search($relation == this && $type == Payment, false);
 	}
 	
-	
-
 	public static function countOperations(user:db.User, group:db.Group):Int{	
 		return manager.count($user == user && $group == group);		
 	}

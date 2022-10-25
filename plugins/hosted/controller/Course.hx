@@ -14,6 +14,9 @@ class Course extends sugoi.BaseController
 	**/
 	@tpl("plugin/pro/hosted/course/default.mtt")
 	function doDefault(){
+if (App.current.getSettings().noCourse==true) {
+			throw Redirect("/");
+		}
 
 		var now :DateTime = Date.now();				
 		var from = now.snap(Month(Down)).add(Day(-1)).snap(Month(Down)).getDate();			
@@ -83,7 +86,7 @@ class Course extends sugoi.BaseController
 			Sys.println("fix :");
 			for( c in course.getCompanies()){
 				for ( cata in c.company.getCatalogs()){
-					for ( rc in connector.db.RemoteCatalog.getFromCatalog(cata)){
+					for ( rc in connector.db.RemoteCatalog.getFromPCatalog(cata)){
 						var group = rc.getRelatedContract().amap;
 						group.lock();
 						group.flags.set(ShopMode);
@@ -286,6 +289,8 @@ class Course extends sugoi.BaseController
 				v.disabled = null;
 				v.update();
 
+				VendorStats.getOrCreate(v);
+
 				//create default catalog
 				var catalog = new pro.db.PCatalog();
 				catalog.company = c;
@@ -298,7 +303,6 @@ class Course extends sugoi.BaseController
 					var rc = pro.service.PCatalogService.linkCatalogToGroup(catalog, group, u.id);
 					service.DistributionService.participate(distrib,rc.getContract());
 				}
-				
 
 				//add user + teacher
 				pro.db.PUserCompany.make(u,c);
@@ -344,7 +348,7 @@ class Course extends sugoi.BaseController
 		if(companyCourse.moodleUser==null) throw Error("/p/hosted/course/view/"+course.id,"Erreur : impossible d'envoyer le mail car le mot de passe Moodle n'a pas été sauvegardé");
 
 		var m = new sugoi.mail.Mail();
-		m.setSender(App.config.get("default_email"), App.current.theme.name);
+		m.setSender(App.current.getTheme().email.senderEmail, App.current.getTheme().name);
 		m.setRecipient(companyCourse.user.email);
 		m.setReplyTo("deborah@alilo.fr", "Deborag REYT");							
 		m.setSubject("Formation Cagette - La formation commence maintenant" );		
@@ -406,7 +410,7 @@ class Course extends sugoi.BaseController
 
 		//remove access to groups linked to this cpro + remove future distribs
 		for( cat in company.getCatalogs()){
-			for( rc in connector.db.RemoteCatalog.getFromCatalog(cat,true)){
+			for( rc in connector.db.RemoteCatalog.getFromPCatalog(cat,true)){
 
 				//remove membership
 				var contract = rc.getContract();
@@ -501,7 +505,11 @@ class Course extends sugoi.BaseController
 		cpro.update();
 
 		// Cancel running subscription
-		service.BridgeService.call('/subscriptions/cancel/${vendor.id}');
+		try {
+			service.BridgeService.call('/subscriptions/cancel/${vendor.id}');
+		} catch (e: Dynamic) {
+			Sys.println(e);
+		}
 
 		//refresh stats
         VendorStats.updateStats(vendor);

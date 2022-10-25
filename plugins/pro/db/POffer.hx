@@ -51,7 +51,7 @@ class POffer extends Object
 		//Attention : ne pas ommettre les distribs ou ce produit était présent, même si il n'est plus dans le catalogue actuellement.
 		//donc on check tous les catalogues
 		for ( catalog in this.product.company.getCatalogs() ){			
-			var rcs = connector.db.RemoteCatalog.getFromCatalog(catalog);
+			var rcs = connector.db.RemoteCatalog.getFromPCatalog(catalog);
 			for (rc in rcs){
 				var contract = rc.getContract();				
 				var product = db.Product.manager.select($ref == this.ref && $catalog == contract, false);

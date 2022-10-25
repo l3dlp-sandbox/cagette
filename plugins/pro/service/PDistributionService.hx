@@ -21,12 +21,12 @@ class PDistributionService
 		
 		if(d==null) throw "distribution should not be null";
 		if(company.vendor.email==null) return;
-		var catalog = rc.getCatalog();
+		var catalog = rc.getPCatalog();
 		try{
 			
 			var m = new sugoi.mail.Mail();
 			m.addRecipient(company.vendor.email , company.vendor.name);
-			m.setSender(App.config.get("default_email"), App.current.theme.name);
+			m.setSender(App.current.getTheme().email.senderEmail, App.current.getTheme().name);
 			m.setSubject('[${d.catalog.group.name}] Livraison du ${App.current.view.dDate(d.date)} (${catalog.name})');
 		
 			var ordersObj = pro.service.ProReportService.getOrdersByProduct({distribution:d});

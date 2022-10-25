@@ -447,7 +447,7 @@ class Distribution extends Controller {
 	/**
 		Insert a distribution
 	**/
-	@tpl("form.mtt")
+	/*@tpl("form.mtt")
 	public function doInsert(contract:db.Catalog) {
 		if (!app.user.isContractManager(contract))
 			throw Error('/', t._('Forbidden action'));
@@ -502,7 +502,7 @@ class Distribution extends Controller {
 
 		view.form = form;
 		view.title = t._("Create a distribution");
-	}
+	}*/
 
 	/**
 		Invite farmers to a single distrib
@@ -526,7 +526,7 @@ class Distribution extends Controller {
 			var rc = connector.db.RemoteCatalog.getFromContract(c);
 			if (rc != null) {
 				// is cpro
-				if (pro.db.PNotif.getDistributionInvitation(rc.getCatalog(), distrib).length > 0) {
+				if (pro.db.PNotif.getDistributionInvitation(rc.getPCatalog(), distrib).length > 0) {
 					// has already a pending notif
 					invitationsSent.push(c);
 				} else {
@@ -604,12 +604,12 @@ class Distribution extends Controller {
 					if (d == null) {
 						var contract = db.Catalog.manager.get(cid, false);
 						var rc = connector.db.RemoteCatalog.getFromContract(contract);
-						var hasNotif = pro.db.PNotif.getDistributionInvitation(rc.getCatalog(), distrib).length > 0;
+						var hasNotif = pro.db.PNotif.getDistributionInvitation(rc.getPCatalog(), distrib).length > 0;
 						if (!hasNotif) {
 							// send notif
 							var contract = db.Catalog.manager.get(cid, false);
 							var rc = connector.db.RemoteCatalog.getFromContract(contract);
-							var catalog = rc.getCatalog();
+							var catalog = rc.getPCatalog();
 							if (catalog != null) {
 								pro.db.PNotif.distributionInvitation(catalog, distrib, app.user);
 							}
@@ -970,15 +970,8 @@ class Distribution extends Controller {
 			throw Redirect('/distribution/ordersRecap/'+multiDistrib.id);
 		}
 		checkToken();
-		// view.users = multiDistrib.getUsers(db.Catalog.TYPE_VARORDER);
 
 		var baskets = multiDistrib.getBaskets();
-		baskets.sort(function(a, b) {
-			if (a.user.lastName > b.user.lastName)
-				return 1
-			else
-				return -1;
-		});
 		view.baskets = baskets;
 		view.distribution = multiDistrib;
 	}

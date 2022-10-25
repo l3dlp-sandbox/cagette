@@ -1,4 +1,5 @@
 package service;
+import db.Basket.BasketStatus;
 import sugoi.apis.google.GeoCode.GeoCodingData;
 import db.Operation;
 import pro.payment.MangopayECPayment;
@@ -55,18 +56,15 @@ class GraphService{
         return g;
     }
 
-
     /**
         compute basket numbers by period
     **/
-    public static function baskets(from:Date,to:Date):Int {
-        
-		return db.Basket.manager.count($cdate>=from && $cdate<=to);
-        
+    public static function baskets(from:Date,to:Date):Int {        
+		return db.Basket.manager.count($status!=Std.string(BasketStatus.OPEN) && $cdate>=from && $cdate<=to);        
     }
 
     public static  function turnover(from:Date,to:Date):Int{
-        var baskets = db.Basket.manager.search($cdate>=from && $cdate<=to);
+        var baskets = db.Basket.manager.search( $cdate>=from && $cdate<=to && $status!=Std.string(BasketStatus.OPEN) );
 		var value = 0.0;
 		for( b in baskets){
             var t  =  b.getOrdersTotal();
@@ -75,7 +73,6 @@ class GraphService{
                 b.total = t;
 			    b.update();
             }
-
 			value += t;
 		}
 		return Math.round(value);
@@ -90,8 +87,4 @@ class GraphService{
 		}
 		return Math.round(value);
     }
-
-
-
-
 }

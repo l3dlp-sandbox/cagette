@@ -13,6 +13,8 @@
         ::end::
     </title>
 
+    $$favicons()
+
     <!-- Cagette CSS -->
     ::if(DEBUG)::
         <link rel="stylesheet" type="text/css" href="/theme/::theme.id::/css/::getVariable('css')::/style.css" />
@@ -53,12 +55,13 @@
 <body class="::container::">
 
     ::if DEBUG::
-    <div style="position: fixed;background: #666;padding: 8px;left: 0;bottom:0;color:#FF0;">DEBUG ::session.lang::</div>
+    <div style="position: fixed;background: #666;padding: 8px;left: 0;bottom:0;color:#FF0;">DEBUG</div>
     ::end::
 
-    ::if ( HOST.indexOf(".dev.",null)!=-1 || HOST.substr(0,3)=="pp." )::
+    ::if ( HOST.indexOf(".dev.",null)!=-1 )::
     <div style="position: fixed;background: #600;padding: 8px;left:0;bottom:0;color: #FA0;width: 100%;z-index: 99;text-align: center;">
-        <i class="icon icon-alert"></i> Ce site n'est pas le "vrai" site Cagette, c'est un site de test. <b>Ne l'utilisez surtout pas pour prendre de vraies commandes.</b>
+        <i class="icon icon-alert"></i> 
+        <b>Ce site est une instance de test.</b> Ne l'utilisez pas pour prendre de vraies commandes.
     </div>
     ::end::
 
@@ -89,47 +92,22 @@
 
     <script type="text/javascript">
 
+        _Cagette.theme = {
+            id: "::theme.id::",
+            name: "::theme.name::",
+            supportEmail: "::theme.supportEmail::"
+        }
+        
         document.addEventListener("DOMContentLoaded", function (event) {
             //init vars in js App
             _Cagette.lang = "::session.lang::";
-				:: if (user != null)::
-                _Cagette.userId = :: user.id:: ;
+            :: if (user != null)::
+            _Cagette.userId = :: user.id:: ;
             _Cagette.userName = "::user.getName()::";
             _Cagette.userEmail = "::user.email::";
-				:: end::
-
-				//tutorials
-				:: if tuto != null::
-                _Cagette.getTuto("::tuto.name::",:: tuto.step:: );			
-				:: end::
-
+            :: end::
             _Cagette.antiDoubleClick();
-            _Cagette.theme = {
-                id: "::theme.id::",
-                name: "::theme.name::",
-                url: "::theme.url::",
-                supportEmail: "::theme.supportEmail::",
-                cguLink: "::theme.cguLink::",
-                footer: {
-                    bloc1: "::theme.bloc1::",
-                    bloc2: "::theme.bloc2::",
-                    bloc3: "::theme.bloc3::",
-                    bloc4: "::theme.bloc4::"
-                },
-                brandedEmailLayoutFooter: "::theme.brandedEmailLayoutFooter::"
-            };
         })
-
-			//tracking 24x7
-        /*var rumMOKey='1d36c37d438ba069db210c73cb74308d';
-        (function(){
-            if(window.performance && window.performance.timing && window.performance.navigation) {
-                var site24x7_rum_beacon=document.createElement('script');
-                site24x7_rum_beacon.async=true;
-                site24x7_rum_beacon.setAttribute('src','//static.site24x7rum.com/beacon/site24x7rum-min.js?appKey='+rumMOKey);
-                document.getElementsByTagName('head')[0].appendChild(site24x7_rum_beacon);
-            }
-        })(window)*/
 
     </script>
 

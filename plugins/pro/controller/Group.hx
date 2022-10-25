@@ -22,7 +22,7 @@ class Group extends controller.Controller
 		var linkages = [];
 		
 		for ( cat in company.getCatalogs()){
-			for ( rc in connector.db.RemoteCatalog.getFromCatalog(cat)){
+			for ( rc in connector.db.RemoteCatalog.getFromPCatalog(cat)){
 				if (rc.getContract().group.id == g.id) linkages.push(rc);
 			}
 		}		

@@ -23,6 +23,7 @@ enum GroupFlags {
 enum BetaFlags{
 	___ShopV2; 		//shop V2 @deprecated
 	Cagette2;		//BETA Cagette 2.0
+	Dispatch;		//BETA DIspatch enabled group
 }
 
 //user registration options
@@ -138,18 +139,24 @@ class Group extends Object
 	}
 
 	/**
-		vérifie que le groupe est bien dans un ilot/isolat cagette 2
+		vérifie que le groupe est bien compatible cagette 2
 	**/
 	public function checkIsolate(){
 	
-		/*if(this.betaFlags.has(BetaFlags.Cagette2)){
-			var noCagette2Vendors = getVendors().filter(v->!v.betaFlags.has(db.Vendor.VendorBetaFlags.Cagette2));
-			if ( noCagette2Vendors.length>0 ){
-				var name = noCagette2Vendors.map(v -> v.name).join(", ");
-				throw sugoi.ControllerAction.ControllerAction.ErrorAction("/user/choose",'Le groupe "${this.name}" a l\'option Cagette2 activée et ne peut pas fonctionner avec des producteurs qui n\'ont pas activé cette option ($name). Contactez nous sur <b>'+App.current.theme.supportEmail+'</b> pour régler le problème.');
+		if(this.hasCagette2()){
+			// var noCagette2Vendors = getVendors().filter(v->!v.betaFlags.has(db.Vendor.VendorBetaFlags.Cagette2));
+			// if ( noCagette2Vendors.length>0 ){
+			// 	var name = noCagette2Vendors.map(v -> v.name).join(", ");
+			// 	throw sugoi.ControllerAction.ControllerAction.ErrorAction("/user/choose",'Le groupe "${this.name}" a l\'option Cagette2 activée et ne peut pas fonctionner avec des producteurs qui n\'ont pas activé cette option ($name). Contactez nous sur <b>'+App.current.getTheme().supportEmail+'</b> pour régler le problème.');
+			// }
+
+			var catalogs = this.getActiveContracts();
+			if( catalogs.count(c -> c.percentageValue>0) > 0){
+				throw sugoi.ControllerAction.ControllerAction.ErrorAction("/user/choose",'Le groupe "${this.name}" a l\'option Cagette2 activée et ne peut pas fonctionner avec des catalogues qui ont des frais. Contactez le support pour débloquer la situation.');
 			}
 			
-		}*/
+			
+		}
 	}
 
 	public function hasCagette2(){
@@ -511,6 +518,10 @@ class Group extends Object
 			return [];
 		}
 		
+	}
+
+	public function isDispatch():Bool{
+		return betaFlags.has(Dispatch);
 	}
 
 }

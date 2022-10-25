@@ -14,8 +14,8 @@ class PCatalog extends Object
 	
 	public var startDate : SDateTime;			
 	public var endDate : SDateTime;			
-	//achat-revente uniquement
-	@:relation(vendorId) @formPopulate("populateVendor") public var vendor : SNull<db.Vendor>;
+
+	@hideInForms @:relation(vendorId) @formPopulate("populateVendor") public var vendor : SNull<db.Vendor>;
 
 	@hideInForms public var visible : SBool;
 	
@@ -84,7 +84,7 @@ class PCatalog extends Object
 		this.lastUpdate = Date.now();
 		this.update();
 		
-		for ( rc in connector.db.RemoteCatalog.getFromCatalog(this,true)){
+		for ( rc in connector.db.RemoteCatalog.getFromPCatalog(this,true)){
 			
 			rc.needSync = true;
 			rc.update();

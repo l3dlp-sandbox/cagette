@@ -1,4 +1,6 @@
 package controller.admin;
+import haxe.Json;
+import sugoi.form.elements.TextArea;
 import Common;
 import db.BufferedJsonMail;
 import db.Catalog;
@@ -30,7 +32,51 @@ class Admin extends Controller {
 	@tpl("admin/default.mtt")
 	function doDefault() {
 		view.now = Date.now();
-		view.ip = Web.getClientIP();		
+		view.ip = Web.getClientIP();
+
+		// db.Group.manager.count($betaFlags.has(Cagette2));
+		// db.Group.manager.count($betaFlags.has(Dispatch));
+
+		//tmp deploiement de l'option cagette2
+		var groups = db.Group.manager.unsafeCount('SELECT COUNT(g.id) FROM `Group` g, GroupStats gs WHERE gs.groupId=g.id AND gs.active=1');
+		var cg2groups = db.Group.manager.unsafeCount('SELECT COUNT(g.id) FROM `Group` g, GroupStats gs WHERE betaFlags & 2 != 0 AND gs.groupId=g.id AND gs.active=1');
+		var dispatchGroups = db.Group.manager.unsafeCount('SELECT COUNT(g.id) FROM `Group` g, GroupStats gs WHERE betaFlags & 4 != 0 AND gs.groupId=g.id AND gs.active=1');
+		view.groups = groups;
+		view.cg2groups = cg2groups;
+		view.dispatchGroups = dispatchGroups;
+		
+		if(app.params.get("reloadSettings")=="1"){
+			app.setSettings();
+			app.setTheme();
+			view.theme = app.getTheme();
+			view.settings = app.getSettings();
+			throw Ok('/admin',"Settings and theme reloaded");
+		}
+	}
+
+	@tpl("form.mtt")
+	function doTheme(){
+
+		var f = new sugoi.form.Form("theme");
+
+		f.addElement(new sugoi.form.elements.TextArea("theme","theme",Json.stringify(app.getTheme()),true,null,"style='height:800px;'"));
+		f.addElement(new sugoi.form.elements.Html("html","<a href='https://www.jsonlint.com/' target='_blank'>jsonlint.com</a>"));
+
+		if(f.isValid()){
+
+			var json:Theme = null;
+			try{
+				json = Json.parse(f.getValueOf("theme"));
+				Variable.set("whiteLabel",Json.stringify(json));
+			}catch(e:Dynamic){
+				throw Error('/admin/theme',"Erreur : "+Std.string(e));
+			}
+
+			throw Ok("/admin/","Thème mis à jour");
+		}
+
+		view.form = f;
+		view.title = "Modifier le thème";
 	}
 
 	@tpl('admin/basket.mtt')
@@ -65,6 +111,14 @@ class Admin extends Controller {
 	
 	function doVendor(d:haxe.web.Dispatch) {
 		d.dispatch(new controller.admin.Vendor());
+	}
+
+	function doUser(d:haxe.web.Dispatch) {
+		d.dispatch(new controller.admin.User());
+	}
+
+	function doGroup(d:haxe.web.Dispatch) {
+		d.dispatch(new controller.admin.Group());
 	}
 
 	/**
@@ -198,20 +252,26 @@ class Admin extends Controller {
 	}
 
 	@tpl("admin/stats.mtt")
-	function doStats(?month:Int, ?year:Int) {
+	function doStats() {
 		var now = Date.now();
-		if (month == null) {
-			year = now.getFullYear();
-			month = now.getMonth();
-		}
-		var from = new Date(year, month, 1, 0, 0, 0);
-		var to = new Date(year, month + 1, 0, 23, 59, 59);
-		view.year = year;
-		view.month = month;
-		view.from = from;
-		view.to = to;
+		
+		var from = new Date(now.getFullYear(),now.getMonth(), now.getDate(), 0, 0, 0);
+		var to 	 = new Date(now.getFullYear(),now.getMonth(), now.getDate(), 0, 0, 0);
+
+		//find previous monday
+		while(from.getDay()!=1) from = DateTools.delta(from, -1000*60*60*24);
+		//find next monday
+		while(to.getDay()!=1) to = DateTools.delta(to, 1000*60*60*24);
+		
+		view.tf = new Timeframe(from,to);
 
 		view.newVendors = db.Vendor.manager.count($cdate >= from && $cdate < to);
+		view.newVendorsByType = sys.db.Manager.cnx.request('SELECT count(v.id) as count, vs.type
+		FROM Vendor v, VendorStats vs 
+		WHERE vs.vendorId=v.id AND cdate >= "${from.toString()}" and cdate < "${to.toString()}"
+		group by vs.type
+		order by type').results();
+		
 		view.activeVendors = sys.db.Manager.cnx.request("SELECT count(v.id) FROM Vendor v, VendorStats vs where vs.vendorId=v.id and vs.active=1")
 			.getIntResult(0);
 
@@ -219,22 +279,30 @@ class Admin extends Controller {
 		FROM Vendor v, VendorStats vs 
 		WHERE vs.vendorId=v.id AND active=1
 		group by vs.type
-		order by type')
-			.results();
-
-		view.newVendorsByType = sys.db.Manager.cnx.request('SELECT count(v.id) as count, vs.type
-		FROM Vendor v, VendorStats vs 
-		WHERE vs.vendorId=v.id AND cdate > "${from.toString()}" and cdate <= "${to.toString()}"
-		group by vs.type
-		order by type')
-			.results();
+		order by type').results();
 
 		view.activeGroups = GroupStats.manager.count($active);
 		view.activeUsers = sys.db.Manager.cnx.request('SELECT sum(gs.membersNum) FROM `Group` g, GroupStats gs where gs.groupId=g.id and gs.active=1')
 			.getIntResult(0);
-		view.newUsers = sys.db.Manager.cnx.request('SELECT count(id) FROM `User` where cdate > "${from.toString()}" and cdate <= "${to.toString()}"')
+		view.newUsers = sys.db.Manager.cnx.request('SELECT count(id) FROM `User` where cdate >= "${from.toString()}" and cdate < "${to.toString()}"')
 			.getIntResult(0);
+
 		view.newGroups = db.Group.manager.count($cdate >= from && $cdate < to);
+		view.newCSAGroups = db.Group.manager.count($cdate >= from && $cdate < to && !$flags.has(ShopMode));
+		view.newMarketGroups = db.Group.manager.count($cdate >= from && $cdate < to && $flags.has(ShopMode));
+
+		view.newGroupsByAdmin = sys.db.Manager.cnx.request('SELECT count(gs.contactType) as count,gs.contactType FROM `Group` g, GroupStats gs 
+		where gs.groupId=g.id 
+		and g.cdate >= "${from.toString()}" and g.cdate < "${to.toString()}"
+		group by contactType
+		order by count desc').results();
+
+		view.activeGroupsByAdmin = sys.db.Manager.cnx.request('SELECT count(gs.contactType) as count,gs.contactType FROM `Group` g, GroupStats gs 
+		where gs.groupId=g.id 
+		and gs.active=1
+		group by contactType
+		order by count desc').results();
+
 	}
 
 	public static function addUserToGroup(email:String, group:db.Group) {
@@ -506,6 +574,9 @@ class Admin extends Controller {
 	@tpl('admin/news.mtt')
 	function doNews() {}
 
+
+
+
 	function doTestMails(?args:{tpl:String}){
 
 		//list existing mail templates
@@ -564,4 +635,16 @@ class Admin extends Controller {
 
 	@tpl('admin/settings.mtt')
 	function doSettings(){}
+
+
+
+	@tpl('admin/superadmins.mtt')
+	function doSuperadmins(){
+		view.superadmins = db.User.manager.search($rights.has(Admin),false);
+	}
+
+	@tpl('admin/stripe.mtt')
+	function doStripe(){
+
+	}
 }

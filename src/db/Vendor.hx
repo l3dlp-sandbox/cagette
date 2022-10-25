@@ -32,6 +32,7 @@ typedef SiretInfos = {
 
 enum VendorBetaFlags{
 	Cagette2;		//BETA Cagette 2.0
+	CanOpenStripeAccount; //Can Open Stripe Account
 }
 
 /**
@@ -72,7 +73,6 @@ class Vendor extends Object
 	@hideInForms public var companyCapital : SNull<SInt>; //capital social
 	@hideInForms public var activityCode:SNull<SString<8>>;//code NAF (NAFRev2)
 	
-	// @hideInForms public var vendorPolicy:SBool; //charte producteurs
 	@hideInForms public var tosVersion: SNull<SInt>; //CGV version checked
 	
 	public var linkText:SNull<SString<256>>;
@@ -87,14 +87,13 @@ class Vendor extends Object
 	@hideInForms public var status : SNull<SString<32>>; //temporaire , pour le dédoublonnage
 	@hideInForms public var disabled : SNull<SEnum<DisabledReason>>; // vendor is disabled
 	
-	// @hideInForms public var isTest : SBool; //cpro test account
-
 	@hideInForms public var lat:SNull<SFloat>;
 	@hideInForms public var lng:SNull<SFloat>;
 
 	@hideInForms public var betaFlags:SFlags<VendorBetaFlags>;
 
 	@hideInForms public var stripeCustomerId:SNull<SString<255>>;
+	@hideInForms public var stripeAccountId:SNull<SString<255>>;
 
 	public function new() 
 	{
@@ -111,7 +110,7 @@ class Vendor extends Object
 			var noCagette2Groups = cpro.getGroups().filter(v->!v.hasCagette2());
 			if ( noCagette2Groups.length>0 ){
 				var name = noCagette2Groups.map(v -> v.name).join(", ");
-				throw sugoi.ControllerAction.ControllerAction.ErrorAction("/user/choose",'Le producteur "${this.name}" a l\'option Cagette2 activée et ne peut pas fonctionner avec des groupes qui n\'ont pas activé cette option ($name). Contactez nous sur <b>'+App.current.theme.supportEmail+'</b> pour régler le problème.');
+				throw sugoi.ControllerAction.ControllerAction.ErrorAction("/user/choose",'Le producteur "${this.name}" a l\'option Cagette2 activée et ne peut pas fonctionner avec des groupes qui n\'ont pas activé cette option ($name). Contactez nous sur <b>'+App.current.getTheme().supportEmail+'</b> pour régler le problème.');
 			}
 		}*/
 	}
@@ -269,6 +268,7 @@ class Vendor extends Object
 		if(address2!=null) str.add(", "+address2);
 		if(zipCode!=null) str.add(", "+zipCode);
 		if(city!=null) str.add(" "+city);
+		if(country!=null) str.add(", "+country);
 		return str.toString();
 	}
 
@@ -318,13 +318,20 @@ class Vendor extends Object
 		return str;
 	}
 
-	function check(){
-		if(this.email==null){
-			throw new tink.core.Error("Vous devez obligatoirement saisir un email pour ce producteur.");
-		}
+	/**NAF**/
+	function getActivity():{id:String,name:String}{
+		if (activityCode==null) return null;
+		var naf = activityCode.split(".").join("");
+		return service.VendorService.getActivityCodes().find(p -> Std.string(p.id) == naf);
+	}
 
-		if(!EmailValidator.check(this.email) ) {
-			throw new tink.core.Error("Email invalide.");
+	function check(){
+		/*if(this.email==null){
+			throw new tink.core.Error("Vous devez obligatoirement saisir un email pour ce producteur.");
+		}*/
+
+		if(this.email!=null && !EmailValidator.check(this.email) ) {
+			throw new tink.core.Error('Email du producteur ${this.id} invalide.');
 		}
 
 		//disable if missing legal infos
@@ -357,4 +364,20 @@ class Vendor extends Object
 	public function getImageId(){
         return this.imageId;
     }
+
+	/**
+		has a valid Stripe account
+	**/
+	public function isDispatchReady():Bool{
+
+		if(stripeAccountId==null) return false;
+		return sys.db.Manager.cnx.request('SELECT count(id) FROM stripeAccount where id="+${this.stripeAccountId}" and details_submitted=1 and charges_enabled=1').getIntResult(0) > 0;
+
+	}
+
+	public function canOpenStripeAccount():Bool{
+		return betaFlags.has(CanOpenStripeAccount);
+	}
+
+	
 }

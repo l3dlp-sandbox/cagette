@@ -12,6 +12,7 @@ enum VendorType {
 	VTDiscovery; 		// 6 Offre Découverte
 	VTCproSubscriberMontlhy; 	// 7 Offre Pro abonné mensuel
 	VTCproSubscriberYearly; 	// 8 Offre Pro abonné annuel
+	VTMarketplace; // producteur au %
 }
 
 /**
@@ -43,8 +44,7 @@ class VendorStats extends sys.db.Object
 		if(vs==null){
 			vs = new VendorStats();
 			vs.vendor = vendor;
-			vs.insert();
-			
+			vs.insert();			
 		}
 		return vs;
 	}
@@ -54,8 +54,32 @@ class VendorStats extends sys.db.Object
 	**/
 	public static function updateStats(vendor:db.Vendor){
 
-		var vs = getOrCreate(vendor);
+		//Find lat/lnt if not set
+		if(vendor.lat==null && !vendor.isDisabled()){
+			vendor.lock();
 
+			var address = vendor.getAddress();
+			
+			try{
+				var res = service.Mapbox.geocode(address);
+	
+				if(res!=null){
+					if(res.geometry.coordinates[0]!=null){					
+						vendor.lat = res.geometry.coordinates[1];
+						vendor.lng = res.geometry.coordinates[0];
+						vendor.update();
+					}
+				}else{
+					vendor.lat = 0;
+					vendor.lng = 0;
+					vendor.update();
+				}
+			}catch(e:Dynamic){
+				App.current.logError("Unable to geocode vendor #"+vendor.id+" : "+Std.string(e));
+			}
+		}
+
+		var vs = getOrCreate(vendor);
 		var cpro = pro.db.CagettePro.getFromVendor(vendor);
 
 		//type
@@ -72,10 +96,17 @@ class VendorStats extends sys.db.Object
 			}else if(cpro.offer==Pro){
 				// Get subscription plan
 				var result:Dynamic = BridgeService.call('/subscriptions/plan/${vendor.stripeCustomerId}');
-				if (result!=null && result.plan=='year'){
-					vs.type = VTCproSubscriberYearly;
-				} else {
-					vs.type = VTCproSubscriberMontlhy;
+				if (result!=null){
+					if(result.plan=='year'){
+						vs.type = VTCproSubscriberYearly;
+					} else if(result.plan=='month'){
+						vs.type = VTCproSubscriberMontlhy;
+					}else{
+						vs.type = VTMarketplace;
+					}
+
+				}else{
+					throw "unable to get stripe subscription status";
 				}
 			}
 			
@@ -96,18 +127,6 @@ class VendorStats extends sys.db.Object
 			}
 		}
 
-		//active
-		/*var isActive = false;
-		else{
-			//should have open distribs
-			for( c in vendor.getActiveContracts() ){				
-				if ( c!=null && c.getDistribs(true).length > 0 ){
-					isActive=true;
-					break;
-				}			
-			}
-		}*/
-		
 		var now = Date.now();
 		vs.ldate = now;
 		

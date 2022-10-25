@@ -23,7 +23,7 @@ class OrderService
 	 * @param	quantity
 	 * @param	productId
 	 */
-	public static function make(user:db.User, quantity:Float, product:db.Product, distribId:Int, ?paid:Bool, ?subscription : db.Subscription, ?user2:db.User, ?invert:Bool ) : Null<db.UserOrder> {
+	public static function make(user:db.User, quantity:Float, product:db.Product, distribId:Int, ?paid:Bool, ?subscription : db.Subscription, ?user2:db.User, ?invert:Bool, ?basket:db.Basket ) : Null<db.UserOrder> {
 		
 		var t = sugoi.i18n.Locale.texts;
 
@@ -69,9 +69,9 @@ class OrderService
 			for ( i in 0...Math.round(quantity) ) {
 
 				if( shopMode ) {
-					newOrder = make( user, 1, product, distribId, paid, null, user2, invert );
+					newOrder = make( user, 1, product, distribId, paid, null, null , null, basket );
 				} else {
-					newOrder = make( user, 1, product, distribId, paid, subscription );
+					newOrder = make( user, 1, product, distribId, paid, subscription, user2, invert, basket);
 				}
 			}
 			return newOrder;
@@ -108,26 +108,22 @@ class OrderService
 				//}
 			}
 		}
-		
-		//create a basket
-		if (distribId != null){
-			order.basket = db.Basket.getOrCreate(user, order.distribution.multiDistrib);			
-		}
 
+		//basket can be sent in param, if not getOrCreate it
+		if(basket==null){
+			basket = db.Basket.getOrCreate(user, order.distribution.multiDistrib);
+		}
+		order.basket = basket;			
+		
 		//checks
 		if(order.distribution==null) throw new Error( "cant record an order for a variable catalog without a distribution linked" );
 		if(order.basket==null) throw new Error( "this order should have a basket" );
 		if( !shopMode ) {
-
 			if( subscription != null && subscription.id == null ) throw new Error( "La souscription a un id null." );
 			if( subscription == null ) throw new Error( "Impossible d'enregistrer une commande sans souscription." );
+			order.subscription = subscription;
 		} 
 
-		if ( subscription != null ) { 
-
-			order.subscription = subscription;
-		 }
-		
 		order.insert();
 		
 		//Stocks
@@ -348,7 +344,7 @@ class OrderService
 					var orders = basket.getOrders();
 					//Check if it is the last order, if yes then delete the related operation
 					if( orders.length == 1 && orders[0].id==order.id ){
-						var operation = service.PaymentService.findVOrderOperation(basket.multiDistrib, user);
+						var operation = basket.getOrderOperation(false);
 						if(operation!=null) operation.delete();
 					}
 				}
@@ -481,11 +477,17 @@ class OrderService
 	 */
 	public static function confirmTmpBasket(tmpBasket:db.Basket):Array<db.UserOrder>{
 
+		tmpBasket.lock();
+
 		if(tmpBasket.status != Std.string(BasketStatus.OPEN)) throw "basket should be status=OPEN";
 
 		var t = sugoi.i18n.Locale.texts;
 		var orders = [];
 		var user = tmpBasket.user;
+
+		// we get an existing basket by user-distrib , it will reuse existing basket
+		var basket = db.Basket.getOrCreate(user,tmpBasket.multiDistrib);
+
 		var distributions = tmpBasket.multiDistrib.getDistributions();
 		for (o in tmpBasket.getData().products){
 			var p = db.Product.manager.get(o.productId,false);
@@ -509,13 +511,12 @@ class OrderService
 				continue;
 			}
 
-			var order = make(user, o.quantity, p, distrib.id );
+			var order = make(user, o.quantity, p, distrib.id, basket );
 			if(order!=null) orders.push( order );
 		}
 		
 		//store total price
 		if(orders.length>0){
-			var basket = orders[0].basket;
 			basket.total = basket.getOrdersTotal();
 			basket.update();
 		}
@@ -524,6 +525,7 @@ class OrderService
 		
 		//delete tmpBasket
 		if(App.current.session.data.tmpBasketId==tmpBasket.id) App.current.session.data.tmpBasketId=null;
+
 		tmpBasket.delete();
 
 		return orders;
@@ -537,7 +539,7 @@ class OrderService
 		
 		var m = new sugoi.mail.Mail();
 		m.addRecipient(d.catalog.contact.email , d.catalog.contact.getName());
-		m.setSender(App.config.get("default_email"), App.current.theme.name);
+		m.setSender(App.current.getTheme().email.senderEmail, App.current.getTheme().name);
 		m.setSubject('[${d.catalog.group.name}] Distribution du ${Formatting.dDate(d.date)} (${d.catalog.name})');
 		var orders = service.ReportService.getOrdersByProduct(d);
 
@@ -553,8 +555,7 @@ class OrderService
 		} );
 		
 		m.setHtmlBody(html);
-		App.sendMail(m);					
-
+		App.sendMail(m, d.catalog.group);
 	}
 
 
@@ -571,7 +572,7 @@ class OrderService
 			var m = new sugoi.mail.Mail();
 			m.addRecipient(user.email , user.getName(),user.id);
 			if(user.email2!=null) m.addRecipient(user.email2 , user.getName(),user.id);
-			m.setSender(App.config.get("default_email"), App.current.theme.name);
+			m.setSender(App.current.getTheme().email.senderEmail, App.current.getTheme().name);
 			m.setSubject(title);
 			var orders = prepare(d.catalog.getUserOrders(user,d));
 
@@ -587,7 +588,7 @@ class OrderService
 			} );
 			
 			m.setHtmlBody(html);
-			App.sendMail(m);
+			App.sendMail(m, d.catalog.group);
 		}
 		
 	}

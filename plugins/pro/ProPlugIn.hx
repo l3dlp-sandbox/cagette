@@ -14,7 +14,7 @@ class ProPlugIn extends PlugIn implements IPlugIn{
 		name = "pro";
 		file = sugoi.tools.Macros.getFilePath();
 		//suscribe to events
-		App.current.eventDispatcher.add(onEvent);		
+		App.eventDispatcher.add(onEvent);		
 	}
 	
 	public function onEvent(e:Event) {
@@ -58,7 +58,7 @@ class ProPlugIn extends PlugIn implements IPlugIn{
 							continue;
 						}
 						
-						var pcatalog = rc.getCatalog();						
+						var pcatalog = rc.getPCatalog();						
 						var distribService = new pro.service.PDistributionService(pcatalog.company);					
 						distribService.sendOrdersByProductReport(d,rc);
 						task.log(" -- Sent orders by product for : "+d.toString());
@@ -129,7 +129,7 @@ class ProPlugIn extends PlugIn implements IPlugIn{
 				//get related offer in cpro
 				var rc = connector.db.RemoteCatalog.getFromContract(e.product.catalog);
 				if ( rc != null){
-					var catalog = rc.getCatalog();
+					var catalog = rc.getPCatalog();
 					if(catalog==null) return ;
 					var offer = null;
 					for ( off in catalog.getOffers() ){

@@ -26,7 +26,7 @@
                     à ::md.getPlace()::
                 </td>
                 
-                ::if md.isConfirmed()::              
+                ::if md.isValidated()::              
                     ::set payout = getMangopayGroupPayout(md)::
                     ::if(payout!=null)::
                         <td>::payout.getAmount():: &euro;</td>
