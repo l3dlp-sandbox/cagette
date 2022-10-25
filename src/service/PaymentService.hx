@@ -372,8 +372,7 @@ class PaymentService {
 			throw new tink.core.Error("Vous ne pouvez pas valider cette distribution car elle n'a pas encore commencé");
 		}
 
-		for (user in distrib.getUsers()) {
-			var basket = db.Basket.get(user, distrib);
+		for (basket in distrib.getBaskets()) {
 			validateBasket(basket);
 		}
 		// finally validate distrib
@@ -389,8 +388,7 @@ class PaymentService {
 	}
 
 	public static function unvalidateDistribution(distrib:db.MultiDistrib) {
-		for (user in distrib.getUsers()) {
-			var basket = db.Basket.get(user, distrib);
+		for (basket in distrib.getBaskets()) {
 			unvalidateBasket(basket);
 		}
 		// finally validate distrib
@@ -453,6 +451,12 @@ class PaymentService {
 		if (basket == null || !basket.isValidated())
 			return false;
 
+
+		basket.lock();
+		basket.status = Std.string(BasketStatus.CONFIRMED);
+		basket.update();
+		
+
 		// mark orders as paid
 		var orders = basket.getOrders();
 		for (order in orders) {
@@ -480,6 +484,8 @@ class PaymentService {
 			updateUserBalance(o.user, o.distribution.place.group);
 		}
 
+		
+
 		return true;
 	}
 
@@ -497,16 +503,16 @@ class PaymentService {
 
 	/**
 		Get multidistrib turnover by payment type
-	**/
+	
 	public static function getMultiDistribTurnoverByPaymentType(md:db.MultiDistrib):Map<String, {ht:Float, ttc:Float}> {
 		var out = new Map<String, {ht:Float, ttc:Float}>();
 
-		/*for( b in md.getBaskets()){
+		for( b in md.getBaskets()){
 			for( op in b.getPaymentsOperations()){
 
 			}
-		}*/
+		}
 
 		return out;
-	}
+	}**/
 }

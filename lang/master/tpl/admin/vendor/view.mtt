@@ -90,7 +90,7 @@
 			</b>	
 
 			::if(tmpVendor.id!=null)::
-				<a href='/p/pro/admin/certification#/::tmpVendor.id::' target="_blank">( questionnaire )</a><br/>
+				<a href='/p/pro/admin/certification#/certification/::tmpVendor.id::' target="_blank">( questionnaire )</a><br/>
 			::end::
 		</p>
 

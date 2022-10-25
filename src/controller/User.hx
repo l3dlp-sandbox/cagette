@@ -31,10 +31,18 @@ class User extends Controller
 			throw Redirect('/');
 		}
 
-		service.UserService.prepareLoginBoxOptions(view);
 
 		view.sid = App.current.session.sid;
-		
+
+		// If the session has been closed, Neko has been logged out while Nest might still be logged in
+		var cookies = Web.getCookies();
+		var authSidCookie = cookies["Auth_sid"];
+		if (authSidCookie != null && authSidCookie != view.sid){
+			throw Redirect('/user/logout');
+		}
+
+		service.UserService.prepareLoginBoxOptions(view);
+
 		//if its needed to redirect after login
 		if (app.params.exists("redirect")){
 			view.redirect = app.params.exists("redirect");
@@ -135,7 +143,7 @@ class User extends Controller
 			domain = domain.split('app.').join("");
 		}
 		Web.setHeader("Set-Cookie", 'Auth_sid=; HttpOnly; Path=/; Max-Age=0; Domain=$domain');
-		throw Redirect('/');
+		throw Redirect('/user/login');
 	}
 	
 	/**

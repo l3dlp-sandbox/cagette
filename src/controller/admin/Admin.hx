@@ -239,20 +239,30 @@ class Admin extends Controller {
 	}
 
 	@tpl("admin/stats.mtt")
-	function doStats(?month:Int, ?year:Int) {
+	function doStats() {
 		var now = Date.now();
-		if (month == null) {
-			year = now.getFullYear();
-			month = now.getMonth();
-		}
-		var from = new Date(year, month, 1, 0, 0, 0);
-		var to = new Date(year, month + 1, 0, 23, 59, 59);
-		view.year = year;
-		view.month = month;
-		view.from = from;
-		view.to = to;
+		
+		var from = new Date(now.getFullYear(),now.getMonth(), now.getDate(), 0, 0, 0);
+		var to 	 = new Date(now.getFullYear(),now.getMonth(), now.getDate(), 0, 0, 0);
+
+		//find previous monday
+		while(from.getDay()!=1) from = DateTools.delta(from, -1000*60*60*24);
+		//find next monday
+		while(to.getDay()!=1) to = DateTools.delta(to, 1000*60*60*24);
+		
+		var tf = new Timeframe(from,to);
+		view.tf = tf;
+
+		from = tf.from;
+		to = tf.to;
 
 		view.newVendors = db.Vendor.manager.count($cdate >= from && $cdate < to);
+		view.newVendorsByType = sys.db.Manager.cnx.request('SELECT count(v.id) as count, vs.type
+		FROM Vendor v, VendorStats vs 
+		WHERE vs.vendorId=v.id AND cdate >= "${from.toString()}" and cdate < "${to.toString()}"
+		group by vs.type
+		order by type').results();
+		
 		view.activeVendors = sys.db.Manager.cnx.request("SELECT count(v.id) FROM Vendor v, VendorStats vs where vs.vendorId=v.id and vs.active=1")
 			.getIntResult(0);
 
@@ -260,22 +270,63 @@ class Admin extends Controller {
 		FROM Vendor v, VendorStats vs 
 		WHERE vs.vendorId=v.id AND active=1
 		group by vs.type
-		order by type')
-			.results();
-
-		view.newVendorsByType = sys.db.Manager.cnx.request('SELECT count(v.id) as count, vs.type
-		FROM Vendor v, VendorStats vs 
-		WHERE vs.vendorId=v.id AND cdate > "${from.toString()}" and cdate <= "${to.toString()}"
-		group by vs.type
-		order by type')
-			.results();
+		order by type').results();
 
 		view.activeGroups = GroupStats.manager.count($active);
 		view.activeUsers = sys.db.Manager.cnx.request('SELECT sum(gs.membersNum) FROM `Group` g, GroupStats gs where gs.groupId=g.id and gs.active=1')
 			.getIntResult(0);
-		view.newUsers = sys.db.Manager.cnx.request('SELECT count(id) FROM `User` where cdate > "${from.toString()}" and cdate <= "${to.toString()}"')
+		view.newUsers = sys.db.Manager.cnx.request('SELECT count(id) FROM `User` where cdate >= "${from.toString()}" and cdate < "${to.toString()}"')
 			.getIntResult(0);
+
 		view.newGroups = db.Group.manager.count($cdate >= from && $cdate < to);
+		view.newCSAGroups = db.Group.manager.count($cdate >= from && $cdate < to && !$flags.has(ShopMode));
+		view.newMarketGroups = db.Group.manager.count($cdate >= from && $cdate < to && $flags.has(ShopMode));
+
+		view.newGroupsByAdmin = sys.db.Manager.cnx.request('SELECT count(gs.contactType) as count,gs.contactType FROM `Group` g, GroupStats gs 
+		where gs.groupId=g.id 
+		and g.cdate >= "${from.toString()}" and g.cdate < "${to.toString()}"
+		group by contactType
+		order by count desc').results();
+
+		view.activeGroupsByAdmin = sys.db.Manager.cnx.request('SELECT count(gs.contactType) as count,gs.contactType FROM `Group` g, GroupStats gs 
+		where gs.groupId=g.id 
+		and gs.active=1
+		group by contactType
+		order by count desc').results();
+
+		// db.Group.manager.search($flags.has(ShopMode));
+		// db.Group.manager.search(!$flags.has(ShopMode));
+
+
+		//BASKETS
+		var marketBaskets = db.Basket.manager.unsafeObjects('
+			select * from Basket where cdate >= "${from.toString()}" and cdate < "${to.toString()}"
+			and multiDistribId in (
+			select id from MultiDistrib where groupId in (
+				#group AVEC shopMode
+				SELECT id FROM `Group` WHERE flags & 2 != 0 
+			) and distribStartDate > NOW() )',false);
+
+
+		view.marketBasketsNum = marketBaskets.length;
+
+		var amapBaskets = db.Basket.manager.unsafeObjects('
+			select * from Basket where cdate >= "${from.toString()}" and cdate < "${to.toString()}"
+			and multiDistribId in (
+			select id from MultiDistrib where groupId in (
+				#group SANS shopMode
+				SELECT id FROM `Group` WHERE !(flags & 2 != 0) 
+			) and distribStartDate > NOW() )',false);
+
+
+		view.amapBasketsNum = amapBaskets.length;
+
+		
+
+
+
+
+
 	}
 
 	public static function addUserToGroup(email:String, group:db.Group) {
