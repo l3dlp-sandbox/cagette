@@ -41,6 +41,9 @@ class Distribution extends Controller {
 
 	@tpl('distribution/default.mtt')
 	function doDefault() {
+		if (app.getCurrentGroup().hasCagette2()){
+			throw Redirect('/distributions');
+		}
 		checkHasDistributionSectionAccess();
 
 		var now = Date.now();
@@ -69,13 +72,6 @@ class Distribution extends Controller {
 		// view.noSiret = vendors.filter(v -> v.companyNumber==null);
 
 		checkToken();
-	}
-
-	@tpl('distribution/default2.mtt')
-	function doCagette2() {
-		if (!app.getCurrentGroup().hasCagette2()){
-			throw Error('/', t._('Forbidden action'));
-		}
 	}
 
 	/**
