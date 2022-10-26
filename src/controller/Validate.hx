@@ -21,7 +21,7 @@ class Validate extends controller.Controller
 	@tpl('validate/user.mtt')
 	public function doDefault(){
 		if (multiDistrib.getGroup().hasCagette2()) {
-			throw Redirect('/distribution/cagette2#/'+multiDistrib.id+'/'+basket.id);
+			throw Redirect('/distributions#/'+multiDistrib.id+'/'+basket.id);
 		}
 
 		if(basket.status==Std.string(OPEN)) throw "basket is OPEN";
