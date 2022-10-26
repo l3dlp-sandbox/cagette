@@ -41,6 +41,9 @@ class Distribution extends Controller {
 
 	@tpl('distribution/default.mtt')
 	function doDefault() {
+		if (app.getCurrentGroup().hasCagette2()){
+			throw Redirect('/distributions');
+		}
 		checkHasDistributionSectionAccess();
 
 		var now = Date.now();
@@ -967,7 +970,7 @@ class Distribution extends Controller {
 	public function doValidate(multiDistrib:db.MultiDistrib) {
 		checkHasDistributionSectionAccess();
 		if (multiDistrib.getGroup().hasCagette2()){
-			throw Redirect('/distribution/ordersRecap/'+multiDistrib.id);
+			throw Redirect('/distributions#/'+multiDistrib.id);
 		}
 		checkToken();
 
@@ -1580,20 +1583,6 @@ class Distribution extends Controller {
 		view.url = flow.getPlaceUrl(flow.getNextPlace());
 
 		view.distribution = tmpBasket.multiDistrib;
-	}
-
-	/**
-		Cagette 2 distribution recap page
-	**/
-	@tpl('distribution/ordersRecap.mtt')
-	function doOrdersRecap(multiDistrib: db.MultiDistrib) {
-		checkHasDistributionSectionAccess();
-
-		if (!multiDistrib.getGroup().hasCagette2()){
-			throw Error('/', t._('Forbidden action'));
-		}
-
-		view.multiDistribId = multiDistrib.id;
 	}
 
 	/**

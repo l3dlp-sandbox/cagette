@@ -46,6 +46,15 @@ class Main extends Controller {
 	function doHome() {
 		addBc("home", "Commandes", "/home");
 
+		// If the session has been closed, Neko has been logged out while Nest might still be logged in
+		if (app.user == null){
+			var cookies = Web.getCookies();
+			var authSidCookie = cookies["Auth_sid"];
+			if (authSidCookie != null && authSidCookie != view.sid){
+				throw Redirect('/user/logout');
+			}
+		}
+
 		var group = app.getCurrentGroup();
 		if (app.user != null && group == null) {
 			throw Redirect("/user/choose");
@@ -259,6 +268,12 @@ class Main extends Controller {
 	function doDistribution(d:Dispatch) {
 		addBc("distribution", "Distributions", "/distribution");
 		d.dispatch(new controller.Distribution());
+	}
+
+	@logged
+	function doDistributions(d:Dispatch) {
+		addBc("distribution", "Distributions", "/distributions");
+		d.dispatch(new controller.Distributions());
 	}
 
 	function doShop(d:Dispatch) {
