@@ -38,7 +38,7 @@ class TestRemoteCatalog extends utest.Test
 
 		Assert.isTrue(rc!=null);
 		var contract = rc.getContract();
-		var catalog = rc.getCatalog();
+		var catalog = rc.getPCatalog();
 		Assert.isTrue(contract!=null);
 		Assert.equals(catalog.id,catalog.id);
 		Assert.equals(catalog.startDate.getTime(),contract.startDate.getTime());
