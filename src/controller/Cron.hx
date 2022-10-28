@@ -275,11 +275,7 @@ class Cron extends Controller
 		//stats
 		var task = new TransactionWrappedTask( "Global stats");
 		task.setTask(function() {
-			//====================================================================
-			// NOPE 
-			return;
-			//====================================================================
-
+			
 			// daily stats
 			var yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate()-1, 0, 0, 0);
 			for( k in GraphService.getAllGraphKeys()){
@@ -294,7 +290,7 @@ class Cron extends Controller
 
 			var stats = {
 				totalTurnoverMarket:0,
-				totalTurnoverAMAP:0,
+				totalTurnoverAmap:0,
 
 				invitedTurnoverMarket:0,
 				invitedTurnoverAmap:0,
@@ -310,6 +306,9 @@ class Cron extends Controller
 
 				memberTurnoverMarket:0,
 				memberTurnoverAmap:0,
+
+				marketplaceTurnoverMarket:0,
+				marketplaceTurnoverAmap:0
 			};
 
 			for(uo in db.UserOrder.manager.search($date >= from && $date < to,false)){
@@ -328,6 +327,7 @@ class Cron extends Controller
 						case VendorType.VTCproSubscriberMontlhy, VendorType.VTCproSubscriberYearly : stats.proTurnoverMarket += total;
 						case VendorType.VTDiscovery : stats.discoveryTurnoverMarket += total;
 						case VendorType.VTInvitedPro : stats.cproInvitedTurnoverMarket += total;
+						case VendorType.VTMarketplace : stats.marketplaceTurnoverMarket += total;
 					}
 					stats.totalTurnoverMarket += total;
 
@@ -340,6 +340,7 @@ class Cron extends Controller
 						case VendorType.VTCproSubscriberMontlhy, VendorType.VTCproSubscriberYearly : stats.proTurnoverAmap  += total;
 						case VendorType.VTDiscovery : stats.discoveryTurnoverAmap  += total;
 						case VendorType.VTInvitedPro : stats.cproInvitedTurnoverAmap  += total;
+						case VendorType.VTMarketplace : stats.marketplaceTurnoverAmap += total;
 					}
 					stats.totalTurnoverAmap += total;
 				}

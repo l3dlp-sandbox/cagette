@@ -1,4 +1,5 @@
 package controller.admin;
+import db.Graph;
 import haxe.Json;
 import sugoi.form.elements.TextArea;
 import Common;
@@ -334,8 +335,10 @@ class Admin extends Controller {
 
 		view.amapBasketsNum = amapBaskets.length;
 
-		
-
+		//global stats
+		var stats = Graph.getData("global",from);
+		if(stats==null) stats = {};
+		view.stats = stats;
 
 
 

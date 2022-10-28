@@ -59,5 +59,12 @@ class Graph extends Object{
 	}
 
 
+	public static function getData(key:String,date:Date){
+		var g = manager.select($key==key && $date==date, false);
+		if(g==null) return null;
+		return haxe.Json.parse(g.data);
+	}
+
+
 
 }
