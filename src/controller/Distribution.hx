@@ -1112,7 +1112,7 @@ class Distribution extends Controller {
 	@admin
 	public function doUnvalidate(md:db.MultiDistrib) {
 		checkHasDistributionSectionAccess();
-		if (!md.validated)
+		if (!md.isValidated())
 			return;
 
 		try {

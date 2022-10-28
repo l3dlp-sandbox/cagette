@@ -197,22 +197,17 @@ class Vendor extends controller.Controller
 			BridgeService.syncVendorToHubspot(v);
 		}
 
-		
-
 		if (app.params["canOpenStripeAccount"] == "1") {
-		
 			v.lock();
 			v.betaFlags.set(CanOpenStripeAccount);
 			v.update();
 		}
 
 		if (app.params["canOpenStripeAccount"] == "0") {
-		
 			v.lock();
 			v.betaFlags.unset(CanOpenStripeAccount);
 			v.update();
 		}
-
 
 		/*if (app.params["disableAccess"] != null) {
 			var user = db.User.manager.get(Std.parseInt(app.params["disableAccess"]), false);

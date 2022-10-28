@@ -638,7 +638,7 @@ class Cron extends Controller
 		/*
 		 * warn administrator if a distribution just ended
 		 */ 
-		var distribs = db.MultiDistrib.manager.search( !$validated && ($distribStartDate >= from) && ($distribStartDate < to) , false);
+		var distribs = db.MultiDistrib.manager.search( $validatedStatus==Std.string(NOT_VALIDATED) && ($distribStartDate >= from) && ($distribStartDate < to) , false);
 		
 		for ( d in Lambda.array(distribs)){
 			if ( !d.getGroup().hasPayments() ){
@@ -663,7 +663,7 @@ class Cron extends Controller
 		var to = now.setHourMinute( now.getHours()+1 , 0).deltaDays(-3);
 		
 		//warn administrator if a distribution just ended
-		var distribs = db.MultiDistrib.manager.search( !$validated && ($distribStartDate >= from) && ($distribStartDate < to) , false);
+		var distribs = db.MultiDistrib.manager.search( $validatedStatus==Std.string(NOT_VALIDATED) && ($distribStartDate >= from) && ($distribStartDate < to) , false);
 		
 		for ( d in Lambda.array(distribs)){
 			if ( !d.getGroup().hasPayments() ){

@@ -16,6 +16,12 @@ typedef Slot = {
 	end:Date
 }
 
+enum MultiDistribValidatedStatus { 
+	NOT_VALIDATED;
+	VALIDATED;
+	PAID;
+}
+
 /**
  * MultiDistrib represents a global distributions with many vendors. 	
  * @author fbarbut
@@ -40,16 +46,18 @@ class MultiDistrib extends Object
 	@hideInForms public var counterBeforeDistrib:SFloat; //counter before distrib "fond de caisse"
 	@hideInForms public var volunteerRolesIds : SNull<String>;
 
-	@hideInForms public var validated:SNull<SBool>;
+	// @hideInForms public var validated:SNull<SBool>;
 
 	@:skip public var contracts : Array<db.Catalog>;
 	@:skip public var extraHtml : String;
+
+	public var validatedStatus:SString<32>;
 	
 	public function new(){
 		super();
 		contracts = [];
 		extraHtml = "";
-		validated = false;
+		validatedStatus = Std.string(MultiDistribValidatedStatus.NOT_VALIDATED);
 	}
 	
 	/**
@@ -410,8 +418,7 @@ class MultiDistrib extends Object
 	}
 	
 	public function isValidated():Bool{
-		//return Lambda.count( distributions , function(d) return d.validated) == distributions.length;
-		return validated == true;
+		return validatedStatus==Std.string(VALIDATED) || validatedStatus==Std.string(PAID);
 	}
 
 	/**
@@ -603,5 +610,9 @@ class MultiDistrib extends Object
 			}
 		}
 		return null;
+	}
+
+	public function getValidatedStatus():MultiDistribValidatedStatus{
+		return Type.createEnum(MultiDistribValidatedStatus,validatedStatus);		
 	}
 }

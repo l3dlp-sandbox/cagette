@@ -7,6 +7,7 @@ enum CagetteProOffer {
 	Member;
 	Pro;
 	Training;
+	Marketplace;
 }
 
 /**

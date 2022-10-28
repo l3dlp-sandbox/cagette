@@ -4,6 +4,7 @@ import db.Basket.BasketStatus;
 import db.Catalog;
 import haxe.Json;
 import db.Operation;
+import db.MultiDistrib.MultiDistribValidatedStatus;
 import Common;
 import tink.core.Error;
 
@@ -376,7 +377,7 @@ class PaymentService {
 			validateBasket(basket);
 		}
 		// finally validate distrib
-		distrib.validated = true;
+		distrib.validatedStatus = Std.string(MultiDistribValidatedStatus.PAID);
 		distrib.update();
 
 		//update vendor stats if distrib is not today
@@ -393,7 +394,7 @@ class PaymentService {
 		}
 		// finally validate distrib
 		distrib.lock();
-		distrib.validated = false;
+		distrib.validatedStatus = Std.string(MultiDistribValidatedStatus.NOT_VALIDATED);
 		distrib.update();
 	}
 
