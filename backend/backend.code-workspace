@@ -19,10 +19,10 @@
 			"path": "../src"
 		},
 		{
-			"path": "../devLibs/sugoi"
+			"path": "../plugins"
 		},
 		{
-			"path": "../plugins"
+			"path": "../../../../haxe/haxe_libraries/sugoi/1.0.0/github/049fb6b31c3b07482a0e81447f8c12f386e62457/src/sugoi"
 		}
 	],
 	"settings": {
