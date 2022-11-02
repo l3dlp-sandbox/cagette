@@ -356,7 +356,7 @@ class Vendor extends Object
 		super.update();
 	}
 
-	function getStats():VendorStats{
+	public function getStats():VendorStats{
 		return VendorStats.getOrCreate(this);
 	}
 

@@ -1,6 +1,13 @@
 ::use 'design.mtt'::
 
+::set hasCagette2 = getCurrentGroup().hasCagette2()::
+
 <h2 style="margin:12px">::_("Distributions")::</h2>
+
+::if hasCagette2::
+	<h3 style="margin-bottom: 16px;"><a href="/distributions">➤ Nouvelle interface Cagette 2.0</a></h3>
+::end::
+
 <div class="row" style="margin-bottom:24px;">
 
 	<div class="col-md-6">
@@ -83,12 +90,7 @@
 		::set ordersEndDate = d.getOrdersEndDate(false)::
 		::set vdistribs = d.getDistributions(1)::
 		::set cdistribs = d.getDistributions(0)::
-		::set hasCagette2 = d.getGroup().hasCagette2()::
-		::set cagette2OrdersRecapUrl = "/distribution/ordersRecap/"+d.id::
 		::set validateUrl = "/distribution/validate/"+d.id::
-		::if hasCagette2::
-			::set validateUrl = cagette2OrdersRecapUrl::
-		::end::
 
 		<div class="header orders row">
 
@@ -283,18 +285,12 @@
 						</div>
 						<div class="actions">
 							::set ordersUrl = "/contractAdmin/ordersByDate/"+d.getDate().toString().substr(0,10)+"/"+d._place.id::
-							::if hasCagette2::
-								::set ordersUrl = cagette2OrdersRecapUrl::
-							::end::
 							<a href="::ordersUrl::" class="btn btn-default btn-sm">
 								<i class="icon icon-basket"></i> ::_("Orders")::
 							</a>
 
 							::if(status=="open" && d.getGroup().hasShopMode())::
 								::set openBasketsUrl = "/contractAdmin/tmpBaskets/"+d.id::
-								::if hasCagette2::
-									::set openBasketsUrl = cagette2OrdersRecapUrl::
-								::end::
 								<a href="::openBasketsUrl::" class="btn btn-default btn-sm">
 									Commandes en cours
 								</a>

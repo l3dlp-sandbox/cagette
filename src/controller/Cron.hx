@@ -1,4 +1,6 @@
 package controller;
+import pro.db.VendorStats.VendorType;
+import db.Graph;
 import Common;
 import db.Catalog;
 import db.MultiDistrib;
@@ -269,6 +271,86 @@ class Cron extends Controller
 		});
 		task.execute(false);
 
+
+		//stats
+		var task = new TransactionWrappedTask( "Global stats");
+		task.setTask(function() {
+			//====================================================================
+			// NOPE 
+			return;
+			//====================================================================
+
+			// daily stats
+			var yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate()-1, 0, 0, 0);
+			for( k in GraphService.getAllGraphKeys()){
+				GraphService.getDay(k,yesterday);
+			}
+
+			// weekly stats			
+			var from = new Date(now.getFullYear(), now.getMonth(), now.getDate()-7, 0, 0, 0);
+			var to = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+
+			task.log("weekly stats from "+from+" to "+to);
+
+			var stats = {
+				totalTurnoverMarket:0,
+				totalTurnoverAMAP:0,
+
+				invitedTurnoverMarket:0,
+				invitedTurnoverAmap:0,
+
+				cproInvitedTurnoverMarket:0,
+				cproInvitedTurnoverAmap:0,
+
+				discoveryTurnoverMarket:0,
+				discoveryTurnoverAmap:0,
+
+				proTurnoverMarket:0,
+				proTurnoverAmap:0,
+
+				memberTurnoverMarket:0,
+				memberTurnoverAmap:0,
+			};
+
+			for(uo in db.UserOrder.manager.search($date >= from && $date < to,false)){
+
+				var total = Math.round(uo.quantity * uo.productPrice);
+				var catalog = uo.product.catalog;
+				var vendorType = catalog.vendor.getStats().type;
+				var group = catalog.group;
+
+				if(group.hasShopMode()){
+					//MARKET
+					switch (vendorType){
+						case VendorType.VTCpro : stats.memberTurnoverMarket += total;
+						case VendorType.VTCproTest,VTStudent : null;
+						case VendorType.VTFree,VendorType.VTInvited : stats.invitedTurnoverMarket += total;
+						case VendorType.VTCproSubscriberMontlhy, VendorType.VTCproSubscriberYearly : stats.proTurnoverMarket += total;
+						case VendorType.VTDiscovery : stats.discoveryTurnoverMarket += total;
+						case VendorType.VTInvitedPro : stats.cproInvitedTurnoverMarket += total;
+					}
+					stats.totalTurnoverMarket += total;
+
+				}else{
+					//AMAP
+					switch (vendorType){
+						case VendorType.VTCpro : stats.memberTurnoverAmap += total;
+						case VendorType.VTCproTest,VTStudent : null;
+						case VendorType.VTFree,VendorType.VTInvited : stats.invitedTurnoverAmap  += total;
+						case VendorType.VTCproSubscriberMontlhy, VendorType.VTCproSubscriberYearly : stats.proTurnoverAmap  += total;
+						case VendorType.VTDiscovery : stats.discoveryTurnoverAmap  += total;
+						case VendorType.VTInvitedPro : stats.cproInvitedTurnoverAmap  += total;
+					}
+					stats.totalTurnoverAmap += total;
+				}
+			}
+
+			Graph.recordData("global",stats,from);
+		});
+		if( (now.getHours()==4 && now.getDay()==1) || App.config.DEBUG){ //if monday at 4 am, compute stats of past week
+			task.execute();
+		}
+
 		/**
 			orders notif in cpro, should be sent AFTER default automated orders
 		**/
@@ -344,15 +426,7 @@ class Cron extends Controller
 		});
 		task.execute(!App.config.DEBUG);
 
-		//stats
-		var task = new TransactionWrappedTask( "Stats");
-		task.setTask(function() {
-			var yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate()-1, 0, 0, 0);
-			for( k in GraphService.getAllGraphKeys()){
-				GraphService.getDay(k,yesterday);
-			}
-		});
-		task.execute();
+		
 
 
 		var task = new TransactionWrappedTask( "Refresh group Stats");
