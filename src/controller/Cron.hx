@@ -335,7 +335,7 @@ class Cron extends Controller
 					//AMAP
 					switch (vendorType){
 						case VendorType.VTCpro : stats.memberTurnoverAmap += total;
-						case VendorType.VTCproTest,VTStudent : null;
+						case VendorType.VTCproTest,VTStudent,VendorType.VTMarketplace : null;
 						case VendorType.VTFree,VendorType.VTInvited : stats.invitedTurnoverAmap  += total;
 						case VendorType.VTCproSubscriberMontlhy, VendorType.VTCproSubscriberYearly : stats.proTurnoverAmap  += total;
 						case VendorType.VTDiscovery : stats.discoveryTurnoverAmap  += total;
