@@ -294,7 +294,7 @@ class Cron extends Controller
 
 			var stats = {
 				totalTurnoverMarket:0,
-				totalTurnoverAMAP:0,
+				totalTurnoverAmap:0,
 
 				invitedTurnoverMarket:0,
 				invitedTurnoverAmap:0,
