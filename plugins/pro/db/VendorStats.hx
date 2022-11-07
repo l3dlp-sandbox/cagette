@@ -108,7 +108,7 @@ trace(cpro.offer);
 				}else{
 					throw "unable to get stripe subscription status";
 				}
-			}else if(cpro.offer==MarketPlace){
+			}else if(cpro.offer==Marketplace){
 				vs.type = VTMarketplace;
 			}
 			
