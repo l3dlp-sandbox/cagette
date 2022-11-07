@@ -2,9 +2,9 @@
 		
 	<div class="row header" style="margin-top:10px;">
 		<div class="col-md-6" style="display: flex;">
-			::if(company.offer==2 || company.offer==1)::
+			::if(company.offer==2 || company.offer==1 || company.offer==4)::
 				<a href="/p/pro/upgrade">
-					<div class="iconBadge farmer-pro" style="margin-top:8px; margin-right: 8px;" data-toggle="tooltip" title="::if(company.offer==2)::Formule Pro::else::Formule Membre::end::">
+					<div class="iconBadge farmer-pro" style="margin-top:8px; margin-right: 8px;" data-toggle="tooltip" title="::if(company.offer==2)::Formule Pro::elseif(company.offer==3)::Formule Membre::else::Formule Marketplace::end::">
 						<i class="icon icon-farmer-pro"></i>
 					</div>
 				</a>
@@ -90,7 +90,7 @@
 						</ul>
 					</div>
 			</nav>
-			::if(company.offer==0)::
+			::if(company.offer==0 || company.offer==2)::
 			<div 
 				style="margin-top: -16px; height: 16px; background: #E1E1E1;">
 			</div>
@@ -104,7 +104,7 @@
 							vendorId: ::vendor.id::,
 						});
 					});
-				</script>
+			</script>
 			::end::
 			
 	::end::

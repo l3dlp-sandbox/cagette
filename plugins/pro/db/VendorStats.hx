@@ -104,13 +104,12 @@ trace(cpro.offer);
 						vs.type = VTCproSubscriberYearly;
 					} else if(result.plan=='month'){
 						vs.type = VTCproSubscriberMontlhy;
-					}else{
-						vs.type = VTMarketplace;
 					}
-
 				}else{
 					throw "unable to get stripe subscription status";
 				}
+			}else if(cpro.offer==MarketPlace){
+				vs.type = VTMarketplace;
 			}
 			
 		}else{
