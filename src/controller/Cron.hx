@@ -322,7 +322,7 @@ class Cron extends Controller
 					//MARKET
 					switch (vendorType){
 						case VendorType.VTCpro : stats.memberTurnoverMarket += total;
-						case VendorType.VTCproTest,VTStudent,VendorType.VTMarketplace : null;
+						case VendorType.VTCproTest,VTStudent : null;
 						case VendorType.VTFree,VendorType.VTInvited : stats.invitedTurnoverMarket += total;
 						case VendorType.VTCproSubscriberMontlhy, VendorType.VTCproSubscriberYearly : stats.proTurnoverMarket += total;
 						case VendorType.VTDiscovery : stats.discoveryTurnoverMarket += total;
@@ -335,7 +335,7 @@ class Cron extends Controller
 					//AMAP
 					switch (vendorType){
 						case VendorType.VTCpro : stats.memberTurnoverAmap += total;
-						case VendorType.VTCproTest,VTStudent,VendorType.VTMarketplace : null;
+						case VendorType.VTCproTest,VTStudent : null;
 						case VendorType.VTFree,VendorType.VTInvited : stats.invitedTurnoverAmap  += total;
 						case VendorType.VTCproSubscriberMontlhy, VendorType.VTCproSubscriberYearly : stats.proTurnoverAmap  += total;
 						case VendorType.VTDiscovery : stats.discoveryTurnoverAmap  += total;
