@@ -1,6 +1,6 @@
 ::use 'admin/design.mtt'::
 
-		<h3>Stats mensuelles</h3>
+		<h3>Stats hebdomadaires</h3>
 		<!--<p>
 			<a href="/admin/stats/::month-1::/::year::" class="btn btn-default btn-sm">Précédent</a>
 			Du ::dDate(from):: au ::dDate(to)::
