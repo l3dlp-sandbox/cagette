@@ -4,7 +4,7 @@
 		<div class="col-md-6" style="display: flex;">
 			::if(company.offer==2 || company.offer==1 || company.offer==4)::
 				<a href="/p/pro/upgrade">
-					<div class="iconBadge farmer-pro" style="margin-top:8px; margin-right: 8px;" data-toggle="tooltip" title="::if(company.offer==2)::Formule Pro::elseif(company.offer==3)::Formule Membre::else::Formule Marketplace::end::">
+					<div class="iconBadge farmer-pro" style="margin-top:8px; margin-right: 8px;" data-toggle="tooltip" title="::if(company.offer==2)::Formule Pro::elseif(company.offer==3)::Formule Membre::end::">
 						<i class="icon icon-farmer-pro"></i>
 					</div>
 				</a>
