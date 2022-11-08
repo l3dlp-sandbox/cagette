@@ -86,7 +86,7 @@
 				</tr>		
 			</table>
 
-
+<!--
 			<h4>Paniers</h4>
 			<table class="table table-bordered table-striped">				
 				<tr>
@@ -98,7 +98,7 @@
 					<td class="col-md-6">::amapBasketsNum::</td>
 				</tr>		
 			</table>
-
+-->
 
 			<h4>Producteurs</h4>
 			<table class="table table-bordered table-striped">				

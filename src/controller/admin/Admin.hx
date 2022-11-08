@@ -313,7 +313,7 @@ class Admin extends Controller {
 
 
 		//BASKETS
-		var marketBaskets = db.Basket.manager.unsafeObjects('
+		/*var marketBaskets = db.Basket.manager.unsafeObjects('
 			select * from Basket where cdate >= "${from.toString()}" and cdate < "${to.toString()}"
 			and multiDistribId in (
 			select id from MultiDistrib where groupId in (
@@ -333,7 +333,7 @@ class Admin extends Controller {
 			) and distribStartDate > NOW() )',false);
 
 
-		view.amapBasketsNum = amapBaskets.length;
+		view.amapBasketsNum = amapBaskets.length;*/
 
 		//global stats
 		var stats = Graph.getData("global",from);

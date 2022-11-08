@@ -1,4 +1,5 @@
 package controller;
+import pro.db.VendorStats;
 import pro.db.VendorStats.VendorType;
 import db.Graph;
 import Common;
@@ -311,47 +312,48 @@ class Cron extends Controller
 				marketplaceTurnoverAmap:0,
 			};
 
-			
-			/*
-			select sum(turnoverCSA) as turnoverCSASum, sum(turnoverMarket) as turnoverMarketSum , vendorId
+			var summaries = sys.db.Manager.cnx.request('select sum(turnoverCSA) as turnoverAMAPSum, sum(turnoverMarket) as turnoverMarketSum , vendorId
 			from vendorDailySummary 
 			where date >= "${from.toString()}" and date < "${to.toString()}"
 			and turnoverCSA+turnoverMarket > 0
-			group by vendorId
-			*/
+			group by vendorId').results();
 
-			// for(uo in db.UserOrder.manager.search($date >= from && $date < to,false)){
+			var vendorIds:Array<Int> = summaries.array().map(s -> Std.parseInt(s.vendorId));
+			var vendorStats = VendorStats.manager.search($vendorId in vendorIds,false);
+			var vendorStatsMap = new Map<Int,VendorStats>();
+			for( vs in vendorStats){
+				vendorStatsMap.set(untyped vs.vendorId, vs);
+			}
 
-			// 	var total = Math.round(uo.quantity * uo.productPrice);
-			// 	var catalog = uo.product.catalog;
-			// 	var vendorType = catalog.vendor.getStats().type;
-			// 	var group = catalog.group;
+			for(summary in summaries){
+				var vs = vendorStatsMap.get(summary.vendorId);
 
-				// if(group.hasShopMode()){
-				// 	//MARKET
-				// 	switch (vendorType){
-				// 		case VendorType.VTCpro : stats.memberTurnoverMarket += total;
-				// 		case VendorType.VTCproTest,VTStudent : null;
-				// 		case VendorType.VTFree,VendorType.VTInvited : stats.invitedTurnoverMarket += total;
-				// 		case VendorType.VTCproSubscriberMontlhy, VendorType.VTCproSubscriberYearly : stats.proTurnoverMarket += total;
-				// 		case VendorType.VTDiscovery : stats.discoveryTurnoverMarket += total;
-				// 		case VendorType.VTInvitedPro : stats.cproInvitedTurnoverMarket += total;
-				// 	}
-				// 	stats.totalTurnoverMarket += total;
+				switch (vs.type){
+					case VendorType.VTCpro : 
+						stats.memberTurnoverMarket += summary.turnoverMarketSum;
+						stats.memberTurnoverAmap += summary.turnoverAMAPSum;
+					case VendorType.VTCproTest,VTStudent : null;
+					case VendorType.VTFree,VendorType.VTInvited : 
+						stats.invitedTurnoverMarket += summary.turnoverMarketSum;
+						stats.invitedTurnoverAmap += summary.turnoverAMAPSum;
+					case VendorType.VTCproSubscriberMontlhy, VendorType.VTCproSubscriberYearly : 
+						stats.proTurnoverMarket += summary.turnoverMarketSum;
+						stats.proTurnoverAmap += summary.turnoverAMAPSum;
+					case VendorType.VTDiscovery : 
+						stats.discoveryTurnoverMarket += summary.turnoverMarketSum;
+						stats.discoveryTurnoverAmap += summary.turnoverAMAPSum;
+					case VendorType.VTInvitedPro : 
+						stats.cproInvitedTurnoverMarket += summary.turnoverMarketSum;
+						stats.cproInvitedTurnoverAmap += summary.turnoverAMAPSum;
+					case VendorType.VTMarketplace : 
+						stats.marketplaceTurnoverMarket += summary.turnoverMarketSum;
+						stats.marketplaceTurnoverAmap += summary.turnoverAMAPSum;
+				}
+				
+				stats.totalTurnoverMarket += summary.turnoverMarketSum;
+				stats.totalTurnoverAmap += summary.turnoverAMAPSum;
 
-				// }else{
-				// 	//AMAP
-				// 	switch (vendorType){
-				// 		case VendorType.VTCpro : stats.memberTurnoverAmap += total;
-				// 		case VendorType.VTCproTest,VTStudent : null;
-				// 		case VendorType.VTFree,VendorType.VTInvited : stats.invitedTurnoverAmap  += total;
-				// 		case VendorType.VTCproSubscriberMontlhy, VendorType.VTCproSubscriberYearly : stats.proTurnoverAmap  += total;
-				// 		case VendorType.VTDiscovery : stats.discoveryTurnoverAmap  += total;
-				// 		case VendorType.VTInvitedPro : stats.cproInvitedTurnoverAmap  += total;
-				// 	}
-				// 	stats.totalTurnoverAmap += total;
-				// }
-			// }
+			}
 
 			Graph.recordData("global",stats,from);
 		});
@@ -433,9 +435,6 @@ class Cron extends Controller
 			}
 		});
 		task.execute(!App.config.DEBUG);
-
-		
-
 
 		var task = new TransactionWrappedTask( "Refresh group Stats");
 		task.setTask(function() {			
