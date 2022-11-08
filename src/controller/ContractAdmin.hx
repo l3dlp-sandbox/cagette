@@ -1,4 +1,5 @@
 package controller;
+import pro.db.CagettePro;
 import Common;
 import connector.db.RemoteCatalog;
 import datetime.DateTime;
@@ -66,6 +67,8 @@ class ContractAdmin extends Controller
 				if(!app.user.canManageContract(c)) contracts.remove(c);				
 			}
 		}
+
+		
 		
 		view.contracts = contracts;
 		var vendors = app.user.getGroup().getActiveVendors();
@@ -73,8 +76,32 @@ class ContractAdmin extends Controller
 		view.places = app.user.getGroup().getPlaces();
 		view.group = app.user.getGroup();
 		
+		if(app.user.getGroup().hasShopMode()){
+			var uncertified = [];
+			for( v in vendors){
+				var vs = v.getStats();
+				switch(vs.type){
+					case VTInvited,VTFree,VTInvitedPro :
+						uncertified.push(v);
+					default :
+				}
+			}
+
+			var hasDisabled:Bool = vendors.find(v -> v.isDisabled()) != null;
+			var uncertifiedHtml = uncertified.map(v -> "<li><b>"+v.name+"</b></li>").join("");
+
+			if(!hasDisabled){
+				if(uncertified.length>0){
+					app.session.addMessage('Attention, les producteurs suivant ne sont pas certifiés : <ul>$uncertifiedHtml</ul><br/>Ils doivent ouvrir leur <a href="https://www.cagette.net/producteurs/" target="_blank">compte Producteur</a> pour continuer à vendre après le 9 janvier 2023.<br/>Pour en savoir plus, consultez le mail envoyé le 7 Novembre 2022 ou contactez le support sur <a href="mailto:support@cagette.net">support@cagette.net</a>',true);
+				}else{
+					app.session.addMessage('Tous les producteurs de ce point de distribution sont bien certifiés. Bonnes ventes !');
+				}
+			}
+		}
+
+
 		//Multidistribs to validate
-		if( (app.user.canManageAllContracts()||app.user.isAmapManager() )  && app.user.getGroup().hasPayments()){
+		/*if( (app.user.canManageAllContracts()||app.user.isAmapManager() )  && app.user.getGroup().hasPayments()){
 			var twoMonthAgo = tools.DateTool.deltaDays(now,-60);
 			var multidistribs = [];
 			for( md in db.MultiDistrib.getFromTimeRange(app.user.getGroup(),twoMonthAgo,now)){
@@ -84,7 +111,7 @@ class ContractAdmin extends Controller
 
 		}else{
 			view.multidistribs = [];
-		}
+		}*/
 
 		checkToken();
 	}
