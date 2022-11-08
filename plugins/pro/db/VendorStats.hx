@@ -12,6 +12,7 @@ enum VendorType {
 	VTDiscovery; 		// 6 Offre Découverte
 	VTCproSubscriberMontlhy; 	// 7 Offre Pro abonné mensuel
 	VTCproSubscriberYearly; 	// 8 Offre Pro abonné annuel
+	VTMarketplace; //9 marketplace
 }
 
 /**

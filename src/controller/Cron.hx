@@ -275,11 +275,7 @@ class Cron extends Controller
 		//stats
 		var task = new TransactionWrappedTask( "Global stats");
 		task.setTask(function() {
-			//====================================================================
-			// NOPE 
-			return;
-			//====================================================================
-
+			
 			// daily stats
 			var yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate()-1, 0, 0, 0);
 			for( k in GraphService.getAllGraphKeys()){
@@ -310,40 +306,52 @@ class Cron extends Controller
 
 				memberTurnoverMarket:0,
 				memberTurnoverAmap:0,
+
+				marketplaceTurnoverMarket:0,
+				marketplaceTurnoverAmap:0,
 			};
 
-			for(uo in db.UserOrder.manager.search($date >= from && $date < to,false)){
+			
+			/*
+			select sum(turnoverCSA) as turnoverCSASum, sum(turnoverMarket) as turnoverMarketSum , vendorId
+			from vendorDailySummary 
+			where date >= "${from.toString()}" and date < "${to.toString()}"
+			and turnoverCSA+turnoverMarket > 0
+			group by vendorId
+			*/
 
-				var total = Math.round(uo.quantity * uo.productPrice);
-				var catalog = uo.product.catalog;
-				var vendorType = catalog.vendor.getStats().type;
-				var group = catalog.group;
+			// for(uo in db.UserOrder.manager.search($date >= from && $date < to,false)){
 
-				if(group.hasShopMode()){
-					//MARKET
-					switch (vendorType){
-						case VendorType.VTCpro : stats.memberTurnoverMarket += total;
-						case VendorType.VTCproTest,VTStudent : null;
-						case VendorType.VTFree,VendorType.VTInvited : stats.invitedTurnoverMarket += total;
-						case VendorType.VTCproSubscriberMontlhy, VendorType.VTCproSubscriberYearly : stats.proTurnoverMarket += total;
-						case VendorType.VTDiscovery : stats.discoveryTurnoverMarket += total;
-						case VendorType.VTInvitedPro : stats.cproInvitedTurnoverMarket += total;
-					}
-					stats.totalTurnoverMarket += total;
+			// 	var total = Math.round(uo.quantity * uo.productPrice);
+			// 	var catalog = uo.product.catalog;
+			// 	var vendorType = catalog.vendor.getStats().type;
+			// 	var group = catalog.group;
 
-				}else{
-					//AMAP
-					switch (vendorType){
-						case VendorType.VTCpro : stats.memberTurnoverAmap += total;
-						case VendorType.VTCproTest,VTStudent : null;
-						case VendorType.VTFree,VendorType.VTInvited : stats.invitedTurnoverAmap  += total;
-						case VendorType.VTCproSubscriberMontlhy, VendorType.VTCproSubscriberYearly : stats.proTurnoverAmap  += total;
-						case VendorType.VTDiscovery : stats.discoveryTurnoverAmap  += total;
-						case VendorType.VTInvitedPro : stats.cproInvitedTurnoverAmap  += total;
-					}
-					stats.totalTurnoverAmap += total;
-				}
-			}
+				// if(group.hasShopMode()){
+				// 	//MARKET
+				// 	switch (vendorType){
+				// 		case VendorType.VTCpro : stats.memberTurnoverMarket += total;
+				// 		case VendorType.VTCproTest,VTStudent : null;
+				// 		case VendorType.VTFree,VendorType.VTInvited : stats.invitedTurnoverMarket += total;
+				// 		case VendorType.VTCproSubscriberMontlhy, VendorType.VTCproSubscriberYearly : stats.proTurnoverMarket += total;
+				// 		case VendorType.VTDiscovery : stats.discoveryTurnoverMarket += total;
+				// 		case VendorType.VTInvitedPro : stats.cproInvitedTurnoverMarket += total;
+				// 	}
+				// 	stats.totalTurnoverMarket += total;
+
+				// }else{
+				// 	//AMAP
+				// 	switch (vendorType){
+				// 		case VendorType.VTCpro : stats.memberTurnoverAmap += total;
+				// 		case VendorType.VTCproTest,VTStudent : null;
+				// 		case VendorType.VTFree,VendorType.VTInvited : stats.invitedTurnoverAmap  += total;
+				// 		case VendorType.VTCproSubscriberMontlhy, VendorType.VTCproSubscriberYearly : stats.proTurnoverAmap  += total;
+				// 		case VendorType.VTDiscovery : stats.discoveryTurnoverAmap  += total;
+				// 		case VendorType.VTInvitedPro : stats.cproInvitedTurnoverAmap  += total;
+				// 	}
+				// 	stats.totalTurnoverAmap += total;
+				// }
+			// }
 
 			Graph.recordData("global",stats,from);
 		});
