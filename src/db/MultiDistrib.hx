@@ -51,7 +51,7 @@ class MultiDistrib extends Object
 	@:skip public var contracts : Array<db.Catalog>;
 	@:skip public var extraHtml : String;
 
-	public var validatedStatus:SString<32>;
+	@hideInForms public var validatedStatus:SString<32>;
 	
 	public function new(){
 		super();
