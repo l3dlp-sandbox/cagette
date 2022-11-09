@@ -386,6 +386,9 @@ class PaymentService {
 				BridgeService.call('/vendor-summaries/update/${vendor.id}/${distrib.distribStartDate.toString().substr(0,10)}');
 			}
 		}
+
+		// record marketplace turnover to Stripe
+		BridgeService.call('/subscriptions/record-marketplace-turnover/${distrib.id}');
 	}
 
 	public static function unvalidateDistribution(distrib:db.MultiDistrib) {
