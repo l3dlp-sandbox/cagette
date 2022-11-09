@@ -5,6 +5,7 @@
 		document.addEventListener("DOMContentLoaded", function(event) {
 			neo.createNeoModule("vendor-stripe", "vendorStripe", {
 					vendorId: ::vendor.id::,
+					variant: "inner"
 				});
 		});
 	</script>
