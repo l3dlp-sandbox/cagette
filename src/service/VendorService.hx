@@ -205,55 +205,54 @@ class VendorService{
 			if(siret=="" || siret==null) throw new Error("Le numéro SIRET est requis.");
 			var sameSiret = db.Vendor.manager.search($companyNumber==siret).array();
 			
-			var raw = c.call("GET","https://entreprise.data.gouv.fr/api/sirene/v3/etablissements/"+siret);
-			// trace("https://entreprise.data.gouv.fr/api/sirene/v3/etablissements/"+siret);
-			var res;
-			try{
-				res = haxe.Json.parse(raw);
-			}catch(e:Dynamic){
-				throw new Error('Erreur de parsing JSON : "$raw"');
-			}
-			
-			if(res.message!=null){
-				throw new Error("Erreur avec le numéro SIRET ("+res.message+"). Si votre numéro SIRET est correct mais non reconnu, contactez nous sur "+App.current.getTheme().supportEmail);
-			}else if(res.etablissement.statut_diffusion=="N"){
+			var dynamicResult:Dynamic = BridgeService.call('/siret/informations/${siret}');
+			var result:{
+				headerStatut: Int,
+				?codePostalEtablissement:String,
+				?libelleCommuneEtablissement:String,
+				?numeroVoieEtablissement:String,
+				?typeVoieEtablissement:String,
+				?libelleVoieEtablissement:String,
+				?activitePrincipaleUniteLegale: String,
+				?categorieJuridiqueUniteLegale: Int
+			} = dynamicResult;
+
+			if(result != null && result.headerStatut == 403){
 				throw new Error("Ce numéro SIRET est non diffusible, vous devez saisir les infos légales manuellement");
+			}else if(result == null || result.headerStatut != 200){
+				throw new Error("Erreur avec le numéro SIRET ("+result+"). Si votre numéro SIRET est correct mais non reconnu, contactez nous sur "+App.current.getTheme().supportEmail); 
 			}else{
 				vendor.companyNumber = siret;
-				var siretInfos = res.etablissement;
 				
-				//take adress from siretInfos
 				var addr = {
 					address1:"",
-					address2:"",
-					zipCode:siretInfos.code_postal,
-					city:siretInfos.libelle_commune,
-					lat:siretInfos.latitude,
-					lng:siretInfos.longitude
+					zipCode:result.codePostalEtablissement,
+					city:result.libelleCommuneEtablissement,
 				}
-		
-				//find address1
-				var a = [];
-				for( k in ["numero_voie","type_voie","libelle_voie"] ){
-					var v = Reflect.field(siretInfos,k);
-					if(v!=null && v!=""){
-						a.push(v);
-					}
+
+				var address1 = "";
+				if (result.numeroVoieEtablissement != null) {
+					address1 += result.numeroVoieEtablissement;
 				}
-				addr.address1 = a.join(" ");
+				if (result.typeVoieEtablissement != null) {
+					address1 += " ";
+					address1 += result.typeVoieEtablissement;
+				}
+				if (result.libelleVoieEtablissement != null) {
+					address1 += " ";
+					address1 += result.libelleVoieEtablissement;
+				}
+
+				addr.address1 = address1;
 		
-				if(addr!=null && addr.city!=null){
+				if(addr.city!=null){
 					vendor.address1 = addr.address1;
 					vendor.zipCode = addr.zipCode;
 					vendor.city = addr.city;
-					if(vendor.lat==null){
-						vendor.lat = addr.lat;
-						vendor.lng = addr.lng;
-					}
 				}
 				
-				vendor.activityCode = res.etablissement.activite_principale;
-				vendor.legalStatus = res.etablissement.unite_legale.categorie_juridique;
+				vendor.activityCode = result.activitePrincipaleUniteLegale;
+				vendor.legalStatus = result.categorieJuridiqueUniteLegale;
 				
 				//do not authorize duplicate companyNumber if not Coop legalStatus
 				var coopStatuses = [5560,5460,5558];
