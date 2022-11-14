@@ -1,4 +1,7 @@
 package controller;
+import pro.db.VendorStats;
+import pro.db.VendorStats.VendorType;
+import db.Graph;
 import Common;
 import db.Catalog;
 import db.MultiDistrib;
@@ -269,6 +272,95 @@ class Cron extends Controller
 		});
 		task.execute(false);
 
+
+		//stats
+		var task = new TransactionWrappedTask( "Global stats");
+		task.setTask(function() {
+			
+			// daily stats
+			var yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate()-1, 0, 0, 0);
+			for( k in GraphService.getAllGraphKeys()){
+				GraphService.getDay(k,yesterday);
+			}
+
+			// weekly stats			
+			var from = new Date(now.getFullYear(), now.getMonth(), now.getDate()-7, 0, 0, 0);
+			var to = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+
+			task.log("weekly stats from "+from+" to "+to);
+
+			var stats = {
+				totalTurnoverMarket:0,
+				totalTurnoverAmap:0,
+
+				invitedTurnoverMarket:0,
+				invitedTurnoverAmap:0,
+
+				cproInvitedTurnoverMarket:0,
+				cproInvitedTurnoverAmap:0,
+
+				discoveryTurnoverMarket:0,
+				discoveryTurnoverAmap:0,
+
+				proTurnoverMarket:0,
+				proTurnoverAmap:0,
+
+				memberTurnoverMarket:0,
+				memberTurnoverAmap:0,
+
+				marketplaceTurnoverMarket:0,
+				marketplaceTurnoverAmap:0,
+			};
+
+			var summaries = sys.db.Manager.cnx.request('select sum(turnoverCSA) as turnoverAMAPSum, sum(turnoverMarket) as turnoverMarketSum , vendorId
+			from vendorDailySummary 
+			where date >= "${from.toString()}" and date < "${to.toString()}"
+			and turnoverCSA+turnoverMarket > 0
+			group by vendorId').results();
+
+			var vendorIds:Array<Int> = summaries.array().map(s -> Std.parseInt(s.vendorId));
+			var vendorStats = VendorStats.manager.search($vendorId in vendorIds,false);
+			var vendorStatsMap = new Map<Int,VendorStats>();
+			for( vs in vendorStats){
+				vendorStatsMap.set(untyped vs.vendorId, vs);
+			}
+
+			for(summary in summaries){
+				var vs = vendorStatsMap.get(summary.vendorId);
+
+				switch (vs.type){
+					case VendorType.VTCpro : 
+						stats.memberTurnoverMarket += summary.turnoverMarketSum;
+						stats.memberTurnoverAmap += summary.turnoverAMAPSum;
+					case VendorType.VTCproTest,VTStudent : null;
+					case VendorType.VTFree,VendorType.VTInvited : 
+						stats.invitedTurnoverMarket += summary.turnoverMarketSum;
+						stats.invitedTurnoverAmap += summary.turnoverAMAPSum;
+					case VendorType.VTCproSubscriberMontlhy, VendorType.VTCproSubscriberYearly : 
+						stats.proTurnoverMarket += summary.turnoverMarketSum;
+						stats.proTurnoverAmap += summary.turnoverAMAPSum;
+					case VendorType.VTDiscovery : 
+						stats.discoveryTurnoverMarket += summary.turnoverMarketSum;
+						stats.discoveryTurnoverAmap += summary.turnoverAMAPSum;
+					case VendorType.VTInvitedPro : 
+						stats.cproInvitedTurnoverMarket += summary.turnoverMarketSum;
+						stats.cproInvitedTurnoverAmap += summary.turnoverAMAPSum;
+					case VendorType.VTMarketplace : 
+						stats.marketplaceTurnoverMarket += summary.turnoverMarketSum;
+						stats.marketplaceTurnoverAmap += summary.turnoverAMAPSum;
+				}
+				
+				stats.totalTurnoverMarket += summary.turnoverMarketSum;
+				stats.totalTurnoverAmap += summary.turnoverAMAPSum;
+
+			}
+
+			Graph.recordData("global",stats,from);
+		});
+		if( (now.getHours()==4 && now.getDay()==1) || App.config.DEBUG){ //if monday at 4 am, compute stats of past week
+			task.execute();
+		}
+
 		/**
 			orders notif in cpro, should be sent AFTER default automated orders
 		**/
@@ -343,17 +435,6 @@ class Cron extends Controller
 			}
 		});
 		task.execute(!App.config.DEBUG);
-
-		//stats
-		var task = new TransactionWrappedTask( "Stats");
-		task.setTask(function() {
-			var yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate()-1, 0, 0, 0);
-			for( k in GraphService.getAllGraphKeys()){
-				GraphService.getDay(k,yesterday);
-			}
-		});
-		task.execute();
-
 
 		var task = new TransactionWrappedTask( "Refresh group Stats");
 		task.setTask(function() {			
@@ -638,7 +719,7 @@ class Cron extends Controller
 		/*
 		 * warn administrator if a distribution just ended
 		 */ 
-		var distribs = db.MultiDistrib.manager.search( !$validated && ($distribStartDate >= from) && ($distribStartDate < to) , false);
+		var distribs = db.MultiDistrib.manager.search( $validatedStatus==Std.string(NOT_VALIDATED) && ($distribStartDate >= from) && ($distribStartDate < to) , false);
 		
 		for ( d in Lambda.array(distribs)){
 			if ( !d.getGroup().hasPayments() ){
@@ -663,7 +744,7 @@ class Cron extends Controller
 		var to = now.setHourMinute( now.getHours()+1 , 0).deltaDays(-3);
 		
 		//warn administrator if a distribution just ended
-		var distribs = db.MultiDistrib.manager.search( !$validated && ($distribStartDate >= from) && ($distribStartDate < to) , false);
+		var distribs = db.MultiDistrib.manager.search( $validatedStatus==Std.string(NOT_VALIDATED) && ($distribStartDate >= from) && ($distribStartDate < to) , false);
 		
 		for ( d in Lambda.array(distribs)){
 			if ( !d.getGroup().hasPayments() ){

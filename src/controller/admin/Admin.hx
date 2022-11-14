@@ -1,4 +1,5 @@
 package controller.admin;
+import db.Graph;
 import haxe.Json;
 import sugoi.form.elements.TextArea;
 import Common;
@@ -312,7 +313,7 @@ class Admin extends Controller {
 
 
 		//BASKETS
-		var marketBaskets = db.Basket.manager.unsafeObjects('
+		/*var marketBaskets = db.Basket.manager.unsafeObjects('
 			select * from Basket where cdate >= "${from.toString()}" and cdate < "${to.toString()}"
 			and multiDistribId in (
 			select id from MultiDistrib where groupId in (
@@ -332,10 +333,12 @@ class Admin extends Controller {
 			) and distribStartDate > NOW() )',false);
 
 
-		view.amapBasketsNum = amapBaskets.length;
+		view.amapBasketsNum = amapBaskets.length;*/
 
-		
-
+		//global stats
+		var stats = Graph.getData("global",from);
+		if(stats==null) stats = {};
+		view.stats = stats;
 
 
 
@@ -658,16 +661,58 @@ class Admin extends Controller {
 
 	}
 
-	public function doUpdate(){
+	public function doStats202211(){
 
-		for(g in db.Group.manager.search(true,false)){
+		for(vs in pro.db.VendorStats.manager.search($type==VTFree || $type==VTInvited || $type==VTInvitedPro , false)){
 
-			var gs = hosted.db.GroupStats.getOrCreate(g.id,true);
-			gs.updateStats();
-			Sys.print(g.name+" #"+g.id+" <br/>");
+			var v = vs.vendor;
 
+			//remove those who have only AMAP clients
+			var catalogs = v.getActiveContracts();
+			var AMAPcatalogs = catalogs.filter( c -> !c.group.hasShopMode());
+
+			if(AMAPcatalogs.length==catalogs.length){
+				continue;
+			}
+
+			Sys.print(v.id+";"+v.name+";"+v.email+"<br/>");
 		}
 
+	}
+
+	public function doStatsCoordo202211(){
+
+		for(vs in pro.db.VendorStats.manager.search($type==VTFree || $type==VTInvited || $type==VTInvitedPro , false)){
+
+			var v = vs.vendor;
+
+			var catalogs = v.getActiveContracts();
+			for ( c in catalogs){
+
+				var g = c.group;
+
+				//if AMAP continue...
+				if(!g.hasShopMode()){
+					continue;
+				}
+
+				for( ua in g.getGroupAdmins()){
+					//people who manage this contract
+					if(ua.hasRight(db.UserGroup.Right.ContractAdmin(c.id))){
+						var u = ua.user;
+						Sys.print(u.id+";"+u.email+"<br/>");
+					}
+				}
+				
+				//group admin
+				if(g.contact!=null){
+					var u = g.contact;
+					Sys.print(u.id+";"+u.email+"<br/>");
+
+				}
+
+			}
+		}
 	}
 
 	@tpl('admin/settings.mtt')

@@ -42,7 +42,7 @@
 					::if(rc==null)::
 						Catalogue invité ( non relié à un compte producteur)
 					::else::
-						::set pcat = rc.getCatalog()::
+						::set pcat = rc.getPCatalog()::
 
 						::if(pcat._company._vendor.id==contract._vendor.id)::
 							Catalogue géré depuis un compte producteur.

@@ -1109,21 +1109,6 @@ class Distribution extends Controller {
 		throw Ok("/distribution/validate/" + md.id, t._("This distribution have been validated"));
 	}
 
-	@admin
-	public function doUnvalidate(md:db.MultiDistrib) {
-		checkHasDistributionSectionAccess();
-		if (!md.validated)
-			return;
-
-		try {
-			service.PaymentService.unvalidateDistribution(md);
-		} catch (e:tink.core.Error) {
-			throw Error("/distribution/validate/" + md.id, e.message);
-		}
-
-		throw Ok("/distribution/validate/" + md.id, t._("This distribution have been Unvalidated"));
-	}
-
 	/**
 		enable/disable volunteer roles for the specified multidistrib
 	**/

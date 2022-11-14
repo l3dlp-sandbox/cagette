@@ -26,7 +26,7 @@ class Signup extends controller.Controller
 		//checks
 		//has access to a cpro
 		var uc = pro.db.PUserCompany.manager.search($user ==app.user);
-		if( uc.length>0){
+		if( uc.length>0 && !App.current.user.isAdmin()){
 			// if (uc.find( c -> c.company.vendor.isTest==true) == null) {
 				throw Error("/","Vous avez déjà accès à un compte Producteur : "+uc.map(c -> return c.company.vendor.name).join(', ')+"</b>. Contactez le support sur <a href='mailto:"+app.getTheme().supportEmail+"'>"+app.getTheme().supportEmail+"</a> pour clarifier votre situation.");
 			// }
@@ -34,7 +34,7 @@ class Signup extends controller.Controller
 
 		//has same mail than a vendor
 		var vendor = db.Vendor.manager.select($email != null && ($email == app.user.email || $email == app.user.email2),true);
-		if( vendor!=null ){
+		if( vendor!=null && !App.current.user.isAdmin()){
 			//is this vendor cpro
 			if(vendor.getCpro()!=null){
 				throw Error("/","Vous avez déjà accès à un compte Producteur : "+vendor.name);

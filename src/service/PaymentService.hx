@@ -4,6 +4,7 @@ import db.Basket.BasketStatus;
 import db.Catalog;
 import haxe.Json;
 import db.Operation;
+import db.MultiDistrib.MultiDistribValidatedStatus;
 import Common;
 import tink.core.Error;
 
@@ -376,7 +377,7 @@ class PaymentService {
 			validateBasket(basket);
 		}
 		// finally validate distrib
-		distrib.validated = true;
+		distrib.validatedStatus = Std.string(MultiDistribValidatedStatus.PAID);
 		distrib.update();
 
 		//update vendor stats if distrib is not today
@@ -385,6 +386,9 @@ class PaymentService {
 				BridgeService.call('/vendor-summaries/update/${vendor.id}/${distrib.distribStartDate.toString().substr(0,10)}');
 			}
 		}
+
+		// record marketplace turnover to Stripe
+		BridgeService.call('/subscriptions/record-marketplace-turnover/${distrib.id}');
 	}
 
 	public static function unvalidateDistribution(distrib:db.MultiDistrib) {
@@ -393,7 +397,7 @@ class PaymentService {
 		}
 		// finally validate distrib
 		distrib.lock();
-		distrib.validated = false;
+		distrib.validatedStatus = Std.string(MultiDistribValidatedStatus.NOT_VALIDATED);
 		distrib.update();
 	}
 
