@@ -134,7 +134,7 @@ class Admin extends controller.Controller {
 				for( catalog in c.getCatalogs()){
 					if(catalog.vendor==null){
 						
-						for(rc in connector.db.RemoteCatalog.getFromCatalog(catalog)){
+						for(rc in connector.db.RemoteCatalog.getFromPCatalog(catalog)){
 							if(rc!=null){
 								var c = rc.getContract();
 								if(c==null) {
@@ -232,7 +232,7 @@ class Admin extends controller.Controller {
 
 					//loop on catalogs
 					for( cat in c.getCatalogs()){
-						for( rc in connector.db.RemoteCatalog.getFromCatalog(cat)){
+						for( rc in connector.db.RemoteCatalog.getFromPCatalog(cat)){
 							var cont = rc.getContract();
 							if(cont==null) continue;
 							var v = cont.vendor;
@@ -252,7 +252,7 @@ class Admin extends controller.Controller {
 
 					//loop on catalogs
 					for( cat in c.getCatalogs()){
-						for( rc in connector.db.RemoteCatalog.getFromCatalog(cat)){
+						for( rc in connector.db.RemoteCatalog.getFromPCatalog(cat)){
 							var cont = rc.getContract();
 							if(cont==null) continue;
 							var v = cont.vendor;
@@ -1056,7 +1056,7 @@ class Admin extends controller.Controller {
 					throw "is not cpro";
 
 				for (cat in cpro.getCatalogs()) {
-					for (rc in connector.db.RemoteCatalog.getFromCatalog(cat)) {
+					for (rc in connector.db.RemoteCatalog.getFromPCatalog(cat)) {
 						if (rc.getContract() != null) {
 							throw Error("/admin/vendor/view/" + vendor.id, "Ce compte producteur a encore des catalogues reliés à des groupes");
 						}
@@ -1083,7 +1083,7 @@ class Admin extends controller.Controller {
 					throw "is not cpro";
 
 				for (cat in cpro.getCatalogs()) {
-					for (rc in connector.db.RemoteCatalog.getFromCatalog(cat)) {
+					for (rc in connector.db.RemoteCatalog.getFromPCatalog(cat)) {
 						if (rc.getContract() != null) {
 							throw Error("/admin/vendor/view/" + vendor.id, "Ce compte producteur a encore des catalogues reliés à des groupes");
 						}

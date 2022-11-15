@@ -79,8 +79,8 @@ class PStockService{
 		if(d.catalog.id != rc.getContract().id) throw "This distribution does not belong to this farmer";
 		if( d.end.getTime() > Date.now().getTime() ) throw "This distribution is not yet done";
 		var orders = pro.service.ProReportService.getOrdersByProduct({distribution:d});
-		var allOffers = rc.getCatalog().company.getOffers();
-		var stockService = new PStockService(rc.getCatalog().company);
+		var allOffers = rc.getPCatalog().company.getOffers();
+		var stockService = new PStockService(rc.getPCatalog().company);
 
 		for( o in orders.orders){
 			
@@ -117,7 +117,7 @@ class PStockService{
 		for( offer in product.getOffers()){
 			var catalogs = Lambda.map(offer.getCatalogOffers(), function(x) return x.catalog).deduplicate();
 			for ( c in catalogs){			
-				for ( rc in connector.db.RemoteCatalog.getFromCatalog(c) ){
+				for ( rc in connector.db.RemoteCatalog.getFromPCatalog(c) ){
 					
 					var contract = rc.getContract();
 					if (contract == null) continue;

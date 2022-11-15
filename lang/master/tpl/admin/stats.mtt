@@ -1,6 +1,6 @@
 ::use 'admin/design.mtt'::
 
-		<h3>Stats mensuelles</h3>
+		<h3>Stats hebdomadaires</h3>
 		<!--<p>
 			<a href="/admin/stats/::month-1::/::year::" class="btn btn-default btn-sm">Précédent</a>
 			Du ::dDate(from):: au ::dDate(to)::
@@ -10,6 +10,83 @@
 		$$timeframe(::tf::)
 		
 		<p>
+			<h4>C.A</h4>
+			<table class="table table-bordered table-striped">				
+				<tr>
+					<td class="col-md-6">Mode Marché</td>
+					<td class="col-md-6">
+
+						<table class="table">
+							<tr>
+								<th>TOTAL</th>
+								<td>::formatNum(stats.totalTurnoverMarket)::</td>
+							</tr>
+							<tr>
+								<td>invités</td>
+								<td>::formatNum(stats.invitedTurnoverMarket)::</td>
+							</tr>
+							<tr>
+								<td>invités sur cpro</td>
+								<td>::formatNum(stats.cproInvitedTurnoverMarket)::</td>
+							</tr>
+							<tr>
+								<td>Découverte</td>
+								<td>::formatNum(stats.discoveryTurnoverMarket)::</td>
+							</tr>
+							<tr>
+								<td>Formule pro</td>
+								<td>::formatNum(stats.proTurnoverMarket)::</td>
+							</tr>
+							<tr>
+								<td>Formule Membre</td>
+								<td>::formatNum(stats.memberTurnoverMarket)::</td>
+							</tr>
+							<tr>
+								<td>Marketplace</td>
+								<td>::formatNum(stats.marketplaceTurnoverMarket)::</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td class="col-md-6">Mode AMAP</td>
+					<td class="col-md-6">
+						<table class="table">
+							<tr>
+								<th>TOTAL</th>
+								<td>::formatNum(stats.totalTurnoverAmap)::</td>
+							</tr>
+							<tr>
+								<td>invités</td>
+								<td>::formatNum(stats.invitedTurnoverAmap)::</td>
+							</tr>
+							<tr>
+								<td>invités sur cpro</td>
+								<td>::formatNum(stats.cproInvitedTurnoverAmap)::</td>
+							</tr>
+							<tr>
+								<td>Découverte</td>
+								<td>::formatNum(stats.discoveryTurnoverAmap)::</td>
+							</tr>
+							<tr>
+								<td>Formule pro</td>
+								<td>::formatNum(stats.proTurnoverAmap)::</td>
+							</tr>
+							<tr>
+								<td>Formule Membre</td>
+								<td>::formatNum(stats.memberTurnoverAmap)::</td>
+							</tr>
+							<tr>
+								<td>Marketplace</td>
+								<td>::formatNum(stats.marketplaceTurnoverAmap)::</td>
+							</tr>
+						</table>
+
+					</td>
+				</tr>		
+			</table>
+
+<!--
 			<h4>Paniers</h4>
 			<table class="table table-bordered table-striped">				
 				<tr>
@@ -21,7 +98,7 @@
 					<td class="col-md-6">::amapBasketsNum::</td>
 				</tr>		
 			</table>
-
+-->
 
 			<h4>Producteurs</h4>
 			<table class="table table-bordered table-striped">				

@@ -224,7 +224,7 @@ class TestStock extends utest.Test
 		Assert.isTrue(catalog.getOffers().length>0);
 
 		//be sure that we have a catalog which is linked to a group
-		var rc = connector.db.RemoteCatalog.getFromCatalog(catalog).first();		
+		var rc = connector.db.RemoteCatalog.getFromPCatalog(catalog).first();		
 		Assert.isTrue(rc!=null);
 
 		//set a stock to apple juice

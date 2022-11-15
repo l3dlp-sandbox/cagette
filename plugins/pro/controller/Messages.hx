@@ -152,7 +152,7 @@ class Messages extends controller.Controller
 			case "1": 		
 				//tout les clients (coordinateurs)
 				for ( c in company.getCatalogs()){
-					var rcs = connector.db.RemoteCatalog.getFromCatalog(c);
+					var rcs = connector.db.RemoteCatalog.getFromPCatalog(c);
 					for ( rc in rcs){
 						var contract = rc.getContract();
 

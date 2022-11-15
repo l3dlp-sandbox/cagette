@@ -86,7 +86,7 @@ if (App.current.getSettings().noCourse==true) {
 			Sys.println("fix :");
 			for( c in course.getCompanies()){
 				for ( cata in c.company.getCatalogs()){
-					for ( rc in connector.db.RemoteCatalog.getFromCatalog(cata)){
+					for ( rc in connector.db.RemoteCatalog.getFromPCatalog(cata)){
 						var group = rc.getRelatedContract().amap;
 						group.lock();
 						group.flags.set(ShopMode);
@@ -410,7 +410,7 @@ if (App.current.getSettings().noCourse==true) {
 
 		//remove access to groups linked to this cpro + remove future distribs
 		for( cat in company.getCatalogs()){
-			for( rc in connector.db.RemoteCatalog.getFromCatalog(cat,true)){
+			for( rc in connector.db.RemoteCatalog.getFromPCatalog(cat,true)){
 
 				//remove membership
 				var contract = rc.getContract();

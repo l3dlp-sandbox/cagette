@@ -132,7 +132,7 @@ class Network extends controller.Controller
 				//get group list
 				var groups = [];
 				for ( c in company.getCatalogs() ){
-					for ( rc in connector.db.RemoteCatalog.getFromCatalog(c) ){
+					for ( rc in connector.db.RemoteCatalog.getFromPCatalog(c) ){
 						groups.push( rc.getContract().group );
 					}	
 				}

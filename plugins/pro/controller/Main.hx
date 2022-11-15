@@ -3,6 +3,7 @@ import service.BridgeService;
 import tools.Matomo;
 import service.VendorService;
 import Common;
+import pro.db.CagettePro;
 using tools.ObjectListTool;
 
 class Main extends controller.Controller
@@ -95,9 +96,11 @@ class Main extends controller.Controller
 
 		var adminClients = [];
 		var regularClients = [];
+		var groups = [];
 
 		for( client in clients ){
 			var group = client[0].getContract().group;
+			groups.push(group);
 			var ua = db.UserGroup.get(app.user,group);
 			
 			if(ua!=null && ( ua.isGroupManager() || ua.canManageAllContracts() )){
@@ -109,6 +112,21 @@ class Main extends controller.Controller
 
 		view.adminClients = adminClients;
 		view.regularClients = regularClients;
+
+
+		//FIX : if vendor is Marketplace
+		if(company.offer==Marketplace){
+
+			for( group in groups){
+
+				if(!group.hasPayments()){
+					group.lock();
+					group.enablePayments();
+				}
+			}
+
+
+		}
 		
 		//next deliveries
 		var now = Date.now();
@@ -121,7 +139,7 @@ class Main extends controller.Controller
 		
 		view.getCatalog = function(d:db.Distribution){			
 			var rc = connector.db.RemoteCatalog.getFromContract(d.catalog);
-			return rc.getCatalog();			
+			return rc.getPCatalog();			
 		};
 		
 		//find unlinked catalogs		

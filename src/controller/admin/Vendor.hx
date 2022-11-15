@@ -25,7 +25,7 @@ class Vendor extends controller.Controller
 		var total = 0;
 		var totalCpros = 0;
 		var totalActive = 0;
-		var defaultType = VTCproSubscriberYearly;
+		var defaultType = VTMarketplace;
 
 		// form
 		var f = new sugoi.form.Form("vendors");
@@ -41,6 +41,7 @@ class Vendor extends controller.Controller
 			{label: "Formule Découverte", value: VTDiscovery.string()},
 			{label: "Formule Pro (abo annuel)", value: VTCproSubscriberYearly.string()},
 			{label: "Formule Pro (abo mensuel)", value: VTCproSubscriberMontlhy.string()},
+			{label: "Formule Marketplace", value: VTMarketplace.string()},
 		];
 		f.addElement(new sugoi.form.elements.StringSelect("type", "Type de producteur", data, defaultType.string(), true, ""));
 		f.addElement(new sugoi.form.elements.StringInput("zipCodes", "Saisir des numéros de département séparés par des virgules ou laisser vide."));
@@ -195,6 +196,18 @@ class Vendor extends controller.Controller
 		if (app.params["refresh"] == "1") {
 			pro.db.VendorStats.updateStats(v);
 			BridgeService.syncVendorToHubspot(v);
+		}
+
+		if (app.params["canOpenStripeAccount"] == "1") {
+			v.lock();
+			v.betaFlags.set(CanOpenStripeAccount);
+			v.update();
+		}
+
+		if (app.params["canOpenStripeAccount"] == "0") {
+			v.lock();
+			v.betaFlags.unset(CanOpenStripeAccount);
+			v.update();
 		}
 
 		/*if (app.params["disableAccess"] != null) {

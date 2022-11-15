@@ -12,7 +12,7 @@ enum VendorType {
 	VTDiscovery; 		// 6 Offre Découverte
 	VTCproSubscriberMontlhy; 	// 7 Offre Pro abonné mensuel
 	VTCproSubscriberYearly; 	// 8 Offre Pro abonné annuel
-	VTMarketplace; //9 marketplace
+	VTMarketplace; 		//9 marketplace
 }
 
 /**
@@ -44,8 +44,7 @@ class VendorStats extends sys.db.Object
 		if(vs==null){
 			vs = new VendorStats();
 			vs.vendor = vendor;
-			vs.insert();
-			
+			vs.insert();			
 		}
 		return vs;
 	}
@@ -85,7 +84,7 @@ class VendorStats extends sys.db.Object
 
 		//type
 		if(cpro!=null){
-
+trace(cpro.offer);
 			//if(vendor.isTest){
 			//	vs.type = VTCproTest;
 			if(cpro.offer == Training){				
@@ -94,14 +93,23 @@ class VendorStats extends sys.db.Object
 				vs.type = VTDiscovery;
 			}else if(cpro.offer==Member){
 				vs.type = VTCpro;
+
+			}else if(cpro.offer==Marketplace)	{
+				vs.type = VTMarketplace;			
 			}else if(cpro.offer==Pro){
 				// Get subscription plan
 				var result:Dynamic = BridgeService.call('/subscriptions/plan/${vendor.stripeCustomerId}');
-				if (result!=null && result.plan=='year'){
-					vs.type = VTCproSubscriberYearly;
-				} else {
-					vs.type = VTCproSubscriberMontlhy;
+				if (result!=null){
+					if(result.plan=='year'){
+						vs.type = VTCproSubscriberYearly;
+					} else if(result.plan=='month'){
+						vs.type = VTCproSubscriberMontlhy;
+					}
+				}else{
+					throw "unable to get stripe subscription status";
 				}
+			}else if(cpro.offer==Marketplace){
+				vs.type = VTMarketplace;
 			}
 			
 		}else{

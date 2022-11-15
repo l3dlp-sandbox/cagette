@@ -21,8 +21,12 @@
 		<th>::ip::</th>
 	</tr>
 	<tr>
-		<td>Déploiement Cagette2</td>
+		<td>Groupes en Cagette2</td>
 		<th>::cg2groups::/::groups::</th>
+	</tr>
+	<tr>
+		<td>Groupes en Cagette2+Dispatch</td>
+		<th>::dispatchGroups::/::groups::</th>
 	</tr>
 </table>
 

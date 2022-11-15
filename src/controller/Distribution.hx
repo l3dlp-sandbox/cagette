@@ -529,7 +529,7 @@ class Distribution extends Controller {
 			var rc = connector.db.RemoteCatalog.getFromContract(c);
 			if (rc != null) {
 				// is cpro
-				if (pro.db.PNotif.getDistributionInvitation(rc.getCatalog(), distrib).length > 0) {
+				if (pro.db.PNotif.getDistributionInvitation(rc.getPCatalog(), distrib).length > 0) {
 					// has already a pending notif
 					invitationsSent.push(c);
 				} else {
@@ -607,12 +607,12 @@ class Distribution extends Controller {
 					if (d == null) {
 						var contract = db.Catalog.manager.get(cid, false);
 						var rc = connector.db.RemoteCatalog.getFromContract(contract);
-						var hasNotif = pro.db.PNotif.getDistributionInvitation(rc.getCatalog(), distrib).length > 0;
+						var hasNotif = pro.db.PNotif.getDistributionInvitation(rc.getPCatalog(), distrib).length > 0;
 						if (!hasNotif) {
 							// send notif
 							var contract = db.Catalog.manager.get(cid, false);
 							var rc = connector.db.RemoteCatalog.getFromContract(contract);
-							var catalog = rc.getCatalog();
+							var catalog = rc.getPCatalog();
 							if (catalog != null) {
 								pro.db.PNotif.distributionInvitation(catalog, distrib, app.user);
 							}
@@ -1107,21 +1107,6 @@ class Distribution extends Controller {
 		}
 
 		throw Ok("/distribution/validate/" + md.id, t._("This distribution have been validated"));
-	}
-
-	@admin
-	public function doUnvalidate(md:db.MultiDistrib) {
-		checkHasDistributionSectionAccess();
-		if (!md.validated)
-			return;
-
-		try {
-			service.PaymentService.unvalidateDistribution(md);
-		} catch (e:tink.core.Error) {
-			throw Error("/distribution/validate/" + md.id, e.message);
-		}
-
-		throw Ok("/distribution/validate/" + md.id, t._("This distribution have been Unvalidated"));
 	}
 
 	/**

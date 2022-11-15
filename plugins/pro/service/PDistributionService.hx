@@ -21,7 +21,7 @@ class PDistributionService
 		
 		if(d==null) throw "distribution should not be null";
 		if(company.vendor.email==null) return;
-		var catalog = rc.getCatalog();
+		var catalog = rc.getPCatalog();
 		try{
 			
 			var m = new sugoi.mail.Mail();

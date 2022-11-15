@@ -2,6 +2,7 @@ package db;
 import Common;
 import sugoi.form.ListData.FormData;
 import sys.db.Object;
+import db.MultiDistrib.MultiDistribValidatedStatus;
 import sys.db.Types;
 
 using tools.DateTool;
@@ -518,6 +519,31 @@ class Group extends Object
 			return [];
 		}
 		
+	}
+
+	public function isDispatch():Bool{
+		return betaFlags.has(Dispatch);
+	}
+
+	/**
+		enable payments
+	**/
+	public function enablePayments(){
+		if(!this.hasPayments()){
+
+			this.flags.set(HasPayments);
+			this.setAllowedPaymentTypes([payment.Cash.TYPE,payment.Check.TYPE]);			
+			this.update();
+
+			var twoWeeksAgo = DateTools.delta(Date.now(),-1000*60*60*24*14);
+
+			//validate old distribs that are not validated
+			var mds = db.MultiDistrib.manager.search($validatedStatus != Std.string(MultiDistribValidatedStatus.PAID) && $distribEndDate < twoWeeksAgo,true);
+			for(md in mds) service.PaymentService.validateDistribution(md);
+
+		}
+
+
 	}
 
 }

@@ -124,7 +124,7 @@ class ProReportService{
 			var catalogs = options.allCatalogs.getCatalogs();			
 			var remoteContracts = [];
 			for ( c in catalogs){
-				for ( rc in connector.db.RemoteCatalog.getFromCatalog(c) ){
+				for ( rc in connector.db.RemoteCatalog.getFromPCatalog(c) ){
 					remoteContracts.push( rc.getContract() );
 				}	
 			}
@@ -258,7 +258,7 @@ class ProReportService{
 			var catalogs = options.allCatalogs.getCatalogs();			
 			var remoteContracts = [];
 			for ( c in catalogs){
-				for ( rc in connector.db.RemoteCatalog.getFromCatalog(c) ){
+				for ( rc in connector.db.RemoteCatalog.getFromPCatalog(c) ){
 					remoteContracts.push( rc.getContract() );
 				}	
 			}

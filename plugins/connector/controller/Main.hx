@@ -21,7 +21,7 @@ class Main extends controller.Controller
 		
 		var rc = connector.db.RemoteCatalog.manager.get(c.id);
 		view.linkage = rc;
-		view.catalog = rc.getCatalog();
+		view.catalog = rc.getPCatalog();
 
 		if(checkToken()){
 			c.lock();
