@@ -378,6 +378,7 @@ class PaymentService {
 		}
 		// finally validate distrib
 		distrib.validatedStatus = Std.string(MultiDistribValidatedStatus.PAID);
+		distrib.validatedDate = Date.now();
 		distrib.update();
 
 		//update vendor stats if distrib is not today
