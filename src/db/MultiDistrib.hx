@@ -52,6 +52,7 @@ class MultiDistrib extends Object
 	@:skip public var extraHtml : String;
 
 	@hideInForms public var validatedStatus:SString<32>;
+	@hideInForms public var validatedDate:SNull<SDateTime>;
 	
 	public function new(){
 		super();
