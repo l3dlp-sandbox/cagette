@@ -84,7 +84,6 @@ class VendorStats extends sys.db.Object
 
 		//type
 		if(cpro!=null){
-trace(cpro.offer);
 			//if(vendor.isTest){
 			//	vs.type = VTCproTest;
 			if(cpro.offer == Training){				
