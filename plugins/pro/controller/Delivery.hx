@@ -619,5 +619,33 @@ class Delivery extends controller.Controller
 		view.distribution = d;
 		view.orders = service.ReportService.getOrdersByProduct(d,false);
 	}
+
+	//similar to ContractAdmin.doOrders() + csv param
+	function doCsv( d:db.Distribution ) {
+
+		var catalog = d.catalog;
+
+		if ( !app.user.canManageContract( catalog ) ) throw Error( "/", t._("You do not have the authorization to manage this contract") );
+		
+
+		var data = [];			
+		for( basket in d.multiDistrib.getBaskets()){
+			for(o in service.OrderService.prepare(basket.getDistributionOrders(d))){
+				data.push( { 
+					"name":o.userName,
+					"productName":o.productName,
+					"price":view.formatNum(o.productPrice),
+					"quantity":view.formatNum(o.quantity),
+					"fees":view.formatNum(o.fees),
+					"total":view.formatNum(o.total),
+					"paid":o.paid
+				});				
+			}
+		}
+		
+		var exportName = catalog.group.name + " - " + t._("Delivery ::contractName:: ", {contractName:catalog.name}) + d.date.toString().substr(0, 10);								
+		sugoi.tools.Csv.printCsvDataFromObjects(data, ["name",  "productName", "price", "quantity", "fees", "total", "paid"], exportName+" - " + t._("Per member"));			
+		
+	}
 	
 }

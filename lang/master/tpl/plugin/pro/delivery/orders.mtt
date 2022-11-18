@@ -16,7 +16,8 @@
 	</a>							
 	::end::
 	
-	$$export(/contractAdmin/orders/::catalog.id::?csv=1&d=::distribution.id::)
+	$$export(/p/pro/delivery/csv/::distribution.id::)
+	
 	<a href="/contractAdmin/ordersByProduct/::catalog.id::?d=::distribution.id::" class="btn btn-default btn-sm">
 		<i class="icon icon-products"></i>
 		::_("Summary by products")::
