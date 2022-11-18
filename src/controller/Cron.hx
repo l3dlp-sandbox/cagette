@@ -368,6 +368,113 @@ class Cron extends Controller
 		
 
 	}
+
+	@tpl("retro.mtt")
+	public function doRetro(){
+		
+		var compute = function(from:Date,to:Date) {
+			
+			// weekly stats			
+			
+
+			// Sys.println("weekly stats from "+from+" to "+to+"<br/>");
+
+			var stats = {
+				totalTurnoverMarket:0,
+				totalTurnoverAmap:0,
+
+				invitedTurnoverMarket:0,
+				invitedTurnoverAmap:0,
+
+				cproInvitedTurnoverMarket:0,
+				cproInvitedTurnoverAmap:0,
+
+				discoveryTurnoverMarket:0,
+				discoveryTurnoverAmap:0,
+
+				proTurnoverMarket:0,
+				proTurnoverAmap:0,
+
+				memberTurnoverMarket:0,
+				memberTurnoverAmap:0,
+
+				marketplaceTurnoverMarket:0,
+				marketplaceTurnoverAmap:0,
+			};
+
+			var summaries = sys.db.Manager.cnx.request('select sum(turnoverCSA) as turnoverAMAPSum, sum(turnoverMarket) as turnoverMarketSum , vendorId
+			from vendorDailySummary 
+			where date >= "${from.toString()}" and date < "${to.toString()}"
+			and turnoverCSA+turnoverMarket > 0
+			group by vendorId').results();
+
+			var vendorIds:Array<Int> = summaries.array().map(s -> Std.parseInt(s.vendorId));
+			var vendorStats = VendorStats.manager.search($vendorId in vendorIds,false);
+			var vendorStatsMap = new Map<Int,VendorStats>();
+			for( vs in vendorStats){
+				vendorStatsMap.set(untyped vs.vendorId, vs);
+			}
+
+			for(summary in summaries){
+				var vs = vendorStatsMap.get(summary.vendorId);
+				if(vs==null) continue;
+				switch (vs.type){
+					case VendorType.VTCpro : 
+						stats.memberTurnoverMarket += summary.turnoverMarketSum;
+						stats.memberTurnoverAmap += summary.turnoverAMAPSum;
+					case VendorType.VTCproTest,VTStudent : null;
+					case VendorType.VTFree,VendorType.VTInvited : 
+						stats.invitedTurnoverMarket += summary.turnoverMarketSum;
+						stats.invitedTurnoverAmap += summary.turnoverAMAPSum;
+					case VendorType.VTCproSubscriberMontlhy, VendorType.VTCproSubscriberYearly : 
+						stats.proTurnoverMarket += summary.turnoverMarketSum;
+						stats.proTurnoverAmap += summary.turnoverAMAPSum;
+					case VendorType.VTDiscovery : 
+						stats.discoveryTurnoverMarket += summary.turnoverMarketSum;
+						stats.discoveryTurnoverAmap += summary.turnoverAMAPSum;
+					case VendorType.VTInvitedPro : 
+						stats.cproInvitedTurnoverMarket += summary.turnoverMarketSum;
+						stats.cproInvitedTurnoverAmap += summary.turnoverAMAPSum;
+					case VendorType.VTMarketplace : 
+						stats.marketplaceTurnoverMarket += summary.turnoverMarketSum;
+						stats.marketplaceTurnoverAmap += summary.turnoverAMAPSum;
+				}
+				
+				stats.totalTurnoverMarket += summary.turnoverMarketSum;
+				stats.totalTurnoverAmap += summary.turnoverAMAPSum;
+
+			}
+
+			Graph.recordData("global",stats,from);
+			return stats;
+		};
+		
+
+		var from = new Date(2021,10,1,0,0,0); //  01/11/2021
+		var to = new Date(from.getFullYear(), from.getMonth(), from.getDate()+7, 0, 0, 0);
+
+		var limit = new Date(2022,9,1,0,0,0);
+		var stats = [];
+		while(to.getTime() < limit.getTime()){
+
+			
+			
+			var stat = compute(from,to);
+			untyped stat.date = from;
+			stats.push(stat);
+
+			
+			from = to;
+			to = new Date(to.getFullYear(), to.getMonth(), to.getDate()+7, 0, 0, 0);
+
+		}
+
+		view.stats = stats;
+
+		
+
+
+	}
 	
 	/**
 		Daily cron job

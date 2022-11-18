@@ -197,7 +197,7 @@ class User extends Controller
 			var m = new sugoi.mail.Mail();
 			m.setSender(App.current.getTheme().email.senderEmail, App.current.getTheme().name);					
 			m.setRecipient(email, user.getName());					
-			m.setSubject( "["+App.current.getTheme().name+"] : "+t._("Password change"));
+			m.setSubject( App.current.getTheme().name+" : "+t._("Password change"));
 			m.setHtmlBody( app.processTemplate('mail/forgottenPassword.mtt', { user:user, link:'http://' + App.config.HOST + '/user/forgottenPassword/'+token+"/"+user.id }) );
 			App.sendMail(m);	
 		}
