@@ -113,19 +113,14 @@ class Main extends controller.Controller
 		view.adminClients = adminClients;
 		view.regularClients = regularClients;
 
-
 		//FIX : if vendor is Marketplace
 		if(company.offer==Marketplace){
-
 			for( group in groups){
-
 				if(!group.hasPayments()){
 					group.lock();
 					group.enablePayments();
 				}
 			}
-
-
 		}
 		
 		//next deliveries

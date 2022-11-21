@@ -256,11 +256,12 @@ class Admin extends Controller {
 	function doStats() {
 		var now = Date.now();
 		
-		var from = new Date(now.getFullYear(),now.getMonth(), now.getDate(), 0, 0, 0);
+		var from = new Date(now.getFullYear(),now.getMonth(), now.getDate()-1, 0, 0, 0);
 		var to 	 = new Date(now.getFullYear(),now.getMonth(), now.getDate(), 0, 0, 0);
 
 		//find previous monday
 		while(from.getDay()!=1) from = DateTools.delta(from, -1000*60*60*24);
+
 		//find next monday
 		while(to.getDay()!=1) to = DateTools.delta(to, 1000*60*60*24);
 		
