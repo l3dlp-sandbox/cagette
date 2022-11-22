@@ -24,7 +24,9 @@ class Cron extends Controller
 
 		//For testing purposes you can add an arg to build a "fake now"
 		this.now = App.current.params.exists("now") ? Date.fromString(App.current.params.get("now")) : Date.now();
-		Sys.println("now is "+this.now.toString());
+
+		var json = app.params.get("json")=="1";
+		if(!json) Sys.println("now is "+this.now.toString());
 	}
 
 	public function doDefault(){}
@@ -54,7 +56,24 @@ class Cron extends Controller
 	public function doMinute() {
 		if (!canRun()) return;
 		
-		app.event(MinutelyCron(this.now));
+		var json = app.params.get("json")=="1";
+		var jobs = [];
+
+		app.event(MinutelyCron(this.now,jobs, json?"json":"print"));
+
+		if(json){
+			//print jobs as json instead of printing
+			sugoi.Web.setHeader("Content-Type", "application/json");
+			sugoi.Web.setHeader("Access-Control-Allow-Credentials","true");
+			var out = [];
+			for(j in jobs){
+				out.push(untyped j._log);
+			}
+			Sys.print(haxe.Json.stringify({
+				now:this.now,
+				jobs:out
+			}));
+		}
 	}
 	
 	/**
