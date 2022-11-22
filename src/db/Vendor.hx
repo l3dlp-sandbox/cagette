@@ -369,9 +369,9 @@ class Vendor extends Object
 		has a valid Stripe account
 	**/
 	public function isDispatchReady():Bool{
-
+	
 		if(stripeAccountId==null) return false;
-		return sys.db.Manager.cnx.request('SELECT count(id) FROM stripeAccount where id="+${this.stripeAccountId}" and details_submitted=1 and charges_enabled=1').getIntResult(0) > 0;
+		return sys.db.Manager.cnx.request('SELECT count(id) FROM stripeAccount where id="${this.stripeAccountId}" and details_submitted=1 and charges_enabled=1').getIntResult(0) > 0;
 
 	}
 
