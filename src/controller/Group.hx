@@ -194,6 +194,7 @@ class Group extends controller.Controller
 			g.groupType = type;
 			g.flags.set(HasPayments);
 			g.setAllowedPaymentTypes([payment.Cash.TYPE,payment.Check.TYPE]);
+			g.betaFlags.set(Cagette2);			
 			g.insert();
 			
 			var ua = new db.UserGroup();
@@ -218,8 +219,7 @@ class Group extends controller.Controller
 			#if plugins
 			try{
 				//sync if this user is not cpro && market mode group
-				if( service.VendorService.getCagetteProFromUser(app.user).length==0 && g.hasShopMode() ){
-					
+				if( service.VendorService.getCagetteProFromUser(app.user).length==0 && g.hasShopMode() ){					
 					BridgeService.syncUserToHubspot(app.user);
 					service.BridgeService.triggerWorkflow(29805116, app.user.email);
 				}
