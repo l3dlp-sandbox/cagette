@@ -1761,15 +1761,15 @@ class Admin extends controller.Controller {
 		var amaps = 0;
 		var groupsWithPercentage = 0;
 
-		for( g in db.Group.manager.all()){
+		for( g in db.Group.manager.search($betaFlags.has(Cagette2)==false && $flags.has(ShopMode)==false,{limit:500})){
 
 			groups++;
 
 			//no AMAPs
-			if( !g.hasShopMode() ){
+			/*if( !g.hasShopMode() ){
 				amaps++;
 				continue;
-			} 
+			} */
 
 			//no percentage on catalogs			
 			if( g.getActiveContracts().count(c -> c.percentageValue>0) > 0){

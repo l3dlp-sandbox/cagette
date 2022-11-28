@@ -70,7 +70,8 @@ class Amap extends Controller
 			form.toSpod(group);
 
 			//keep shop mode
-			if(shopMode) group.flags.set(db.Group.GroupFlags.ShopMode);
+			if(shopMode) group.flags.set(ShopMode);
+			if(hasPayments) group.flags.set(HasPayments);
 
 			if (group.extUrl != null){
 				if ( group.extUrl.indexOf("http://") ==-1 &&  group.extUrl.indexOf("https://") ==-1 ){
