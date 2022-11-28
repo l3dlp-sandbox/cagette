@@ -10,6 +10,8 @@ enum DisabledReason{
 	NotCompliantWithPolicy; //not compliant with policy (charte des producteurs)
 	Banned; 				//banned by network administrateurs
 	TurnoverLimitReached; 	//turnover limit reached
+	MarketplaceNotActivated; //a new marketplace vendor who has not yet activated his subscription
+	MarketplaceDisabled; //a marketplace vendor who did not pay, who removed his payment method, etc
 }
 
 /**
