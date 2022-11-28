@@ -1761,7 +1761,8 @@ class Admin extends controller.Controller {
 		var amaps = 0;
 		var groupsWithPercentage = 0;
 
-		for( g in db.Group.manager.search($betaFlags.has(Cagette2)==false && $flags.has(ShopMode)==false,{limit:500})){
+		//shopmode groups with no cagette2 flag, limit 500
+		for( g in db.Group.manager.search($betaFlags.has(Cagette2)==false && $flags.has(ShopMode)==true,{limit:500})){
 
 			groups++;
 
