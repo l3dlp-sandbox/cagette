@@ -286,6 +286,8 @@ class Vendor extends Object
 			case DisabledReason.NotCompliantWithPolicy : "Producteur incompatible avec la charte producteur de Cagette.net";
 			case DisabledReason.Banned : "Producteur bloqué par les administrateurs";
 			case DisabledReason.TurnoverLimitReached : "Ce producteur a atteint sa limite de chiffre d'affaires annuel";
+			case DisabledReason.MarketplaceDisabled : "Ce producteur est en défaut de paiement";
+			case DisabledReason.MarketplaceNotActivated : "Ce producteur n'a pas encore activé son compte";
 		};
 	}
 
