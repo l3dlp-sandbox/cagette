@@ -1,4 +1,7 @@
 package controller;
+import sugoi.form.elements.Html;
+import sugoi.form.elements.Checkbox;
+import haxe.EnumFlags;
 import Common;
 import datetime.DateTime;
 import db.Group.GroupFlags;
@@ -375,6 +378,49 @@ class AmapAdmin extends Controller
 
 		view.form = form;
 		view.title = "Statistiques";
+	}
+
+	@tpl("amapadmin/form.mtt")
+	function doEnablePayments(){
+
+		var f = new sugoi.form.Form("enablePayments");
+
+
+		f.addElement(new sugoi.form.elements.Checkbox("enable","Activer la gestion des paiements (obligatoire)"));
+		f.addElement(new sugoi.form.elements.Html('html','<div class="alert alert-warning"><p>La gestion des paiements vous permettra de savoir comment vos clients ont payé et de garder un historique complet de vos encaissements.<br/>Cette fonctionnalité, nécéssaire au bon fonctionnement de Cagette.net, sera automatiquement activée à partir du 9 Janvier 2023</p><a href="https://wiki.cagette.net/admin:admin_paiements" target="_blank">En savoir plus</a></div>'));
+
+
+		var types = service.PaymentService.getPaymentTypes(PCGroupAdmin);
+		types = types.filter(x -> x.type!="moneypot");//remove moneypot
+		var formdata = [for (t in types){label:t.name, value:t.type, desc:t.adminDesc, docLink:t.docLink}];		
+		var selected = ["check","cash"];
+		f.addElement(new sugoi.form.elements.CheckboxGroup("paymentTypes", "Sélectionnez les moyens de paiement disponibles dans ce groupe",formdata, selected) );
+
+
+		if(f.isValid()){
+
+			var enable:Bool = f.getValueOf("enable");
+			var paymentTypes:Array<String> = f.getValueOf("paymentTypes");
+
+			if(!enable){
+				throw Error(sugoi.Web.getURI(),"Vous devez activer la gestion des paiements");
+			}
+
+			if(paymentTypes.length==0){
+				throw Error(sugoi.Web.getURI(),"Vous devez choisir au moins un moyen de paiement");
+			}
+
+			var group = app.getCurrentGroup();
+			group.lock();
+			group.enablePayments();
+			group.setAllowedPaymentTypes(paymentTypes);
+			group.update();
+			throw Ok("/home","Gestion des paiements activée.");
+		}
+
+		view.form = f;
+		view.title = "Mettre à jour les moyens de paiement";
+
 	}
 
 }
