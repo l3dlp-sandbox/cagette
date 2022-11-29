@@ -90,7 +90,7 @@
 						</ul>
 					</div>
 			</nav>
-			::if(company.offer==0 || company.offer==2)::
+			::if(company.offer==0 || company.offer==2 || (company.offer==4 && vendor.disabled==4))::
 			<div 
 				style="margin-top: -16px; height: 16px; background: #E1E1E1;">
 			</div>
