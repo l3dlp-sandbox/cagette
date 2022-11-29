@@ -64,10 +64,7 @@
 	::end::
 	::end::
 
-	<div class="article">
-		<h2 style="margin-top:0; margin-bottom: 16px;">Chiffre d'affaires</h2>
-		<div id="stats-module-container" style="margin-bottom: 16px;"></div>
-	</div>
+	<div id="stats-module-container"></div>
 	<script>
 		document.addEventListener("DOMContentLoaded", function () {
 			neo.createNeoModule("stats-module-container", "vendorTurnover", {
