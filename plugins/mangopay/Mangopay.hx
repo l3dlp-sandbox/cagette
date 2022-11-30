@@ -76,11 +76,11 @@ class Mangopay
 
 	}
 
-	static public function getNaturalUser(mangopayUserId:Int) : NaturalUser {
+	static public function getNaturalUser(mangopayUserId:String) : NaturalUser {
 		return callService("users/" + mangopayUserId + "/");
 	}
 
-	static public function getLegalUser(mangopayUserId:Int) : LegalUser {
+	static public function getLegalUser(mangopayUserId:String) : LegalUser {
 		return callService("users/" + mangopayUserId + "/");
 	}
 
@@ -93,7 +93,9 @@ class Mangopay
 			Address: null,
 			Birthday: user.birthDate.getTime()/1000,
 			Nationality: user.nationality,
-			CountryOfResidence: user.countryOfResidence
+			CountryOfResidence: user.countryOfResidence,
+			UserCategory:"PAYER",
+			TermsAndConditionsAccepted:true
 		};
 		if (user.zipCode != null && user.city != null && user.address1 != null && user.countryOfResidence != null) {
 			obj.Address = {
@@ -112,6 +114,26 @@ class Mangopay
 		mangopayUser.insert();
 		
 		return naturalUser;
+	}
+
+	static public function updateLegalUser(mgpLegalUser:LegalUser) : LegalUser {
+		var obj /*: LegalUser*/ = {
+			// Tag: mgpLegalUser.Tag,
+			Email: mgpLegalUser.Email,
+			// FirstName: mgpLegalUser.FirstName,
+			// LastName: mgpLegalUser.LastName,
+			// Address: mgpLegalUser.Address,
+			// Birthday: user.birthDate.getTime()/1000,
+			// Nationality: user.nationality,
+			// CountryOfResidence: user.countryOfResidence,
+			UserCategory:"OWNER",
+			TermsAndConditionsAccepted:true
+		};
+		
+		var params = haxe.Json.stringify(obj);
+		var res:LegalUser = callService("users/legal/"+mgpLegalUser.Id, "PUT", params);
+		
+		return res;
 	}
 
 	/**
