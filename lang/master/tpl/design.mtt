@@ -129,7 +129,7 @@
 				::end::
 			</div>	
 		</div>
-		
+
 		<!-- extra notification block for plugins -->
 		::if extraNotifBlock!=null::
 			::raw extraNotifBlock::

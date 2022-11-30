@@ -77,7 +77,7 @@ class Main extends controller.Controller
 		if( app.params.get("cagette2")=="1" ){
 			group.lock();
 			group.betaFlags.set(Cagette2);
-			group.flags.set(HasPayments);
+			// group.flags.set(HasPayments);
 			group.update();
 
 			throw Ok("/p/hosted/group/"+group.id,"Le groupe est configuré en cagette2");
