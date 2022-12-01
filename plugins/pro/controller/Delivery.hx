@@ -625,9 +625,8 @@ class Delivery extends controller.Controller
 
 		var catalog = d.catalog;
 
-		if ( !app.user.canManageContract( catalog ) ) throw Error( "/", t._("You do not have the authorization to manage this contract") );
+		// if ( !app.user.canManageContract( catalog ) ) throw Error( "/", t._("You do not have the authorization to manage this contract") );
 		
-
 		var data = [];			
 		for( basket in d.multiDistrib.getBaskets()){
 			for(o in service.OrderService.prepare(basket.getDistributionOrders(d))){

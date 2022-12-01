@@ -808,5 +808,23 @@
 		<link rel="icon" type="image/png" sizes="16x16" href="/theme/::theme.id::/favicon-16x16.png"/>
 		<link rel="icon" type="image/x-icon" href="/theme/::theme.id::/favicon.ico"/>
 	</macro>
+
+	<macro name="enablePayments()">		
+		::if(user!=null && user.getGroup()!=null)::
+		<div id="content" class="col-md-12">
+			<div class="row" ::cond user.isGroupManager() && user.getGroup().hasShopMode() && !user.getGroup().hasPayments()::>
+				<div id="content" class="col-md-12">				
+					<div class="alert alert-danger">					
+						<a href="/amapadmin/enablePayments" class="btn btn-danger pull-right">Mettre à jour les moyens de paiement</a>
+						<i class="icon icon-alert"></i>
+						<b>Mise à jour obligatoire des moyens de paiements</b>
+						<p>Choisissez quels moyens de paiements sont disponibles dans ce groupe.</p>						
+						
+					</div>
+				</div>	
+			</div>
+		</div>
+		::end::
+	</macro>
 	
 </macros>
