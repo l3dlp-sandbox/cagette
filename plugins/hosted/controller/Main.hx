@@ -1,4 +1,6 @@
 package hosted.controller;
+import pro.payment.MangopayECPayment;
+import service.GroupService;
 import tools.ObjectListTool;
 import Common;
 import db.Operation;
@@ -81,6 +83,52 @@ class Main extends controller.Controller
 			group.update();
 
 			throw Ok("/p/hosted/group/"+group.id,"Le groupe est configuré en cagette2");
+		}
+
+		if( app.params.get("duplicate")=="1" ){
+
+			//duplicate group with MGP
+
+			var g = GroupService.duplicateGroup(group);
+			g.name = group.name+" - achats groupés";
+			g.betaFlags.set(Cagette2);
+			g.flags.set(HasPayments);
+			g.setAllowedPaymentTypes([MangopayECPayment.TYPE]);
+			g.update();
+
+			var place = group.getMainPlace();
+
+			var p = new db.Place();
+			p.name = place.name;
+			p.group = g;
+			p.address1 = place.address1;
+			p.address2 = place.address2;
+			p.city = place.city;
+			p.zipCode = place.zipCode;
+			p.insert();
+
+			//add members in the new group
+			for(m in group.getMembers()){
+				var ug = db.UserGroup.getOrCreate(m,g);
+			}
+
+			//give main rights
+			for(ug in group.getGroupAdmins()){
+
+				var ug2 = db.UserGroup.getOrCreate(ug.user,g);
+
+				for( r in ug.getRights()){
+					switch (r.right){
+						case "GroupAdmin" 	: ug2.giveRight(GroupAdmin);
+						case "Messages" 	: ug2.giveRight(Messages);
+						case "Membership" 	: ug2.giveRight(Membership);
+						default: //
+					}
+				}
+			}
+
+			throw Ok("/p/hosted/group/"+g.id,"Groupe copié");
+
 		}
 
 
