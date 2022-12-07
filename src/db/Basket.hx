@@ -3,7 +3,7 @@ import sys.db.Object;
 import sys.db.Types;
 import db.Operation;
 import Common;
-
+import pro.payment.MangopayECPayment;
 
 @:enum
 abstract BasketStatus(String) {
@@ -260,6 +260,17 @@ class Basket extends Object
 			out.push({product:p , quantity : o.quantity});
 		}
 		return out;
+	}
+
+	public function hasOnlinePayment() {
+		var payments = getPaymentsOperations();
+		var hasOnlinePayment = false;
+		for( payment in payments ) {
+			if (payment.getPaymentType() == MangopayECPayment.TYPE) {
+				hasOnlinePayment = true;
+			}
+		}
+		return hasOnlinePayment;
 	}
 	
 }

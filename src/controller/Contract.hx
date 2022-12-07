@@ -207,9 +207,9 @@ class Contract extends Controller
 	*/
 	@logged @tpl("contract/editVarOrders.mtt")
 	function doEditVarOrders(distrib:db.MultiDistrib) {
-		
-		if ( app.user.getGroup().hasPayments() || !app.user.getGroup().hasShopMode() ) {
-			//when payments are active, the user cannot modify his/her order
+		var basket = distrib.getUserBasket(app.user);
+		if ( app.user.getGroup().isDispatch() || !app.user.getGroup().hasShopMode() || basket.hasOnlinePayment()) {
+			//when this basket has been payed online, the user cannot modify his/her order
 			throw Redirect("/");
 		}
 		
@@ -228,7 +228,7 @@ class Contract extends Controller
 		var cids = Lambda.map(app.user.getGroup().getActiveContracts(true), function(c) return c.id);
 		var distribs = db.Distribution.manager.search(($catalogId in cids) && $date >= d1 && $date <=d2 , false);
 		var orders = db.UserOrder.manager.search($userId==app.user.id && $distributionId in Lambda.map(distribs,function(d)return d.id)  );*/
-		var orders = distrib.getUserBasket(app.user).getOrders(Catalog.TYPE_VARORDER);
+		var orders = basket.getOrders(Catalog.TYPE_VARORDER);
 		view.orders = service.OrderService.prepare(orders);
 		view.date = distrib.getDate();
 		
