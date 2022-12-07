@@ -93,6 +93,7 @@ class Main extends controller.Controller
 			g.name = group.name+" - achats groupés";
 			g.betaFlags.set(Cagette2);
 			g.flags.set(HasPayments);
+			g.flags.set(ShopMode);
 			g.setAllowedPaymentTypes([MangopayECPayment.TYPE]);
 			g.update();
 
