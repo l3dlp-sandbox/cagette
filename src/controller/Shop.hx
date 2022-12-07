@@ -15,7 +15,7 @@ class Shop extends Controller
 	var tmpBasket : db.Basket;
 
 	@tpl('shop/default.mtt')
-	public function doDefault(md:db.MultiDistrib,?args:{continueShopping:Bool, basketId: Int}) {
+	public function doDefault(md:db.MultiDistrib,?args:{continueShopping:Bool}) {
 		
 		if( app.getCurrentGroup()==null || app.getCurrentGroup().id!=md.getGroup().id){
 			throw  Redirect("/group/"+md.getGroup().id);
@@ -36,7 +36,6 @@ class Shop extends Controller
 		view.category = 'shop';
 		view.md = md;
 		view.tmpBasketId = app.session.data.tmpBasketId;
-		view.basketId = args == null ? null : args.basketId;
 		view.user = app.user;
 
 		// service.OrderService.checkTmpBasket(app.user,app.getCurrentGroup());
