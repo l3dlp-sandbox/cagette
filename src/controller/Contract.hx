@@ -257,6 +257,16 @@ class Contract extends Controller
 					}					
 				}
 			}
+
+			basket.lock();
+		 	var newTotal = basket.getOrdersTotal();
+			basket.total = newTotal;
+			basket.update();
+
+			var orderOp = basket.getOrderOperation(false);
+			orderOp.lock();
+			orderOp.amount = -newTotal;
+			orderOp.update();
 			
 			app.event(MakeOrder(orders_out));
 				
