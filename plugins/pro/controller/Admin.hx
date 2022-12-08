@@ -1,5 +1,6 @@
 package pro.controller;
 
+import mangopay.db.MangopayLegalUser;
 import payment.Check;
 import service.PaymentService;
 import controller.Cron;
@@ -1789,6 +1790,26 @@ class Admin extends controller.Controller {
 		Sys.println("groups : "+groups+"<br/>");
 		Sys.println("amaps : "+amaps+"<br/>");
 		Sys.println("groupsWithPercentage : "+groupsWithPercentage+"<br/>");
+
+	}
+
+	/**
+		https://go.mangopay.com/webmail/307741/669277924/5dba440638d2ee7e9bb8b5d00ee7291f52e450a7d392384fe7f73846cf6691f0
+	**/
+	public function doMangopayMigration2023(){
+
+		for(mgpLegalUser in MangopayLegalUser.manager.all()){
+
+			var m = Mangopay.getLegalUser(mgpLegalUser.mangopayUserId);
+
+			Sys.println('get <pre>$m</pre>');
+			var res = Mangopay.updateLegalUser(m);
+
+			Sys.println('RES <pre>$res</pre>');
+
+			break;
+
+		}
 
 	}
 }
