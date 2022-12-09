@@ -73,6 +73,11 @@ class Cron extends Controller
 				now:this.now,
 				jobs:out
 			}));
+
+			neko.Web.logMessage(haxe.Json.stringify({
+				now:this.now,
+				jobs:out
+			}));
 		}
 	}
 	
