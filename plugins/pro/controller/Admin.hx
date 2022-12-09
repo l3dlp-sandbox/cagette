@@ -1798,16 +1798,17 @@ class Admin extends controller.Controller {
 	**/
 	public function doMangopayMigration2023(){
 
-		for(mgpLegalUser in MangopayLegalUser.manager.all()){
+		for(mgpLegalUser in MangopayLegalUser.manager.search($disabled==false,false)){
 
 			var m = Mangopay.getLegalUser(mgpLegalUser.mangopayUserId);
 
-			Sys.println('get <pre>$m</pre>');
-			var res = Mangopay.updateLegalUser(m);
+			if(m.TermsAndConditionsAccepted) continue;
 
+			Sys.println('get ${m.Id}<pre>$m</pre>');
+			var res = Mangopay.updateLegalUser(m);
 			Sys.println('RES <pre>$res</pre>');
 
-			break;
+			// break;
 
 		}
 

@@ -127,8 +127,18 @@ class Mangopay
 			// Nationality: user.nationality,
 			// CountryOfResidence: user.countryOfResidence,
 			UserCategory:"OWNER",
-			TermsAndConditionsAccepted:true
+			TermsAndConditionsAccepted:true,
+			HeadquartersAddress : { AddressLine1:"", AddressLine2:"", Country:"", City:"", Region:"", PostalCode:"" }
 		};
+
+		if(obj.HeadquartersAddress.AddressLine1==""){
+			obj.HeadquartersAddress.AddressLine1 = mgpLegalUser.LegalRepresentativeAddress.AddressLine1;
+			obj.HeadquartersAddress.AddressLine2 = mgpLegalUser.LegalRepresentativeAddress.AddressLine2;
+			obj.HeadquartersAddress.PostalCode = mgpLegalUser.LegalRepresentativeAddress.PostalCode;
+			obj.HeadquartersAddress.City = mgpLegalUser.LegalRepresentativeAddress.City;
+			obj.HeadquartersAddress.Country = mgpLegalUser.LegalRepresentativeAddress.Country;
+			obj.HeadquartersAddress.Region = "FR";
+		}
 		
 		var params = haxe.Json.stringify(obj);
 		var res:LegalUser = callService("users/legal/"+mgpLegalUser.Id, "PUT", params);
