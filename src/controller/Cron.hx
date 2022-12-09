@@ -74,7 +74,8 @@ class Cron extends Controller
 				jobs:out
 			}));
 
-			neko.Web.logMessage(haxe.Json.stringify({
+			//debug in error log db
+			app.logError(haxe.Json.stringify({
 				now:this.now,
 				jobs:out
 			}));
