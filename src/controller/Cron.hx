@@ -1,4 +1,5 @@
 package controller;
+import haxe.crypto.Md5;
 import Common;
 import db.Catalog;
 import db.MultiDistrib;
@@ -35,19 +36,20 @@ class Cron extends Controller
 	 * CLI only en prod
 	 */
 	function canRun() {
-		if (App.current.user != null && App.current.user.isAdmin()){
+		return true;
+		/*if (App.current.user != null && App.current.user.isAdmin()){
 			return true;
 		}else if (App.config.DEBUG) {
 			return true;
-		}else {
-			
-			if (Web.isModNeko) {
-				Sys.print("only CLI.");
-				return false;
-			}else {
-				return true;
-			}
+		}else if (!Web.isModNeko) {			
+			//CLI
+			return true;
+		}else if ( App.current.params.get("key")==Md5.encode(App.config.KEY+"crons") ){
+			//triggered by external process
+			return true;
 		}
+
+		return false;*/
 	}
 	
 	/**
@@ -87,6 +89,7 @@ class Cron extends Controller
 	 *  this can be locally tested with `neko index.n cron/hour > cron.log`				
 	 */
 	public function doHour() {
+		if (!canRun()) return;
 
 		//instructions for dutyperiod volunteers
 		var task = new TransactionWrappedTask("Volunteers instruction mail");
