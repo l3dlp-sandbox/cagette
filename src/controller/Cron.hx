@@ -36,7 +36,10 @@ class Cron extends Controller
 	 * CLI only en prod
 	 */
 	function canRun() {
+		
+		//implement MD5 key later
 		return true;
+
 		/*if (App.current.user != null && App.current.user.isAdmin()){
 			return true;
 		}else if (App.config.DEBUG) {
