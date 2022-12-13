@@ -47,6 +47,7 @@ class Notif extends controller.Controller
 		view.getDistrib = function(did:Int){
 			return db.MultiDistrib.manager.get(did,false);
 		}
+		view.vendor = pro.db.CagettePro.getCurrentVendor();
 		checkToken();
 	}
 	
