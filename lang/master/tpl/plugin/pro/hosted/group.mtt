@@ -54,6 +54,7 @@
 		::if(!group.hasCagette2())::
 			<a href="?cagette2=1" class="btn btn-default">Passer en Cagette2</a>
 		::end::
+		<a href="?duplicate=1" class="btn btn-default">Dupliquer pour achats groupés</a>
 		</p>
 
 		<hr/>
