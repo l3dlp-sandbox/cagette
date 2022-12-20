@@ -728,6 +728,9 @@ class Admin extends Controller {
 
 	@tpl('admin/stripe.mtt')
 	function doStripe(){
+	}
 
+	@tpl('admin/showcase.mtt')
+	function doShowcase(){
 	}
 }
