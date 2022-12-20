@@ -106,8 +106,8 @@ class User extends Controller
 		} 
 
 		//need to check new CGS
-		for( cpro in cagettePros ){
-			if(cpro.vendor.tosVersion != sugoi.db.Variable.getInt('termsOfSaleVersion')){
+		for( cpro in service.VendorService.getCagetteProFromLegalRep(app.user) ){
+			if(cpro.vendor.tosVersion != sugoi.db.Variable.getInt('platformtermsofservice')){
 				throw Redirect("/user/tos");
 			} 
 		}
@@ -348,30 +348,42 @@ class User extends Controller
 
 	@tpl('form.mtt')
 	function doTos(){
-			
-		
+					
 		var form = new sugoi.form.Form("tos");
-		var cagettePros = service.VendorService.getCagetteProFromUser(app.user);
+		var legalRepCagettePros = service.VendorService.getCagetteProFromLegalRep(app.user);
 
 		if(app.user.tosVersion!=sugoi.db.Variable.getInt("tosVersion")){
 			var c = new sugoi.form.elements.Checkbox("tos","J'accepte les <br/><a href='/tos' target='_blank'>conditions générales d'utilisation</a><br/>et la <a href='/privacypolicy' target='_blank'>politique de confidentialité</a>");
-			// c.description = "J'accepte les <br/><a href='/tos' target='_blank'>conditions générales d'utilisation</a><br/>et la <a href='/privacypolicy' target='_blank'>politique de confidentialité</a>";
 			form.addElement(c);
 		}
 
-		for( cpro in cagettePros ){
+		for( cpro in legalRepCagettePros ){
 			var vendor = cpro.vendor;
 			if(vendor.tosVersion != sugoi.db.Variable.getInt('platformtermsofservice')){
-
-				form.addElement(new sugoi.form.elements.Checkbox("cgs"+vendor.id,"En tant que gestionnaire du compte \""+vendor.name+"\", <br/> j'accepte les <a href='/platformtermsofservice' target='_blank'>Conditions générales de service</a> qui encadrent les services fournis par Cagette.net aux Producteurs"));
+				form.addElement(new sugoi.form.elements.Checkbox("cgs"+vendor.id,"J'accepte les <a href='/platformtermsofservice' target='_blank'>Conditions générales de service</a> qui encadrent les services fournis par Cagette.net aux Producteurs"));
 			} 
 		}
 
-		if(form.isValid() && form.getValueOf("tos")==true){
-			// app.user.lock();
-			// app.user.tosVersion = tosVersion;
-			// app.user.update();
-			// throw Redirect('/');
+		if(form.isValid() ){
+
+			if(form.getElement("tos")!=null && form.getValueOf("tos")==true){
+				app.user.lock();
+				app.user.tosVersion = sugoi.db.Variable.getInt("tosVersion");
+				app.user.update();
+			}
+
+			var platformtermsofservice = sugoi.db.Variable.getInt('platformtermsofservice');
+
+			for( cpro in legalRepCagettePros ){
+				var vendor = cpro.vendor;
+				if(vendor.tosVersion != platformtermsofservice && form.getElement("cgs"+vendor.id)!=null && form.getValueOf("cgs"+vendor.id)==true){
+					vendor.lock();
+					vendor.tosVersion = platformtermsofservice;
+					vendor.update();
+				}
+			}
+
+			throw Redirect('/');
 		}
 		
 		view.title = "Mise à jour des conditions générales";

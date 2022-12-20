@@ -39,6 +39,11 @@ class VendorService{
 		// return vendors;
 	}
 
+	public static function getCagetteProFromLegalRep(user:db.User):Array<CagettePro>{
+		var uc = pro.db.PUserCompany.manager.search($user == user && $legalRepresentative==true, false);
+		return uc.map( x -> x.company).array();
+	}
+
 
 	/**
 		Search vendors.
