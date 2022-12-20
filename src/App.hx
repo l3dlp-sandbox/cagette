@@ -103,7 +103,10 @@ class App extends sugoi.BaseApp {
 								<a href="/cgu" target="_blank">Conditions générales d\'utilisation</a> 
 							</li>
 							<li>
-								<a href="/cgv" target="_blank">Conditions générales de vente</a> 
+								<a href="/privacypolicy" target="_blank">Politique de confidentialité</a> 
+							</li>
+							<li>
+								<a href="/termsofsale" target="_blank">Conditions commerciales (CCP)</a> 
 							</li>	
 							<li>
 								<a href="/mgp" target="_blank">C.G.U Mangopay</a> 
@@ -160,7 +163,8 @@ class App extends sugoi.BaseApp {
 			terms: {
 				termsOfServiceLink: "https://www.cagette.net/wp-content/uploads/2020/11/cgu-.pdf",
 				termsOfSaleLink: "https://www.cagette.net/wp-content/uploads/2020/11/cgv.pdf",
-				platformTermsLink: "",
+				platformTermsOfServiceLink: "",
+				privacyPolicyLink: "",
 			}
 			
 		}

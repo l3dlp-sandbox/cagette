@@ -61,10 +61,10 @@ class Main extends controller.Controller
 			checkCompanySelected();
 		}
 
-		//check terms of sale
-		if(vendor.tosVersion != sugoi.db.Variable.getInt('termsOfSaleVersion')){
-			throw Redirect("/p/pro/tos");
-		} 
+		// //check terms of sale
+		// if(vendor.tosVersion != sugoi.db.Variable.getInt('termsOfSaleVersion')){
+		// 	throw Redirect("/p/pro/tos");
+		// } 
 		
 		view.nav = ["home"];
 		
@@ -263,7 +263,7 @@ class Main extends controller.Controller
 		d.dispatch(new pro.controller.Signup());
 	}
 
-	@tpl('form.mtt')
+	/*@tpl('form.mtt')
 	function doTos(){
 		var tosVersion = sugoi.db.Variable.getInt("termsOfSaleVersion");
 		var form = new sugoi.form.Form("tos");
@@ -279,7 +279,7 @@ class Main extends controller.Controller
 		view.title = "Mise à jour des conditions générales de vente "+' ( v. $tosVersion )';
 		view.text = "En tant que producteur qui vend des produits sur Cagette.net, vous devez accepter ces conditions qui définissent les modalités d'utilisation de Cagette.net par les producteurs.";
 		view.form = form;
-	}
+	}*/
 
 
 	@logged @tpl("plugin/pro/upgrade.mtt")

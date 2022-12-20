@@ -63,11 +63,6 @@ class User extends Controller
 		//home page
 		app.breadcrumb = [];
 		
-		//need to check new ToS
-		if(app.user.tosVersion != sugoi.db.Variable.getInt('tosVersion')){
-			throw Redirect("/user/tos");
-		} 
-		
 		var groups = app.user.getGroups();
 		
 		view.noGroup = true; //force template to not display current group
@@ -86,7 +81,7 @@ class User extends Controller
 		view.groups = groups;
 		view.wl = db.WaitingList.manager.search($user == app.user, false);
 		
-		#if plugins
+
 		//vendor accounts
 		var cagettePros = service.VendorService.getCagetteProFromUser(app.user);
 		view.cagettePros = cagettePros;
@@ -104,7 +99,18 @@ class User extends Controller
 				view.isFreeVendor = true;
 			}
 		}*/	
-		#end
+
+		//need to check new ToS
+		if(app.user.tosVersion != sugoi.db.Variable.getInt('tosVersion')){
+			throw Redirect("/user/tos");
+		} 
+
+		//need to check new CGS
+		for( cpro in cagettePros ){
+			if(cpro.vendor.tosVersion != sugoi.db.Variable.getInt('termsOfSaleVersion')){
+				throw Redirect("/user/tos");
+			} 
+		}
 
 		view.isGroupAdmin = app.user.getUserGroups().find(ug -> return ug.isGroupManager()) != null;
 		//view.cagetteProTest = cagettePros.find(cp -> cp.vendor.isTest)!=null;
@@ -342,18 +348,33 @@ class User extends Controller
 
 	@tpl('form.mtt')
 	function doTos(){
-		var tosVersion = sugoi.db.Variable.getInt("tosVersion");
+			
+		
 		var form = new sugoi.form.Form("tos");
-		form.addElement(new sugoi.form.elements.Checkbox("tos","J'accepte les nouvelles <a href='/cgu' target='_blank'>conditions générales d'utilisation</a>"));
+		var cagettePros = service.VendorService.getCagetteProFromUser(app.user);
+
+		if(app.user.tosVersion!=sugoi.db.Variable.getInt("tosVersion")){
+			var c = new sugoi.form.elements.Checkbox("tos","J'accepte les <br/><a href='/tos' target='_blank'>conditions générales d'utilisation</a><br/>et la <a href='/privacypolicy' target='_blank'>politique de confidentialité</a>");
+			// c.description = "J'accepte les <br/><a href='/tos' target='_blank'>conditions générales d'utilisation</a><br/>et la <a href='/privacypolicy' target='_blank'>politique de confidentialité</a>";
+			form.addElement(c);
+		}
+
+		for( cpro in cagettePros ){
+			var vendor = cpro.vendor;
+			if(vendor.tosVersion != sugoi.db.Variable.getInt('platformtermsofservice')){
+
+				form.addElement(new sugoi.form.elements.Checkbox("cgs"+vendor.id,"En tant que gestionnaire du compte \""+vendor.name+"\", <br/> j'accepte les <a href='/platformtermsofservice' target='_blank'>Conditions générales de service</a> qui encadrent les services fournis par Cagette.net aux Producteurs"));
+			} 
+		}
 
 		if(form.isValid() && form.getValueOf("tos")==true){
-			app.user.lock();
-			app.user.tosVersion = tosVersion;
-			app.user.update();
-			throw Redirect('/');
+			// app.user.lock();
+			// app.user.tosVersion = tosVersion;
+			// app.user.update();
+			// throw Redirect('/');
 		}
 		
-		view.title = "Mise à jour des conditions générales d'utilisation de "+ App.current.getTheme().name +' ( v. $tosVersion )';
+		view.title = "Mise à jour des conditions générales";
 		view.form = form;
 	}
 	
