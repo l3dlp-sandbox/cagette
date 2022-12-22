@@ -61,10 +61,13 @@ class Main extends controller.Controller
 			checkCompanySelected();
 		}
 
-		// //check terms of sale
-		// if(vendor.tosVersion != sugoi.db.Variable.getInt('termsOfSaleVersion')){
-		// 	throw Redirect("/p/pro/tos");
-		// } 
+		//check CGS for non representative
+		if(this.vendor.tosVersion != sugoi.db.Variable.getInt('platformtermsofservice')){
+			var isNonLegalRep = pro.db.PUserCompany.manager.select($user == app.user && $company == this.company && $legalRepresentative==false, false) != null;
+			if(isNonLegalRep){
+				throw Redirect("/p/pro/tosblocked");
+			}
+		} 
 		
 		view.nav = ["home"];
 		
@@ -263,23 +266,12 @@ class Main extends controller.Controller
 		d.dispatch(new pro.controller.Signup());
 	}
 
-	/*@tpl('form.mtt')
-	function doTos(){
-		var tosVersion = sugoi.db.Variable.getInt("termsOfSaleVersion");
-		var form = new sugoi.form.Form("tos");
-		form.addElement(new sugoi.form.elements.Checkbox("tos","J'accepte les nouvelles <a href='/cgv' target='_blank'>conditions générales de vente</a>"));
+	@tpl('plugin/pro/tosblocked.mtt')
+	function doTosblocked(){
 
-		if(form.isValid() && form.getValueOf("tos")==true){
-			vendor.lock();
-			vendor.tosVersion = tosVersion;
-			vendor.update();
-			throw Redirect('/p/pro');
-		}
+		view.legalRep = pro.db.PUserCompany.manager.select($company == this.company && $legalRepresentative==true, false);
 		
-		view.title = "Mise à jour des conditions générales de vente "+' ( v. $tosVersion )';
-		view.text = "En tant que producteur qui vend des produits sur Cagette.net, vous devez accepter ces conditions qui définissent les modalités d'utilisation de Cagette.net par les producteurs.";
-		view.form = form;
-	}*/
+	}
 
 
 	@logged @tpl("plugin/pro/upgrade.mtt")
