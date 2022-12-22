@@ -21,11 +21,14 @@
 				
 				::set user = legalRep._user::
 				<p>
-					Le représentant légal de <b>::legalRep._company._vendor.name::</b> est :
+					Le représentant légal de "<b>::legalRep._company._vendor.name::</b>" est :
 				</p>
 				<p>
 					<b>::user.firstName:: ::user.lastName::</b><br/>
 					::user.email::
+				</p>
+				<p>
+					<a href="mailto:support@cagette.net">Contactez le support</a> si ce compte n'est pas accessible.
 				</p>
 				
 
