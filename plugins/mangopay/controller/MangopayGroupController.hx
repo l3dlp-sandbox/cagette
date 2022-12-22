@@ -287,9 +287,10 @@ class MangopayGroupController extends controller.Controller
 
 		//distribs
 		var now = Date.now();
-		var threeMonthAgo = DateTools.delta(now,-1000.0*60*60*24*30.5*6); 
-		var inThreeMonth = DateTools.delta(now,1000.0*60*60*24*30.5*6); 
-		var mds = MultiDistrib.getFromTimeRange(group,threeMonthAgo,inThreeMonth);
+		var tf = new tools.Timeframe(DateTools.delta(now,-1000.0*60*60*24*30.5*6),DateTools.delta(now,1000.0*60*60*24*30.5*6));
+		view.timeframe = tf;
+	
+		var mds = MultiDistrib.getFromTimeRange(group,tf.from,tf.to);
 		view.multidistribs = mds;
 		view.getMangopayGroupPayout = function(md:MultiDistrib){
 			return MangopayGroupPayOut.get(md);

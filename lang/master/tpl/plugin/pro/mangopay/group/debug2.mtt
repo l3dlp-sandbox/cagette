@@ -1,6 +1,8 @@
 ::use 'amapadmin/design.mtt'::
 	
 	<div class=" article">
+        $$timeframe(::timeframe::)
+
         <h3>Debug Paiements Mangopay - ::group.name::</h3>
         
         ::set walletShouldBe = 0.0::
