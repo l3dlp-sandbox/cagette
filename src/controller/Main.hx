@@ -394,7 +394,6 @@ class Main extends Controller {
 	public function doCcp() {
 		throw Redirect('/termsofsale');
 	}
-
 	public function doTermsofsale() {		
 		throw Redirect(App.current.getTheme().terms.termsOfSaleLink);
 	}
@@ -403,7 +402,6 @@ class Main extends Controller {
 	public function doPlatformTermsOfService() {		
 		throw Redirect(App.current.getTheme().terms.platformTermsOfServiceLink);
 	}
-
 	public function doCgs() {
 		throw Redirect('/platformtermsofservice');
 	}
