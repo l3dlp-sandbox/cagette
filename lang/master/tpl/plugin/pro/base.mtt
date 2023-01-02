@@ -7,6 +7,8 @@
 
 		$$favicons()
 
+		$$googleTagManager(::getVariable("googleTagManagerId")::)
+
 		<!-- Cagette CSS -->
 		::if(DEBUG)::
 			<link rel="stylesheet" type="text/css" href="/theme/::theme.id::/css/::getVariable('css')::/style.css" />
@@ -62,28 +64,14 @@
 		
 		::raw __content__::
 		
-		$$matomo()
+		$$googleTagManagerNoScript(::getVariable("googleTagManagerId")::)
 		  
-		::set matomoUrl = getMatomoUrl()::
-		::if(matomoUrl!="")::
-			<script type="text/javascript"> 
-				//track Matomo events from the backend
-				var events = JSON.parse('::raw getMatomoEvents()::');
-				for(ev of events){
-					console.info("track Matomo event",ev);
-					_paq.push(['trackEvent', ev.category, ev.action, ev.name, ev.value]);
-				}
-			</script>
-		::end::
-
-		 <script type="text/javascript">
-
+		<script type="text/javascript">
 			_Cagette.theme = {
 				id: "::theme.id::",
 				name: "::theme.name::",
 				supportEmail: "::theme.supportEmail::"
-			}
-			
+			}			
 		</script>
 
 		::foreach script getNeoModuleScripts()::

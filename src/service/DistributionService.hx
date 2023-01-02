@@ -334,16 +334,6 @@ class DistributionService
 
 		var d = create( catalog, md.distribStartDate, md.distribEndDate, md.place.id, orderStartDate, orderEndDate, null, true, md );
 
-		//first distrib attendance tracking for Matomo
-		var cpro = CagettePro.getFromVendor(catalog.vendor);
-		if(cpro!=null && cpro.offer==CagetteProOffer.Discovery){
-			var cids = catalog.vendor.getContracts().map(c -> c.id);
-			var distribNum = Distribution.manager.count($catalogId in cids);
-			if(distribNum==1){
-				BridgeService.matomoEvent(cpro.getMainContact().id,"Producteurs","Première distribution");
-			}
-		}
-
 		return d;
 	}
 

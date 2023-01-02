@@ -343,8 +343,6 @@ class PCatalogService{
 			pro.service.PCatalogService.syncProduct(co, null, contract,true, false);
 		}
 
-		BridgeService.matomoEvent(pcatalog.company.getMainContact().id,"Producteurs","Catalogue relié",'Catalogue #${pcatalog.id}');
-		
 		return rc;
 	}
 	

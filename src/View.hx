@@ -5,7 +5,6 @@ import haxe.Json;
 import haxe.Utf8;
 import sugoi.Web;
 import tools.ArrayTool;
-import tools.Matomo;
 
 using Std;
 
@@ -314,14 +313,6 @@ class View extends sugoi.BaseView {
 		return service.BridgeService.getNeoModuleScripts();
 	}
 
-	public function getMatomoUrl() {
-		return App.config.get("matomo_url", "");
-	}
-
-	public function getMatomoSiteId() {
-		return App.config.get("matomo_site_id", "");
-	}
-
 	/** 
 	 * Smart quantity (tm) : displays human readable quantity
 	 * 0.33 x Lemon 12kg => 2kg Lemon
@@ -348,7 +339,4 @@ class View extends sugoi.BaseView {
 		return App.current.session.sid;
 	}
 
-	public function getMatomoEvents() {
-		return Json.stringify(Matomo.getEvents());
-	}
 }

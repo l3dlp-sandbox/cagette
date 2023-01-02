@@ -212,10 +212,6 @@ class Catalog extends controller.Controller
 			catalog.visible = f.getValueOf("visible") == "public";
 			catalog.insert();
 
-			if(company.offer==Discovery && PCatalog.manager.count($company==this.company)==1){
-				service.BridgeService.matomoEvent(app.user.id,"Producteurs","Premier catalogue créé");
-			}
-
 			throw Ok('/p/pro/catalog/products/'+catalog.id,'Le catalogue a été créé');
 		}
 		
