@@ -1,15 +1,15 @@
 ::use 'plugin/pro/design.mtt'::
 
 ::if(vendor.isDisabled())::	
-    ::if(vendor.disabled!=3)::
-    <!--other reason than turnoverLimitReached-->
-    <div class="col-md-12">			
-        <div class="alert alert-danger">
-            <i class="icon icon-alert"></i>
-            Ce compte producteur est bloqué et n'accepte plus de commandes. 
-            Raison : <b>::vendor.getDisabledReason()::</b>
+    ::if(vendor.disabled!=3 && vendor.disabled!=4)::
+        <!--other reason than TurnoverLimitReached or MarketplaceNotActivated-->
+        <div class="col-md-12">			
+            <div class="alert alert-danger">
+                <i class="icon icon-alert"></i>
+                Ce compte producteur est bloqué et n'accepte plus de commandes.<br/>
+                Raison : <b>::vendor.getDisabledReason()::</b>
+            </div>
         </div>
-    </div>	
     ::end::
 ::end::
 

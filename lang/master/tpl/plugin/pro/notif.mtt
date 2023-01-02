@@ -93,21 +93,38 @@
 					::end::
 				</td>
 			</tr>
+			::if(notifContent.message!="")::
+				<tr>
+					<td>Message</td>
+					<td>::raw nl2br(notifContent.message)::</td>
+				</tr>
+			::end::
+			::if vendor.disabled==4::
 			<tr>
-				<td>Message</td>
-				<td>::raw nl2br(notifContent.message)::</td>
+				<td colSpan="2">
+					<div class="alert alert-danger" style="margin-bottom: 0px; margin-top: 16px; display: flex;">
+						<div style="display: flex; align-items: center; margin-right: 8px;">
+							<i class="icon icon-alert"></i>
+						</div>
+						<div>
+							<p>Pour pouvoir relier votre premier catalogue à un groupe, vous devez activer le prélèvement des frais de plateforme Cagette.net</p>
+							<a href="/p/pro/upgrade" class="btn btn-primary pull-right">Activer le prélèvement</a>
+						</div>
+					</div>
+				</td>
 			</tr>
+			::end::
 		</table>
 	
 		<div class="text-center">
-			<a href="/p/pro/catalog/approveImport/::notif.id::" class="btn btn-primary btn-lg" >
+			<a href="/p/pro/catalog/approveImport/::notif.id::" class="btn btn-primary btn-lg ::if vendor.disabled==4::disabled::end::" >
 				<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
 				&nbsp;Approuver
 			</a>
 			
-			<a href="/p/pro/notif/delete/::notif.id::?token=::token::" $$confirm(Supprimer cette demande ?)  class="btn btn-danger btn-lg" >
+			<a href="/p/pro/notif/delete/::notif.id::?token=::token::" $$confirm(Supprimer cette demande ?)  class="btn btn-danger btn-lg ::if vendor.disabled==4::disabled::end::" >
 				<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-				&nbsp;Effacer
+				&nbsp;Refuser
 			</a>
 		</div>
 	
