@@ -1,0 +1,14 @@
+::use 'admin/basedesign.mtt'::
+
+<div id="showcase-div" style="padding: 8px"></div>
+<div id="showcase-result-div" style="padding: 8px"></div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function(event) {
+    neo.createNeoModule("showcase-div", "showcase-multiDistribs", {
+      portalTarget: "showcase-result-div"
+    });
+  });
+</script>
+
+::end::

@@ -1,4 +1,5 @@
 package controller.admin;
+
 import db.Graph;
 import haxe.Json;
 import sugoi.form.elements.TextArea;
@@ -38,42 +39,40 @@ class Admin extends Controller {
 		// db.Group.manager.count($betaFlags.has(Cagette2));
 		// db.Group.manager.count($betaFlags.has(Dispatch));
 
-		//tmp deploiement de l'option cagette2
+		// tmp deploiement de l'option cagette2
 		var groups = db.Group.manager.unsafeCount('SELECT COUNT(g.id) FROM `Group` g, GroupStats gs WHERE gs.groupId=g.id AND gs.active=1');
 		var cg2groups = db.Group.manager.unsafeCount('SELECT COUNT(g.id) FROM `Group` g, GroupStats gs WHERE betaFlags & 2 != 0 AND gs.groupId=g.id AND gs.active=1');
 		var dispatchGroups = db.Group.manager.unsafeCount('SELECT COUNT(g.id) FROM `Group` g, GroupStats gs WHERE betaFlags & 4 != 0 AND gs.groupId=g.id AND gs.active=1');
 		view.groups = groups;
 		view.cg2groups = cg2groups;
 		view.dispatchGroups = dispatchGroups;
-		
-		if(app.params.get("reloadSettings")=="1"){
+
+		if (app.params.get("reloadSettings") == "1") {
 			app.setSettings();
 			app.setTheme();
 			view.theme = app.getTheme();
 			view.settings = app.getSettings();
-			throw Ok('/admin',"Settings and theme reloaded");
+			throw Ok('/admin', "Settings and theme reloaded");
 		}
 	}
 
 	@tpl("form.mtt")
-	function doTheme(){
-
+	function doTheme() {
 		var f = new sugoi.form.Form("theme");
 
-		f.addElement(new sugoi.form.elements.TextArea("theme","theme",Json.stringify(app.getTheme()),true,null,"style='height:800px;'"));
-		f.addElement(new sugoi.form.elements.Html("html","<a href='https://www.jsonlint.com/' target='_blank'>jsonlint.com</a>"));
+		f.addElement(new sugoi.form.elements.TextArea("theme", "theme", Json.stringify(app.getTheme()), true, null, "style='height:800px;'"));
+		f.addElement(new sugoi.form.elements.Html("html", "<a href='https://www.jsonlint.com/' target='_blank'>jsonlint.com</a>"));
 
-		if(f.isValid()){
-
+		if (f.isValid()) {
 			var json:Theme = null;
-			try{
+			try {
 				json = Json.parse(f.getValueOf("theme"));
-				Variable.set("whiteLabel",Json.stringify(json));
-			}catch(e:Dynamic){
-				throw Error('/admin/theme',"Erreur : "+Std.string(e));
+				Variable.set("whiteLabel", Json.stringify(json));
+			} catch (e:Dynamic) {
+				throw Error('/admin/theme', "Erreur : " + Std.string(e));
 			}
 
-			throw Ok("/admin/","Thème mis à jour");
+			throw Ok("/admin/", "Thème mis à jour");
 		}
 
 		view.form = f;
@@ -81,7 +80,7 @@ class Admin extends Controller {
 	}
 
 	@tpl('admin/basket.mtt')
-	function doBasket(basket:db.Basket){
+	function doBasket(basket:db.Basket) {
 		view.basket = basket;
 	}
 
@@ -109,7 +108,7 @@ class Admin extends Controller {
 		view.browser = new sugoi.tools.ResultsBrowser(count, 10, browse);
 		view.num = count;
 	}
-	
+
 	function doVendor(d:haxe.web.Dispatch) {
 		d.dispatch(new controller.admin.Vendor());
 	}
@@ -255,17 +254,19 @@ class Admin extends Controller {
 	@tpl("admin/stats.mtt")
 	function doStats() {
 		var now = Date.now();
-		
-		var from = new Date(now.getFullYear(),now.getMonth(), now.getDate()-1, 0, 0, 0);
-		var to 	 = new Date(now.getFullYear(),now.getMonth(), now.getDate(), 0, 0, 0);
 
-		//find previous monday
-		while(from.getDay()!=1) from = DateTools.delta(from, -1000*60*60*24);
+		var from = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 0, 0, 0);
+		var to = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
 
-		//find next monday
-		while(to.getDay()!=1) to = DateTools.delta(to, 1000*60*60*24);
-		
-		var tf = new Timeframe(from,to);
+		// find previous monday
+		while (from.getDay() != 1)
+			from = DateTools.delta(from, -1000 * 60 * 60 * 24);
+
+		// find next monday
+		while (to.getDay() != 1)
+			to = DateTools.delta(to, 1000 * 60 * 60 * 24);
+
+		var tf = new Timeframe(from, to);
 		view.tf = tf;
 
 		from = tf.from;
@@ -276,8 +277,9 @@ class Admin extends Controller {
 		FROM Vendor v, VendorStats vs 
 		WHERE vs.vendorId=v.id AND cdate >= "${from.toString()}" and cdate < "${to.toString()}"
 		group by vs.type
-		order by type').results();
-		
+		order by type')
+			.results();
+
 		view.activeVendors = sys.db.Manager.cnx.request("SELECT count(v.id) FROM Vendor v, VendorStats vs where vs.vendorId=v.id and vs.active=1")
 			.getIntResult(0);
 
@@ -285,7 +287,8 @@ class Admin extends Controller {
 		FROM Vendor v, VendorStats vs 
 		WHERE vs.vendorId=v.id AND active=1
 		group by vs.type
-		order by type').results();
+		order by type')
+			.results();
 
 		view.activeGroups = GroupStats.manager.count($active);
 		view.activeUsers = sys.db.Manager.cnx.request('SELECT sum(gs.membersNum) FROM `Group` g, GroupStats gs where gs.groupId=g.id and gs.active=1')
@@ -301,49 +304,47 @@ class Admin extends Controller {
 		where gs.groupId=g.id 
 		and g.cdate >= "${from.toString()}" and g.cdate < "${to.toString()}"
 		group by contactType
-		order by count desc').results();
+		order by count desc')
+			.results();
 
 		view.activeGroupsByAdmin = sys.db.Manager.cnx.request('SELECT count(gs.contactType) as count,gs.contactType FROM `Group` g, GroupStats gs 
 		where gs.groupId=g.id 
 		and gs.active=1
 		group by contactType
-		order by count desc').results();
+		order by count desc')
+			.results();
 
 		// db.Group.manager.search($flags.has(ShopMode));
 		// db.Group.manager.search(!$flags.has(ShopMode));
 
-
-		//BASKETS
+		// BASKETS
 		/*var marketBaskets = db.Basket.manager.unsafeObjects('
-			select * from Basket where cdate >= "${from.toString()}" and cdate < "${to.toString()}"
-			and multiDistribId in (
-			select id from MultiDistrib where groupId in (
-				#group AVEC shopMode
-				SELECT id FROM `Group` WHERE flags & 2 != 0 
-			) and distribStartDate > NOW() )',false);
+				select * from Basket where cdate >= "${from.toString()}" and cdate < "${to.toString()}"
+				and multiDistribId in (
+				select id from MultiDistrib where groupId in (
+					#group AVEC shopMode
+					SELECT id FROM `Group` WHERE flags & 2 != 0 
+				) and distribStartDate > NOW() )',false);
 
 
-		view.marketBasketsNum = marketBaskets.length;
+			view.marketBasketsNum = marketBaskets.length;
 
-		var amapBaskets = db.Basket.manager.unsafeObjects('
-			select * from Basket where cdate >= "${from.toString()}" and cdate < "${to.toString()}"
-			and multiDistribId in (
-			select id from MultiDistrib where groupId in (
-				#group SANS shopMode
-				SELECT id FROM `Group` WHERE !(flags & 2 != 0) 
-			) and distribStartDate > NOW() )',false);
+			var amapBaskets = db.Basket.manager.unsafeObjects('
+				select * from Basket where cdate >= "${from.toString()}" and cdate < "${to.toString()}"
+				and multiDistribId in (
+				select id from MultiDistrib where groupId in (
+					#group SANS shopMode
+					SELECT id FROM `Group` WHERE !(flags & 2 != 0) 
+				) and distribStartDate > NOW() )',false);
 
 
-		view.amapBasketsNum = amapBaskets.length;*/
+			view.amapBasketsNum = amapBaskets.length; */
 
-		//global stats
-		var stats = Graph.getData("global",from);
-		if(stats==null) stats = {};
+		// global stats
+		var stats = Graph.getData("global", from);
+		if (stats == null)
+			stats = {};
 		view.stats = stats;
-
-
-
-
 	}
 
 	public static function addUserToGroup(email:String, group:db.Group) {
@@ -380,8 +381,6 @@ class Admin extends Controller {
 		Sys.print('${vendors.length} vendors actifs');
 
 	}*/
-
-
 	/**
 		Stats sur les groupes actifs
 	**/
@@ -469,7 +468,6 @@ class Admin extends Controller {
 
 	@tpl("admin/group/default.mtt")
 	function doGroups() {
-
 		var groups = [];
 		var total = 0;
 		var totalActive = 0;
@@ -483,7 +481,7 @@ class Admin extends Controller {
 			{label: "Tous", value: "all"},
 			{label: "Mode marché", value: "shopMode"},
 			{label: "Mode AMAP", value: "CSAMode"},
-			
+
 		];
 		f.addElement(new sugoi.form.elements.StringSelect("type", "Type de groupe", data, defaultType, true, ""));
 		f.addElement(new sugoi.form.elements.StringInput("zipCodes", "Saisir des numéros de département séparés par des virgules ou laisser vide."));
@@ -494,17 +492,16 @@ class Admin extends Controller {
 			{label: "Tous", value: "all"}
 		];
 		f.addElement(new sugoi.form.elements.StringSelect("active", "Actifs ou pas", data, "active", true, ""));
-		var data = [
-			{label: "Tableau", value: "table"},
-			{label: "CSV", value: "csv"}
-		];
+		var data = [{label: "Tableau", value: "table"}, {label: "CSV", value: "csv"}];
 		f.addElement(new sugoi.form.elements.StringSelect("output", "Sortie", data, "table", true, ""));
 
 		var sql_select = "SELECT g.*,gs.active,gs.membersNum,gs.contractNum,p.name as pname, p.address1,p.address2,p.zipCode,p.country,p.city";
 		var sql_where_or = [];
 		var sql_where_and = [];
 		var sql_end = "ORDER BY g.id ASC";
-		var sql_from = ["`Group` g LEFT JOIN  GroupStats gs ON g.id=gs.groupId LEFT JOIN Place p ON g.placeId=p.id"];
+		var sql_from = [
+			"`Group` g LEFT JOIN  GroupStats gs ON g.id=gs.groupId LEFT JOIN Place p ON g.placeId=p.id"
+		];
 
 		if (f.isValid()) {
 			// filter by zip codes
@@ -527,23 +524,25 @@ class Admin extends Controller {
 			}
 
 			// type
-			if (f.getValueOf("type") != "all") {				
+			if (f.getValueOf("type") != "all") {
 				var type = f.getValueOf("type");
-				switch(type){
-					case "marketMode","shopMode" : sql_where_and.push("g.flags&2 != 0");
-					case "CSAMode" : sql_where_and.push("g.flags&2 = 0");
-					default : throw "unknown type";
+				switch (type) {
+					case "marketMode", "shopMode":
+						sql_where_and.push("g.flags&2 != 0");
+					case "CSAMode":
+						sql_where_and.push("g.flags&2 = 0");
+					default:
+						throw "unknown type";
 				}
 			}
 
 			// country
 			sql_where_and.push('p.country="${f.getValueOf("country")}"');
 
-			//group name
-			if(f.getValueOf("groupName")!=null){
+			// group name
+			if (f.getValueOf("groupName") != null) {
 				sql_where_and.push('g.name like "%${f.getValueOf("groupName")}%"');
 			}
-
 		} else {
 			// default settings
 			sql_where_and.push('active=1');
@@ -564,7 +563,8 @@ class Admin extends Controller {
 		view.form = f;
 
 		for (g in groups) {
-			if (untyped g.active) totalActive++;
+			if (untyped g.active)
+				totalActive++;
 			total++;
 		}
 
@@ -579,8 +579,8 @@ class Admin extends Controller {
 
 			case "csv":
 				var headers = [
-					"id", "name","mode","placeName", "address1", "address2", "zipCode", "city", "active", "url",
-					"contactName","contactEmail","contactPhone","membersNum","contractNum"
+					"id", "name", "mode", "placeName", "address1", "address2", "zipCode", "city", "active", "url", "contactName", "contactEmail",
+					"contactPhone", "membersNum", "contractNum"
 				];
 				var data = [];
 				for (g in groups) {
@@ -589,145 +589,131 @@ class Admin extends Controller {
 					data.push({
 						id: g.id,
 						name: g.name,
-						mode : g.hasShopMode() ? "Marché" : "AMAP",
-						placeName : untyped g.pname,
-						address1 : untyped g.address1,
-						address2 : untyped g.address2,
-						zipCode : untyped g.zipCode,
-						city : untyped g.city,
+						mode: g.hasShopMode() ? "Marché" : "AMAP",
+						placeName: untyped g.pname,
+						address1: untyped g.address1,
+						address2: untyped g.address2,
+						zipCode: untyped g.zipCode,
+						city: untyped g.city,
 						active: switch (active) {
 							case true: "OUI";
 							case false: "NON";
 						},
-						url:"https://app.cagette.net/group/"+g.id,
-						contactName : contact!=null ? contact.getName() : "",
-						contactEmail: contact!=null ? contact.email : "",
-						contactPhone: contact!=null ? contact.phone : "",
-						membersNum : untyped g.membersNum,
-						contractNum : untyped g.contractNum			
+						url: "https://app.cagette.net/group/" + g.id,
+						contactName: contact != null ? contact.getName() : "",
+						contactEmail: contact != null ? contact.email : "",
+						contactPhone: contact != null ? contact.phone : "",
+						membersNum: untyped g.membersNum,
+						contractNum: untyped g.contractNum
 					});
 				}
 
 				sugoi.tools.Csv.printCsvDataFromObjects(data, headers, "groupes");
 		}
 	}
-	
+
 	@tpl('admin/news.mtt')
 	function doNews() {}
 
-
-
-
-	function doTestMails(?args:{tpl:String}){
-
-		//list existing mail templates
+	function doTestMails(?args:{tpl:String}) {
+		// list existing mail templates
 		var dirs = [
-			Web.getCwd()+"/../lang/master/tpl/mail/",
-			Web.getCwd()+"/../lang/master/tpl/plugin/pro/who/mail/",
-			Web.getCwd()+"/../lang/master/tpl/plugin/pro/mail/"
+			Web.getCwd() + "/../lang/master/tpl/mail/",
+			Web.getCwd() + "/../lang/master/tpl/plugin/pro/who/mail/",
+			Web.getCwd() + "/../lang/master/tpl/plugin/pro/mail/"
 		];
 		var tpls = [];
 
-		for( dir in dirs){
+		for (dir in dirs) {
 			var files = FileSystem.readDirectory(dir);
-			for(file in files) tpls.push(dir+file);	
+			for (file in files)
+				tpls.push(dir + file);
 		}
 
 		Sys.print("<ul>");
-		for(tpl in tpls){
+		for (tpl in tpls) {
 			var i = tpl.indexOf("/lang/master/tpl/") + "/lang/master/tpl/".length;
 			tpl = tpl.substr(i);
 			Sys.print('<li><a href="/admin/testMails?tpl=$tpl">$tpl</a></li>');
-		} 
+		}
 		Sys.print("</ul>");
-		
-		var group = db.Group.manager.select(true,false);
-		var user = db.User.manager.select(true,false);
-		var d = db.Distribution.manager.select(true,false);
+
+		var group = db.Group.manager.select(true, false);
+		var user = db.User.manager.select(true, false);
+		var d = db.Distribution.manager.select(true, false);
 		var contract = d.catalog;
 		var catalog = d.catalog;
 
-
-		if(args!=null && args.tpl!=null){
+		if (args != null && args.tpl != null) {
 			var res = App.current.processTemplate(args.tpl, {
-				group:group,
-				user:user,
-				d:d,
-				catalog:catalog,
-				contract:contract,
-				text:"Lorem Ipsum"
-			} );
+				group: group,
+				user: user,
+				d: d,
+				catalog: catalog,
+				contract: contract,
+				text: "Lorem Ipsum"
+			});
 			Sys.print(res);
 		}
-
 	}
 
-	public function doStats202211(){
-
-		for(vs in pro.db.VendorStats.manager.search($type==VTFree || $type==VTInvited || $type==VTInvitedPro , false)){
-
+	public function doStats202211() {
+		for (vs in pro.db.VendorStats.manager.search($type == VTFree || $type == VTInvited || $type == VTInvitedPro, false)) {
 			var v = vs.vendor;
 
-			//remove those who have only AMAP clients
+			// remove those who have only AMAP clients
 			var catalogs = v.getActiveContracts();
-			var AMAPcatalogs = catalogs.filter( c -> !c.group.hasShopMode());
+			var AMAPcatalogs = catalogs.filter(c -> !c.group.hasShopMode());
 
-			if(AMAPcatalogs.length==catalogs.length){
+			if (AMAPcatalogs.length == catalogs.length) {
 				continue;
 			}
 
-			Sys.print(v.id+";"+v.name+";"+v.email+"<br/>");
+			Sys.print(v.id + ";" + v.name + ";" + v.email + "<br/>");
 		}
-
 	}
 
-	public function doStatsCoordo202211(){
-
-		for(vs in pro.db.VendorStats.manager.search($type==VTFree || $type==VTInvited || $type==VTInvitedPro , false)){
-
+	public function doStatsCoordo202211() {
+		for (vs in pro.db.VendorStats.manager.search($type == VTFree || $type == VTInvited || $type == VTInvitedPro, false)) {
 			var v = vs.vendor;
 
 			var catalogs = v.getActiveContracts();
-			for ( c in catalogs){
-
+			for (c in catalogs) {
 				var g = c.group;
 
-				//if AMAP continue...
-				if(!g.hasShopMode()){
+				// if AMAP continue...
+				if (!g.hasShopMode()) {
 					continue;
 				}
 
-				for( ua in g.getGroupAdmins()){
-					//people who manage this contract
-					if(ua.hasRight(db.UserGroup.Right.ContractAdmin(c.id))){
+				for (ua in g.getGroupAdmins()) {
+					// people who manage this contract
+					if (ua.hasRight(db.UserGroup.Right.ContractAdmin(c.id))) {
 						var u = ua.user;
-						Sys.print(u.id+";"+u.email+"<br/>");
+						Sys.print(u.id + ";" + u.email + "<br/>");
 					}
 				}
-				
-				//group admin
-				if(g.contact!=null){
+
+				// group admin
+				if (g.contact != null) {
 					var u = g.contact;
-					Sys.print(u.id+";"+u.email+"<br/>");
-
+					Sys.print(u.id + ";" + u.email + "<br/>");
 				}
-
 			}
 		}
 	}
 
 	@tpl('admin/settings.mtt')
-	function doSettings(){}
-
-
+	function doSettings() {}
 
 	@tpl('admin/superadmins.mtt')
-	function doSuperadmins(){
-		view.superadmins = db.User.manager.search($rights.has(Admin),false);
+	function doSuperadmins() {
+		view.superadmins = db.User.manager.search($rights.has(Admin), false);
 	}
 
 	@tpl('admin/stripe.mtt')
-	function doStripe(){
+	function doStripe() {}
 
-	}
+	@tpl('admin/showcase.mtt')
+	function doShowcase() {}
 }
