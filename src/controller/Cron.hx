@@ -170,9 +170,9 @@ class Cron extends Controller
 		task.execute(!App.config.DEBUG);
 
 		//Distrib Validation notifications				
-		var task = new TransactionWrappedTask("Distrib Validation notifications");
-		task.setTask(distribValidationNotif.bind(task));
-		task.execute(!App.config.DEBUG);
+		// var task = new TransactionWrappedTask("Distrib Validation notifications");
+		// task.setTask(distribValidationNotif.bind(task));
+		// task.execute(!App.config.DEBUG);
 
 		var task = new TransactionWrappedTask( 'Default automated orders for CSA variable contracts' );
 		task.setTask( function() {
@@ -806,106 +806,6 @@ class Cron extends Controller
 		}
 	}
 	
-	
-	/**
-	 * Check if there is a multi-distrib to validate.
-	 * 
-	 * Autovalidate it after 10 days
-	 */
-	function distribValidationNotif(task){
-		
-		var now = Date.now();
-
-		var from = now.setHourMinute( now.getHours(), 0 );
-		var to = now.setHourMinute( now.getHours()+1 , 0);
-		
-		var explain = t._("<p>This step is important in order to:</p>");
-		explain += t._("<ul><li>Update orders if delivered quantities are different from ordered quantities</li>");
-		explain += t._("<li>Confirm the reception of payments (checks, cash, transfers) in order to mark orders as 'paid'</li></ul>");
-		
-		/*
-		 * warn administrator if a distribution just ended
-		 */ 
-		var distribs = db.MultiDistrib.manager.search( $validatedStatus==Std.string(NOT_VALIDATED) && ($distribStartDate >= from) && ($distribStartDate < to) , false);
-		
-		for ( d in Lambda.array(distribs)){
-			if ( !d.getGroup().hasPayments() ){
-				distribs.remove(d);
-			}
-		}
-		var view = App.current.view;
-		for ( d in distribs ){
-			var subj = "Validation de la distribution du " + view.hDate(d.distribStartDate);
-			var url = "http://" + App.config.HOST + "/distribution/validate/"+d.id;
-			var html = t._("<p>Your distribution just finished, don't forget to <b>validate</b> it</p>");
-			html += explain;
-			html += "<p><a href='" + url + "'>Cliquez ici pour valider la distribution</a> (vous devez être connecté·e à votre groupe " + App.current.getTheme().name + ")</p>";
-			App.quickMail(d.getGroup().contact.email, subj, html, d.getGroup());
-		}
-		
-		/*
-		 * warn administrator if a distribution ended 3 days ago
-		 */		
-		
-		var from = now.setHourMinute( now.getHours() , 0 ).deltaDays(-3);
-		var to = now.setHourMinute( now.getHours()+1 , 0).deltaDays(-3);
-		
-		//warn administrator if a distribution just ended
-		var distribs = db.MultiDistrib.manager.search( $validatedStatus==Std.string(NOT_VALIDATED) && ($distribStartDate >= from) && ($distribStartDate < to) , false);
-		
-		for ( d in Lambda.array(distribs)){
-			if ( !d.getGroup().hasPayments() ){
-				distribs.remove(d);
-			}
-		}
-		
-		for ( d in distribs ){
-		
-			var subj = "Validation de la distribution du " + view.hDate(d.distribStartDate);
-			var url = "http://" + App.config.HOST + "/distribution/validate/"+d.id;		
-			var html = t._("<p>Reminder: you have a delivery to validate.</p>");
-			html += explain;
-			html += "<p><a href='" + url + "'>Cliquez ici pour valider la distribution</a> (vous devez être connecté·e à votre groupe " + App.current.getTheme().name + ")</p>";
-			
-			if(d.getGroup().contact!=null){
-				App.quickMail(d.getGroup().contact.email, subj, html, d.getGroup());
-			}
-			
-		}
-		
-		
-		/*
-		 * Autovalidate unvalidated distributions after 10 days
-		 */ 
-		/*var from = now.setHourMinute( now.getHours() , 0 ).deltaDays( 0 - db.Distribution.DISTRIBUTION_VALIDATION_LIMIT );
-		var to = now.setHourMinute( now.getHours() + 1 , 0).deltaDays( 0 - db.Distribution.DISTRIBUTION_VALIDATION_LIMIT );
-		task.log('<h3>Autovalidation of unvalidated distribs</h3>');
-		task.log('Find distributions from $from to $to');
-		var distribs = db.MultiDistrib.manager.search( !$validated && ($distribStartDate >= from) && ($distribStartDate < to) , false);
-		for ( d in Lambda.array(distribs)){
-			if ( !d.getGroup().hasPayments() ){
-				distribs.remove(d);
-			}
-		}
-
-		for (d in distribs){
-			task.log(d.toString());
-			try	{
-				service.PaymentService.validateDistribution(d);
-			}catch(e:tink.core.Error){
-				task.log(e.message);
-				continue;
-			}
-		}
-		//email
-		for ( d in distribs ){
-			if(d.getGroup().contact==null) continue;
-			var subj = t._("[::group::] Validation of the ::date:: distribution",{group : d.getGroup().name , date : view.hDate(d.distribStartDate)});
-			var html = t._("<p>As you did not validate it manually after 10 days, <br/>the delivery of the ::deliveryDate:: has been validated automatically</p>", {deliveryDate:App.current.view.hDate(d.distribStartDate)});
-			App.quickMail(d.getGroup().contact.email, subj, html);
-		}*/
-		
-	}
 	
 	/**
 	 *  Email product report when orders close				
