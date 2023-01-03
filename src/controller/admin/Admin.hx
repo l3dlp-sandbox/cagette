@@ -653,9 +653,11 @@ class Admin extends Controller {
 				group:group,
 				user:user,
 				d:d,
+				distribution:d,
 				catalog:catalog,
 				contract:contract,
-				text:"Lorem Ipsum"
+				text:"Lorem Ipsum",
+				orders:[]
 			} );
 			Sys.print(res);
 		}

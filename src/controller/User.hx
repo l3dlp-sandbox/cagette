@@ -1,4 +1,5 @@
 package controller;
+import sugoi.form.elements.Html;
 import haxe.crypto.Md5;
 import pro.db.CagettePro;
 import pro.db.VendorStats;
@@ -353,6 +354,7 @@ class User extends Controller
 		var legalRepCagettePros = service.VendorService.getCagetteProFromLegalRep(app.user);
 
 		if(app.user.tosVersion!=sugoi.db.Variable.getInt("tosVersion")){
+			form.addElement(new Html("","Afin de répondre à la réglementation des places de marché en ligne à laquelle nous sommes soumis, nous mettons à jour nos conditions générales d'utilisation et notre politique de confidentialité. Celles-ci s'appliquent à partir du 9 janvier 2023"));
 			var c = new sugoi.form.elements.Checkbox("tos","J'accepte les <br/><a href='/tos' target='_blank'>conditions générales d'utilisation</a><br/>et la <a href='/privacypolicy' target='_blank'>politique de confidentialité</a>");
 			form.addElement(c);
 		}
@@ -360,6 +362,7 @@ class User extends Controller
 		for( cpro in legalRepCagettePros ){
 			var vendor = cpro.vendor;
 			if(vendor.tosVersion != sugoi.db.Variable.getInt('platformtermsofservice')){
+				form.addElement(new Html("","Afin de répondre à la réglementation des places de marché en ligne à laquelle nous sommes soumis, nous mettons à jour nos conditions générales de services destinées aux producteurs. Celles-ci s'appliquent à partir du 9 février 2023"));
 				form.addElement(new sugoi.form.elements.Checkbox("cgs"+vendor.id,"J'accepte les <a href='/platformtermsofservice' target='_blank'>Conditions générales de service</a> qui encadrent les services fournis par Cagette.net aux Producteurs"));
 			} 
 		}

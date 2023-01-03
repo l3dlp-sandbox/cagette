@@ -238,7 +238,7 @@ class Cron extends Controller
 		task.execute(!App.config.DEBUG);
 
 		//clean files that are not linked to anything
-		var task = new TransactionWrappedTask( "Clean unused db.File entities");
+		var task = new TransactionWrappedTask("Clean unused db.File entities");
 		task.setTask(function() {
 			var maxId = sys.db.Manager.cnx.request("select max(id) from File").getIntResult(0);
 			var rd = Std.random(Math.round(maxId/1000));

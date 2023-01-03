@@ -2,9 +2,9 @@
 
    	<h3>Récapitulatif de commande par produits</h3>
 
-   <p>
+    <p>
 		Les commandes du catalogue <b>::contract.name::</b> dont vous êtes coordinateur ont fermé le <b>::hDate(distribution.orderEndDate)::</b>.
-	 </p>
+	</p>
 
    <table class="table table-striped">
 		<tr>
@@ -65,5 +65,9 @@
 				<th>::formatNum(total)::&nbsp;::currency()::</th>	
 			</tr>
 	</table>
+
+	<p style="font-size: 0.8em;">
+		En tant que vendeur professionnel, vous répondez à des obligations civiles et fiscales. <a href="">Cliquez ici pour en savoir plus</a>. 
+	</p>
 			
 ::end::
