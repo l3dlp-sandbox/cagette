@@ -42,7 +42,7 @@ class Amap extends Controller
 
 		//remove "membership", "shop mode", "marge a la place des %", "unused" from flags
 		var flags = form.getElement("flags");
-		untyped flags.excluded = [0,1,3,5,9];
+		untyped flags.excluded = [0,1,2,3,5,9];
 		if(!group.hasShopMode()) untyped flags.excluded.push(2);
 
 		//group mode
@@ -70,7 +70,8 @@ class Amap extends Controller
 			form.toSpod(group);
 
 			//keep shop mode
-			if(shopMode) group.flags.set(db.Group.GroupFlags.ShopMode);
+			if(shopMode) group.flags.set(ShopMode);
+			if(hasPayments) group.flags.set(HasPayments);
 
 			if (group.extUrl != null){
 				if ( group.extUrl.indexOf("http://") ==-1 &&  group.extUrl.indexOf("https://") ==-1 ){

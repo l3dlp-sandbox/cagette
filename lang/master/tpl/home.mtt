@@ -3,6 +3,8 @@
 $$browserDetection()
 <div style="margin-top:12px;"></div>
 
+$$enablePayments()
+
 ::set hasShopMode = amap.hasShopMode()::
 <div id="content" class="col-md-8">
 
@@ -191,7 +193,7 @@ $$browserDetection()
 					<a onclick="_Cagette.overlay('/history/basket/::basket.id::/1','::title::')" class="btn btn-default btn-sm">
 						<i class="icon icon-basket"></i> ::_("My order"):: : ::formatNum(basket.getOrdersTotal(1)):: ::currency()::
 					</a>				
-					::if hasShopMode && active && !amap.hasPayments()::
+					::if hasShopMode && active && !amap.isDispatch() && !basket.hasOnlinePayment()::
 						$$edit(Modifier cette commande,/contract/editVarOrders/::md.id::)
 					::end::
 				</div>

@@ -1644,6 +1644,7 @@ class Admin extends controller.Controller {
 		}
 	}
 
+	//vrac 2022-07-01
 	function doVrac(usersToDelete:Int){
 
 		var themeId = App.current.getTheme().id;
@@ -1752,5 +1753,42 @@ class Admin extends controller.Controller {
 	function doFixDuplicateRefs(catalog:db.Catalog){
 		var s = new who.service.WholesaleOrderService(catalog);
 		s.fixDuplicateRefs();
+	}
+
+	function doCagette2(){
+
+		var groups = 0;
+		var amaps = 0;
+		var groupsWithPercentage = 0;
+
+		//shopmode groups with no cagette2 flag, limit 500
+		for( g in db.Group.manager.search($betaFlags.has(Cagette2)==false && $flags.has(ShopMode)==true,{limit:500})){
+
+			groups++;
+
+			//no AMAPs
+			/*if( !g.hasShopMode() ){
+				amaps++;
+				continue;
+			} */
+
+			//no percentage on catalogs			
+			if( g.getActiveContracts().count(c -> c.percentageValue>0) > 0){
+				groupsWithPercentage++;
+				continue;
+			}
+
+			g.lock();
+			g.betaFlags.set(Cagette2);
+			g.update();
+
+			Sys.println(g.id+" - "+g.name+" migrated to cagette2<br/>");
+
+		}
+
+		Sys.println("groups : "+groups+"<br/>");
+		Sys.println("amaps : "+amaps+"<br/>");
+		Sys.println("groupsWithPercentage : "+groupsWithPercentage+"<br/>");
+
 	}
 }
