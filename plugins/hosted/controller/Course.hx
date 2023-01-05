@@ -508,7 +508,6 @@ if (App.current.getSettings().noCourse==true) {
         VendorStats.updateStats(vendor);
 
 		throw Ok("/p/hosted/course/view/"+course.id,"Compte passé en formule Membre");
-
 	}
 
 	

@@ -123,7 +123,7 @@
 			::if(regularClients.length>0)::
 			<div class="col-md-12">
 				<p>
-					Les groupes que j'ai rejoint :
+					Les groupes que j'ai rejoins :
 				</p>
 			</div>
 			::end::

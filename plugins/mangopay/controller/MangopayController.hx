@@ -36,6 +36,13 @@ class MangopayController extends controller.Controller
 		if( product.catalog.group.id != app.getCurrentGroup().id ) throw "Cette commande ne correspond pas au groupe dans lequel vous êtes actuellement.";
 		
 		var user = App.current.user;
+		if(user==null) throw "Vous devez être connecté pour continuer";
+		
+		if(tmpBasket.user==null){
+			tmpBasket.lock();
+			tmpBasket.user = user;
+			tmpBasket.update();
+		}
 
 		//If one of these fields is null ask the user to specify them for Mangopay requirements
 		if(user.birthDate == null || user.nationality == null || user.countryOfResidence == null || user.tosVersion==null)
