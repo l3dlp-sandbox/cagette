@@ -407,4 +407,26 @@ class Main extends Controller {
 	function doDiscovery(){
 		throw Redirect('/p/pro/signup/discovery');
 	}
+
+	/**
+		Maintenance and migration scripts
+	**/
+	function doScripts(d:Dispatch) {
+		try {
+			d.dispatch(new controller.Scripts());
+		} catch (e:Dynamic) {
+			//errors for CLI context
+			sugoi.Web.setReturnCode(500);
+			var stack = haxe.CallStack.toString(haxe.CallStack.exceptionStack());
+			App.current.logError(e, stack);
+			Sys.println("");
+			Sys.println(Std.string(e));
+			for(m in stack.split("\n")) Sys.println(m);
+			Sys.println("");
+
+			app.rollback();
+
+		}
+	}
+
 }

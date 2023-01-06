@@ -772,4 +772,5 @@ class Cron extends Controller
 	public static function printTitle(title){
 		Sys.println("<h2>"+title+"</h2>");
 	}
+
 }
