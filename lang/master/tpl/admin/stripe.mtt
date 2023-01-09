@@ -1,4 +1,4 @@
-::use 'admin/design.mtt'::
+::use 'admin/basedesign.mtt'::
 
 <div id="stripe-dashboard-div" style="padding: 8px"></div>
 

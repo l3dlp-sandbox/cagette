@@ -350,39 +350,6 @@ class Main extends Controller {
 		d.dispatch(new controller.Debug());
 	}
 
-	// CGU
-	public function doCgu() {
-		throw Redirect(App.current.getTheme().terms.termsOfServiceLink);
-	}
-
-	// CGV
-	public function doCgv() {
-		throw Redirect(App.current.getTheme().terms.termsOfSaleLink);
-	}
-
-	// CGU MGP
-	public function doMgp() {
-		throw Redirect("https://www.mangopay.com/terms/MANGOPAY_Terms-FR.pdf");
-	}
-
-	// charte
-	public function doCharte() {
-		throw Redirect("https://www.cagette.net/charte-producteurs/");
-	}
-
-	public function doPing() {
-		Sys.print(haxe.Json.stringify({version: App.VERSION.toString()}));
-	}
-
-	public function doHealth() {
-		var vars = sugoi.db.Variable.manager.search(true);
-		var json = {version: App.VERSION.toString()};
-		for (v in vars) {
-			Reflect.setField(json, v.name, v.value);
-		}
-		Sys.print(haxe.Json.stringify(json));
-	}
-
 	@tpl('invite.mtt')
 	function doInvite(hash:String, userEmail:String, group:db.Group, ?user:db.User){
 
@@ -404,5 +371,61 @@ class Main extends Controller {
 
 	function doDiscovery(){
 		throw Redirect('/p/pro/signup/discovery');
+	}
+
+	// TOS (CGU)
+	public function doTos() {
+		throw Redirect(App.current.getTheme().terms.termsOfServiceLink);
+	}
+
+	public function doCgu() {
+		throw Redirect('/tos');
+	}
+
+	// Privacy policy (politique de confidentialité)
+	public function doPrivacypolicy() {
+		throw Redirect(App.current.getTheme().terms.privacyPolicyLink);
+	}
+
+	// CCP (Conditions Commerciales par défaut de la Plateforme)
+	public function doCgv() {
+		throw Redirect('/termsofsale');
+	}
+	public function doCcp() {
+		throw Redirect('/termsofsale');
+	}
+	public function doTermsofsale() {		
+		throw Redirect(App.current.getTheme().terms.termsOfSaleLink);
+	}
+
+	//CGS
+	public function doPlatformTermsOfService() {		
+		throw Redirect(App.current.getTheme().terms.platformTermsOfServiceLink);
+	}
+	public function doCgs() {
+		throw Redirect('/platformtermsofservice');
+	}
+
+	// CGU Mangopay
+	public function doMgp() {
+		throw Redirect("https://www.cagette.net/wp-content/uploads/2023/01/CGU-MangoPay.pdf");
+	}
+
+	// charte
+	public function doCharte() {
+		throw Redirect("https://www.cagette.net/charte-producteurs/");
+	}
+
+	public function doPing() {
+		Sys.print(haxe.Json.stringify({version: App.VERSION.toString()}));
+	}
+
+	public function doHealth() {
+		var vars = sugoi.db.Variable.manager.search(true);
+		var json = {version: App.VERSION.toString()};
+		for (v in vars) {
+			Reflect.setField(json, v.name, v.value);
+		}
+		Sys.print(haxe.Json.stringify(json));
 	}
 }

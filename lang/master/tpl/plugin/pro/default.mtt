@@ -50,24 +50,21 @@
 
 
 	::if(vendor.isDisabled())::
-	::if(vendor.disabled!=3)::
-    <!--other reason than turnoverLimitReached-->
-	<div class="row">
-		<div class="col-md-12">			
-			<div class="alert alert-danger">
-				<i class="icon icon-alert"></i>
-				Ce compte producteur est bloqué et n'accepte plus de commandes.<br/>
-				Raison : <b>::vendor.getDisabledReason()::</b>
+		::if(vendor.disabled!=3 && vendor.disabled!=4)::
+		<!--other reason than TurnoverLimitReached or MarketplaceNotActivated-->
+		<div class="row">
+			<div class="col-md-12">			
+				<div class="alert alert-danger">
+					<i class="icon icon-alert"></i>
+					Ce compte producteur est bloqué et n'accepte plus de commandes.<br/>
+					Raison : <b>::vendor.getDisabledReason()::</b>
+				</div>
 			</div>
 		</div>
-	</div>
-	::end::
+		::end::
 	::end::
 
-	<div class="article">
-		<h2 style="margin-top:0; margin-bottom: 16px;">Chiffre d'affaires</h2>
-		<div id="stats-module-container" style="margin-bottom: 16px;"></div>
-	</div>
+	<div id="stats-module-container"></div>
 	<script>
 		document.addEventListener("DOMContentLoaded", function () {
 			neo.createNeoModule("stats-module-container", "vendorTurnover", {
@@ -126,7 +123,7 @@
 			::if(regularClients.length>0)::
 			<div class="col-md-12">
 				<p>
-					Les groupes que j'ai rejoint :
+					Les groupes que j'ai rejoins :
 				</p>
 			</div>
 			::end::

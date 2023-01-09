@@ -1,5 +1,4 @@
 package pro.controller;
-import tools.Matomo;
 import haxe.macro.Tools.TMacroStringTools;
 import Common.Unit;
 import pro.service.PProductService;
@@ -128,10 +127,6 @@ class Product extends controller.Controller
 			}
 			
 			p.insert();
-
-			if(company.offer==Discovery && pro.db.PProduct.manager.count($company==this.company)==1){
-				service.BridgeService.matomoEvent(app.user.id,"Producteurs","Premier produit créé");
-			}
 
 			throw Ok(baseUrl,'Le produit a été enregistrée');
 		}

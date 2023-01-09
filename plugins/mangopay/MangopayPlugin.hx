@@ -458,7 +458,7 @@ class MangopayPlugin extends PlugIn implements IPlugIn{
 		if(paymentType!=pro.payment.MangopayECPayment.TYPE){
 			throw new Error("The payment type should be mangopay-ec");
 		}
-		
+
 		//create real orders
 		var transactionId = payIn.Id;
 		var total = payIn.DebitedFunds.Amount/100;

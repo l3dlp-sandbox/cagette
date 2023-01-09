@@ -90,21 +90,6 @@ class BridgeService {
 		return curl.call("GET", '${App.config.get("cagette_bridge_api")}/crm/triggerWorkflow/$workflowId/$contactEmail', getHeaders());
 	}
 
-	/**
-		Post an event to track with Matomo
-	**/
-	public static function matomoEvent(userId:Int,category:String,action:String,?name:String,?value:Int){
-		var curl = new sugoi.apis.linux.Curl();
-		var post = {
-			userId:userId,
-			category:category,
-			action:action,
-			name:name,
-			value:value
-		}
-		return curl.call("POST", '${App.config.get("cagette_bridge_api")}/bridge/matomo', getHeaders(), Json.stringify(post));
-	}
-
 	static function getHeaders():Map<String,String>{
 		return [
 			"Authorization" => "Bearer " + App.config.get("key"),

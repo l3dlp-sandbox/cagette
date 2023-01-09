@@ -504,11 +504,17 @@ if (App.current.getSettings().noCourse==true) {
 		cpro.offer = Member;
 		cpro.update();
 
+		// Cancel running subscription
+		try {
+			service.BridgeService.call('/subscriptions/cancel/${vendor.id}');
+		} catch (e: Dynamic) {
+			Sys.println(e);
+		}
+
 		//refresh stats
         VendorStats.updateStats(vendor);
 
 		throw Ok("/p/hosted/course/view/"+course.id,"Compte passé en formule Membre");
-
 	}
 
 	

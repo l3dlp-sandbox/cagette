@@ -646,13 +646,15 @@ class Admin extends Controller {
 
 		if (args != null && args.tpl != null) {
 			var res = App.current.processTemplate(args.tpl, {
-				group: group,
-				user: user,
-				d: d,
-				catalog: catalog,
-				contract: contract,
-				text: "Lorem Ipsum"
-			});
+				group:group,
+				user:user,
+				d:d,
+				distribution:d,
+				catalog:catalog,
+				contract:contract,
+				text:"Lorem Ipsum",
+				orders:[]
+			} );
 			Sys.print(res);
 		}
 	}
@@ -712,8 +714,10 @@ class Admin extends Controller {
 	}
 
 	@tpl('admin/stripe.mtt')
-	function doStripe() {}
+	function doStripe(){
+	}
 
 	@tpl('admin/showcase.mtt')
-	function doShowcase() {}
+	function doShowcase(){
+	}
 }

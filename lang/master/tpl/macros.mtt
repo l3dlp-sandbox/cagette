@@ -628,24 +628,22 @@
 		</div>
 	</macro>
 
-	<macro name="matomo()">
-		::set matomoUrl = getMatomoUrl()::
-		::set matomoSiteId = getMatomoSiteId()::
-		::if(matomoUrl!="" && matomoSiteId!="")::
-			<script type="text/javascript">
-			var _paq = window._paq = window._paq || [];
-			/* tracker methods like "setCustomDimension" should be called before "trackPageView" */		
-			_paq.push(['trackPageView']);
-			_paq.push(['enableLinkTracking']);
-			::if(user!=null):: _paq.push(['setUserId', '::user.id::']); ::end::
-			(function() {
-				var u="https://cagette.matomo.cloud/";
-				_paq.push(['setTrackerUrl', u+'matomo.php']);
-				_paq.push(['setSiteId', '1']);
-				var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-				g.async=true; g.src='//cdn.matomo.cloud/cagette.matomo.cloud/matomo.js'; s.parentNode.insertBefore(g,s);
-			})();
-			</script>
+	<!--insert in HEAD section-->
+	<macro name="googleTagManager(googleTagManagerId)">
+		::if(googleTagManagerId!=null && googleTagManagerId!="")::
+			<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+			new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+			j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+			'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+			})(window,document,'script','dataLayer','::googleTagManagerId::');</script>
+		::end::
+	</macro>
+
+	<!--insert in BODY section-->
+	<macro name="googleTagManagerNoScript(googleTagManagerId)">
+		::if(googleTagManagerId!=null && googleTagManagerId!="")::
+		<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=::googleTagManagerId::"
+		height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 		::end::
 	</macro>
 

@@ -2,9 +2,9 @@
 
    	<h3>Récapitulatif de commande par produits</h3>
 
-   <p>
+    <p>
 		Les commandes du catalogue <b>::contract.name::</b> dont vous êtes coordinateur ont fermé le <b>::hDate(distribution.orderEndDate)::</b>.
-	 </p>
+	</p>
 
    <table class="table table-striped">
 		<tr>
@@ -65,5 +65,7 @@
 				<th>::formatNum(total)::&nbsp;::currency()::</th>	
 			</tr>
 	</table>
+
+	
 			
 ::end::

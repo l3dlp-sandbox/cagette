@@ -84,9 +84,6 @@ class App extends sugoi.BaseApp {
 							<img src="/theme/cagette/logo.png" alt="logo Cagette.net" style="width:166px;"/>
 						</a>',
 				bloc2: '<ul>
-							<li>								
-								<a href="https://www.cagette.net/comment-ca-marche/" target="_blank">Comment ça marche ?</a> 
-							</li>
 							<li> 
 								<a href="/charte/" target="_blank">Charte producteurs</a> 
 							</li>
@@ -103,7 +100,10 @@ class App extends sugoi.BaseApp {
 								<a href="/cgu" target="_blank">Conditions générales d\'utilisation</a> 
 							</li>
 							<li>
-								<a href="/cgv" target="_blank">Conditions générales de vente</a> 
+								<a href="/privacypolicy" target="_blank">Politique de confidentialité</a> 
+							</li>
+							<li>
+								<a href="/termsofsale" target="_blank">Conditions commerciales (CCP)</a> 
 							</li>	
 							<li>
 								<a href="/mgp" target="_blank">C.G.U Mangopay</a> 
@@ -158,9 +158,10 @@ class App extends sugoi.BaseApp {
 				</div>'
 			},
 			terms: {
-				termsOfServiceLink: "https://www.cagette.net/wp-content/uploads/2020/11/cgu-.pdf",
-				termsOfSaleLink: "https://www.cagette.net/wp-content/uploads/2020/11/cgv.pdf",
-				platformTermsLink: "",
+				termsOfServiceLink: "https://www.cagette.net/wp-content/uploads/2023/01/Conditions-Generales-dUtilisation-de-Cagette.net.pdf",
+				termsOfSaleLink: "https://www.cagette.net/wp-content/uploads/2023/01/Conditions-Commerciales-de-la-Plateforme.pdf",
+				platformTermsOfServiceLink: "https://www.cagette.net/wp-content/uploads/2023/01/Conditions-Generales-de-Services-de-Cagette.net.pdf",
+				privacyPolicyLink: "https://www.cagette.net/wp-content/uploads/2023/01/Politique-de-confidentialite-Cagette.net.pdf",
 			}
 			
 		}

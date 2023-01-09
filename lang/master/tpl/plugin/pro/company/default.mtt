@@ -2,8 +2,6 @@
 	
 	<div class=" article">
 		
-		
-
 		<div class="row">
 			<div class="col-md-6">
 				<h4>Informations principales</h4>
@@ -92,6 +90,20 @@
 				::if images.portrait!=null::
 				<img src="::file(images.portrait)::" style="max-width: 256px;max-height: 128px;" class="thumbnail" />
 				::end::
+			</div>
+		</div>
+
+
+		<div class="row">
+			<div class="col-md-6">
+				<h4>Vos conditions générales de vente (CGV)</h4>
+				<p class="desc">	
+					Sur Cagette.net, les relations entre les clients et les producteurs sont régies par les <a href="/ccp">CCP</a>.<br/>
+					Cependant vous pouvez personnaliser vos conditions générales de vente si vous le souhaitez.<br/>  
+				</p>
+				<p>
+					<a href="/p/pro/company/cgv" class="btn btn-default btn-xs">Gérer mes conditions générales de vente</a>
+				</p>
 			</div>
 		</div>
 

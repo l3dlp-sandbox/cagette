@@ -44,6 +44,7 @@ class MangopayController extends controller.Controller
 			tmpBasket.update();
 		}
 		
+
 		//If one of these fields is null ask the user to specify them for Mangopay requirements
 		if(user.birthDate == null || user.nationality == null || user.countryOfResidence == null || user.tosVersion==null)
 		{

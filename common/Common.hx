@@ -326,8 +326,9 @@ typedef Theme = {
 	};
 	var terms : {
 		var termsOfServiceLink:String; // Terms of service (CGU)
-		var termsOfSaleLink:String;
-		var platformTermsLink:String;
+		var termsOfSaleLink:String;    //CCP
+		var platformTermsOfServiceLink:String;  //CGS
+		var privacyPolicyLink:String; 
 	};
 }
 

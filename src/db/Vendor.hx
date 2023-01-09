@@ -10,6 +10,8 @@ enum DisabledReason{
 	NotCompliantWithPolicy; //not compliant with policy (charte des producteurs)
 	Banned; 				//banned by network administrateurs
 	TurnoverLimitReached; 	//turnover limit reached
+	MarketplaceNotActivated; //a new marketplace vendor who has not yet activated his subscription
+	MarketplaceDisabled; //a marketplace vendor who did not pay, who removed his payment method, etc
 }
 
 /**
@@ -83,6 +85,7 @@ class Vendor extends Object
 	@hideInForms public var offCagette 	: SNull<SText>;
 	
 	@hideInForms @:relation(imageId) 	public var image : SNull<sugoi.db.File>;
+	@hideInForms @:relation(customizedTermsOfSaleFileId) 	public var customizedTermsOfSaleFile : SNull<sugoi.db.File>;
 	
 	@hideInForms public var status : SNull<SString<32>>; //temporaire , pour le dédoublonnage
 	@hideInForms public var disabled : SNull<SEnum<DisabledReason>>; // vendor is disabled
@@ -284,6 +287,8 @@ class Vendor extends Object
 			case DisabledReason.NotCompliantWithPolicy : "Producteur incompatible avec la charte producteur de Cagette.net";
 			case DisabledReason.Banned : "Producteur bloqué par les administrateurs";
 			case DisabledReason.TurnoverLimitReached : "Ce producteur a atteint sa limite de chiffre d'affaires annuel";
+			case DisabledReason.MarketplaceDisabled : "Ce producteur est en défaut de paiement";
+			case DisabledReason.MarketplaceNotActivated : "Ce producteur n'a pas encore activé son compte";
 		};
 	}
 

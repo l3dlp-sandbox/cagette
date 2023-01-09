@@ -15,6 +15,8 @@
 
     $$favicons()
 
+    $$googleTagManager(::getVariable("googleTagManagerId")::)
+
     <!-- Cagette CSS -->
     ::if(DEBUG)::
         <link rel="stylesheet" type="text/css" href="/theme/::theme.id::/css/::getVariable('css')::/style.css" />
@@ -88,7 +90,7 @@
 
     ::raw __content__::
 
-    $$matomo()
+    $$googleTagManagerNoScript(::getVariable("googleTagManagerId")::)
 
     <script type="text/javascript">
 

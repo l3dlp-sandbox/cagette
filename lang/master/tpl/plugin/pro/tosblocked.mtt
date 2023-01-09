@@ -1,0 +1,36 @@
+::use 'plugin/pro/base.mtt'::
+<div class="col-md-12">
+	<h2>Mise à jour des conditions générales</h2>
+</div>
+<div class="col-md-6">
+	<div class="alert alert-danger">
+		Le représentant légal de l'entreprise doit valider les nouvelles conditions générales de Cagette.net
+	</div>
+</div>
+
+<div class="col-md-6">
+	<div class="article">
+		::if(legalRep!=null)::
+			::set user = legalRep._user::
+			<p>
+				Le représentant légal de "<b>::legalRep._company._vendor.name::</b>" est :
+			</p>
+			<p>
+				<b>::user.firstName:: ::user.lastName::</b><br/>
+				::user.email::
+			</p>
+			<p>
+				<a href="mailto:support@cagette.net">Contactez le support</a> si ce compte n'est pas accessible.
+			</p>
+		::else::
+			<p>
+				Le représentant légal de l'entreprise liée à ce compte est :
+			</p>
+			<p>
+				Inconnu.<br/>
+				<a href="mailto:support@cagette.net">Contactez le support</a>
+			</p>
+		::end::
+	</div>
+</div>
+::end::
