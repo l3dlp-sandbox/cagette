@@ -408,7 +408,7 @@ class Main extends Controller {
 
 	// CGU Mangopay
 	public function doMgp() {
-		throw Redirect("https://www.mangopay.com/terms/MANGOPAY_Terms-FR.pdf");
+		throw Redirect("https://www.cagette.net/wp-content/uploads/2023/01/CGU-MangoPay.pdf");
 	}
 
 	// charte
