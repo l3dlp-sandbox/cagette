@@ -1,0 +1,13 @@
+::use 'admin/design.mtt'::
+
+	<h3>Export des distributions</h3>
+
+    <p>
+        $$timeframe(::tf::)
+    </p>
+    
+    <p>
+        <a href="?export=1&_from=::tf.from.toString()::&_to=::tf.to.toString()::" class="btn btn-default">Export CSV</a>
+    </p>
+
+::end::

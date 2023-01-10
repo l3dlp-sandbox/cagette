@@ -75,6 +75,9 @@
 
 		<ul>
 			<li>
+				<a href="/admin/stats">Stats hebdomadaires</a>
+			</li>
+			<li>
 				<a href="/admin/graph/basket">Nbre de Paniers</a>
 			</li>
 			<li>
@@ -83,10 +86,10 @@
 			<li>
 				<a href="/admin/graph/mangopay">C.A Mangopay</a>
 			</li>
+			<li>
+				<a href="/admin/exportDistribs">Export Distributions</a>
+			</li>
 		</ul>
-
-		<a href="/admin/stats">Stats hebdomadaire</a>
-
 	::end::
 
 

@@ -44,4 +44,16 @@ class Scripts extends Controller
         }
 
 	}
+
+    /**
+        2023-01-10 enable payments for all shopMode groups
+    **/
+    public function doEnablepayments(){
+        for(g in db.Group.manager.search( $flags.has(ShopMode) && !$flags.has(HasPayments) ,true) ){
+
+            print(g.id+" - "+g.name);
+            g.enablePayments();
+        }
+        
+    }
 }

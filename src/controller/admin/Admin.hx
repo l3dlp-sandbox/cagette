@@ -720,4 +720,70 @@ class Admin extends Controller {
 	@tpl('admin/showcase.mtt')
 	function doShowcase(){
 	}
+
+	@tpl('admin/exportDistribs.mtt')
+	function doExportDistribs(){
+
+		var now = Date.now();
+		var year = now.getFullYear();
+		var month = now.getMonth();
+
+		var from = new Date(year, month, 1, 0, 0, 0);
+		var to = new Date(year, month + 1, 0, 23, 59, 59);
+
+		var tf = new tools.Timeframe(from,to);
+
+		view.tf = tf;
+
+		if(app.params.get("export")=="1"){
+			var data = [];
+			for(md in db.MultiDistrib.manager.search($distribStartDate > tf.from && $distribStartDate <= tf.to,false)){
+
+				var group = md.group;
+
+				if(!group.hasShopMode()) continue;
+
+				var baskets = md.getBaskets();
+				var turnover = 0.0;
+				for(b in baskets) turnover += b.total;
+
+				var contactType = "";
+				if(group.contact!=null){
+					var cpros = service.VendorService.getCagetteProFromUser(group.contact);
+					if(cpros.length>0){
+						var vendor = cpros.find(cpro -> cpro.offer!=Training);				
+						contactType = vendor==null ? "USER" : Std.string(vendor.offer).toUpperCase();
+					} else {
+						contactType = "USER";
+					}
+				}else{
+					contactType = "NONE";
+				}
+
+				data.push({
+					id: md.id,
+					marketId : group.id,
+					url : "https://app.cagette.net/p/hosted/group/"+group.id,
+					contactType:contactType,
+					membersNum : group.getMembersNum(),
+					date : md.distribStartDate.toString().substr(0,10),
+					zipCode : md.place.zipCode,
+					address : md.place.address1,
+					city : md.place.city,
+					turnover : Math.round(turnover),
+					basketNums : baskets.length,
+					vendorsInGroup : group.getActiveVendors().length,
+					vendorsInDistrib: md.getVendors().length,
+				});
+
+				baskets = [];
+				
+			}
+			var headers = ["id","marketId","url","contactType","membersNum","date","zipCode","address","city","turnover","basketNums","vendorsInGroup","vendorsInDistrib"];
+			sugoi.tools.Csv.printCsvDataFromObjects(data, headers, "Distributions");
+
+		}
+
+
+	}
 }
