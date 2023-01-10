@@ -31,10 +31,12 @@ class PUserCompany extends Object
 		return c;	
 	}
 
-	public static function make(user:db.User,company:pro.db.CagettePro):PUserCompany{
+	public static function make(user:db.User,company:pro.db.CagettePro,?salesRep=false,?legalRep=false):PUserCompany{
 		var uc = new pro.db.PUserCompany();
 		uc.company = company;
 		uc.user = user;
+		if(salesRep) uc.salesRepresentative = true;
+		if(legalRep) uc.legalRepresentative = true;
 		uc.insert();
 		return uc;
 	}

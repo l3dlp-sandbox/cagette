@@ -45,6 +45,10 @@ class OrderService
 				if(subscription!=null) isVendorDisabled = false;
 			}
 
+			if(vendor.disabled==db.Vendor.DisabledReason.DisabledInvited){
+				isVendorDisabled = false;
+			}
+
 			if (isVendorDisabled) {
 				throw new Error('${vendor.name} est désactivé. Raison : ${vendor.getDisabledReason()}');
 			}

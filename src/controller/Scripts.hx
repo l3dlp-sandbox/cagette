@@ -50,10 +50,29 @@ class Scripts extends Controller
     **/
     public function doEnablepayments(){
         for(g in db.Group.manager.search( $flags.has(ShopMode) && !$flags.has(HasPayments) ,true) ){
-
             print(g.id+" - "+g.name);
             g.enablePayments();
         }
-        
+    }
+
+    /**
+        2023-01-10 ensure all cpro have legal rep
+    **/
+    public function doLegalRep(){
+
+        for(cpro in pro.db.CagettePro.manager.all(false)){
+
+            var ucs = cpro.getUserCompany();
+            var hasLegalRep = ucs.find(x -> x.legalRepresentative) != null;
+            if(!hasLegalRep && ucs.length>0){
+                var u = ucs[0];
+                u.lock();
+                u.legalRepresentative = true;
+                u.update();
+                print(cpro.vendor.id+" - "+cpro.vendor.name);
+            }
+            
+        }
+
     }
 }

@@ -305,7 +305,7 @@ if (App.current.getSettings().noCourse==true) {
 				}
 
 				//add user + teacher
-				pro.db.PUserCompany.make(u,c);
+				pro.db.PUserCompany.make(u,c,true,true);
 				//if(form.getValueOf("teacher")==true) pro.db.PUserCompany.make(course.teacher,c);
 
 				//add it to the course
