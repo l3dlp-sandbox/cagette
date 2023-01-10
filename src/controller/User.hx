@@ -101,17 +101,19 @@ class User extends Controller
 			}
 		}*/	
 
-		//need to check new ToS
-		if(app.user.tosVersion != sugoi.db.Variable.getInt('tosVersion')){
-			throw Redirect("/user/tos");
-		} 
-
-		//need to check new CGS
-		for( cpro in service.VendorService.getCagetteProFromLegalRep(app.user) ){
-			if(cpro.vendor.tosVersion != sugoi.db.Variable.getInt('platformtermsofservice')){
+		if(app.user!=null){
+			//need to check new ToS
+			if(app.user.tosVersion != sugoi.db.Variable.getInt('tosVersion')){
 				throw Redirect("/user/tos");
 			} 
-		}
+
+			//need to check new CGS
+			for( cpro in service.VendorService.getCagetteProFromLegalRep(app.user) ){
+				if(cpro.vendor.tosVersion != sugoi.db.Variable.getInt('platformtermsofservice')){
+					throw Redirect("/user/tos");
+				} 
+			}
+		}		
 
 		view.isGroupAdmin = app.user.getUserGroups().find(ug -> return ug.isGroupManager()) != null;
 		//view.cagetteProTest = cagettePros.find(cp -> cp.vendor.isTest)!=null;
@@ -363,7 +365,7 @@ class User extends Controller
 			var vendor = cpro.vendor;
 			if(vendor.tosVersion != sugoi.db.Variable.getInt('platformtermsofservice')){
 				form.addElement(new Html("","Afin de répondre à la réglementation des places de marché en ligne à laquelle nous sommes soumis, nous mettons à jour nos conditions générales de services destinées aux producteurs. Celles-ci s'appliquent à partir du 9 février 2023"));
-				form.addElement(new sugoi.form.elements.Checkbox("cgs"+vendor.id,"J'accepte les <a href='/platformtermsofservice' target='_blank'>Conditions générales de service</a> qui encadrent les services fournis par Cagette.net aux Producteurs"));
+				form.addElement(new sugoi.form.elements.Checkbox("cgs"+vendor.id,"J'accepte les <a href='/platformtermsofservice' target='_blank'>Conditions générales de service</a> qui encadrent les services fournis par Cagette.net aux Producteurs (compte \""+vendor.name+"\")"));
 			} 
 		}
 

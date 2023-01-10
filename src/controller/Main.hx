@@ -399,7 +399,7 @@ class Main extends Controller {
 	}
 
 	//CGS
-	public function doPlatformTermsOfService() {		
+	public function doPlatformtermsofservice() {		
 		throw Redirect(App.current.getTheme().terms.platformTermsOfServiceLink);
 	}
 	public function doCgs() {

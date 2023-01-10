@@ -76,7 +76,7 @@ class ContractAdmin extends Controller
 		view.places = app.user.getGroup().getPlaces();
 		view.group = app.user.getGroup();
 		
-		if(app.user.getGroup().hasShopMode()){
+		/*if(app.user.getGroup().hasShopMode()){
 			var uncertified = [];
 			for( v in vendors){
 				var vs = v.getStats();
@@ -97,7 +97,7 @@ class ContractAdmin extends Controller
 					app.session.addMessage('Tous les producteurs de ce point de distribution sont bien certifiés. Bonnes ventes !');
 				}
 			}
-		}
+		}*/
 
 
 		//Multidistribs to validate

@@ -4,10 +4,10 @@
 
 	::foreach v vendors::		
 		::if(v.isDisabled())::
-			::if( group.hasShopMode() || v.disabled!=3  )::			
-			<div class="alert alert-danger"><i class="icon icon-alert"></i> Le producteur <b>::v.name::</b> est désactivé : ::v.getDisabledReason()::</div>	
+			::if( group.hasShopMode() || (v.disabled!=3 && v.disabled!=6)  )::			
+			<div class="alert alert-danger"><i class="icon icon-alert"></i> Le producteur <b>::v.name::</b> est désactivé : ::raw v.getDisabledReason()::</div>	
 			::else::
-			<!-- turnoverLimitReached has no effect in CSA mode -->
+			<!-- turnoverLimitReached,DisabledInvited has no effect in CSA mode -->
 			::end::
 		::end::	
 	::end::
@@ -118,8 +118,8 @@
 						::v.zipCode:: ::v.city::
 
 						::if(v.isDisabled())::
-							::if( group.hasShopMode() || v.disabled!=3  )::	
-								<div class="alert alert-danger"><i class="icon icon-alert"></i> Producteur désactivé : ::v.getDisabledReason()::</div>
+							::if( group.hasShopMode() || (v.disabled!=3 && v.disabled!=6)  )::	
+								<div class="alert alert-danger"><i class="icon icon-alert"></i> Producteur désactivé : ::raw v.getDisabledReason()::</div>
 							::end::
 						::end::
 					</td>
