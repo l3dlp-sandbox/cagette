@@ -86,10 +86,15 @@ class ProPlugIn extends PlugIn implements IPlugIn{
 
 				
 
-			case MinutelyCron(now):
+			case MinutelyCron(now,jobs,outputFormat):
 				
 				//Decrease stocks in cpro when distrib has been done	
 				var task = new TransactionWrappedTask("Decrease stocks in cpro when distrib has been done");
+				if(outputFormat=="json"){
+					jobs.push(task);
+					task.printLog = false;
+				}
+				
 				task.setTask(function (){
 								
 					var range = if(App.config.DEBUG) tools.DateTool.getLastHourRange() else tools.DateTool.getLastMinuteRange();
@@ -114,6 +119,10 @@ class ProPlugIn extends PlugIn implements IPlugIn{
 				if (Date.now().getMinutes() % 10 == 0 || (App.current.user!=null && App.current.user.isAdmin()) ){	
 									
 					var task = new TransactionWrappedTask("Cpro Catalogs sync");
+					if(outputFormat=="json"){
+						jobs.push(task);
+						task.printLog = false;
+					}
 					task.setTask(function (){
 						var log = pro.service.PCatalogService.sync();
 						for( l in log) task.log(l);

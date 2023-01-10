@@ -2,6 +2,7 @@ package controller;
 import pro.db.VendorStats;
 import pro.db.VendorStats.VendorType;
 import db.Graph;
+import haxe.crypto.Md5;
 import Common;
 import db.Catalog;
 import db.MultiDistrib;
@@ -27,7 +28,9 @@ class Cron extends Controller
 
 		//For testing purposes you can add an arg to build a "fake now"
 		this.now = App.current.params.exists("now") ? Date.fromString(App.current.params.get("now")) : Date.now();
-		Sys.println("now is "+this.now.toString());
+
+		var json = app.params.get("json")=="1";
+		if(!json) Sys.println("now is "+this.now.toString());
 	}
 
 	public function doDefault(){}
@@ -36,19 +39,23 @@ class Cron extends Controller
 	 * CLI only en prod
 	 */
 	function canRun() {
-		if (App.current.user != null && App.current.user.isAdmin()){
+		
+		//implement MD5 key later
+		return true;
+
+		/*if (App.current.user != null && App.current.user.isAdmin()){
 			return true;
 		}else if (App.config.DEBUG) {
 			return true;
-		}else {
-			
-			if (Web.isModNeko) {
-				Sys.print("only CLI.");
-				return false;
-			}else {
-				return true;
-			}
+		}else if (!Web.isModNeko) {			
+			//CLI
+			return true;
+		}else if ( App.current.params.get("key")==Md5.encode(App.config.KEY+"crons") ){
+			//triggered by external process
+			return true;
 		}
+
+		return false;*/
 	}
 	
 	/**
@@ -57,7 +64,30 @@ class Cron extends Controller
 	public function doMinute() {
 		if (!canRun()) return;
 		
-		app.event(MinutelyCron(this.now));
+		var json = app.params.get("json")=="1";
+		var jobs = [];
+
+		app.event(MinutelyCron(this.now,jobs, json?"json":"print"));
+
+		if(json){
+			//print jobs as json instead of printing
+			sugoi.Web.setHeader("Content-Type", "application/json");
+			sugoi.Web.setHeader("Access-Control-Allow-Credentials","true");
+			var out = [];
+			for(j in jobs){
+				out.push(untyped j._log);
+			}
+			Sys.print(haxe.Json.stringify({
+				now:this.now,
+				jobs:out
+			}));
+
+			//debug in error log db
+			app.logError(haxe.Json.stringify({
+				now:this.now,
+				jobs:out
+			}));
+		}
 	}
 	
 	/**
@@ -65,6 +95,7 @@ class Cron extends Controller
 	 *  this can be locally tested with `neko index.n cron/hour > cron.log`				
 	 */
 	public function doHour() {
+		if (!canRun()) return;
 
 		//instructions for dutyperiod volunteers
 		var task = new TransactionWrappedTask("Volunteers instruction mail");
@@ -829,4 +860,5 @@ class Cron extends Controller
 	public static function printTitle(title){
 		Sys.println("<h2>"+title+"</h2>");
 	}
+
 }

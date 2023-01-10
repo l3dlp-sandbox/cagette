@@ -276,7 +276,7 @@ enum Event {
 	//crons
 	DailyCron(now:Date);
 	HourlyCron(now:Date);
-	MinutelyCron(now:Date);
+	MinutelyCron(now:Date,jobs:Array<sugoi.tools.TransactionWrappedTask>,outputFormat:String);
 	
 	//orders
 	MakeOrder(orders:Array<db.UserOrder>); 
