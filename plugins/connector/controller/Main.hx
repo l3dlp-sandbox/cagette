@@ -14,27 +14,22 @@ class Main extends controller.Controller
 	
 	public function doContract(c:db.Catalog){
 		
-		/*new controller.ContractAdmin().sendNav(c);
-		view.c = c;
-		view.nav = ["contractadmin", "cpro"];*/
-		
-		
 		var rc = connector.db.RemoteCatalog.manager.get(c.id);
 		view.linkage = rc;
 		view.catalog = rc.getPCatalog();
 
+		//unlink catalog and archive
 		if(checkToken()){
-			c.lock();
-			c.endDate = Date.now();
-			c.update();
-			
-			rc.lock();
-			rc.delete();
+
+			try{
+				pro.service.PCatalogService.breakLinkage(c);
+			}catch(e:tink.core.Error){
+				throw Error("/contractAdmin/view/"+c.id , e.message);
+			}
 			
 			throw Ok("/contractAdmin/view/"+c.id,"Le contrat \""+c.name+"\" a été archivé.");
-			
-		}
 
-		
+		}
+	
 	}
 }

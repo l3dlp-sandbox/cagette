@@ -127,12 +127,15 @@ class Distribution extends Object
 		return tools.ObjectListTool.deduplicate( Lambda.map(getOrders(), function(x) return x.user ) );		
 	}
 
+	/**
+		get baskets implied in this distribution
+	**/
 	public function getBaskets(){
 		var baskets = new Map<Int,db.Basket>();
 		for( o in getOrders()){
 			if(o.basket!=null) baskets.set(o.basket.id,o.basket);
 		}
-		return Lambda.array(baskets);
+		return baskets.array();
 	}
 
 	

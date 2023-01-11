@@ -349,6 +349,34 @@ class PCatalogService{
 
 		return rc;
 	}
+
+	/**
+		break linkage and archive catalog
+	**/
+	public static function breakLinkage(catalog:db.Catalog){
+
+		var rc = RemoteCatalog.getFromContract(catalog);
+		if(rc == null) throw new tink.core.Error("Ce catalogue n'est pas relié à un catalogue de compte producteur");
+		
+		//do not participate in future distribs
+		var futureDistribs = db.Distribution.manager.search($end > Date.now() && $catalog == catalog,true);
+		for(fd in futureDistribs){
+			if(fd.getBaskets().length>0){
+				throw new tink.core.Error("Impossible d'annuler la distribution du "+fd.date.toString()+" car elle a des commandes. Supprimez d'abord les commandes.");
+			}else{
+				fd.delete();
+			}
+		}
+
+		//archive catalog
+		catalog.lock();
+		catalog.endDate = Date.now();
+		catalog.update();
+		
+		rc.lock();
+		rc.delete();
+
+	}
 	
 	public static function makeCatalogOffer(offer:pro.db.POffer,catalog:pro.db.PCatalog,price:Float){
 		var cp = new pro.db.PCatalogOffer();

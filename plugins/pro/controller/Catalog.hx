@@ -427,13 +427,13 @@ class Catalog extends controller.Controller
 		if (checkToken()){
 			
 			var c = rc.getContract(true);
-			c.endDate = Date.now();
-			c.update();
+			try{
+				pro.service.PCatalogService.breakLinkage(c);
+			}catch(e:tink.core.Error){
+				throw Error("/p/pro/catalog/" , e.message);
+			}
 			
-			rc.lock();
-			rc.delete();
-			
-			throw Ok("/p/pro/catalog/","Le catalogue \""+c.name+"\" a été fermé. Il reste consultable dans les anciens contrats du groupe.");
+			throw Ok("/p/pro/catalog/","Le catalogue \""+c.name+"\" a été archivé. Il reste consultable dans les catalogues archivés du groupe.");
 			
 		}
 		

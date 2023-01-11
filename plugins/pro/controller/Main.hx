@@ -61,7 +61,7 @@ class Main extends controller.Controller
 		}
 
 		//check CGS for non representative
-		if(this.vendor.tosVersion != sugoi.db.Variable.getInt('platformtermsofservice')){
+		if(this.vendor.tosVersion != sugoi.db.Variable.getInt('platformtermsofservice') && app.user.isAdmin()==false){
 			var isNonLegalRep = pro.db.PUserCompany.manager.select($user == app.user && $company == this.company && $legalRepresentative==false, false) != null;
 			if(isNonLegalRep){
 				throw Redirect("/p/pro/tosblocked");
