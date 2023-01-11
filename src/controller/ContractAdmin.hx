@@ -67,8 +67,6 @@ class ContractAdmin extends Controller
 				if(!app.user.canManageContract(c)) contracts.remove(c);				
 			}
 		}
-
-		
 		
 		view.contracts = contracts;
 		var vendors = app.user.getGroup().getActiveVendors();
@@ -99,19 +97,12 @@ class ContractAdmin extends Controller
 			}
 		}*/
 
+		var contractsToFix = contracts.filter(c -> c.hasPercentageOnOrders());
 
-		//Multidistribs to validate
-		/*if( (app.user.canManageAllContracts()||app.user.isAmapManager() )  && app.user.getGroup().hasPayments()){
-			var twoMonthAgo = tools.DateTool.deltaDays(now,-60);
-			var multidistribs = [];
-			for( md in db.MultiDistrib.getFromTimeRange(app.user.getGroup(),twoMonthAgo,now)){
-				if( !md.isValidated() ) multidistribs.push(md);				
-			}
-			view.multidistribs = multidistribs; 
-
-		}else{
-			view.multidistribs = [];
-		}*/
+		if(contractsToFix.length>0){
+			app.session.addMessage('Attention, la gestion des "frais au pourcentage de la commande" va disparaître le 1er Février 2023.<br/>Les catalogues suivants l\'utilisent : <b>${contractsToFix.map(c->c.name).join(", ")}</b><br/><a href="https://wiki.cagette.net/basculecommissioncatalogue" target="_blank">Cliquez ici pour connaître un alternative.</a>',true);
+		}
+		
 
 		checkToken();
 	}
