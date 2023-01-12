@@ -132,10 +132,7 @@ class App extends sugoi.BaseApp {
 							</li>
 							<li class="cagyoutube">
 								<a title="Youtube" href="https://www.youtube.com/channel/UC3cvGxAUrbN9oSZmr1oZEaw" target="_blank"> <i class="icon icon-youtube"></i></a> 						
-							</li>
-							<li style="background-color:#333;">
-								<a title="Github" href="https://github.com/bablukid/cagette" target="_blank"> <i class="icon icon-github"></i></a> 						
-							</li>
+							</li>							
 						</ul>
 
 						<br/>
