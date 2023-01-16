@@ -1,5 +1,6 @@
 package controller;
 
+import payment.MoneyPot;
 import db.Basket;
 import Common;
 import db.Distribution;
@@ -64,6 +65,10 @@ class Main extends Controller {
 			throw Redirect("/group/disabled");
 		}
 
+		if( app.user != null && app.user.isAmapManager() && group.getAllowedPaymentTypes().has(MoneyPot.TYPE)){
+			app.session.addMessage("Attention, le moyen de paiement \"cagnotte\" va disparaître le 1er Février 2023.<br/><a href='https://wiki.cagette.net/basculecagnotte' target='_blank'>Cliquez ici pour savoir comment faire la bascule</a>",true);
+		}
+
 		group.checkIsolate();
 
 		view.amap = group;
@@ -116,6 +121,7 @@ class Main extends Controller {
 		if (app.user != null && group.flags.has(db.Group.GroupFlags.PhoneRequired) && app.user.phone == null) {
 			app.session.addMessage("Les membres de ce groupe doivent fournir un numéro de téléphone. <a href='/account'>Cliquez ici pour mettre à jour votre compte</a>.",true);
 		}
+
 		// message if address is required
 		if (app.user != null && group.flags.has(db.Group.GroupFlags.AddressRequired) && app.user.city == null) {
 			app.session.addMessage("Les membres de ce groupe doivent fournir leur adresse. <a href='/account'>Cliquez ici pour mettre à jour votre compte</a>.",true);

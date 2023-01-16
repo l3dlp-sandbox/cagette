@@ -127,14 +127,10 @@ class App extends sugoi.BaseApp {
 							<li class="cagfb">
 								<a title="Facebook" href="https://www.facebook.com/cagette" target="_blank"> <i class="icon icon-facebook"></i></a>	
 							</li>
-							<li class="cagtwitter">
-								<a title="Twitter" href="https://twitter.com/Cagettenet" target="_blank"> <i class="icon icon-twitter"></i></a> 
-							</li>
 							<li class="cagyoutube">
 								<a title="Youtube" href="https://www.youtube.com/channel/UC3cvGxAUrbN9oSZmr1oZEaw" target="_blank"> <i class="icon icon-youtube"></i></a> 						
 							</li>							
 						</ul>
-
 						<br/>
 						Cagette.net est réalisé <br/>
 						par la <a href="https://www.alilo.fr" "target="_blank">SCOP Alilo</a>'

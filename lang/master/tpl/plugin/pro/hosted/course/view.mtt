@@ -69,8 +69,8 @@
 							</li>
 							
 							<li>
-								<!--can become member only if discovery or pro offer-->
-								<a ::cond(c._company.offer==0 || c._company.offer==2):: href="/p/hosted/course/cproDef/::c._company.id::/::course.id::" >
+								<!--can become member only if discovery / pro / marketplace-->
+								<a ::cond(c._company.offer==0 || c._company.offer==2 || c._company.offer==4):: href="/p/hosted/course/cproDef/::c._company.id::/::course.id::" >
 									<i class="icon icon-plus"></i> Passer en formule Membre
 								</a>
 							</li>

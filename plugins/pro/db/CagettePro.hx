@@ -3,11 +3,11 @@ import Common;
 import sys.db.Types;
 
 enum CagetteProOffer {
-	Discovery;
-	Member;
-	Pro;
-	Training;
-	Marketplace;
+	Discovery;	//0
+	Member;		//1
+	Pro;		//2
+	Training;	//3
+	Marketplace;//4
 }
 
 /**
