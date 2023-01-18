@@ -1756,47 +1756,10 @@ class Admin extends controller.Controller {
 		s.fixDuplicateRefs();
 	}
 
-	function doCagette2(){
-
-		var groups = 0;
-		var amaps = 0;
-		var groupsWithPercentage = 0;
-
-		//shopmode groups with no cagette2 flag, limit 500
-		for( g in db.Group.manager.search($betaFlags.has(Cagette2)==false && $flags.has(ShopMode)==true,{limit:500})){
-
-			groups++;
-
-			//no AMAPs
-			/*if( !g.hasShopMode() ){
-				amaps++;
-				continue;
-			} */
-
-			//no percentage on catalogs			
-			if( g.getActiveContracts().count(c -> c.percentageValue>0) > 0){
-				groupsWithPercentage++;
-				continue;
-			}
-
-			g.lock();
-			g.betaFlags.set(Cagette2);
-			g.update();
-
-			Sys.println(g.id+" - "+g.name+" migrated to cagette2<br/>");
-
-		}
-
-		Sys.println("groups : "+groups+"<br/>");
-		Sys.println("amaps : "+amaps+"<br/>");
-		Sys.println("groupsWithPercentage : "+groupsWithPercentage+"<br/>");
-
-	}
-
 	/**
 		https://go.mangopay.com/webmail/307741/669277924/5dba440638d2ee7e9bb8b5d00ee7291f52e450a7d392384fe7f73846cf6691f0
 	**/
-	public function doMangopayMigration2023(){
+	/*public function doMangopayMigration2023(){
 
 		for(mgpLegalUser in MangopayLegalUser.manager.search($disabled==false,false)){
 
@@ -1809,8 +1772,6 @@ class Admin extends controller.Controller {
 			Sys.println('RES <pre>$res</pre>');
 
 			// break;
-
 		}
-
-	}
+	}*/
 }

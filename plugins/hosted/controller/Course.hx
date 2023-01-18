@@ -331,10 +331,10 @@ if (App.current.getSettings().noCourse==true) {
 	 *  EXport a CSV for Moodle
 	 */
 	function doMoodleCsv(course:hosted.db.Course){
-		var headers = ["username","password","firstname","lastname","email","course1"];
+		var headers = ["username","password","firstname","lastname","email","course1","group1"];
 		var data = [];
 		for( d in course.getCompanies()) {			
-			data.push([d.moodleUser, d.moodlePass, d.user.firstName, d.user.lastName, d.cagetteUser ]);
+			data.push([d.moodleUser, d.moodlePass, d.user.firstName, d.user.lastName, d.cagetteUser, "Développer ses ventes en ligne - 2022/2023",course.name ]);
 		}
 
 		sugoi.tools.Csv.printCsvDataFromStringArray( data , headers , "Feuille identifiants.csv" );
@@ -503,6 +503,17 @@ if (App.current.getSettings().noCourse==true) {
 		cpro.lock();
 		cpro.offer = Member;
 		cpro.update();
+
+
+		vendor.lock();
+		switch(vendor.disabled){
+			case DisabledReason.TurnoverLimitReached : vendor.disabled = null;
+			case DisabledReason.DisabledInvited : vendor.disabled = null;
+			case DisabledReason.MarketplaceNotActivated : vendor.disabled = null;
+			case DisabledReason.MarketplaceDisabled : vendor.disabled = null;
+			default:
+		}
+		vendor.update();
 
 		// Cancel running subscription
 		try {

@@ -17,9 +17,12 @@ class Shop extends Controller
 	@tpl('shop/default.mtt')
 	public function doDefault(md:db.MultiDistrib,?args:{continueShopping:Bool}) {
 		
-		if( app.getCurrentGroup()==null || app.getCurrentGroup().id!=md.getGroup().id){
-			throw  Redirect("/group/"+md.getGroup().id);
+		if( app.getCurrentGroup()==null || app.getCurrentGroup().id != md.getGroup().id){
+			
+			app.session.data.amapId = md.getGroup().id;
+			// throw  Redirect("/group/"+md.getGroup().id);
 		}
+
 		// If the session has been closed, Neko has been logged out while Nest might still be logged in
 		if (app.user == null){
 			var cookies = Web.getCookies();
@@ -28,97 +31,19 @@ class Shop extends Controller
 				throw Redirect('/user/logout');
 			}
 		}
-		if(args!=null){
-			if(!args.continueShopping){
-				service.OrderService.checkTmpBasket(app.user,app.getCurrentGroup());
-			}
+
+		//if not cagette2
+		if(args!=null && !args.continueShopping){
+			service.OrderService.checkTmpBasket(app.user,app.getCurrentGroup());			
 		}
+
 		view.category = 'shop';
 		view.md = md;
 		view.tmpBasketId = app.session.data.tmpBasketId;
 		view.user = app.user;
-
-		// service.OrderService.checkTmpBasket(app.user,app.getCurrentGroup());
-
-		// var date = md.getDate();
-		// var place = md.getPlace();
-		// if(place.group.betaFlags.has(ShopV2)) throw Redirect('/shop2/${md.id}');
-
-		// var products = getProducts(md);
-		// view.products = products;
-		// view.place = place;
-		// view.date = date;
-		// view.group = place.group;
-		// view.multiDistrib = md;	
-
-		// //various closing dates	
-		// var infos = ArrayTool.groupByDate(Lambda.array(distribs), "orderEndDate");
-		// var str = "";
-		// if (Lambda.count(infos) == 1){
-		// 	str = Formatting.hDate( infos.iterator().next()[0].orderEndDate );
-		// }else{
-		// 	str = "<ul>";
-		// 	for( k in infos.keys()){
-		// 		str+="<li>";
-		// 		var dists = infos.get(k);
-				
-		// 		if (dists.length==1){
-		// 			str += dists[0].catalog.name;
-		// 		} else {
-		// 			var tt = "";
-		// 			for(d  in dists) tt  += d.catalog.name + ". ";					
-		// 			str += '<span data-toggle="tooltip" title="$tt" style="text-decoration:underline;">Autres</span>';
-		// 		}
-				
-		// 		str += ": "+Formatting.hDate(Date.fromString(k));
-		// 		str+="</li>";
-		// 	}
-		// 	str +="</ul>";
-		// }
-		// view.infos = str;
-
-
-		//message if phone is required
-		// if(app.user!=null && md.getGroup().flags.has(db.Group.GroupFlags.PhoneRequired) && app.user.phone==null){
-		// 	app.session.addMessage(t._("Members of this group should provide a phone number. <a href='/account'>Please click here to update your account</a>."),true);
-		// }
-
-		// //event for additionnal blocks on home page
-		// var e = Blocks([], "shop");
-		// app.event(e);
-		// view.blocks = e.getParameters()[0];
 	}
 
 	
-	/**
-	 * prints the full product list and current cart 
-	 */
-	/*public function doInit(md:db.MultiDistrib) {
-		
-		//init order serverside if needed		
-		var tmpBasket = OrderService.getOrCreateTmpBasket(app.user,md);
-
-		var products = [];
-		var categs = new Array<{name:String,pinned:Bool,categs:Array<CategoryInfo>}>();		
-		
-		if (!md.getGroup().flags.has(db.Group.GroupFlags.CustomizedCategories)){			
-			//TAXO CATEGORIES
-			products = getProducts(md, true);
-		}else{			
-			//CUSTOM CATEGORIES
-			products = getProducts(md, false);
-		}
-		
-		categs = md.getGroup().getCategoryGroups();
-
-	
-
-		Sys.print( haxe.Serializer.run( {
-			products:products,
-			categories:categs,
-			order:tmpBasket.getData()
-		} ) );
-	}*/
 	
 	/**
 	 * Get the available products list

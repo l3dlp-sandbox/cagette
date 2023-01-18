@@ -45,9 +45,16 @@ class OrderService
 				if(subscription!=null) isVendorDisabled = false;
 			}
 
-			if(vendor.disabled==db.Vendor.DisabledReason.DisabledInvited){
-				isVendorDisabled = false;
+			//do not block for these reason if group is AMAP
+			if(subscription!=null){
+				switch (vendor.disabled){
+					case db.Vendor.DisabledReason.DisabledInvited : isVendorDisabled=false;
+					case db.Vendor.DisabledReason.MarketplaceDisabled : isVendorDisabled=false;
+					case db.Vendor.DisabledReason.MarketplaceNotActivated : isVendorDisabled=false;
+					default :
+				}
 			}
+			
 
 			if (isVendorDisabled) {
 				throw new Error('${vendor.name} est désactivé. Raison : ${vendor.getDisabledReason()}');

@@ -75,4 +75,36 @@ class Scripts extends Controller
         }
 
     }
+
+    /**
+        enable massively cagette2 option
+    **/
+    function doCagette2(){
+
+		var groups = 0;
+		var groupsWithPercentage = 0;
+
+		//shopmode groups with no cagette2 flag, limit 500
+		for( g in db.Group.manager.search($betaFlags.has(Cagette2)==false && $flags.has(ShopMode)==true,{limit:500})){
+
+			groups++;
+
+			//no percentage on catalogs			
+			if( g.getActiveContracts().count(c -> c.percentageValue>0) > 0){
+				groupsWithPercentage++;
+				continue;
+			}
+
+			g.lock();
+			g.betaFlags.set(Cagette2);
+			g.update();
+
+			print(g.id+" - "+g.name+" migrated to cagette2");
+
+		}
+
+		print("groups : "+groups+"");
+		print("groupsWithPercentage : "+groupsWithPercentage+"");
+
+	}
 }
