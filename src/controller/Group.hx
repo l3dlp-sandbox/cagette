@@ -194,7 +194,7 @@ class Group extends controller.Controller
 			g.groupType = type;
 			g.flags.set(HasPayments);
 			g.setAllowedPaymentTypes([payment.Cash.TYPE,payment.Check.TYPE]);
-			g.betaFlags.set(Cagette2);			
+			if(type!=Amap) g.betaFlags.set(Cagette2);			
 			g.insert();
 			
 			var ua = new db.UserGroup();

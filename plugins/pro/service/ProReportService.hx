@@ -121,13 +121,15 @@ class ProReportService{
 			
 			//by dates
 			//get catalogs
-			var catalogs = options.allCatalogs.getCatalogs();			
+			// var catalogs = options.allCatalogs.getCatalogs();			
 			var remoteContracts = [];
-			for ( c in catalogs){
+			/*for ( c in catalogs){
 				for ( rc in connector.db.RemoteCatalog.getFromPCatalog(c) ){
 					remoteContracts.push( rc.getContract() );
 				}	
-			}
+			}*/
+			//get all catalogs, even if not linked to cpro
+			remoteContracts = options.allCatalogs.vendor.getContracts().array();
 			
 			var distribs = db.Distribution.manager.search($date >= options.startDate && $date <= options.endDate && ($catalogId in remoteContracts.getIds()), false);
 			if (distribs.length == 0) throw new Error("Aucune distribution sur cette periode");

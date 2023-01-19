@@ -106,5 +106,17 @@ class Scripts extends Controller
 		print("groups : "+groups+"");
 		print("groupsWithPercentage : "+groupsWithPercentage+"");
 
+        for( g in db.Group.manager.search( $flags.has(ShopMode)==false )){
+
+            if(g.betaFlags.has(Cagette2)){
+                print("AMAP group should not have cagette2 : "+g.id+" - "+g.name);
+                g.lock();
+                g.betaFlags.unset(Cagette2);
+                g.update();
+            }
+
+			
+        }
+
 	}
 }
