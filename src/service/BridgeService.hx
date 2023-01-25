@@ -90,6 +90,18 @@ class BridgeService {
 		return curl.call("GET", '${App.config.get("cagette_bridge_api")}/crm/triggerWorkflow/$workflowId/$contactEmail', getHeaders());
 	}
 
+	/**
+		Post an event to track with GA4
+	**/
+	public static function ga4Event(userId:Int,name:String){
+		var curl = new sugoi.apis.linux.Curl();
+		var post = {
+			userId:userId,
+			name:name
+		}
+		return curl.call("POST", '${App.config.get("cagette_bridge_api")}/bridge/ga4', getHeaders(), Json.stringify(post));
+	}
+
 	static function getHeaders():Map<String,String>{
 		return [
 			"Authorization" => "Bearer " + App.config.get("key"),
