@@ -212,6 +212,10 @@ class Catalog extends controller.Controller
 			catalog.visible = f.getValueOf("visible") == "public";
 			catalog.insert();
 
+			if(company.offer==Marketplace && PCatalog.manager.count($company==this.company)==1){
+				service.BridgeService.ga4Event(app.user.id,"FirstCatalog");
+			}
+
 			throw Ok('/p/pro/catalog/products/'+catalog.id,'Le catalogue a été créé');
 		}
 		

@@ -128,6 +128,10 @@ class Product extends controller.Controller
 			
 			p.insert();
 
+			if(company.offer==Marketplace && pro.db.PProduct.manager.count($company==this.company)==1){
+				service.BridgeService.ga4Event(app.user.id,"FirstProduct");
+			}
+
 			throw Ok(baseUrl,'Le produit a été enregistrée');
 		}
 		

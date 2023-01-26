@@ -347,6 +347,8 @@ class PCatalogService{
 			pro.service.PCatalogService.syncProduct(co, null, contract,true, false);
 		}
 
+		BridgeService.ga4Event(pcatalog.company.getMainContact().id,"FirstCatalogLinked");
+		
 		return rc;
 	}
 
