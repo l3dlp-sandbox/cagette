@@ -115,13 +115,7 @@ class App extends sugoi.BaseApp {
 								<a href="http://www.lilo.org/fr/cagette-net/?utm_source=cagette-net" target="_blank">Notre page sur Lilo.org</a>
 							</li>
 						</ul>
-						<!-- PAYPAL !-->
-						<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top" style="margin-top:12px;">
-							<input type="hidden" name="cmd" value="_s-xclick"/>
-							<input type="hidden" name="hosted_button_id" value="S9KT7FQS7P622"/>
-							<input type="image" src="https://www.paypalobjects.com/fr_FR/FR/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal, le réflexe sécurité pour payer en ligne"/>
-							<img alt="" border="0" src="https://www.paypalobjects.com/fr_FR/i/scr/pixel.gif" width="1" height="1"/>
-						</form>',
+						',
 				bloc4: 'SUIVEZ-NOUS
 						<ul class="cagsocialmedia">
 							<li class="cagfb">
@@ -133,7 +127,7 @@ class App extends sugoi.BaseApp {
 						</ul>
 						<br/>
 						Cagette.net est réalisé <br/>
-						par la <a href="https://www.alilo.fr" "target="_blank">SCOP Alilo</a>'
+						par la SCOP Alilo'
 			},
 			email:{
 				senderEmail : 'noreply@mj.cagette.net',

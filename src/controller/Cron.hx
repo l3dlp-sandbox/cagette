@@ -305,7 +305,7 @@ class Cron extends Controller
 
 
 		//stats
-		var task = new TransactionWrappedTask( "Global stats");
+		var task = new TransactionWrappedTask("Global stats");
 		task.setTask(function() {
 			
 			// daily stats
@@ -358,6 +358,7 @@ class Cron extends Controller
 
 			for(summary in summaries){
 				var vs = vendorStatsMap.get(summary.vendorId);
+				if(vs==null) continue;
 
 				switch (vs.type){
 					case VendorType.VTCpro : 
@@ -388,8 +389,11 @@ class Cron extends Controller
 
 			Graph.recordData("global",stats,from);
 		});
-		if( (now.getHours()==4 && now.getDay()==1) || App.config.DEBUG){ //if monday at 4 am, compute stats of past week
+		if( (this.now.getHours()==4 && this.now.getDay()==1) || App.config.DEBUG){ 
+			//if monday at 4 am, compute stats of past week
 			task.execute();
+		}else{
+			print("no weekly stats "+this.now.getHours()+" "+this.now.getDay());
 		}
 
 		/**
@@ -473,14 +477,12 @@ class Cron extends Controller
 				
 				stats.totalTurnoverMarket += summary.turnoverMarketSum;
 				stats.totalTurnoverAmap += summary.turnoverAMAPSum;
-
 			}
 
 			Graph.recordData("global",stats,from);
 			return stats;
 		};
 		
-
 		var from = new Date(2021,10,1,0,0,0); //  01/11/2021
 		var to = new Date(from.getFullYear(), from.getMonth(), from.getDate()+7, 0, 0, 0);
 
@@ -488,12 +490,9 @@ class Cron extends Controller
 		var stats = [];
 		while(to.getTime() < limit.getTime()){
 
-			
-			
 			var stat = compute(from,to);
 			untyped stat.date = from;
 			stats.push(stat);
-
 			
 			from = to;
 			to = new Date(to.getFullYear(), to.getMonth(), to.getDate()+7, 0, 0, 0);
@@ -501,10 +500,6 @@ class Cron extends Controller
 		}
 
 		view.stats = stats;
-
-		
-
-
 	}
 	
 	/**
@@ -574,7 +569,7 @@ class Cron extends Controller
 		});
 		task.execute(!App.config.DEBUG);
 
-		var task = new TransactionWrappedTask( "Refresh group Stats");
+		var task = new TransactionWrappedTask( "Refresh GroupStats");
 		task.setTask(function() {			
 			//split groups in 7 segments so the update is made every week
 			var maxId = sys.db.Manager.cnx.request("select max(id) from `Group`").getIntResult(0);

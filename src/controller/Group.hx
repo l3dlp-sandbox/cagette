@@ -187,7 +187,7 @@ class Group extends controller.Controller
 				
 			case ProducerDrive,FarmShop : 
 				g.flags.set(ShopMode);								
-				g.flags.set(PhoneRequired);				
+				// g.flags.set(PhoneRequired);				
 				g.regOption = Open;
 			}
 			
