@@ -160,11 +160,6 @@ class Group extends Object
 		}
 	}
 
-	public function hasCagette2(){
-		return betaFlags.has(BetaFlags.Cagette2);
-	}
-	
-	
 	/**
 	 * find the most common delivery place
 	 */
@@ -523,6 +518,10 @@ class Group extends Object
 
 	public function isDispatch():Bool{
 		return betaFlags.has(Dispatch);
+	}
+
+	public function hasCagette2(){
+		return betaFlags.has(BetaFlags.Cagette2);
 	}
 
 	/**
