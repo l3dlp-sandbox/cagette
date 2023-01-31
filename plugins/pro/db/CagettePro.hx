@@ -133,6 +133,17 @@ class CagettePro extends sys.db.Object
 		}
 	}
 
+	public function getSalesContact():db.User{
+		var ucs = getUserCompany();
+		if (ucs.length==0) return null;
+		var uc = ucs.filter(x -> x.salesRepresentative)[0];
+		if(uc==null){
+			return ucs[0].user;
+		}else{
+			return uc.user;
+		}
+	}
+
 	/**
 	 * Check if a new reference is not already taken in this company's products
 	 * @param	ref
