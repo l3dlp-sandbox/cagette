@@ -77,7 +77,7 @@ class Scripts extends Controller
     }
 
     /**
-        enable massively cagette2 option
+        2023-02-01 enable massively cagette2 option + remove percentage on catalogs
     **/
     function doCagette2(){
 
@@ -90,10 +90,18 @@ class Scripts extends Controller
 			groups++;
 
 			//no percentage on catalogs			
-			if( g.getActiveContracts().count(c -> c.percentageValue>0) > 0){
-				groupsWithPercentage++;
-				continue;
-			}
+			// if( g.getActiveContracts().count(c -> c.percentageValue>0) > 0){
+			// 	groupsWithPercentage++;
+			// 	continue;
+			// }
+
+            for( c in g.getActiveContracts().filter(c -> c.percentageValue>0)){
+                c.lock();
+                c.flags.unset(PercentageOnOrders);
+                c.percentageName = null;
+                c.percentageValue = null;
+                c.update();
+            }
 
 			g.lock();
 			g.betaFlags.set(Cagette2);

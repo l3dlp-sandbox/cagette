@@ -216,7 +216,10 @@ class Group extends Object
 	
 	public function hasPayments(){		
 		//CSA group cannot have global payment option enabled
-		return flags != null && flags.has(HasPayments) && flags.has(ShopMode);
+		// return flags != null && flags.has(HasPayments) && flags.has(ShopMode);
+
+		//since 2023, all shopMode groups have payments
+		return hasShopMode();
 	}
 	
 	/*public function hasTaxonomy(){
@@ -521,7 +524,11 @@ class Group extends Object
 	}
 
 	public function hasCagette2(){
-		return betaFlags.has(BetaFlags.Cagette2);
+
+		// return betaFlags.has(BetaFlags.Cagette2);
+
+		//since 2023-02-01 all shopMode groups are cagette2
+		return hasShopMode();
 	}
 
 	/**
