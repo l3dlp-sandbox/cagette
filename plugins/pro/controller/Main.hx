@@ -115,23 +115,12 @@ class Main extends controller.Controller
 		view.adminClients = adminClients;
 		view.regularClients = regularClients;
 
-		//FIX : if vendor is Marketplace
-		/*if(company.offer==Marketplace){
-			for( group in groups){
-				if(!group.hasPayments()){
-					group.lock();
-					group.enablePayments();
-				}
-			}
-		}*/
-		
 		//next deliveries
 		var now = Date.now();
 		var oneMonth = DateTools.delta(now, 1000.0 * 60 * 60 * 24 * 30);	
 		var today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
 		
-		var distribs = db.Distribution.manager.search( ($catalogId in remoteCatalogs.getIds() ) && $date <= oneMonth && $date >= today , {orderBy:date}, false);
-		//view.distribs = distribs;
+		var distribs = db.Distribution.manager.search( ($catalogId in remoteCatalogs.getIds()) && $date <= oneMonth && $date >= today , {orderBy:date}, false);
 		view.distribs = distribs.groupDistributionsByGroupAndDay();
 		
 		view.getCatalog = function(d:db.Distribution){			

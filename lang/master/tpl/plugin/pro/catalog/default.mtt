@@ -3,14 +3,12 @@
 <div class="col-md-12">
 	<div class=" article">
 		<h2>Catalogues</h2>	
-		
+	
 		<p>
 			$$insert(Nouveau catalogue,/p/pro/catalog/insert/)
-
 			<a href="https://formation.alilo.fr/course/view.php?id=7&section=3" target="_blank" class="btn btn-warning btn-sm">
 				<i class="icon icon-youtube"></i> Tuto vidéo
 			</a>
-
 		</p>
 		
 		<table class="table">
@@ -48,6 +46,25 @@
 						
 						$$delete( Supprimer ,/p/pro/catalog/delete/::c.id::?token=::token::)
 					</div>
+
+					::if(c._vendor != null && c._vendor.id != company._vendor.id )::
+					<!--alert on invited catalogs-->					
+					<div class="alert alert-danger" style="margin-top: 12px;">
+						<p>
+							<i class="icon icon-alert"></i>
+							<b>Vous avez créé ce catalogue en invitant "::c._vendor.name::" sur votre compte producteur.</b>
+						</p>
+						<p>
+							Cagette.net encourage chaque producteur à gérer ses propres catalogues en toute autonomie, voilà pourquoi cette fonctionnalité disparaîtra le 1er Mars 2023.
+						</p>
+						<p>
+							Invitez <b>::c._vendor.name::</b> ( ::c._vendor.email:: ) à ouvrir son compte producteur sur Cagette.net pour récupérer ce catalogue en se rendant sur <a href="https://www.cagette.net/producteurs" target="_blank">www.cagette.net/producteurs</a> et en cliquant sur "<i>ouvrir mon compte producteur</i>". 
+						</p>
+						<p>
+							Si <b>::c._vendor.name::</b> ne récupère pas son catalogue avant le 1er Mars 2023, ce catalogue disparaîtra de votre compte producteur mais restera utilisable dans vos groupes Cagette.
+						</p>
+					</div>
+					::end::
 					
 					::set linkages = getLinkages(c)::
 					::if linkages.length>0::

@@ -33,8 +33,7 @@ class CatalogLinker extends controller.Controller
 	public function doSelectPcatalog(c:db.Catalog){
 				
 		view.pcatalogs = company.getCatalogs();
-		view.catalog = c;
-		
+		view.catalog = c;		
 	}
 
 	/**
