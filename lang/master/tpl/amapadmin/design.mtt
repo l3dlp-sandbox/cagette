@@ -25,11 +25,19 @@
 				<a href="/place/">
 					<i class="icon icon-map-marker"></i> Lieu de distribution</a>
 			</li>
-			<li id="currency" ::attr class if(category=="currency") 'active'::>
+
+			<!--<li id="currency" ::attr class if(category=="currency") 'active'::>
 				 <a href="/amapadmin/currency/">
 					<i class="icon icon-payment-type"></i> ::_("Currency")::
 				</a>
-			</li>
+			</li>-->
+
+			<li id="payments" ::attr class if(category=="payments") 'active'::>
+				<a href="/amapadmin/payments/">
+				   <i class="icon icon-payment-type"></i> Moyens de paiement
+			   </a>
+		   </li>
+
 			<li id="documents" ::attr class if(category=="documents") 'active'::>
 				<a href="/amapadmin/documents">
 					<i class="icon icon-file-pdf"></i> Documents
