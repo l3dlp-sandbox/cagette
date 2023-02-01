@@ -140,7 +140,7 @@ class Group extends controller.Controller
 				{ 
 					label:"Mode AMAP",
 					value:"0",
-					desc : "Gérer des contrats AMAP classiques ou variables.<br/>Configuration par défaut : Groupe fermé avec liste d'attente et gestion des adhésions. <a data-toggle='tooltip' title='En savoir plus' href='https://wiki.cagette.net/admin:admin_boutique#mode_amap' target='_blank'><i class='icon icon-info'></i></a>"
+					desc : "<div class='alert alert-danger' style='font-size: 0.9em'>Il n'est plus possible d'ouvrir de groupe en mode AMAP sur Cagette.net</div>"
 				}
 			];	
 			var gt = new sugoi.form.elements.RadioGroup("type", t._("Group type"), data ,"2", Std.string( db.Catalog.TYPE_VARORDER ), true, true, true);
@@ -178,7 +178,8 @@ class Group extends controller.Controller
 				g.hasMembership=true;
 				g.regOption = WaitingList;
 
-				if(!user.isAdmin()) throw Redirect('/group/csa?name='+g.name);
+				// if(!user.isAdmin()) 
+				throw Redirect('/group/csa?name='+g.name);
 				
 			case GroupedOrders :
 				g.flags.set(ShopMode);
