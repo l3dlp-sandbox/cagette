@@ -1,5 +1,8 @@
 package controller;
 
+import payment.Check;
+import payment.Cash;
+
 class Scripts extends Controller
 {
 	var now : Date;
@@ -77,7 +80,7 @@ class Scripts extends Controller
     }
 
     /**
-        enable massively cagette2 option
+        2023-02-01 enable massively cagette2 option + remove percentage on catalogs
     **/
     function doCagette2(){
 
@@ -90,10 +93,18 @@ class Scripts extends Controller
 			groups++;
 
 			//no percentage on catalogs			
-			if( g.getActiveContracts().count(c -> c.percentageValue>0) > 0){
-				groupsWithPercentage++;
-				continue;
-			}
+			// if( g.getActiveContracts().count(c -> c.percentageValue>0) > 0){
+			// 	groupsWithPercentage++;
+			// 	continue;
+			// }
+
+            for( c in g.getActiveContracts().filter(c -> c.percentageValue>0)){
+                c.lock();
+                c.flags.unset(PercentageOnOrders);
+                c.percentageName = null;
+                c.percentageValue = null;
+                c.update();
+            }
 
 			g.lock();
 			g.betaFlags.set(Cagette2);
@@ -114,9 +125,28 @@ class Scripts extends Controller
                 g.betaFlags.unset(Cagette2);
                 g.update();
             }
+        }
+	}
 
-			
+     /**
+        2023-02-01 no more MoneyPot payment
+    **/
+    function doMoneypot(){
+
+        for( g in db.Group.manager.search( $flags.has(ShopMode) )){
+            var paymentTypes = g.getAllowedPaymentTypes();
+            if( paymentTypes.has("moneypot") ){
+                paymentTypes.remove("moneypot");
+                if(paymentTypes.length==0){                    
+                    g.lock();
+                    paymentTypes = [Cash.TYPE,Check.TYPE];
+                    g.setAllowedPaymentTypes(paymentTypes);
+                    g.update();                    
+                }
+                print("remove Moneypot : "+g.id+" - "+g.name);
+
+            }
         }
 
-	}
+    }
 }

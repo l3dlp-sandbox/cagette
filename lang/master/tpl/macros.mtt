@@ -79,7 +79,7 @@
 						<a href="http://wiki.cagette.net" target="_blank"><i class="icon icon-info"></i> Documentation</a> 
 					</li>
 					<li>
-						<a href="https://www.facebook.com/groups/EntraideCagette/" target="_blank"><i class="icon icon-facebook"></i> Groupe d'entraide Facebook</a> 
+						<a href="https://www.facebook.com/groups/EntraideCagette/" target="_blank"><i class="icon icon-facebook"></i> Groupe d'entraide</a> 
 					</li>
 					<li>
 						<a href="https://wiki.cagette.net/support" target="_blank"><i class="icon icon-question"></i> Contacter le support</a> 
@@ -88,7 +88,7 @@
 						<a href="https://cagette.uservoice.com/" target="_blank"><i class="icon icon-list"></i> Faire une suggestion</a> 
 					</li>
 					<li>
-						<a href="http://www.cagette.pro" target="_blank"><i class="icon icon-student"></i> Formation pour producteurs</a> 
+						<a href="http://www.cagette.net/producteurs" target="_blank"><i class="icon icon-student"></i> Formation pour producteurs</a> 
 					</li>
 				</ul>
 			::end::

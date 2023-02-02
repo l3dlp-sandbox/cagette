@@ -25,14 +25,44 @@ class AmapAdmin extends Controller
 		
 		//lance un event pour demander aux plugins si ils veulent ajouter un item dans la nav
 		var nav = new Array<Link>();
-		
-		if (app.user.getGroup().hasPayments()) {
-			nav.push({id:"payments",link:"/amapadmin/payments",name: t._("Means of payment"),icon:"payment-type" });
-		}	
-
+				
 		var e = Nav(nav,"groupAdmin");
 		app.event(e);
 		view.nav = e.getParameters()[0];
+	}
+
+	@tpl("amapadmin/default.mtt")
+	function doDefault() {
+
+		var group = app.user.getGroup();
+		view.membersNum = UserGroup.manager.count($group == group);
+		view.contractsNum = group.getActiveContracts().length;
+		
+		//visible on map
+		#if plugins
+		var h = hosted.db.GroupStats.getOrCreate(group.id, true);
+		var o = h.updateStats();
+		
+		var str = "";
+		if(!o.cagetteNetwork){
+			str += "L'option 'Lister ce groupe sur la carte' n'est pas cochée.";
+		}
+		if (!o.geoloc){
+			str += "Votre lieu de distribution n'a pas pu être géolocaliser, merci de compléter ou corriger son adresse. ";
+		}
+		if( ! o.distributions ){
+			str += "Vous devez avoir des distributions planifiées. ";
+		}
+		if(!o.members){
+			str += "Vous devez avoir au moins 3 personnes dans votre groupe. ";
+		}
+
+		view.visibleOnMapText = str;
+		view.visibleOnMap = o.visible;
+
+		#else
+		view.visibleOnMap = true;
+		#end
 	}
 	
 	@tpl("amapadmin/form.mtt")
@@ -70,40 +100,6 @@ class AmapAdmin extends Controller
 		view.title = "Adhésions";
 	}
 
-	@tpl("amapadmin/default.mtt")
-	function doDefault() {
-
-		var group = app.user.getGroup();
-		view.membersNum = UserGroup.manager.count($group == group);
-		view.contractsNum = group.getActiveContracts().length;
-		
-		//visible on map
-		#if plugins
-		var h = hosted.db.GroupStats.getOrCreate(group.id, true);
-		var o = h.updateStats();
-		
-		var str = "";
-		if(!o.cagetteNetwork){
-			str += "L'option 'Lister ce groupe sur la carte' n'est pas cochée.";
-		}
-		if (!o.geoloc){
-			str += "Votre lieu de distribution n'a pas pu être géolocaliser, merci de compléter ou corriger son adresse. ";
-		}
-		if( ! o.distributions ){
-			str += "Vous devez avoir des distributions planifiées. ";
-		}
-		if(!o.members){
-			str += "Vous devez avoir au moins 3 personnes dans votre groupe. ";
-		}
-
-		view.visibleOnMapText = str;
-		view.visibleOnMap = o.visible;
-
-		#else
-		view.visibleOnMap = true;
-		#end
-	}
-	
 	@tpl("amapadmin/rights.mtt")
 	public function doRights() {
 		view.users = app.user.getGroup().getGroupAdmins();
@@ -312,7 +308,7 @@ class AmapAdmin extends Controller
 		// }
 		// f.addElement( new sugoi.form.elements.StringInput("checkOrder", t._("Make the check payable to"), app.user.getGroup().checkOrder, false)); 
 		f.addElement( new sugoi.form.elements.StringInput("IBAN", t._("IBAN of your bank account for transfers"), app.user.getGroup().IBAN, false)); 
-		f.addElement( new sugoi.form.elements.Checkbox("allowMoneyPotWithNegativeBalance", t._("Allow money pots with negative balance"), app.user.getGroup().allowMoneyPotWithNegativeBalance));
+		// f.addElement( new sugoi.form.elements.Checkbox("allowMoneyPotWithNegativeBalance", t._("Allow money pots with negative balance"), app.user.getGroup().allowMoneyPotWithNegativeBalance));
 		//avoid modifiying another group
 		var groupId = new sugoi.form.elements.IntInput("groupId","groupId",group.id);
 		groupId.inputType = InputType.ITHidden;
@@ -322,8 +318,6 @@ class AmapAdmin extends Controller
 			
 			if( f.getValueOf("groupId") != group.id ) throw "Vous avez changé de groupe.";
 
-
-
 			group.lock();
 			var paymentTypes:Array<String> = f.getValueOf("paymentTypes");
 
@@ -331,14 +325,14 @@ class AmapAdmin extends Controller
 				throw Error(sugoi.Web.getURI(),"Vous devez choisir au moins un moyen de paiement");
 			}
 
-			if(paymentTypes.has(payment.MoneyPot.TYPE) && paymentTypes.length>1) {
-				throw Error(sugoi.Web.getURI(),"Le paiement Cagnotte ne peut pas être utilisé en même temps que d'autres moyens de paiements.");
-			}
+			// if(paymentTypes.has(payment.MoneyPot.TYPE) && paymentTypes.length>1) {
+			// 	throw Error(sugoi.Web.getURI(),"Le paiement Cagnotte ne peut pas être utilisé en même temps que d'autres moyens de paiements.");
+			// }
 			
 			group.setAllowedPaymentTypes(paymentTypes);
 			// group.checkOrder = f.getValueOf("checkOrder");
 			group.IBAN = f.getValueOf("IBAN");
-			group.allowMoneyPotWithNegativeBalance = f.getValueOf("allowMoneyPotWithNegativeBalance");
+			// group.allowMoneyPotWithNegativeBalance = f.getValueOf("allowMoneyPotWithNegativeBalance");
 			group.update();
 			
 			throw Ok("/amapadmin/payments", t._("Payment options updated"));

@@ -31,6 +31,11 @@ class CatalogService{
 		form.removeElement(form.getElement("absentDistribsMaxNb"));
 		form.removeElement(form.getElement("absencesStartDate"));
 		form.removeElement(form.getElement("absencesEndDate"));
+
+		//2022-02-01 remove percentage on orders
+		form.removeElementByName("percentageValue");
+		form.removeElementByName("percentageName");
+		untyped form.getElement("flags").excluded = [2];// remove "PercentageOnOrders" flag
 		
 		if ( catalog.group.hasShopMode() ) {
 			//SHOP MODE
@@ -42,10 +47,6 @@ class CatalogService{
 			
 		} else {
 			//CSA MODE
-			form.removeElementByName("percentageValue");
-			form.removeElementByName("percentageName");
-			untyped form.getElement("flags").excluded = [2];// remove "PercentageOnOrders" flag
-
 			var absencesIndex = 16;
 			if ( catalog.type == Catalog.TYPE_VARORDER ) {
 				//VAR

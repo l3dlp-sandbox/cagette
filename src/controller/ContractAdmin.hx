@@ -74,35 +74,10 @@ class ContractAdmin extends Controller
 		view.places = app.user.getGroup().getPlaces();
 		view.group = app.user.getGroup();
 		
-		/*if(app.user.getGroup().hasShopMode()){
-			var uncertified = [];
-			for( v in vendors){
-				var vs = v.getStats();
-				switch(vs.type){
-					case VTInvited,VTFree,VTInvitedPro :
-						uncertified.push(v);
-					default :
-				}
-			}
-
-			var hasDisabled:Bool = vendors.find(v -> v.isDisabled()) != null;
-			var uncertifiedHtml = uncertified.map(v -> "<li><b>"+v.name+"</b></li>").join("");
-
-			if(!hasDisabled){
-				if(uncertified.length>0){
-					app.session.addMessage('Attention, les producteurs suivant ne sont pas certifiés : <ul>$uncertifiedHtml</ul><br/>Ils doivent ouvrir leur <a href="https://www.cagette.net/producteurs/" target="_blank">compte Producteur</a> pour continuer à vendre après le 9 janvier 2023.<br/>Pour en savoir plus, consultez le mail envoyé le 7 Novembre 2022 ou contactez le support sur <a href="mailto:support@cagette.net">support@cagette.net</a>',true);
-				}else{
-					app.session.addMessage('Tous les producteurs de ce point de distribution sont bien certifiés. Bonnes ventes !');
-				}
-			}
-		}*/
-
-		var contractsToFix = contracts.filter(c -> c.hasPercentageOnOrders());
-
+		/*var contractsToFix = contracts.filter(c -> c.hasPercentageOnOrders());
 		if(contractsToFix.length>0){
 			app.session.addMessage('Attention, la gestion des "frais au pourcentage de la commande" va disparaître le 1er Février 2023.<br/>Les catalogues suivants l\'utilisent : <b>${contractsToFix.map(c->c.name).join(", ")}</b><br/><a href="https://wiki.cagette.net/basculecommissioncatalogue" target="_blank">Cliquez ici pour connaître un alternative.</a>',true);
-		}
-		
+		}*/
 
 		checkToken();
 	}

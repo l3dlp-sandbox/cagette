@@ -8,7 +8,7 @@
 
 <div style="margin:8px 0;">
 	
-	::if(catalog._group.hasShopMode())::
+	::if(catalog._group.hasShopMode() && !catalog._group.isDispatch() )::
 	<a class="btn btn-default btn-sm"
 		onclick="_Cagette.initOrderBox(null,::multiDistribId::,::distribution._catalog.id::,::catalog.type::,'::escapeJS(hDate(distribution.date))::','::escapeJS(distribution._place.toString())::',null,'::catalog._group.currency::', ::catalog._group.hasPayments()::, '/p/pro/delivery/orders/::distribution.id::', ::catalog._group.hasCagette2()::, ::catalog._group.id::)">
 		<i class="icon icon-plus"></i>

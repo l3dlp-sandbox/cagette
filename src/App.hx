@@ -91,7 +91,7 @@ class App extends sugoi.BaseApp {
 								<a href="https://wiki.cagette.net" target="_blank">Documentation</a> 
 							</li>
 							<li>
-								<a href="https://www.facebook.com/groups/EntraideCagette/" target="_blank">Groupe Facebook</a> 
+								<a href="https://www.facebook.com/groups/EntraideCagette/" target="_blank">Groupe d\'entraide</a> 
 							</li>
 							<li>
 								<a href="http://www.cagette.net/producteurs" target="_blank">Information producteurs</a> 

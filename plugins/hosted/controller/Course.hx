@@ -504,8 +504,15 @@ if (App.current.getSettings().noCourse==true) {
 		cpro.offer = Member;
 		cpro.update();
 
+		// Cancel running subscription
+		try {
+			service.BridgeService.call('/subscriptions/cancel/${vendor.id}');
+		} catch (e: Dynamic) {
+			Sys.println(e);
+		}
 
-		vendor.lock();
+		//Do not disable
+		vendor.lock();		
 		switch(vendor.disabled){
 			case DisabledReason.TurnoverLimitReached : vendor.disabled = null;
 			case DisabledReason.DisabledInvited : vendor.disabled = null;
@@ -514,13 +521,6 @@ if (App.current.getSettings().noCourse==true) {
 			default:
 		}
 		vendor.update();
-
-		// Cancel running subscription
-		try {
-			service.BridgeService.call('/subscriptions/cancel/${vendor.id}');
-		} catch (e: Dynamic) {
-			Sys.println(e);
-		}
 
 		//refresh stats
         VendorStats.updateStats(vendor);
