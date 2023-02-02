@@ -444,6 +444,14 @@ class Company extends controller.Controller
 	function doStripe(){
 		var vendor = company.vendor;
 		view.vendor = vendor;
+		view.nav.push("stripe");
+	}
+
+	@tpl('plugin/pro/company/accounting.mtt')
+	function doAccounting(){
+		var vendor = company.vendor;
+		view.vendor = vendor;
+		view.nav.push("accounting");
 	}
 
 	@tpl('plugin/pro/company/cgv.mtt')
