@@ -454,11 +454,19 @@ class Company extends controller.Controller
 		view.nav.push("accounting");
 	}
 
+	@tpl('plugin/pro/company/cgvcgs.mtt')
+	function doCgvcgs(){
+		var vendor = company.vendor;
+		view.vendor = vendor;
+		view.nav.push("cgvcgs");
+	}
+
+
 	@tpl('plugin/pro/company/cgv.mtt')
 	function doCgv(){
 
 		view.vendor = vendor;
-
+		view.nav.push("cgvcgs");
 		var request = new Map();
 		try {
 			request = sugoi.tools.Utils.getMultipart( 1024 * 1024 * 10 ); //10Mb	
@@ -486,7 +494,6 @@ class Company extends controller.Controller
 				throw Ok( Web.getURI(), 'Le document ' + file.name + ' a bien été ajouté.' );
 			}
 		}
-
 	}
 
 }

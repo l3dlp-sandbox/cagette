@@ -16,6 +16,9 @@
 				<li ::attr class if(nav[1]=="accounting") 	'active'::><a href="/p/pro/company/accounting">Comptabilité</a></li>
 				::end::
 
+				<li ::attr class if(nav[1]=="cgvcgs") 	'active'::><a href="/p/pro/company/cgvcgs">C.G.V & C.G.S</a></li>
+
+
 				::if navbar!=null::
 					::foreach i navbar::
 					<li ::attr class if(nav[1]==i.id) 'active'::>

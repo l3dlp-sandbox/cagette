@@ -1,0 +1,24 @@
+::use 'plugin/pro/company/design.mtt'::
+	
+    <h3>C.G.V & C.G.S</h3>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Vos conditions générales de vente (C.G.V)</h4>
+            <p class="desc">	
+                Sur Cagette.net, les relations entre les clients et les producteurs sont régies par les <a href="/ccp">conditions commerciales de la plateforme (C.C.P)</a>.<br/>
+                Cependant vous pouvez personnaliser vos conditions générales de vente si vous le souhaitez.<br/>  
+            </p>
+            <p>
+                <a href="/p/pro/company/cgv" class="btn btn-default btn-xs">Gérer mes conditions générales de vente</a>
+            </p>
+        </div>
+        <div class="col-md-6">
+            <h4>Conditions générales de service (C.G.S)</h4>
+            <p>
+                Consultez les <a href="/cgs">conditions générales de service</a> qui régissent les relations entre Cagette.net et les producteurs.
+            </p>
+        </div>
+    </div>
+	
+::end::
