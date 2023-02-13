@@ -1,4 +1,5 @@
 package hosted.controller;
+import service.ProductService;
 import pro.payment.MangopayECPayment;
 import service.GroupService;
 import tools.ObjectListTool;
@@ -90,11 +91,11 @@ class Main extends controller.Controller
 			//duplicate group with MGP
 
 			var g = GroupService.duplicateGroup(group);
-			g.name = group.name+" - achats groupés";
+			g.name = group.name+" (marché)";
 			g.betaFlags.set(Cagette2);
 			g.flags.set(HasPayments);
 			g.flags.set(ShopMode);
-			g.setAllowedPaymentTypes([MangopayECPayment.TYPE]);
+			// g.setAllowedPaymentTypes([MangopayECPayment.TYPE]);
 			g.update();
 
 			var place = group.getMainPlace();
@@ -127,6 +128,34 @@ class Main extends controller.Controller
 					}
 				}
 			}
+
+			//copy catalogs
+			for ( c in group.getActiveContracts()){
+
+				var newcat = new db.Catalog();
+				newcat.name = c.name;
+				newcat.startDate = c.startDate;
+				newcat.endDate = c.endDate;
+				newcat.type = c.type;
+				newcat.description = c.description;
+				newcat.contact = c.contact;
+				newcat.vendor = c.vendor;
+				newcat.flags.set(UsersCanOrder);
+				newcat.group = g;
+				newcat.insert();
+
+				//copy products
+				for( p in c.getProducts()){
+
+					var newproduct = ProductService.duplicate(p);
+					newproduct.catalog = newcat;
+					newproduct.update();
+				}
+
+			}
+
+
+
 
 			throw Ok("/p/hosted/group/"+g.id,"Groupe copié");
 
