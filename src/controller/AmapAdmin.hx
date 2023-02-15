@@ -301,6 +301,10 @@ class AmapAdmin extends Controller
 		
 		var group = app.user.getGroup();
 
+		if(group.isDispatch()){
+			throw Error("/amapadmin","Ce groupe utilise le paiement en ligne avec Stripe, il n'est pas possible d'y ajouter d'autres moyens de paiement.");
+		}
+
 		// if (group.checkOrder == ""){
 		// 	group.lock();
 		// 	group.checkOrder = app.user.getGroup().name;
