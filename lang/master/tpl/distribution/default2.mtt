@@ -5,7 +5,8 @@
 <script>
     document.addEventListener("DOMContentLoaded", function(event) {
        neo.createNeoModule("distributions-neo-container", "distributions", {
-            groupId: ::getCurrentGroup().id::
+            groupId: ::getCurrentGroup().id::,
+            differenciatedPricingSetting: "::settings.differenciatedPricing::"
         });
     });
 </script>

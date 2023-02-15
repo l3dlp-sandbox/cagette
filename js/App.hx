@@ -166,6 +166,7 @@ class App {
         callbackUrl : String,
         hasCagette2 : Bool,
         groupId : Int,
+        differenciatedPricingSetting: Bool,
         ?basketId : Int
     ) {
         var node = js.Browser.document.createDivElement();
@@ -198,7 +199,8 @@ class App {
                 userName: userName,
                 callbackUrl: callbackUrl,
                 hasPayments: hasPayments,
-                basketId: basketId
+                basketId: basketId,
+                differenciatedPricingSetting: differenciatedPricingSetting
             });
         }
 	}
