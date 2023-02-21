@@ -149,4 +149,30 @@ class Scripts extends Controller
         }
 
     }
+
+    /**
+        2023-02-15 redirect AMAPs to camap.alilo.fr
+    **/
+    function doRedirectamaps(){
+
+        for( g in db.Group.manager.search( $flags.has(ShopMode)==false ,true)){
+
+            g.disabled = "MOVED";
+            g.extUrl = "https://camap.alilo.fr/group/"+g.id;
+            g.update();
+
+            print('Redirects #'+g.id+" "+g.name);
+
+            //break linkage
+            for( cat in g.getContracts() ){
+
+                var rc = connector.db.RemoteCatalog.getFromContract(cat,true);
+		        if(rc != null ){                    
+                    rc.delete();
+                }
+            }
+
+        }
+
+    }
 }

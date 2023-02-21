@@ -730,7 +730,6 @@ class Admin extends Controller {
 
 		var from = new Date(year, month, 1, 0, 0, 0);
 		var to = new Date(year, month + 1, 0, 23, 59, 59);
-
 		var tf = new tools.Timeframe(from,to);
 
 		view.tf = tf;
@@ -773,17 +772,14 @@ class Admin extends Controller {
 					turnover : Math.round(turnover),
 					basketNums : baskets.length,
 					vendorsInGroup : group.getActiveVendors().length,
-					vendorsInDistrib: md.getVendors().length,
+					// vendorsInDistrib: md.getVendors().length,
 				});
 
 				baskets = [];
 				
 			}
-			var headers = ["id","marketId","url","contactType","membersNum","date","zipCode","address","city","turnover","basketNums","vendorsInGroup","vendorsInDistrib"];
+			var headers = ["id","marketId","url","contactType","membersNum","date","zipCode","address","city","turnover","basketNums","vendorsInGroup"];
 			sugoi.tools.Csv.printCsvDataFromObjects(data, headers, "Distributions");
-
 		}
-
-
 	}
 }

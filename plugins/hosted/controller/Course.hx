@@ -360,11 +360,20 @@ if (App.current.getSettings().noCourse==true) {
 
 	private function generatePassword():String{
 		var letters = "abcdefghijklmnopqrstuvwxyz";
+		var upperCaseLetters = letters.toUpperCase();
+		var specials = "_-.#";
 		var pass  = new StringBuf();
 		for(i in 0...8){
+
 			if(i<=3){
-				pass.add(letters.charAt(Std.random(letters.length)));
-			}else{
+				if(i%2==0){
+					pass.add(letters.charAt(Std.random(letters.length)));
+				}else{
+					pass.add(upperCaseLetters.charAt(Std.random(upperCaseLetters.length)));
+				}				
+			}else if(i == 4){
+				pass.add(specials.charAt(Std.random(specials.length)));
+			} else {
 				pass.add(Std.random(10));
 			}
 		}
@@ -372,18 +381,21 @@ if (App.current.getSettings().noCourse==true) {
 	}
 
 	private function generateUsername(first:String,last:String):String{
-
-		var last = StringTools.replace(last, " ", "");
-		var last = StringTools.replace(last, "'", "");
-		var last = StringTools.replace(last, "é", "e");
-		var last = StringTools.replace(last, "è", "e");
-		var last = StringTools.replace(last, "ê", "e");
-		var last = StringTools.replace(last, "ç", "c");
-		var last = StringTools.replace(last, "à", "a");
-		var last = StringTools.replace(last, "â", "a");
-		
-		var s = first.substr(0, 1) + last.substr(0,12);
+		var s = cleanString(first).substr(0, 64) +"."+ cleanString(last).substr(0,64);
 		return s.toLowerCase();
+	}
+
+	function cleanString(str:String):String{
+		str = StringTools.replace(str, " ", "");
+		str = StringTools.replace(str, "'", "");
+		str = StringTools.replace(str, "é", "e");
+		str = StringTools.replace(str, "è", "e");
+		str = StringTools.replace(str, "ê", "e");
+		str = StringTools.replace(str, "ç", "c");
+		str = StringTools.replace(str, "à", "a");
+		str = StringTools.replace(str, "â", "a");
+		return str;
+		
 	}
 
 	/**

@@ -535,8 +535,9 @@ class Group extends Object
 		enable payments
 	**/
 	public function enablePayments(){
-		if(!this.hasPayments()){
-
+		if(!this.hasPayments() && this.hasShopMode()){
+			
+			this.lock();
 			this.flags.set(HasPayments);
 			this.setAllowedPaymentTypes([payment.Cash.TYPE,payment.Check.TYPE]);			
 			this.update();
@@ -562,13 +563,9 @@ class Group extends Object
 					basket.lock();
 					basket.status = Std.string(db.Basket.BasketStatus.VALIDATED);
 					basket.update();
-				}
-				
+				}		
 			}
-
 		}
-
-
 	}
 
 }

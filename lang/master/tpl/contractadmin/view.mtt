@@ -134,7 +134,7 @@
 						</p>
 						::if(cpro==null)::
 							<p>
-								<a href="/vendor/checkId/::c.id::" class="btn btn-primary">Ouvrir un compte Producteur Découverte</a>
+								<a href="/vendor/checkId/::c.id::" class="btn btn-primary">Ouvrir un compte Producteur</a>
 							</p>
 							<p>
 								<div id="discoveryVendorTurnoverLimit"></div>

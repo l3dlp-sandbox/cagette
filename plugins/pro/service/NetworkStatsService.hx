@@ -42,7 +42,6 @@ class NetworkStatsService{
     
     public function getSalesAmount(){
         var amount = 0.0;
-        
         var dids = multiDistribs.map(d -> d.id);
         var baskets = Basket.manager.search( ($multiDistribId in dids) && $status!=Std.string(db.Basket.BasketStatus.OPEN) );
         for ( b in baskets){
@@ -53,7 +52,6 @@ class NetworkStatsService{
             }
             amount += b.total;
         }
-                
         return amount;
     }
 
