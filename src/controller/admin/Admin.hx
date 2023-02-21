@@ -728,8 +728,8 @@ class Admin extends Controller {
 		var year = now.getFullYear();
 		var month = now.getMonth();
 
-		var from = new Date(year, month, 1, 0, 0, 0);
-		var to = new Date(year, month + 1, 0, 23, 59, 59);
+		var from = new Date(year, month-1, 1, 0, 0, 0);
+		var to 	 = new Date(year, month  , 1, 0, 0, 0);
 		var tf = new tools.Timeframe(from,to);
 
 		view.tf = tf;
@@ -741,10 +741,6 @@ class Admin extends Controller {
 				var group = md.group;
 
 				if(!group.hasShopMode()) continue;
-
-				var baskets = md.getBaskets();
-				var turnover = 0.0;
-				for(b in baskets) turnover += b.total;
 
 				var contactType = "";
 				if(group.contact!=null){
@@ -759,26 +755,40 @@ class Admin extends Controller {
 					contactType = "NONE";
 				}
 
-				data.push({
-					id: md.id,
-					marketId : group.id,
-					url : "https://app.cagette.net/p/hosted/group/"+group.id,
-					contactType:contactType,
-					membersNum : group.getMembersNum(),
-					date : md.distribStartDate.toString().substr(0,10),
-					zipCode : md.place.zipCode,
-					address : md.place.address1,
-					city : md.place.city,
-					turnover : Math.round(turnover),
-					basketNums : baskets.length,
-					vendorsInGroup : group.getActiveVendors().length,
-					// vendorsInDistrib: md.getVendors().length,
-				});
+				var baskets = md.getBaskets();
+				var turnover = 0.0;
+				
+				for( d in md.getDistributions()){
+
+					data.push({
+						distributionId: md.id,
+						marketId : group.id,
+						url : "https://app.cagette.net/p/hosted/group/"+group.id,
+						vendorId : d.catalog.vendor.id,
+						vendorName : d.catalog.vendor.name,
+						vendorProfession : d.catalog.vendor.getProfession(),
+						
+						contactType : contactType,
+						membersNum : group.getMembersNum(),
+						
+						day : md.distribStartDate.getDate(),
+						month : md.distribStartDate.getMonth()+1,
+						year : md.distribStartDate.getFullYear(),
+
+						zipCode : md.place.zipCode.substr(0,2),
+						address : md.place.address1,
+						city : md.place.city,
+						turnover : Math.round(d.getTurnOver()),
+						basketNums : baskets.length,
+						vendorsInGroup : group.getActiveVendors().length,						
+					});
+
+				}
 
 				baskets = [];
 				
 			}
-			var headers = ["id","marketId","url","contactType","membersNum","date","zipCode","address","city","turnover","basketNums","vendorsInGroup"];
+			var headers = ["distributionId","marketId","url","vendorId","vendorName","vendorProfession","basketNums","contactType","membersNum","day","month","year","zipCode","address","city","turnover"];
 			sugoi.tools.Csv.printCsvDataFromObjects(data, headers, "Distributions");
 		}
 	}
