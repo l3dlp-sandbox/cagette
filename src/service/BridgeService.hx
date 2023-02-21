@@ -22,7 +22,7 @@ class BridgeService {
 	public static function getNeoModuleScripts() {
 		try{
 			var manifest = BridgeService.getNeoWebpackManifest();
-			var data = [manifest.get("runtime.js"), manifest.get("reactlibs.js"), manifest.get("vendors.js"), manifest.get("neo.js")];
+			var data = [manifest.get("runtime.js"), manifest.get("reactlibs.js"), manifest.get("neo.js")];
 			if(Std.random(10)==0 && Cache.get("manifest")==null){
 				Cache.set("manifest",data,60*60);
 			}
