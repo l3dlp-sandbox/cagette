@@ -119,13 +119,14 @@ class VolunteerService
 			var foundVolunteer = Lambda.find(multidistrib.getVolunteerForUser(user), function(v) return v.volunteerRole.id==role.id);
 			if ( foundVolunteer != null ) {
 
-				//Send notification email to either the coordinators or all the members depending on the current date
+				// If unsubscribeVolunteerRoleReasonOnlyForAdmin is set, send notification email to the coordinators
+				// else send it to either the coordinators or all the members depending on the current date
 				var mail = new Mail();
 				mail.setSender(App.current.getTheme().email.senderEmail, App.current.getTheme().name);
 				var now = Date.now();
 				var alertDate = DateTools.delta( multidistrib.distribStartDate, - 1000.0 * 60 * 60 * 24 * multidistrib.group.vacantVolunteerRolesMailDaysBeforeDutyPeriod );
 
-				if ( now.getTime() <=  alertDate.getTime() ) {
+				if ( App.current.getSettings().unsubscribeVolunteerRoleReasonOnlyForAdmin==true || now.getTime() <=  alertDate.getTime() ) {
 
 					//Recipients are the coordinators
 					var rights = if(foundVolunteer.volunteerRole.catalog==null){

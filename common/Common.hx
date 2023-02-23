@@ -338,4 +338,5 @@ typedef Settings = {
 	var ?onlyVendorsCanCreateGroup: Bool;
 	var ?noCourse: Bool;
 	var ?differenciatedPricing: Bool;
+	var ?unsubscribeVolunteerRoleReasonOnlyForAdmin: Bool;
 }
