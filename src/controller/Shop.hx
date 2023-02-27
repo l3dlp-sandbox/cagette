@@ -280,10 +280,10 @@ class Shop extends Controller
 	*/
 	@tpl('shop/basket.mtt')
 	public function doBasket(basket:db.Basket) {
-		
-		var group = app.getCurrentGroup();
-		if(group==null){
-			throw Redirect("/");
+		var md = basket.multiDistrib;
+		var group = md.group;
+		if (app.session.data.amapId != group.id){
+			app.session.data.amapId = group.id;
 		}
 
 		if (!group.hasCagette2()) {
