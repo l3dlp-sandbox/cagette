@@ -37,6 +37,11 @@ class Shop extends Controller
 			service.OrderService.checkTmpBasket(app.user,app.getCurrentGroup());			
 		}
 
+		//if orders are closed
+		if(md.getStatus() != "open"){
+			throw Redirect('/home');
+		}
+
 		view.category = 'shop';
 		view.md = md;
 		view.tmpBasketId = app.session.data.tmpBasketId;
