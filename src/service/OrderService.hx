@@ -99,6 +99,7 @@ class OrderService
 		order.product = product;
 		order.quantity = quantity;
 		order.productPrice = product.price;
+		order.vatRate = product.vat;
 		if ( product.catalog.hasPercentageOnOrders() ){
 			order.feesRate = product.catalog.percentageValue;
 		}

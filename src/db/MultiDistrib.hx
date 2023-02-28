@@ -26,7 +26,7 @@ enum MultiDistribValidatedStatus {
  * MultiDistrib represents a global distributions with many vendors. 	
  * @author fbarbut
  */
-@:index(distribStartDate)
+@:index(distribStartDate,validatedStatus,orderStartDate)
 class MultiDistrib extends Object
 {
 	public var id : SId;
