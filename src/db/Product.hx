@@ -1,4 +1,5 @@
 package db;
+import pro.db.POffer;
 import sys.db.Object;
 import sys.db.Types;
 import Common;
@@ -39,6 +40,7 @@ class Product extends Object
 	
 	@hideInForms @:relation(imageId) public var image : SNull<sugoi.db.File>;
 	@:relation(txpProductId) public var txpProduct : SNull<db.TxpProduct>; //taxonomy	
+	@hideInForms @:relation(pOfferId) public var pOffer : SNull<POffer>;	
 	
 	public var active : SBool; 	//if false, product disabled, not visible on front office
 	
