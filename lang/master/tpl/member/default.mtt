@@ -7,7 +7,7 @@
        neo.createNeoModule("members-neo-container", "members", {
             groupId: parseInt("::user.getGroup().id::", 10),
             token: "::token::",
-            differenciatedPricingSetting: "::settings.differenciatedPricing::"
+            differenciatedPricingSetting: ::settings.differenciatedPricing::
         });
     });
 </script>

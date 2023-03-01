@@ -7,7 +7,7 @@
 			neo.createNeoModule("messages-neo-container", "messages", {
 				groupId: parseInt("::user.getGroup().id::", 10),
 				whichUser: !!parseInt("::whichUser()::"),
-            	differenciatedPricingSetting: "::settings.differenciatedPricing::"
+            	differenciatedPricingSetting: ::settings.differenciatedPricing::
 			});
 		});
 	</script>

@@ -8,7 +8,7 @@
                         basketId: ::basket.id::,
                         groupId: ::group.id::,
                         sid: "::getSid()::",
-                        differenciatedPricingSetting: "::settings.differenciatedPricing::"
+                        differenciatedPricingSetting: ::settings.differenciatedPricing::
                     });
             });
         </script>

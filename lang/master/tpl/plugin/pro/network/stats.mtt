@@ -7,7 +7,7 @@
 					cagetteProId: ::cagetteProId::,
 					fromDate: new Date("::fromDate::"),
 					toDate: new Date("::toDate::"),
-                    differenciatedPricingSetting: "::settings.differenciatedPricing::"
+                    differenciatedPricingSetting: ::settings.differenciatedPricing::
 				});
 		});
 	</script>
