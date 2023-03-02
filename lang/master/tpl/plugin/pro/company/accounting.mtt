@@ -6,7 +6,9 @@
 
     <script>
     document.addEventListener("DOMContentLoaded", function(event) {
-        neo.createNeoModule("accounting-container", "vendor-accounting");
+        neo.createNeoModule("accounting-container", "vendor-accounting", {
+            vendorId: ::vendor.id::
+        });
     });
     </script>
 
