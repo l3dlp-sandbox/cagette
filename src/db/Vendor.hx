@@ -382,6 +382,25 @@ class Vendor extends Object
 
 	}
 
+	public function getStripeConnectStatus(){
+
+		var out = {account_open:false,details_submitted:false,charges_enabled:false};
+
+		if(stripeAccountId==null) {
+			return out;
+		}else{
+			out.account_open=true;
+		}
+
+		var res = sys.db.Manager.cnx.request('SELECT * FROM stripeAccount where id="${this.stripeAccountId}" and details_submitted=1 and charges_enabled=1').results().first();
+		if(res!=null){
+			out.details_submitted = res.details_submitted==1;
+			out.charges_enabled = res.charges_enabled==1;
+		}
+
+		return out;
+	}
+
 	public function canOpenStripeAccount():Bool{
 		return betaFlags.has(CanOpenStripeAccount);
 	}
