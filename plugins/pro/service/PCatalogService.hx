@@ -121,6 +121,7 @@ class PCatalogService{
 		groupProduct.retail = co.offer.product.retail;
 		groupProduct.bulk = co.offer.product.bulk;
 		groupProduct.smallQt = co.offer.smallQt;
+		groupProduct.pOffer = co.offer;
 		
 		//set stock if it's a new product
 		if(groupProduct.id == null && co.offer.stock!=null){
