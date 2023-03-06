@@ -21,6 +21,7 @@ class POffer extends Object
 	public var active : SBool; 	//if false, product disabled, not visible on front office
 	
 	@hideInForms public var stock : SNull<SFloat>; // Current stock of this offer (available for sale + undelivered orders)
+	@hideInForms public var orderedStock : SNull<SFloat>; // Current undelivered orders stock
 	
 	public function new() 
 	{
