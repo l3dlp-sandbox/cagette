@@ -199,7 +199,6 @@ class Scripts extends Controller
 
             //break linkage
             for( cat in g.getContracts() ){
-
                 var rc = connector.db.RemoteCatalog.getFromContract(cat,true);
 		        if(rc != null ){                    
                     rc.delete();

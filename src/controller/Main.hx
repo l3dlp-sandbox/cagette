@@ -351,7 +351,7 @@ class Main extends Controller {
 		sys.db.admin.Admin.handler();
 	}
 
-	@admin
+	// @admin
 	function doDebug(d:Dispatch) {
 		d.dispatch(new controller.Debug());
 	}
