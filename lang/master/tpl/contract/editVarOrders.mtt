@@ -2,7 +2,7 @@
 <div id="content" class="col-md-8">
 	<div class="article">
 		<h2>
-			::__("Modify the order delivered on ::date::",{date:hDate(date)})::
+			Modifier ma commande pour la distribution du ::hDate(date).toLowerCase()::
 		</h2>
 		
 		<p>Vous ne pourrez pas forcément modifier tous les articles car la commande peut être close pour certains producteurs.</p>
