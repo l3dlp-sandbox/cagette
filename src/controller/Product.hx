@@ -31,13 +31,6 @@ class Product extends Controller
 
 			f.toSpod(product);
 
-			//manage stocks by distributions for CSA contracts
-			if(!product.catalog.group.hasShopMode() && product.catalog.hasStockManagement()){
-				var distribNum = product.catalog.getDistribs(false).length;
-				distribNum = distribNum == 0 ? 1 : distribNum;
-				product.stock = (f.getValueOf("stock"):Float) * distribNum;
-			}
-
 			try{
 				ProductService.check(product);
 			}catch(e:tink.core.Error){
@@ -117,7 +110,7 @@ class Product extends Controller
 		var csv = new sugoi.tools.Csv();
 		csv.step = 1;
 		var request = sugoi.tools.Utils.getMultipart(1024 * 1024 * 4);
-		csv.setHeaders( ["productName","price","ref","desc","qt","unit","organic","floatQt","vat","stock"] );
+		csv.setHeaders( ["productName","price","ref","desc","qt","unit","organic","floatQt","vat"] );
 		view.contract = c;
 		
 		// get the uploaded file content
@@ -158,7 +151,6 @@ class Product extends Controller
 							default : Piece;
 						}
 					}
-					if (p["stock"] != null) product.stock = fv.filterString(p["stock"]);
 					product.organic = p["organic"] != null;
 					// product.hasFloatQt = p["floatQt"] != null;
 					

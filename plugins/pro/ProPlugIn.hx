@@ -88,33 +88,6 @@ class ProPlugIn extends PlugIn implements IPlugIn{
 
 			case MinutelyCron(now,jobs,outputFormat):
 				
-				//Decrease stocks in cpro when distrib has been done	
-				var task = new TransactionWrappedTask("Decrease stocks in cpro when distrib has been done");
-				if(outputFormat=="json"){
-					jobs.push(task);
-					task.printLog = false;
-				}
-				
-				task.setTask(function (){
-								
-					var range = if(App.config.DEBUG) tools.DateTool.getLastHourRange() else tools.DateTool.getLastMinuteRange();
-					task.log("Time is "+Date.now()+"<br/>");
-					task.log('Find all distributions that took place in the last minute from ${range.from} to ${range.to} \n<br/>');
-					
-					for ( d in db.Distribution.manager.search($end >= range.from && $end < range.to, false)){
-						if(d.catalog==null) continue;
-						//We ignore all non cpro distribs
-						var contract = d.catalog;
-						var rc = connector.db.RemoteCatalog.getFromContract(contract);					
-						if(rc==null) continue;
-						
-						PStockService.decreaseStocksOnDistribEnd(d,rc);
-						
-					}
-
-				});
-				task.execute();
-
 				//Catalogs synchro
 				if (Date.now().getMinutes() % 10 == 0 || (App.current.user!=null && App.current.user.isAdmin()) ){	
 									

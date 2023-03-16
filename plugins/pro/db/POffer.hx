@@ -128,7 +128,6 @@ class POffer extends Object
 			categories : [],	//used in old shop
 			subcategories : [],  //used in new shop
 			orderable : false,			//can be currently ordered
-			stock: null,			//available stock
 			qt:this.quantity,
 			unitType:this.product.unitType,
 			organic:this.product.organic,

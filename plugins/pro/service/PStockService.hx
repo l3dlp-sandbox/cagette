@@ -72,35 +72,6 @@ class PStockService{
 	}
 
 	/**
-	 *  Decrease cpro stocks when orders close
-	 */
-	public static function decreaseStocksOnDistribEnd(d:db.Distribution,rc:connector.db.RemoteCatalog){
-
-		if(d.catalog.id != rc.getContract().id) throw "This distribution does not belong to this farmer";
-		if( d.end.getTime() > Date.now().getTime() ) throw "This distribution is not yet done";
-		var orders = pro.service.ProReportService.getOrdersByProduct({distribution:d});
-		var allOffers = rc.getPCatalog().company.getOffers();
-		var stockService = new PStockService(rc.getPCatalog().company);
-
-		for( o in orders.orders){
-			
-			var offer = Lambda.find(allOffers,function(x) return x.ref==o.ref);
-			if(offer==null || offer.stock==null){
-				continue;
-			} else {
-				//update stock in cpro
-				offer.lock();
-				offer.stock -= o.quantity;
-				offer.update();
-
-				//update stock in groups
-				stockService.updateStockInGroups(offer);
-			}
-		}
-	}
-
-
-	/**
 		update stocks in groups when the stock of a product is modified
 	
     public static function updateStockInGroupsByProduct(product:pro.db.PProduct){

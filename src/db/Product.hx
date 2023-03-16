@@ -115,7 +115,6 @@ class Product extends Object
 			categories : null,
 			subcategories:null,
 			orderable : this.catalog.isUserOrderAvailable(),
-			stock : catalog.hasStockManagement() ? this.stock : null,
 			qt:qt,
 			unitType:unitType,
 			organic:organic,
