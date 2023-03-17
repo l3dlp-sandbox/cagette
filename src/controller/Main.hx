@@ -62,12 +62,12 @@ class Main extends Controller {
 		} else if (app.user == null && (group == null || group.regOption != db.Group.RegOption.Open)) {
 			throw Redirect("/user/login");
 		}else if(group.disabled!=null){
-			throw Redirect("/group/disabled");
+			if(app.user!=null && app.user.isAdmin()){
+				app.session.addMessage('Ce groupe est bloqué, mais en tant que superadmin vous pouvez y accéder (${group.disabled})');
+			}else{
+				throw Redirect("/group/disabled");
+			}
 		}
-
-		// if( app.user != null && app.user.isAmapManager() && group.getAllowedPaymentTypes().has(MoneyPot.TYPE)){
-		// 	app.session.addMessage("Attention, le moyen de paiement \"cagnotte\" va disparaître le 1er Février 2023.<br/><a href='https://wiki.cagette.net/basculecagnotte' target='_blank'>Cliquez ici pour savoir comment faire la bascule</a>",true);
-		// }
 
 		group.checkIsolate();
 

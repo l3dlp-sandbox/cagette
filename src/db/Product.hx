@@ -15,8 +15,7 @@ class Product extends Object
 	
 	@hideInForms  @:relation(catalogId) public var catalog : db.Catalog;
 	
-	//prix TTC
-	public var price : SFloat;
+	public var price : SFloat;	
 	public var vat : SFloat;			//VAT rate in percent
 	
 	public var desc : SNull<SText>;
@@ -35,8 +34,6 @@ class Product extends Object
 	public var bulk : Bool;		//(vrac) warn the customer this product is not packaged
 	public var smallQt : SNull<SFloat>; //if bulk is true, a smallQt should be defined
 
-	// public var hasFloatQt:SBool; //deprecated : this product can be ordered in "float" quantity
-	
 	@hideInForms @:relation(imageId) public var image : SNull<sugoi.db.File>;
 	@:relation(txpProductId) public var txpProduct : SNull<db.TxpProduct>; //taxonomy	
 	

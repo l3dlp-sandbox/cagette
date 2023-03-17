@@ -515,12 +515,15 @@ class Group extends Object
 			return haxe.Json.parse(allowedPaymentsType);
 		}catch(e:Dynamic){
 			return [];
-		}
-		
+		}		
 	}
 
 	public function isDispatch():Bool{
 		return betaFlags.has(Dispatch);
+	}
+
+	public function isDisabled():Bool{
+		return disabled!=null;
 	}
 
 	public function hasCagette2(){

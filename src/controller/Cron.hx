@@ -108,7 +108,8 @@ class Cron extends Controller
 				FROM MultiDistrib distrib INNER JOIN `Group` g
 				ON distrib.groupId = g.id
 				WHERE distrib.distribStartDate >= DATE_ADD(\'${fromNow}\', INTERVAL g.volunteersMailDaysBeforeDutyPeriod DAY)
-				AND distrib.distribStartDate < DATE_ADD(\'${toNow}\', INTERVAL g.volunteersMailDaysBeforeDutyPeriod DAY);', false).array();
+				AND distrib.distribStartDate < DATE_ADD(\'${toNow}\', INTERVAL g.volunteersMailDaysBeforeDutyPeriod DAY)
+				AND g.disabled IS NULL;', false).array();
 			
 			for (multidistrib  in multidistribs) {
 
@@ -154,7 +155,8 @@ class Cron extends Controller
 				FROM MultiDistrib distrib INNER JOIN `Group` g
 				ON distrib.groupId = g.id
 				WHERE distrib.distribStartDate >= DATE_ADD(\'${fromNow}\', INTERVAL g.vacantVolunteerRolesMailDaysBeforeDutyPeriod DAY)
-				AND distrib.distribStartDate < DATE_ADD(\'${toNow}\', INTERVAL g.vacantVolunteerRolesMailDaysBeforeDutyPeriod DAY);', false));
+				AND distrib.distribStartDate < DATE_ADD(\'${toNow}\', INTERVAL g.vacantVolunteerRolesMailDaysBeforeDutyPeriod DAY)
+				AND g.disabled IS NULL;', false));
 
 			var vacantVolunteerRolesMultidistribs = Lambda.filter( multidistribs, function(multidistrib) return multidistrib.hasVacantVolunteerRoles() );
 			
@@ -609,6 +611,8 @@ class Cron extends Controller
 		task.title('$flag : Look for distribs happening between $from to $to');
 		distribs = db.Distribution.manager.search( $date >= from && $date < to , false);
 		
+		//exclude disabled groups
+		distribs = distribs.filter(d -> d.multiDistrib.group.isDisabled()==false);
 		
 		//on s'arrete immédiatement si aucune distibution trouvée
  		if (distribs.length == 0) return;
@@ -757,7 +761,9 @@ class Cron extends Controller
 		
 		//exclude CSA catalogs
 		distribs = distribs.filter( (d) -> return d.catalog.type!=db.Catalog.TYPE_CONSTORDERS );
-		distribs.map(  (d) -> task.log("Distrib : "+d.date+" de "+d.catalog.name+", groupe : "+d.catalog.group.name) );
+		//exclude disabled groups
+		distribs = distribs.filter(d -> d.multiDistrib.group.isDisabled()==false);
+		distribs.map( d -> task.log("Distrib : "+d.date+" de "+d.catalog.name+", groupe : "+d.catalog.group.name) );
 				
 		/*
 		 * Group distribs by group.

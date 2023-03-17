@@ -1,5 +1,6 @@
 package controller.admin;
 
+import pro.db.CagettePro;
 import db.Graph;
 import haxe.Json;
 import sugoi.form.elements.TextArea;
@@ -760,13 +761,18 @@ class Admin extends Controller {
 				
 				for( d in md.getDistributions()){
 
+					var v = d.catalog.vendor;
+					var cpro = v.getCpro();
+					var vendorStatus = cpro==null ? "Invited" : Std.string(cpro.offer);
+
 					data.push({
 						distributionId: md.id,
 						marketId : group.id,
 						url : "https://app.cagette.net/p/hosted/group/"+group.id,
-						vendorId : d.catalog.vendor.id,
-						vendorName : d.catalog.vendor.name,
-						vendorProfession : d.catalog.vendor.getProfession(),
+						vendorId : v.id,
+						vendorName : v.name,
+						vendorProfession : v.getProfession(),
+						vendorStatus : vendorStatus,
 						
 						contactType : contactType,
 						membersNum : group.getMembersNum(),
@@ -788,7 +794,7 @@ class Admin extends Controller {
 				baskets = [];
 				
 			}
-			var headers = ["distributionId","marketId","url","vendorId","vendorName","vendorProfession","basketNums","contactType","membersNum","day","month","year","zipCode","address","city","turnover"];
+			var headers = ["distributionId","marketId","url","vendorId","vendorName","vendorStatus","vendorProfession","basketNums","contactType","membersNum","day","month","year","zipCode","address","city","turnover"];
 			sugoi.tools.Csv.printCsvDataFromObjects(data, headers, "Distributions");
 		}
 	}

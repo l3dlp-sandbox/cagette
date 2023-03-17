@@ -1,7 +1,5 @@
 ::use 'plugin/pro/company/design.mtt'::
 	
-    <h3>Comptabilité</h3>
-
     <div id="accounting-container"></div>
 
     <script>
@@ -11,6 +9,5 @@
         });
     });
     </script>
-
 	
 ::end::
