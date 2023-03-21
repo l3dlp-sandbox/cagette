@@ -29,19 +29,19 @@ using Std;
 using tools.DateTool;
 
 class Distribution extends Controller {
+
 	public function new() {
 		super();
 		view.category = "distribution";
 	}
 
+	function doDefault(){
+		throw Redirect('/distributions');
+	}
+
 	function checkHasDistributionSectionAccess() {
 		if (!app.user.canManageAllContracts())
 			throw Error('/', t._('Forbidden action'));
-	}
-
-	@tpl('distribution/default.mtt')
-	function doDefault() {
-		throw Redirect('/distributions');		
 	}
 
 	/**
@@ -1420,13 +1420,7 @@ class Distribution extends Controller {
 		view.partiallyPaid = partiallyPaid;
 	}
 
-	/**
 
-
-		@tpl("distribution/userTimeSlot.mtt")
-		function doUserTimeSlot(d:db.MultiDistrib){
-			view.distribution = d;
-	}**/
 	/**
 		See timeslot resolution for admins
 	**/
