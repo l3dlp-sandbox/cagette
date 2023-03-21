@@ -12,10 +12,7 @@ class Distributions extends Controller {
 	}
 
 	@tpl('distribution/default2.mtt')
-	function doDefault() {
-		if (!app.getCurrentGroup().hasCagette2()){
-			throw Redirect('/distribution');
-		}
+	function doDefault() {		
 		checkHasDistributionSectionAccess();
 	}
 

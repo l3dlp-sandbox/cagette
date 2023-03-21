@@ -34,7 +34,7 @@ typedef SiretInfos = {
 }
 
 enum VendorBetaFlags{
-	Cagette2;		//BETA Cagette 2.0
+	__Cagette2;		//BETA Cagette 2.0 @deprecated
 	CanOpenStripeAccount; //Can Open Stripe Account
 }
 
@@ -107,22 +107,6 @@ class Vendor extends Object
 		freemiumResetDate = Date.now();
 	}
 
-	public function checkIsolate(){
-	
-		/*if(this.betaFlags.has(VendorBetaFlags.Cagette2)){
-			var cpro = pro.db.CagettePro.getCurrentCagettePro();
-			var noCagette2Groups = cpro.getGroups().filter(v->!v.hasCagette2());
-			if ( noCagette2Groups.length>0 ){
-				var name = noCagette2Groups.map(v -> v.name).join(", ");
-				throw sugoi.ControllerAction.ControllerAction.ErrorAction("/user/choose",'Le producteur "${this.name}" a l\'option Cagette2 activée et ne peut pas fonctionner avec des groupes qui n\'ont pas activé cette option ($name). Contactez nous sur <b>'+App.current.getTheme().supportEmail+'</b> pour régler le problème.');
-			}
-		}*/
-	}
-
-	public function hasCagette2(){
-		return betaFlags.has(VendorBetaFlags.Cagette2);
-	}
-	
 	override function toString() {
 		return name;
 	}
@@ -402,7 +386,8 @@ class Vendor extends Object
 	}
 
 	public function canOpenStripeAccount():Bool{
-		return betaFlags.has(CanOpenStripeAccount);
+		// return betaFlags.has(CanOpenStripeAccount);
+		return true;
 	}
 
 	

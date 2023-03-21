@@ -37,15 +37,9 @@ class Admin extends Controller {
 		view.now = Date.now();
 		view.ip = Web.getClientIP();
 
-		// db.Group.manager.count($betaFlags.has(Cagette2));
-		// db.Group.manager.count($betaFlags.has(Dispatch));
-
-		// tmp deploiement de l'option cagette2
 		var groups = db.Group.manager.unsafeCount('SELECT COUNT(g.id) FROM `Group` g, GroupStats gs WHERE gs.groupId=g.id AND gs.active=1');
-		var cg2groups = db.Group.manager.unsafeCount('SELECT COUNT(g.id) FROM `Group` g, GroupStats gs WHERE betaFlags & 2 != 0 AND gs.groupId=g.id AND gs.active=1');
 		var dispatchGroups = db.Group.manager.unsafeCount('SELECT COUNT(g.id) FROM `Group` g, GroupStats gs WHERE betaFlags & 4 != 0 AND gs.groupId=g.id AND gs.active=1');
 		view.groups = groups;
-		view.cg2groups = cg2groups;
 		view.dispatchGroups = dispatchGroups;
 
 		if (app.params.get("reloadSettings") == "1") {
@@ -487,6 +481,11 @@ class Admin extends Controller {
 		f.addElement(new sugoi.form.elements.StringSelect("type", "Type de groupe", data, defaultType, true, ""));
 		f.addElement(new sugoi.form.elements.StringInput("zipCodes", "Saisir des numéros de département séparés par des virgules ou laisser vide."));
 		f.addElement(new sugoi.form.elements.StringSelect("country", "Pays", db.Place.getCountries(), "FR", true, ""));
+		
+
+		var data = [{label: "Tous", value: "any"},{label: "Paiement en ligne Stripe", value: "stripe"}, {label: "Paiement sur place", value: "onthespot"},{label: "Paiement en ligne Mangopay", value: "mangopay"}];
+		f.addElement(new sugoi.form.elements.StringSelect("payment", "Moyen de paiement", data, "table", true, ""));
+
 		var data = [
 			{label: "Actifs", value: "active"},
 			{label: "Inactifs", value: "inactive"},
@@ -544,6 +543,20 @@ class Admin extends Controller {
 			if (f.getValueOf("groupName") != null) {
 				sql_where_and.push('g.name like "%${f.getValueOf("groupName")}%"');
 			}
+
+			//payment
+			if (f.getValueOf("payment") != null && f.getValueOf("payment") != "any") {
+				switch (f.getValueOf("payment")){
+					case "stripe" : sql_where_and.push('g.allowedPaymentsType LIKE "%stripe%"');
+					case "onthespot" : sql_where_and.push('( g.allowedPaymentsType LIKE "%cash%" OR g.allowedPaymentsType LIKE "%check%" OR g.allowedPaymentsType LIKE "%card-terminal%" )');
+					case "mangopay" : sql_where_and.push('g.allowedPaymentsType LIKE "%mangopay-ec%"');
+				}
+				
+			}
+			
+
+
+
 		} else {
 			// default settings
 			sql_where_and.push('active=1');

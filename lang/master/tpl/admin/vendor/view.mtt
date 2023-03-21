@@ -103,15 +103,8 @@
 		<p>
 			Actif $$bool(::stats.active::)<br/>
 
-			::if(vendor.canOpenStripeAccount())::
-				Peut ouvrir un compte Stripe $$bool(::true::)  <a href="?canOpenStripeAccount=0" class="btn btn-default btn-xs">désactiver</a><br/>
-				A un compte Stripe valide : $$bool(::vendor.isDispatchReady()::) 
-				::if(vendor.isDispatchReady())::  #::vendor.stripeAccountId:: ::end::
-
-			::else::
-				Peut ouvrir un compte Stripe $$bool(::false::) <a href="?canOpenStripeAccount=1" class="btn btn-default btn-xs">Activer</a>
-			::end::
-
+			
+			
 			
 		</p>
 		
@@ -187,11 +180,9 @@
 </div>
 
 <div class="row" style="margin-bottom: 24px;">
-	<div class="col-md-12">
-		<h4>Gestion Abonnement Stripe</h4>
-	</div>
-
-	<div class="col-md-12">
+	<div class="col-md-6">
+		<h4>Frais paiement sur place</h4>
+		<p class="disabled">Les frais sur les ventes en paiement sur place sont payés via un abonnement Stripe Billing.</p>
 		<div id="stripe-admin-neo-container" style="margin-bottom: 8px"></div>
 		<script>
 			document.addEventListener("DOMContentLoaded", function(event) {
@@ -200,6 +191,24 @@
 				});
 			});
 		</script>
+	</div>
+
+	<div class="col-md-6">
+		<h4>Paiement en ligne</h4>
+		<p class="disabled">Le paiement CB en ligne (<i>avec Dispatch</i>) fonctionne avec Stripe connect. Les frais sont prélevés directement.</p>
+		<p>
+			<!--
+				Peut ouvrir un compte Stripe $$bool(::true::)
+				<a href="?canOpenStripeAccount=0" class="btn btn-default btn-xs">désactiver</a><br/>
+			-->
+			::set dispatch = vendor.isDispatchReady()::
+			Compte Stripe Connect valide : $$bool(::dispatch::) 
+
+			::if(vendor.stripeAccountId!=null)::
+			<a href="https://dashboard.stripe.com/connect/accounts/::vendor.stripeAccountId::/activity" class="btn btn-default btn-sm" target="_blank">consulter</a>
+			::end::
+
+		</p>
 	</div>
 </div>
 

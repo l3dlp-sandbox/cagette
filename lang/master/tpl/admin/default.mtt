@@ -19,14 +19,10 @@
 	<tr>
 		<td>Votre IP</td>
 		<th>::ip::</th>
-	</tr>
+	</tr>	
 	<tr>
-		<td>Groupes en Cagette2</td>
-		<th>::cg2groups::/::groups::</th>
-	</tr>
-	<tr>
-		<td>Groupes en Cagette2+Dispatch</td>
-		<th>::dispatchGroups::/::groups::</th>
+		<td>Groupes en Dispatch</td>
+		<th>::dispatchGroups::/::groups::  (::formatNum(dispatchGroups/groups)::%)</th>
 	</tr>
 </table>
 

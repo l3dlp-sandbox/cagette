@@ -43,18 +43,14 @@
 		</p>
 		<hr/>
 		<h3>Fonctionnalités en beta</h3>
-		
-		Cagette2 : $$bool(::group.hasCagette2()::)<br/>
+				
 		Dispatch : $$bool(::group.isDispatch()::)<br/>
 
 		<p>
 		::if(!group.isDispatch())::
 			<a href="?dispatch=1" class="btn btn-default">Passer en Dispatch</a>
 		::end::
-		::if(!group.hasCagette2())::
-			<a href="?cagette2=1" class="btn btn-default">Passer en Cagette2</a>
-		::end::
-
+		
 		::if( !group.hasShopMode() )::
 		<a href="?duplicate=1" class="btn btn-default">Dupliquer en mode Marché</a>
 		::end::
@@ -112,7 +108,7 @@
 					<th>id</th>
 					<th>Nom</th>
 					<th>Statut</th>
-					<th>Compte Stripe (dispatch)</th>
+					<th>Compte Stripe Connect (dispatch)</th>
 				</tr>
 				::foreach v vendors::
 

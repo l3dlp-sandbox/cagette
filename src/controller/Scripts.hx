@@ -116,7 +116,7 @@ class Scripts extends Controller
     /**
         2023-02-01 enable massively cagette2 option + remove percentage on catalogs
     **/
-    function doCagette2(){
+    /*function doCagette2(){
 
 		var groups = 0;
 		var groupsWithPercentage = 0;
@@ -160,7 +160,7 @@ class Scripts extends Controller
                 g.update();
             }
         }
-	}
+	}*/
 
      /**
         2023-02-01 no more MoneyPot payment

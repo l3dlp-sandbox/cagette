@@ -58,8 +58,6 @@ class Main extends controller.Controller
 			//ENABLE DISPATCH
 			group.lock();
 			group.betaFlags.set(Dispatch);
-			group.betaFlags.set(Cagette2);
-			
 			group.setAllowedPaymentTypes(["stripe"]);
 			group.flags.set(HasPayments);
 			
@@ -77,22 +75,12 @@ class Main extends controller.Controller
 			throw Ok("/p/hosted/group/"+group.id,"Le groupe est configuré pour le dispatch");
 		}
 
-		if( app.params.get("cagette2")=="1" ){
-			group.lock();
-			group.betaFlags.set(Cagette2);
-			// group.flags.set(HasPayments);
-			group.update();
-
-			throw Ok("/p/hosted/group/"+group.id,"Le groupe est configuré en cagette2");
-		}
-
 		if( app.params.get("duplicate")=="1" ){
 
 			//duplicate group with MGP
 
 			var g = GroupService.duplicateGroup(group);
 			g.name = group.name+" (marché)";
-			g.betaFlags.set(Cagette2);
 			g.flags.set(HasPayments);
 			g.flags.set(ShopMode);
 			// g.setAllowedPaymentTypes([MangopayECPayment.TYPE]);

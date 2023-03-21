@@ -68,13 +68,7 @@ class Main extends Controller {
 				throw Redirect("/group/disabled");
 			}
 		}
-
-		group.checkIsolate();
-
 		view.amap = group;
-
-		// has unconfirmed basket ?
-		service.OrderService.checkTmpBasket(app.user, app.getCurrentGroup());
 
 		// contract not ended with UserCanOrder flag
 		if (!group.hasShopMode()) {
