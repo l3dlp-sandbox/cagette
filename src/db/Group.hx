@@ -505,41 +505,4 @@ class Group extends Object
 		return disabled!=null;
 	}
 
-	/**
-		enable payments
-	**/
-	public function enablePayments(){
-		if(!this.hasPayments() && this.hasShopMode()){
-			
-			this.lock();
-			this.flags.set(HasPayments);
-			this.setAllowedPaymentTypes([payment.Cash.TYPE,payment.Check.TYPE]);			
-			this.update();
-
-			// var twoWeeksAgo = DateTools.delta(Date.now(),-1000*60*60*24*14);
-
-			//validate old distribs that are not validated
-			var mds = db.MultiDistrib.manager.search($group==this && $validatedStatus != Std.string(MultiDistribValidatedStatus.PAID) && $distribEndDate < Date.now(),true);
-			for(md in mds) {
-				/*try{
-					service.PaymentService.validateDistribution(md);
-				}catch(e:Dynamic){
-					//fail silently ( ie if unspecified OntheSpotPayment )
-				}*/
-
-				//REAL validation is to slow because of bridges, so we perform a simplifed validation
-
-				md.validatedStatus = Std.string(MultiDistribValidatedStatus.PAID);
-				md.validatedDate = Date.now();
-				md.update();
-
-				for(basket in md.getBaskets()){
-					basket.lock();
-					basket.status = Std.string(db.Basket.BasketStatus.VALIDATED);
-					basket.update();
-				}		
-			}
-		}
-	}
-
 }

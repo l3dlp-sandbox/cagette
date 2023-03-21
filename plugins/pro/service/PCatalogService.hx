@@ -323,10 +323,6 @@ class PCatalogService{
 			}
 		}
 
-		if(pcatalog.company.offer==CagetteProOffer.Marketplace){
-			clientGroup.enablePayments();
-		}
-
 		//coordinator
 		var contact = db.User.manager.get(remoteUserId);
 		
