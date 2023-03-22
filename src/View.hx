@@ -277,10 +277,6 @@ class View extends sugoi.BaseView {
 		return App.current.session.data.whichUser == null ? 0 : App.current.session.data.whichUser;
 	}
 
-	public function isAmap() {
-		return App.current.user.getGroup().groupType == db.Group.GroupType.Amap;
-	}
-
 	public function getBasket(id) {
 		return db.Basket.manager.get(id, false);
 	}

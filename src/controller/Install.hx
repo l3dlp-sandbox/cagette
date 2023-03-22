@@ -75,7 +75,6 @@ class Install extends controller.Controller
 				amap.contact = user;
 
 				amap.hasMembership = true;
-				//amap.flags.set(db.Group.GroupFlags.IsAmap);
 				amap.insert();
 				
 				var ua = new db.UserGroup();
