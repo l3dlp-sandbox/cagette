@@ -10,7 +10,7 @@ using tools.DateTool;
 enum GroupFlags {
 	__HasMembership; 	//@deprecated membership management  
 	ShopMode; 		//shop mode / CSA mode
-	HasPayments; 	//manage payments and user balance
+	__HasPayments; 	//@deprecated manage payments and user balance
 	__ComputeMargin;	//compute margin instead of percentage
 	CagetteNetwork; //register in cagette.net groups directory
 	__CustomizedCategories;  //the custom categories are not used anymore, use product taxonomy instead
@@ -192,14 +192,6 @@ class Group extends Object
 	public function canExposePhone() {
  		return !flags.has(HidePhone);
  	}
-	
-	public function hasPayments(){		
-		//CSA group cannot have global payment option enabled
-		// return flags != null && flags.has(HasPayments) && flags.has(ShopMode);
-
-		//since 2023, all shopMode groups have payments
-		return hasShopMode();
-	}
 	
 	/*public function hasTaxonomy(){
 		return flags != null && !flags.has(CustomizedCategories);

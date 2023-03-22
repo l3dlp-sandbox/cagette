@@ -65,13 +65,11 @@ class Amap extends Controller
 			}
 			
 			var shopMode = group.hasShopMode();
-			var hasPayments = group.hasPayments();
 
 			form.toSpod(group);
 
 			//keep shop mode
 			if(shopMode) group.flags.set(ShopMode);
-			if(hasPayments) group.flags.set(HasPayments);
 
 			if (group.extUrl != null){
 				if ( group.extUrl.indexOf("http://") ==-1 &&  group.extUrl.indexOf("https://") ==-1 ){

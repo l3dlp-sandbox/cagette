@@ -25,7 +25,6 @@ class CatalogService{
 		form.removeElement(form.getElement("groupId") );
 		form.removeElement(form.getElement("type"));
 		form.removeElement(form.getElement("vendorId"));
-		form.removeElement(form.getElement("hasPayments"));
 
 		//not in this form
 		form.removeElement(form.getElement("absentDistribsMaxNb"));

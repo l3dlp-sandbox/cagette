@@ -174,7 +174,6 @@ class Group extends controller.Controller
 
 			case Amap : 
 				g.flags.unset(ShopMode);
-				g.flags.set(HasPayments);
 				g.hasMembership=true;
 				g.regOption = WaitingList;
 
@@ -193,7 +192,6 @@ class Group extends controller.Controller
 			}
 			
 			g.groupType = type;
-			g.flags.set(HasPayments);
 			g.setAllowedPaymentTypes([payment.Cash.TYPE,payment.Check.TYPE]);
 			g.insert();
 			

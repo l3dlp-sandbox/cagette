@@ -190,17 +190,6 @@ class Shop extends Controller
 		//whats next
 		var flow = new service.OrderFlowService().setPlace(SubmitOrder(tmpBasket));
 		throw Redirect(flow.getPlaceUrl(flow.getNextPlace()));		
-
-		
-		/*if (group.hasPayments()){			
-			//Go to payments page
-			throw Redirect("/transaction/pay/"+tmpBasket.id);
-		}else{
-			//no payments, confirm direclty
-			OrderService.confirmTmpBasket(tmpBasket);			
-			throw Ok("/contract", t._("Your order has been confirmed") );	
-		}*/
-
 	}
 
 	/**

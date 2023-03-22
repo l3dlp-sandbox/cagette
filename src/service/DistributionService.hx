@@ -151,13 +151,6 @@ class DistributionService
 			return d;
 		} else {
 			d.insert();
-
-			//In case this is a distrib for an amap contract with payments enabled, it will update all the operations
-			//names and amounts with the new number of distribs
-			// if( !contract.group.hasShopMode() && contract.group.hasPayments() )  {
-			// 	service.SubscriptionService.updateCatalogSubscriptionsOperation( d.catalog );
-			// }
-
 			return d;
 		}
 	}
@@ -477,7 +470,7 @@ class DistributionService
 		var orders = d.getOrders();
 
 		#if plugins
-		if(d.catalog.group.hasPayments() && orders.length>0){
+		if(orders.length>0){
 			var paymentTypes = PaymentService.getPaymentTypes( PaymentContext.PCPayment , newMd.getGroup() );
 			if( paymentTypes.find( p -> return p.type==MangopayECPayment.TYPE ) != null ){
 				throw new Error("Les décalages de distributions sont interdits lorsque le paiement en ligne est activé et que des commandes sont déjà enregistrées.");
@@ -494,7 +487,7 @@ class DistributionService
 		}
 
 		//recompute order operations for oldMd and newMd baskets
-		if(newMd.group.hasShopMode() && newMd.group.hasPayments()){
+		if(newMd.group.hasShopMode()){
 			for( b in oldMd.getBaskets()){
 				PaymentService.onOrderConfirm( b.getOrders() );
 			}

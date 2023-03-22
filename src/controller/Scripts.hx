@@ -56,7 +56,6 @@ class Scripts extends Controller
 		printTitle("Recompute ops from "+from.toString()+" to "+to.toString());
         for(g in db.Group.manager.search($id>0,false)){
             if(!g.hasShopMode()) continue; //no AMAPs
-            if(!g.hasPayments()) continue;
             var dids = db.MultiDistrib.getFromTimeRange( g , from , to  ).map(d -> d.id);
             print("group "+g.id+" has "+dids.length+" mds");
             //get not validated baskets

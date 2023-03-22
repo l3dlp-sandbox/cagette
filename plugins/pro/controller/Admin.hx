@@ -1550,11 +1550,6 @@ class Admin extends controller.Controller {
 				op.pending = false;
 				op.update();
 			}
-			
-			//remove ops of catalogs where payments are not activated
-			// if(op.subscription!=null && !op.subscription.catalog.hasPayments){
-			// 	op.delete();
-			// }
 		}
 
 		//update balances
@@ -1562,56 +1557,6 @@ class Admin extends controller.Controller {
 			service.PaymentService.updateUserBalance(m, group);	
 		}
 	}
-
-	/**
-		gestion des paiements obligatoire dans les AMAP
-		2022-05
-	**/
-	function doMigrateCsaPayments20220530(){
-		var print = controller.Cron.print;
-		for ( g in db.Group.manager.search(!$flags.has(ShopMode))){
-			print("<h2>"+g.name+"</h2>");
-
-			//remove shopMode operations
-			for( op in Operation.manager.search($group==g,true)){
-				if(op.type==VOrder){
-					print('delete shopMode op #${op.id}');
-					op.delete();
-				}
-			}
-
-
-			for ( cat in g.getActiveContracts()){
-				if(untyped cat.hasPayments) continue;
-				print(cat.name);
-				for (sub in SubscriptionService.getCatalogSubscriptions(cat)){
-					print("----sub "+sub.id);
-					//create payements operation
-					var orderOp = SubscriptionService.createOrUpdateTotalOperation(sub);
-
-					if(untyped sub.isPaid){
-						if (db.Operation.manager.count( $subscription == sub && $type==Payment )>0 ) continue;
-
-						var op = PaymentService.makePaymentOperation(sub.user,g,Check.TYPE,Math.abs(orderOp.amount),"Paiement créé automatiquement car souscription marquée comme payée",orderOp);
-						op.subscription = sub;
-						op.date = orderOp.date;
-						op.pending = false;
-						op.update();
-						
-						print("create order op "+orderOp.amount);
-						print("create payment op "+op.amount);
-					}
-
-					
-				}
-			}
-
-			for( u in g.getMembers()){
-				service.PaymentService.updateUserBalance(u,g);
-			}
-		}
-	}
-
 
 	function doFix(){
 

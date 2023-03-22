@@ -202,7 +202,6 @@ class TestSuite
 		var a = new db.Group();
 		a.name = "AMAP du Jardin public";
 		a.contact = f;
-		a.flags.set(db.Group.GroupFlags.HasPayments);
 		a.insert();
 		AMAP_DU_JARDIN = a;
 		
@@ -311,7 +310,6 @@ class TestSuite
 		var a = new db.Group();
 		a.name = "Les Locavores de la Rue Saucisse";
 		a.contact = f;
-		a.flags.set(db.Group.GroupFlags.HasPayments);
 		a.insert();
 		LOCAVORES = a;
 		

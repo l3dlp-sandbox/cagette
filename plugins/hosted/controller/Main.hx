@@ -59,7 +59,6 @@ class Main extends controller.Controller
 			group.lock();
 			group.betaFlags.set(Dispatch);
 			group.setAllowedPaymentTypes(["stripe"]);
-			group.flags.set(HasPayments);
 			
 			//get active and non disabled vendors
 			var vendors = group.getActiveContracts(false).map(c -> c.vendor).filter(v -> !v.isDisabled()).array();
@@ -81,7 +80,6 @@ class Main extends controller.Controller
 
 			var g = GroupService.duplicateGroup(group);
 			g.name = group.name+" (marché)";
-			g.flags.set(HasPayments);
 			g.flags.set(ShopMode);
 			// g.setAllowedPaymentTypes([MangopayECPayment.TYPE]);
 			g.update();

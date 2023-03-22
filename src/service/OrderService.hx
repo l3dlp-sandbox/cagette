@@ -349,8 +349,6 @@ class OrderService
 			}
 
 			if ( contract.group.hasShopMode() ) {
-				if( contract.group.hasPayments() ) {
-
 					//Get the basket for this user
 					var basket = db.Basket.get(user, order.distribution.multiDistrib);
 					var orders = basket.getOrders();
@@ -359,7 +357,6 @@ class OrderService
 						var operation = basket.getOrderOperation(false);
 						if(operation!=null) operation.delete();
 					}
-				}
 
 				order.delete();
 			} else {

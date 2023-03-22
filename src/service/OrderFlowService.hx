@@ -62,13 +62,8 @@ class OrderFlowService {
 
 			case TimeSlotSelection(tmpBasket):
 				var distrib = tmpBasket.multiDistrib;
-				if (distrib.group.hasPayments()) {
-					// Go to payments page
-					return PaymentTypeSelection(tmpBasket);
-				} else {
-					// no payments, confirm directly
-					return ConfirmOrder(tmpBasket);
-				}
+				// Go to payments page
+				return PaymentTypeSelection(tmpBasket);
 
 			default:
 				return null;

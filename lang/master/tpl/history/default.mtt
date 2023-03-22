@@ -1,7 +1,6 @@
 ::use 'design.mtt'::
 <div class="col-md-8">
 
-	::set hasPayments = user.getGroup().hasPayments()::
 	::set hasShopMode = user.getGroup().hasShopMode()::
 
 	<h2>
@@ -38,7 +37,6 @@
 							<th class="col-md-2">::_("Sub-total")::</th>
 							<th class="col-md-1">::_("Fees")::</th>
 							<th class="col-md-1">::_("Total")::</th>
-							<th class="col-md-1" ::cond !hasPayments::>::_("Paid")::</th>			
 						</tr>
 						::set total = 0::
 						::foreach o prepare(orders)::
@@ -65,17 +63,10 @@
 									::formatNum(o.total)::&nbsp;::currency()::
 									::set total = total + o.total::
 								</td>
-								<td ::cond !hasPayments:: class="text-center">
-									$$check(::o.paid::)
-								</td>
-							
 							</tr>
 						::end::	
 						<tr>
 							<td colspan="4">
-								::if hasShopMode && !hasPayments:: 
-									$$edit(Modifier cette commande,/contract/editVarOrders/::d.id::)
-								::end::
 							</td>
 							<td>TOTAL</td>
 							<td><b>::formatNum(total)::&nbsp;::currency()::</b></td>
@@ -131,7 +122,7 @@
 
 <div class="col-md-4">
 	
-	::if hasPayments && hasShopMode::
+	::if hasShopMode::
 	<h3>::_("Payments")::</h3>
 	<div  class="article">
 		<span style="font-size:1.3em;">

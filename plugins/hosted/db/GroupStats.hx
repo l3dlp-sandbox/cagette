@@ -75,7 +75,6 @@ class GroupStats extends sys.db.Object
 		var activeCatalogs = g.getActiveContracts();
 		this.contractNum = activeCatalogs.length;
 		this.vendorNum = activeCatalogs.map(c -> c.vendor).deduplicate().length;
-		this.hasPayment = !g.hasShopMode() || g.hasPayments(); 
 		this.mode = g.hasShopMode() ? "MARKET" : "AMAP";
 
 		var mds = db.MultiDistrib.getFromTimeRange(g,DateTools.delta(now, -1000.0 * 60 * 60 * 24 * 90),now);

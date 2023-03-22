@@ -93,7 +93,6 @@
 	</div>
 </div>
 
-::set hasPayments = user.getGroup().hasPayments()::
 ::set hasShopMode = user.getGroup().hasShopMode()::
 
 <div class="col-md-8">
@@ -211,7 +210,7 @@
 </div>
 
 
-<div class="col-md-4" ::cond (hasPayments && hasShopMode) || !hasShopMode::>
+<div class="col-md-4">
 	<h3>::_("Balance")::</h3>
 	<div  class="article">
 		

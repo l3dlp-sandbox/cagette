@@ -117,7 +117,7 @@
 					</tr>
 			
 					<!-- PAIEMENTS -->
-					<tr ::cond user.getGroup().hasPayments()::>
+					<tr>
 						
 						<!--  PAYMENT CHECK FOR SHOP MODE -->
 						

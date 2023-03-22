@@ -318,31 +318,6 @@ class TestOrders extends utest.Test
 		Assert.equals(null, db.UserOrder.manager.get(order2Id));
 		Assert.equals(null, db.Operation.manager.get(operationId));
 
-		//[Test case] Var Order contract and quantity zero with payments disabled
-		//Check that order is deleted
-		var variableDistrib = TestSuite.DISTRIB_FRUITS_PLACE_DU_VILLAGE;
-
-		var g = variableDistrib.catalog.group;		
-		g.lock();
-		g.flags.unset(HasPayments);
-		g.update();
-		
-		var order = OrderService.make(TestSuite.FRANCOIS, 2, TestSuite.STRAWBERRIES, variableDistrib.id);
-		var orderId = order.id;
-		service.PaymentService.onOrderConfirm([order]);
-		order = OrderService.edit(order, 0);
-		service.PaymentService.onOrderConfirm([order]);
-		var e1 = null;
-		try {
-			service.OrderService.delete(order);
-		}
-	    catch(x:tink.core.Error){
-			e1 = x;
-		}
-		Assert.equals(false,variableDistrib.catalog.group.hasPayments() );
-		Assert.equals(null, e1);
-		Assert.equals(null, db.UserOrder.manager.get(orderId));
-
 		//[Test case] Var Order contract and quantity zero with payments enabled and 2 orders
 		//Check that first order is deleted
 		//Check that operation is deleted only at the second order deletion
@@ -350,9 +325,7 @@ class TestOrders extends utest.Test
 		var variableContract = variableDistrib.catalog;
 		var g = variableDistrib.catalog.group;		
 		g.lock();
-		g.flags.set(HasPayments);
 		g.update();
-		Assert.isTrue(variableContract.group.hasPayments());
 
 		var order1 = OrderService.make(TestSuite.FRANCOIS, 2, TestSuite.STRAWBERRIES, variableDistrib.id);
 		service.PaymentService.onOrderConfirm([order1]);
