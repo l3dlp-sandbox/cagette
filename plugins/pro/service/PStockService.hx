@@ -29,7 +29,7 @@ class PStockService{
 	/**
 		update available stock in groups.		
 	**/
-	var remoteProductsList:Array<db.Product>;
+	/*var remoteProductsList:Array<db.Product>;
 
     public function updateStockInGroups(offer:pro.db.POffer){
 
@@ -54,7 +54,7 @@ class PStockService{
 			product.stock = getStocks(offer).availableStock;
 			product.update();
 		}
-	}
+	}*/
 
 	public static function getStocks(offer:pro.db.POffer):{centralStock:Float,undeliveredOrders:Float,availableStock:Float}{
 		var out = {centralStock:null,undeliveredOrders:null,availableStock:null};

@@ -35,7 +35,7 @@ class Product extends Object
 	public var bulk : Bool;		//(vrac) warn the customer this product is not packaged
 	public var smallQt : SNull<SFloat>; //if bulk is true, a smallQt should be defined
 
-	// public var hasFloatQt:SBool; //deprecated : this product can be ordered in "float" quantity
+	// public var stock:SFloat;
 	
 	@hideInForms @:relation(imageId) public var image : SNull<sugoi.db.File>;
 	@:relation(txpProductId) public var txpProduct : SNull<db.TxpProduct>; //taxonomy	
@@ -157,15 +157,6 @@ class Product extends Object
 	}
 	
 	/**
-	 * customs categs
-	 */
-	// public function getCategories() {		
-	// 	//"Types de produits" categGroup first
-	// 	//var pc = db.ProductCategory.manager.search($productId == id, {orderBy:categoryId}, false);		
-	// 	return Lambda.map(db.ProductCategory.manager.search($productId == id,{orderBy:categoryId},false), function(x) return x.category);
-	// }
-	
-	/**
 	 * general categs
 	 */
 	public function getFullCategorization(){
@@ -173,11 +164,6 @@ class Product extends Object
 		return txpProduct.getFullCategorization();
 	}
 	
-	public static function getByRef(c:db.Catalog, ref:String){
-		var pids = tools.ObjectListTool.getIds(c.getProducts(false));
-		return db.Product.manager.select($ref == ref && $id in pids, false);
-	}
-
 	function check(){		
 		//Fix values that will make mysql 5.7 scream
 		if(this.vat==null) this.vat=0;

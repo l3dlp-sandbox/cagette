@@ -14,7 +14,6 @@ class POffer extends Object
 	@hideInForms @:relation(productId) public var product : pro.db.PProduct;
 	@hideInForms @:relation(imageId) public var image : SNull<sugoi.db.File>; //custom image
 	public var quantity : SNull<SFloat>; //quantity of units (kg,L,g,units)
-	//@hideInForms public var htPrice : SFloat; //price excluding VAT @deprecated
 	public var price : SFloat; //price including VAT
 	public var vat : SFloat;
 	public var smallQt : SNull<SFloat>; //if bulk is true, a smallQt should be defined

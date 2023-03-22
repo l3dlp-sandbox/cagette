@@ -27,11 +27,9 @@ class PCatalogService{
 			if (contract == null) continue;
 			var catalog = rc.getPCatalog();			
 			if( catalog==null ) continue;
-			
-			
+						
 			var fullUpdate = !contract.hasOpenOrders() || catalogId!=null;
 			
-			//log.push( "<h4>" + /*contract.name+" - " +*/ contract.amap.name /*+(fullUpdate?"[Full]":"[Light]")*/ + "</h4>" );
 			log.push( "<h4>" +  contract.group.name + "</h4>" );
 
 			syncCatalog(contract,catalog);
@@ -40,24 +38,24 @@ class PCatalogService{
 			var groupProducts = contract.getProducts(false);
 			var disabledProducts = rc.getDisabledProducts();
 			
-			for ( cproProduct in catalog.getOffers() ){
+			for ( pcatalogOffer in catalog.getOffers() ){
 				
-				//find remote product by ref.
-				var groupProduct = Lambda.find(groupProducts, function(x) return x.ref == cproProduct.offer.ref);				
+				//find remote product
+				var groupProduct = groupProducts.find( gp -> gp.pOffer!=null && gp.pOffer.id == pcatalogOffer.offer.id);				
 				var disabledInGroup = false;
 				if(groupProduct!=null){
 					disabledInGroup = Lambda.has(disabledProducts, groupProduct.id);
 					//debug
 					/*if(disabledInGroup){
-						log.push( cproProduct.offer+" est désactivé dans le groupe" );
+						log.push( pcatalogOffer.offer+" est désactivé dans le groupe" );
 					}else{
-						log.push( cproProduct.offer+" est actif dans le groupe" );
+						log.push( pcatalogOffer.offer+" est actif dans le groupe" );
 					}*/
 				}else{
 					//debug
-					//log.push( cproProduct.offer+" n'existe pas, faut le créer" );
+					//log.push( pcatalogOffer.offer+" n'existe pas, faut le créer" );
 				} 
-				log = log.concat( syncProduct(cproProduct, groupProduct, contract, fullUpdate, disabledInGroup) );	
+				log = log.concat( syncProduct(pcatalogOffer, groupProduct, contract, fullUpdate, disabledInGroup) );	
 				groupProducts.remove(groupProduct);				
 			}
 			
@@ -68,19 +66,16 @@ class PCatalogService{
 				log.push("Produit désactivé : " + p.name);
 				p.lock();
 				p.active = false;
-				p.update();
-				
+				p.update();				
 			}
 
 			//once everything is updated, set needSync to false
 			if (fullUpdate){
 				rc.needSync = false;
 				rc.update();	
-			}
+			}			
 			
-			
-		}
-		//log = log.split("\n").join("<br/>\n");
+		}		
 		return log;
 	}
 
@@ -96,6 +91,7 @@ class PCatalogService{
 			log.push("Nouveau produit : " + co.offer.product.name);
 			groupProduct = new db.Product();
 			groupProduct.catalog = contract;
+
 		}else{
 			groupProduct.lock();
 		}
@@ -122,12 +118,6 @@ class PCatalogService{
 		groupProduct.bulk = co.offer.product.bulk;
 		groupProduct.smallQt = co.offer.smallQt;
 		groupProduct.pOffer = co.offer;
-		
-		//set stock if it's a new product
-		if(groupProduct.id == null && co.offer.stock!=null){
-			groupProduct.stock = PStockService.getStocks(co.offer).availableStock;
-		}
-		
 		groupProduct.active = co.offer.active && !isLocallyDisabled;		
 		
 		//name change
