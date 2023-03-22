@@ -1,6 +1,5 @@
 package hosted.controller;
 
-import db.Operation.COrderInfos;
 import pro.db.PUserCompany;
 import tools.ObjectListTool;
 

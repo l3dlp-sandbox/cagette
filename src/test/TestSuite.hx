@@ -24,7 +24,6 @@ class TestSuite
 		r.addCase(new test.TestDistributions());
 		r.addCase(new test.TestPayments());
 		r.addCase(new test.TestReports());
-		r.addCase(new test.TestSubscriptions());
 
 		#if plugins
 		//Cagette-pro tests, keep in this order
@@ -92,7 +91,6 @@ class TestSuite
 			db.VolunteerRole.manager,
 			db.Distribution.manager,
 			db.DistributionCycle.manager,
-			db.Subscription.manager,						
 			
 			//sugoi tables
 			sugoi.db.Cache.manager,

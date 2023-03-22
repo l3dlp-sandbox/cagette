@@ -207,69 +207,6 @@ class Cron extends Controller
 		// task.setTask(distribValidationNotif.bind(task));
 		// task.execute(!App.config.DEBUG);
 
-		var task = new TransactionWrappedTask( 'Default automated orders for CSA variable contracts' );
-		task.setTask( function() {
-
-			var range = tools.DateTool.getLastHourRange( now );
-
-			var distributionsToCheckForMissingOrders = db.Distribution.manager.unsafeObjects(
-			'SELECT Distribution.* 
-			FROM Distribution INNER JOIN Catalog
-			ON Distribution.catalogId = Catalog.id
-			WHERE Catalog.distribMinOrdersTotal > 0
-			AND Distribution.orderEndDate >= \'${range.from}\'
-			AND Distribution.orderEndDate < \'${range.to}\';', false );
-				
-			for ( distrib in distributionsToCheckForMissingOrders ) {
-				var distribSubscriptions = db.Subscription.manager.search( $catalog == distrib.catalog && $startDate <= distrib.date && $endDate >= distrib.date, false );
-
-				for ( subscription in distribSubscriptions ) {
-
-					if ( subscription.getAbsentDistribIds().find( id -> id == distrib.id ) == null ) {
-					
-						var distribSubscriptionOrders = db.UserOrder.manager.search( $subscription == subscription && $distribution == distrib );
-						if ( distribSubscriptionOrders.length == 0 ) {
-
-							// if ( service.SubscriptionService.areAutomatedOrdersValid( subscription, distrib ) ) {
-
-								var defaultOrders = subscription.getDefaultOrders();
-
-								var automatedOrders = [];
-								for ( order in defaultOrders ) {
-
-									var product = db.Product.manager.get( order.productId, false );
-									if ( product != null && order.quantity != null && order.quantity != 0 ) {
-										automatedOrders.push( service.OrderService.make( subscription.user, order.quantity, product, distrib.id, null, subscription ) );	
-									}
-								}
-
-								if( automatedOrders.length != 0 ) {
-
-									var message = 'Bonjour ${subscription.user.firstName},<br /><br />
-									A défaut de commande de votre part, votre commande par défaut a été appliquée automatiquement 
-									à la distribution du ${view.hDate( distrib.date )} du contrat "${subscription.catalog.name}".
-									<br /><br />
-									Votre commande par défaut : <br /><br />${subscription.getDefaultOrdersToString()}
-									<br /><br />
-									La commande à chaque distribution est obligatoire dans le contrat "${subscription.catalog.name}". 
-									Vous pouvez modifier votre commande par défaut en accédant à votre souscription à ce contrat depuis la page "commandes" sur Cagette.net';
-
-									//fail silently
-									try{} catch(e:Dynamic){
-										App.quickMail( subscription.user.email, distrib.catalog.name + ' : Commande par défaut', message, distrib.catalog.group );
-									}
-								}
-							
-								//Create order operation only
-								service.SubscriptionService.createOrUpdateTotalOperation( subscription );
-						}
-
-					}
-				}
-			}
-		});
-		task.execute(!App.config.DEBUG);
-
 		//clean files that are not linked to anything
 		var task = new TransactionWrappedTask("Clean unused db.File entities");
 		task.setTask(function() {

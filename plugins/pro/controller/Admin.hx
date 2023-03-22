@@ -12,14 +12,12 @@ import db.Group.BetaFlags;
 import tools.DateTool;
 import pro.db.PUserCompany;
 import tink.core.Error;
-import service.SubscriptionService;
 import service.VendorService;
 import connector.db.RemoteCatalog;
 import hosted.db.CompanyCourse;
 import pro.payment.MangopayECPayment;
 import pro.db.CagettePro;
 import haxe.Json;
-import db.Subscription;
 import db.Operation;
 import form.CagetteForm;
 import db.Vendor;
@@ -1415,180 +1413,6 @@ class Admin extends controller.Controller {
 
 	@admin @tpl('plugin/pro/admin/certification.mtt')
 	function doCertification() { }
-
-	/**
-	- détecte les operations invalides ou orphelines	
-	- détecte les orders sans souscription et recréé les subs
-	**/
-	@admin
-	function doFixCsaOrders(group:db.Group,?args:{?fixUserOrder:db.UserOrder,?fixInvalidOps:Bool,?fixPendingPayments:Bool}){
-		
-		if(group.hasShopMode()) throw "Pour les AMAP only !";
-		var print = Cron.print;
-		print('<h1>#${group.id} ${group.name}</h1>');
-		print('<h1>Operations</h1>');
-
-		//invalid ops
-		if(args!=null && args.fixInvalidOps){
-			Operation.manager.delete($group==group && $type==VOrder);
-		}
-		var invalidOperations = Operation.manager.search($group==group && $type==VOrder);
-		Sys.print('Operations invalides (de type VOrder): <a href="/p/pro/admin/fixCsaOrders/${group.id}?fixInvalidOps=1">[fix]</a> <ul>');
-		for (o in invalidOperations) Sys.print('<li><a href="/db/Operation/edit/${o.id}">$o</a></li>');
-		Sys.print("</ul>");
-
-		//unlinked ops
-		var unlinkedOps = Operation.manager.search($group==group && $type==Payment && $subscription==null);
-		Sys.print("Operations orphelines (paiements non liés à une sub, non lié à une adhésion): <ul>");
-		for (o in unlinkedOps) {
-			if(o.relation!=null && o.relation.type==Membership) continue;
-			Sys.print('<li><a href="/db/Operation/edit/${o.id}">$o</a></li>');
-		}
-		Sys.print("</ul>");
-
-		//pending payments
-		if(args!=null && args.fixPendingPayments){
-			for( op in Operation.manager.search($group==group && $type==Payment && $pending==true, true) ){
-				op.pending = false;
-				op.update();
-			}
-			for(m in group.getMembers()){
-				service.PaymentService.updateUserBalance(m,group);
-			}
-		}
-		var pendingPayments = Operation.manager.search($group==group && $type==Payment && $pending==true,false);
-		Sys.print('Paiement non confirmés <a href="/p/pro/admin/fixCsaOrders/${group.id}?fixPendingPayments=1">[fix]</a> <ul>');
-		for (o in pendingPayments) {
-			Sys.print('<li><a href="/db/Operation/edit/${o.id}">$o</a></li>');
-		}
-		Sys.print("</ul>");
-
-
-		print('<h1>Commandes non rattachées à des souscriptions</h1>');
-
-		//run fix
-		var subToCreate = null;
-		if(args!=null && args.fixUserOrder!=null){
-
-			var sub = Subscription.manager.select($user == args.fixUserOrder.user && $catalog == args.fixUserOrder.product.catalog);
-			if(sub!=null){
-				throw args.fixUserOrder.user+" a dejà une sub #"+sub.id+" dans "+args.fixUserOrder.product.catalog;
-			}
-
-			var sub = new db.Subscription();
-			sub.user = args.fixUserOrder.user;
-			sub.catalog = args.fixUserOrder.product.catalog; 
-			sub.insert();
-
-			for( d in sub.catalog.getDistribs(false)){
-				var orders = db.UserOrder.manager.search($distribution == d  && $user==sub.user, true).array();
-				if(orders.length>0){
-					for(o in orders) {
-						o.subscription = sub; 
-						o.update();
-					}
-
-					//find dates
-					if( sub.startDate==null || d.date.getTime() < sub.startDate.getTime()){
-						sub.startDate = d.date;
-					}
-					if( sub.endDate==null || d.date.getTime() > sub.endDate.getTime()){
-						sub.endDate = d.date;
-					}
-				}
-			}
-
-			sub.update();			
-			print('<pre>Souscription créée pour ${sub.user} dans le contrat ${sub.catalog}</pre>');
-		}
-
-
-		//detect
-		for(c in group.getActiveContracts(true)){
-			print('<h2>#${c.id} ${c.name}</h2>');
-			for( d in c.getDistribs(false)){
-				print('<h3>#${d.id} ${Formatting.dDate(d.date)}</h3>');
-				var orders = db.UserOrder.manager.search($subscription==null && $distribution==d,false).array();
-
-				if(orders.length>0){
-					Sys.print("<ul>");
-					for (o in orders){
-						Sys.print('<li>$o');
-						Sys.print('<a href="/p/pro/admin/fixCsaOrders/${group.id}?fixUserOrder=${o.id}">[fix]</a>');
-						Sys.print('<a href="/db/UserOrder/edit/${o.id}">[edit]</a>');
-						Sys.print('</li>');
-					} 
-					Sys.print("</ul>");
-				}
-			}
-		}
-
-	}
-
-
-	@admin
-	function doFixCsaOps(group:db.Group){
-
-		//Fix CSA operations :
-		/*
-		- supprimer les opérations qui n'ont pas de subscriptionId et qui ne sont pas des paiements de membership
-		- attention des ops de paiement sont en pending
-		*/
-
-		if(group.hasShopMode()) throw "Pour les AMAP only !";
-
-		//remove 'non CSA' ops
-		Operation.manager.delete($group==group && $type==OperationType.VOrder);
-
-		//remove payment/subscriptionTotal ops with no subscription
-		Operation.manager.delete($group==group && $type==OperationType.SubscriptionTotal && $subscription==null);
-		Operation.manager.delete($group==group && $type==OperationType.Payment && $subscription==null);
-
-		for ( op in Operation.manager.search($group==group,true)){
-			//no pending ops
-			if(op.pending) {
-				op.pending = false;
-				op.update();
-			}
-		}
-
-		//update balances
-		for(m in group.getMembers()){
-			service.PaymentService.updateUserBalance(m, group);	
-		}
-	}
-
-	function doFix(){
-
-		//fill defaultOrder in constant order subs when empty
-		var now = Date.now();
-		var print = controller.Cron.print;
-		for( sub in Subscription.manager.search($startDate < now && $endDate > now,true)){
-			
-			if(sub.catalog.isConstantOrdersCatalog()){
-				
-				var dord = sub.getDefaultOrders();
-				
-				if(dord.length==0){
-					print(sub+" has null defaultOrders");
-
-					var newdo = service.SubscriptionService.getCSARecurrentOrders(sub,[]);
-		
-					var newdo2 : Array<CSAOrder> = newdo.map( order -> {
-						productId:order.product.id,
-						productPrice:order.productPrice,
-						quantity:order.productPrice,
-						userId2:null,
-						invertSharedOrder:null						
-					});
-					sub.defaultOrders = haxe.Json.stringify( newdo2 );
-					sub.update();
-				}
-
-
-			}
-		}
-	}
 
 	//vrac 2022-07-01
 	function doVrac(usersToDelete:Int){

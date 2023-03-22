@@ -22,7 +22,7 @@ class Transaction extends controller.Controller
 	 * A manager inserts manually a payment
 	 */
 	@tpl('form.mtt')
-	public function doInsertPayment( user : db.User, ?subscription : db.Subscription ) {
+	public function doInsertPayment( user : db.User ) {
 		if(app.user==null){
 			throw Redirect("/");
 		}
@@ -34,14 +34,6 @@ class Transaction extends controller.Controller
 			var returnUrl = '/member/payments/' + user.id;
 	
 		var form = new sugoi.form.Form("payement");
-
-		if ( !hasShopMode ) {
-
-			if ( subscription == null ) throw Error("/member/view/" + user.id, "Pas de souscription fournie." );
-
-			returnUrl = '/contractAdmin/subscriptions/payments/' + subscription.id;
-			form.addElement( new sugoi.form.elements.Html( "subscription", '<div class="control-label" style="text-align:left;"> ${ subscription.catalog.name } - ${ subscription.catalog.vendor.name } </div>', 'Souscription' ) );
-		}
 
 		form.addElement(new sugoi.form.elements.StringInput("name", t._("Label||label or name for a payment"), "Paiement", false));
 		form.addElement(new sugoi.form.elements.FloatInput("amount", t._("Amount"), null, true));
@@ -87,10 +79,6 @@ class Transaction extends controller.Controller
 					}
 				}
 			}
-			else {
-				
-				operation.subscription = subscription;
-			}
 			
 			operation.insert();
 			service.PaymentService.updateUserBalance( user, group );
@@ -112,22 +100,11 @@ class Transaction extends controller.Controller
 		var hasShopMode = operation.group.hasShopMode();
 		var returnUrl = '/member/payments/' + operation.user.id;
 
-		if ( !hasShopMode ) {
-
-			App.current.session.data.returnUrl = '/contractAdmin/subscriptions/payments/' + operation.subscription.id;
-			returnUrl = App.current.session.data.returnUrl;
-		}
-		
 		if ( !app.user.canAccessMembership() || operation.group.id != app.user.getGroup().id ) {
 
 			throw Error( returnUrl, t._("Action forbidden") );
 		}
 
-		if( !hasShopMode && operation.subscription == null ) {
-
-			throw Error( '/', 'Cette opération n\'est rattachée à aucune souscription' );
-		}
-		
 		App.current.event( PreOperationEdit( operation ) );
 		
 		operation.lock();
@@ -187,21 +164,12 @@ class Transaction extends controller.Controller
 
 		var returnUrl = '/member/payments/' + operation.user.id;
 
-		if ( !hasShopMode &&  operation.subscription!=null ) {
-			App.current.session.data.returnUrl = '/contractAdmin/subscriptions/payments/' + operation.subscription.id;
-			returnUrl = App.current.session.data.returnUrl;
-		}
-
-		/*if( !hasShopMode && operation.subscription == null ) {
-			throw Error( '/', 'Cette opération n\'est rattachée à aucune souscription' );
-		}*/
-
 		if ( !app.user.canAccessMembership() || operation.group.id != app.user.getGroup().id ) throw Error("/member/payments/" + operation.user.id, t._("Action forbidden"));	
 		
 		App.current.event( PreOperationDelete( operation ) );
 
 		//only an admin can delete an order op
-		if( ( operation.type == db.Operation.OperationType.VOrder || operation.type == db.Operation.OperationType.SubscriptionTotal ) && !app.user.isAdmin() ) {
+		if( ( operation.type == db.Operation.OperationType.VOrder ) && !app.user.isAdmin() ) {
 			throw Error( returnUrl, t._("Action forbidden"));
 		}
 

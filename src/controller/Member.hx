@@ -8,7 +8,6 @@ import haxe.Utf8;
 import haxe.macro.Expr.Catch;
 import payment.Check;
 import service.OrderService;
-import service.SubscriptionService;
 import sugoi.form.Form;
 import sugoi.form.elements.Selectbox;
 import sugoi.form.validators.EmailValidator;
@@ -59,10 +58,6 @@ class Member extends Controller
 		view.getUserOrders = function(md:db.MultiDistrib){
 			return OrderService.prepare(md.getUserOrders(member,db.Catalog.TYPE_VARORDER));
 		}
-
-		//const orders subscriptions
-		view.subscriptionService = service.SubscriptionService;
-		view.subscriptionsByCatalog = SubscriptionService.getActiveSubscriptionsByCatalog( member, app.user.getGroup() );
 
 		//notifications
 		var notifications = [];

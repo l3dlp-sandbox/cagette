@@ -11,7 +11,6 @@ import form.CagetteDatePicker;
 import service.CatalogService;
 import service.OrderService;
 import service.ProductService;
-import service.SubscriptionService;
 import sugoi.form.Form;
 import sugoi.form.elements.Checkbox;
 import sugoi.form.elements.IntInput;
@@ -764,10 +763,6 @@ class ContractAdmin extends Controller
 		dispatch.dispatch( new controller.Documents() );
 	}
 
-	function doSubscriptions( dispatch : haxe.web.Dispatch ) {
-		dispatch.dispatch( new controller.SubscriptionAdmin() );
-	}
-	
 	@tpl("contractadmin/stats.mtt")
 	function doStats(contract:db.Catalog, ?args: { stat:Int } ) {
 		sendNav(contract);
@@ -833,58 +828,6 @@ class ContractAdmin extends Controller
 	function doTmpBaskets(md:db.MultiDistrib){
 		view.md = md;
 		view.tmpBaskets = db.Basket.manager.search($multiDistrib == md && $status==Std.string(BasketStatus.OPEN),false);
-	}
-
-
-	/**
-		the catalog admin updates absences options
-	**/
-	@tpl("contractadmin/form.mtt")
-	function doAbsences(catalog:db.Catalog){
-		view.category = 'contractadmin';
-		view.nav.push("absences");
-		if (!app.user.isContractManager( catalog )) throw Error('/', t._("Forbidden action"));
-
-		view.title = 'Période d\'absences du contrat \"${catalog.name}\"';
-
-		var form = new sugoi.form.Form("absences");
-	
-		var html = "<div class='alert alert-warning'><p><i class='icon icon-info'></i> 
-		Vous pouvez définir une période pendant laquelle les membres pourront choisir d'être absent.<br/>
-		<b>Saisissez la période d'absence uniquement après avoir défini votre planning de distribution définitif sur toute la durée du contrat.</b><br/>
-		<a href='https://wiki.cagette.net/admin:absences' target='_blank'>Consulter la documentation.</a>
-		</p></div>";
-		
-		form.addElement( new sugoi.form.elements.Html( 'absences', html, '' ) );
-		form.addElement(new IntInput("absentDistribsMaxNb","Nombre maximum d'absences autorisées",catalog.absentDistribsMaxNb,true));
-		var start = catalog.absencesStartDate==null ? catalog.startDate : catalog.absencesStartDate;
-		var end = catalog.absencesEndDate==null ? catalog.endDate : catalog.absencesEndDate;
-		form.addElement(new CagetteDatePicker("absencesStartDate","Début de la période d'absence",start));
-		form.addElement(new CagetteDatePicker("absencesEndDate","Fin de la période d'absence",end));
-		
-		if ( form.checkToken() ) {
-			catalog.lock();
-			form.toSpod( catalog );
-			var absencesStartDate : Date = form.getValueOf('absencesStartDate');
-			var absencesEndDate : Date = form.getValueOf('absencesEndDate');
-			catalog.absencesStartDate = new Date( absencesStartDate.getFullYear(), absencesStartDate.getMonth(), absencesStartDate.getDate(), 0, 0, 0 );
-			catalog.absencesEndDate = new Date( absencesEndDate.getFullYear(), absencesEndDate.getMonth(), absencesEndDate.getDate(), 23, 59, 59 );
-			catalog.update();
-		
-			try{
-				
-				CatalogService.checkAbsences(catalog);
-
-			} catch ( e : Error ) {
-				throw Error( '/contractAdmin/absences/'+catalog.id, e.message );
-			}
-			
-			throw Ok( "/contractAdmin/view/" + catalog.id,  "Catalogue mis à jour." );
-		}
-		 
-		view.form = form;
-		view.c = catalog;
-		
 	}
 
 	/**

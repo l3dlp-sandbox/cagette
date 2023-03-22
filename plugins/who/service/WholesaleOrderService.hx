@@ -215,7 +215,7 @@ class WholesaleOrderService {
 			var qt = o.quantity * (qt1 / qt2);
 			//o.productPrice = o.product.price;
 
-			var newOrder = OrderService.make(o.user, qt, retailToWholesale[o.product.id], d.id, null, o.subscription, o.user2, null);
+			var newOrder = OrderService.make(o.user, qt, retailToWholesale[o.product.id], d.id, null, o.user2, null);
 			if(newOrder!=null){
 				newOrders.push(newOrder);
 				o.delete();

@@ -63,17 +63,7 @@ class Order extends Controller
 
 		checkRights( user, catalog, multiDistrib );
 
-		/*var subscription : db.Subscription = null;
-		if ( catalog != null && catalog.type == db.Catalog.TYPE_CONSTORDERS ) {
-
-			//The user needs a subscription for this catalog to have orders
-			subscription = service.SubscriptionService.getUserCatalogSubscription( user, catalog, true );
-			if ( subscription == null ) {				
-				throw new Error( "Il n\'y a pas de souscription à ce nom. Il faut d\'abord créer une souscription pour cette personne pour pouvoir ajouter des commandes."  );
-			}
-		}*/
-
-		var orders : Array<db.UserOrder> = OrderService.getUserOrders( user, catalog, multiDistrib /*, subscription*/ );
+		var orders : Array<db.UserOrder> = OrderService.getUserOrders( user, catalog, multiDistrib );
 		Sys.print( tink.Json.stringify( { success : true, orders : OrderService.prepare(orders) } ) );
 	}
 	

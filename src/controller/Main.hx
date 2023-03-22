@@ -309,11 +309,6 @@ class Main extends Controller {
 	}
 
 	@logged
-	function doSubscriptions(dispatch:Dispatch) {
-		dispatch.dispatch(new Subscriptions());
-	}
-
-	@logged
 	function doMessages(d:Dispatch) {
 		addBc("messages", "Messagerie", "/messages");
 		d.dispatch(new Messages());

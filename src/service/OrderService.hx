@@ -23,7 +23,7 @@ class OrderService
 	 * @param	quantity
 	 * @param	productId
 	 */
-	public static function make(user:db.User, quantity:Float, product:db.Product, distribId:Int, ?paid:Bool, ?subscription : db.Subscription, ?user2:db.User, ?invert:Bool, ?basket:db.Basket ) : Null<db.UserOrder> {
+	public static function make(user:db.User, quantity:Float, product:db.Product, distribId:Int, ?paid:Bool, ?user2:db.User, ?invert:Bool, ?basket:db.Basket ) : Null<db.UserOrder> {
 		
 		var t = sugoi.i18n.Locale.texts;
 
@@ -41,20 +41,7 @@ class OrderService
 				var whitelist : Array<Int> = vendor.turnoverLimitReachedDistribsWhiteList.split(",").map(Std.parseInt);
 				if(whitelist.has(distribId)) isVendorDisabled = false;
 
-				//Exception : do not block if TurnoverLimitReached && CSA subscription
-				if(subscription!=null) isVendorDisabled = false;
 			}
-
-			//do not block for these reason if group is AMAP
-			if(subscription!=null){
-				switch (vendor.disabled){
-					case db.Vendor.DisabledReason.DisabledInvited : isVendorDisabled=false;
-					case db.Vendor.DisabledReason.MarketplaceDisabled : isVendorDisabled=false;
-					case db.Vendor.DisabledReason.MarketplaceNotActivated : isVendorDisabled=false;
-					default :
-				}
-			}
-			
 
 			if (isVendorDisabled) {
 				throw new Error('${vendor.name} est désactivé. Raison : ${vendor.getDisabledReason()}');
@@ -78,12 +65,7 @@ class OrderService
 			var newOrder = null;
 
 			for ( i in 0...Math.round(quantity) ) {
-
-				if( shopMode ) {
-					newOrder = make( user, 1, product, distribId, paid, null, null , null, basket );
-				} else {
-					newOrder = make( user, 1, product, distribId, paid, subscription, user2, invert, basket);
-				}
+				newOrder = make( user, 1, product, distribId, paid, null , null, basket );
 			}
 			return newOrder;
 		}
@@ -130,11 +112,6 @@ class OrderService
 		//checks
 		if(order.distribution==null) throw new Error( "cant record an order for a variable catalog without a distribution linked" );
 		if(order.basket==null) throw new Error( "this order should have a basket" );
-		if( !shopMode ) {
-			if( subscription != null && subscription.id == null ) throw new Error( "La souscription a un id null." );
-			if( subscription == null ) throw new Error( "Impossible d'enregistrer une commande sans souscription." );
-			order.subscription = subscription;
-		} 
 
 		order.insert();
 		
@@ -287,41 +264,6 @@ class OrderService
 			throw new Error( "Erreur : la quantité du produit" + order.product.name + " devrait être un entier." );
 		}
 
-		if( !order.product.catalog.group.hasShopMode() && order.product.multiWeight ) {
-
-			var currentOrdersNb = db.UserOrder.manager.count( $subscription == order.subscription && $distribution == order.distribution && $product == order.product && $quantity > 0 );
-			if ( newquantity == currentOrdersNb ) return order;
-			
-			var orders = db.UserOrder.manager.search( $subscription == order.subscription && $distribution == order.distribution && $product == order.product && $quantity > 0, false).array();
-			if ( newquantity != 0 ) {
-
-				var quantityDiff = Std.int(newquantity) - currentOrdersNb;
-				if ( quantityDiff < 0 ) {
-
-					for ( i in 0...-quantityDiff ) {
-						edit( orders[i], 0 );
-						// orders.remove( orders[i] );
-					}
-				} else if ( quantityDiff > 0 ) {
-					make( order.user, 1, order.product, order.distribution.id, null, order.subscription );
-					// for ( i in 0...quantityDiff ) {
-					// 	orders.push( make( order.user, 1, order.product, order.distribution.id, null, order.subscription ) );
-					// }
-				}
-
-				// for ( order in orders ) {
-				// 	edit( order , 1 );
-				// }
-			}else{
-
-				//set all orders to zero
-				for ( order in orders ) {
-					edit( order , 0 );
-				}
-			}
-			
-		}
-		
 		return order;
 	}
 
@@ -348,22 +290,16 @@ class OrderService
 				// e = StockMove({product:product, move:0-order.quantity });
 			}
 
-			if ( contract.group.hasShopMode() ) {
-					//Get the basket for this user
-					var basket = db.Basket.get(user, order.distribution.multiDistrib);
-					var orders = basket.getOrders();
-					//Check if it is the last order, if yes then delete the related operation
-					if( orders.length == 1 && orders[0].id==order.id ){
-						var operation = basket.getOrderOperation(false);
-						if(operation!=null) operation.delete();
-					}
-
-				order.delete();
-			} else {
-
-				order.delete();
-				service.SubscriptionService.createOrUpdateTotalOperation( order.subscription );
+			//Get the basket for this user
+			var basket = db.Basket.get(user, order.distribution.multiDistrib);
+			var orders = basket.getOrders();
+			//Check if it is the last order, if yes then delete the related operation
+			if( orders.length == 1 && orders[0].id==order.id ){
+				var operation = basket.getOrderOperation(false);
+				if(operation!=null) operation.delete();
 			}
+
+			order.delete();
 	
 		} else {
 			throw new Error( t._( "Deletion not possible: quantity is not zero." ) );
@@ -713,7 +649,7 @@ class OrderService
 
 
 	// Get orders of a user for a multi distrib or a catalog
-	public static function getUserOrders( user : db.User, ?catalog : db.Catalog, ?multiDistrib : db.MultiDistrib, ?subscription : db.Subscription ) : Array<db.UserOrder> {
+	public static function getUserOrders( user : db.User, ?catalog : db.Catalog, ?multiDistrib : db.MultiDistrib ) : Array<db.UserOrder> {
 	 
 		var orders : Array<db.UserOrder>;
 		if( catalog == null ) {
@@ -728,12 +664,7 @@ class OrderService
 				distrib = multiDistrib.getDistributionForContract(catalog);
 			}
 
-			if ( catalog.type == db.Catalog.TYPE_VARORDER ) {
-				orders = catalog.getUserOrders( user, distrib, false );
-			} else {
-				orders = SubscriptionService.getCSARecurrentOrders( subscription, null );
-			}
-				
+			orders = catalog.getUserOrders( user, distrib, false );
 		}
 
 		return orders;
@@ -772,16 +703,6 @@ class OrderService
 
 		var group : db.Group = multiDistrib != null ? multiDistrib.group : catalog.group;
 		if ( group == null ) { throw new Error('Impossible de déterminer le groupe.'); }
-		var shopMode = group.hasShopMode();
-		var subscriptions = new Array< db.Subscription >();
-		if( !shopMode && catalog != null ) {
-
-			var subscription = db.Subscription.manager.select( $user == user && $catalog == catalog && $startDate <= multiDistrib.distribStartDate && multiDistrib.distribEndDate <= $endDate );
-			if ( subscription == null ) { 
-				throw new Error('Il n\'y a pas de souscription pour cette personne. Vous devez d\'abord créer une souscription avant de commander.');
-			}			
-			subscriptions.push( subscription );
-		}
 		
 		for ( order in ordersData ) {
 			
@@ -805,27 +726,7 @@ class OrderService
 					distrib = multiDistrib.getDistributionFromProduct( product );
 				}
 
-				var newOrder : db.UserOrder = null;
-				if ( shopMode ) {
-					newOrder =  OrderService.make( user, order.qt , product, distrib == null ? null : distrib.id, order.paid );
-				} else {
-
-					//Let's find the subscription for that user, catalog and distrib
-					var subscription : db.Subscription = null;
-					if ( catalog != null ) {
-						subscription = subscriptions[0];
-					} else {
-						subscription = db.Subscription.manager.select( $user == user && $catalog == distrib.catalog && $startDate <= distrib.date && distrib.date <= $endDate );
-					}
-					if ( subscription == null ) { throw new Error('Il n\'y a pas de souscription pour cette personne. Vous devez d\'abord créer une souscription avant de commander.'); }
-
-					newOrder =  OrderService.make( user, order.qt , product, distrib == null ? null : distrib.id, order.paid, subscription );
-
-					if ( catalog == null && subscriptions.find( x -> x.id == subscription.id ) == null ) {
-						subscriptions.push( subscription );
-					}
-				}
-				
+				var newOrder =  OrderService.make( user, order.qt , product, distrib == null ? null : distrib.id, order.paid );
 				if ( newOrder != null ) orders.push( newOrder );
 				
 			}
@@ -840,13 +741,8 @@ class OrderService
 			b.update();
 		}
 
-		if ( shopMode ) {
-			service.PaymentService.onOrderConfirm( orders );
-		} else {
-			for( subscription in subscriptions ) {
-				service.SubscriptionService.createOrUpdateTotalOperation( subscription );				
-			}
-		}
+		service.PaymentService.onOrderConfirm( orders );
+		
 		return orders;
 	}
 }

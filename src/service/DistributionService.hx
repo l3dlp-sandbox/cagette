@@ -509,26 +509,6 @@ class DistributionService
 			catalog.update();
 		}
 
-		//extends subscriptions
-		if( !d.catalog.group.hasShopMode() ) { 
-			var ss = new SubscriptionService();
-			ss.adminMode = true;
-
-			//get subscriptions that were concerned by this distribution
-			var subscriptions = Subscription.manager.search($catalog==d.catalog && $startDate <= d.date && $endDate >= d.date , true );
-			for ( sub in subscriptions ){
-				//if the subscription is closing before the new date, extends it
-				if(sub.endDate.getTime() < newMd.getDate().getTime()){
-					ss.updateSubscription( sub, sub.startDate, newMd.getDate() );
-				}					
-			}
-			/**
-			2020-03-04 francois :
-			il peut se produire un bug pour une souscription concernée par la distrib reportée, si cette souscription est terminée de maniere anticipée.
-			le code actuel va reporter sa date de fin à la distrib reportée, ce qui va certainement englober d'autres distribs non souhaitées.
-			**/
-		}
-
 		checkDistrib(d);
 
 		if(dispatchEvent) App.current.event(EditDistrib(d));
@@ -567,15 +547,6 @@ class DistributionService
 		var t = sugoi.i18n.Locale.texts;
 		
 		var shopMode = d.catalog.group.hasShopMode();
-		if( !shopMode && (d.catalog.type==db.Catalog.TYPE_CONSTORDERS || d.catalog.distribMinOrdersTotal>0) ) {
-			//if there is at least one validated subscription, cancelation is not possible
-			var subscriptions = db.Subscription.manager.search( $catalog == d.catalog );
-			if( subscriptions.count( s -> s.paid() ) > 0) {
-				throw new Error("Vous ne pouvez pas annuler cette distribution car il y a déjà des souscriptions payées. Vous pouvez cependant décaler cette distribution en fin de contrat afin de maintenir le même nombre dans les souscriptions des adhérents. Pour décaler une distribution, cliquez sur le bouton \"Dates\".");
-			} else if( subscriptions.length > 0 ) {
-				App.current.session.addMessage( "Attention, vous avez déjà des souscriptions enregistrées pour ce contrat. Si vous supprimez des distributions, le montant à payer va varier." , true);
-			}
-		}
 
 		if ( !canDelete(d) ) {
 			throw new Error(t._("Deletion not possible: orders are recorded for ::vendorName:: on ::date::.",{vendorName:d.catalog.vendor.name,date:Formatting.hDate(d.date)}));

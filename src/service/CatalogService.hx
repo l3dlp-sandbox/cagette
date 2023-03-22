@@ -187,48 +187,6 @@ class CatalogService{
 		}
 	}
 
-	public static function checkAbsences( catalog:db.Catalog ){
-
-		var absentDistribsMaxNb = catalog.absentDistribsMaxNb;
-		var absencesStartDate = catalog.absencesStartDate;
-		var absencesEndDate = catalog.absencesEndDate;
-
-		if ( ( absentDistribsMaxNb != null && absentDistribsMaxNb != 0 ) && ( absencesStartDate == null || absencesEndDate == null ) ) {
-			throw new Error( 'Vous avez défini un nombre maximum d\'absences alors vous devez sélectionner des dates pour la période d\'absences.' );
-		}
-
-		// if ( ( absencesStartDate != null || absencesEndDate != null ) && ( absentDistribsMaxNb == null || absentDistribsMaxNb == 0 ) ) {
-		// 	throw new Error( 'Vous avez défini des dates pour la période d\'absences alors vous devez entrer un nombre maximum d\'absences.' );
-		// }
-	
-		if ( absencesStartDate != null && absencesEndDate != null ) {
-			if ( absencesStartDate.getTime() >= absencesEndDate.getTime() ) {
-				throw new Error( 'La date de début des absences doit être avant la date de fin des absences.' );
-			}
-
-			var absencesDistribsNb = AbsencesService.getContractAbsencesDistribs( catalog ).length;
-			if ( absentDistribsMaxNb > 0 && absentDistribsMaxNb > absencesDistribsNb ) {
-				throw new Error( 'Le nombre maximum d\'absences que vous avez saisi est trop grand.
-				Il doit être inférieur ou égal au nombre de distributions dans la période d\'absences : ' + absencesDistribsNb );				
-			}
-
-			//edge case : if absence period == catalog period, check that absentDistribsMaxNb is less than all distribs number
-			if(catalog.startDate.toString().substr(0,10)==absencesStartDate.toString().substr(0,10)){
-				if(catalog.endDate.toString().substr(0,10)==absencesEndDate.toString().substr(0,10)){
-					if ( absentDistribsMaxNb > 0  && absentDistribsMaxNb == absencesDistribsNb ) {
-						throw new Error( 'Le nombre maximum d\'absences que vous avez saisi est trop grand.
-						 Il doit être inférieur au nombre de distributions du contrat' );				
-					}
-				}	
-			}
-
-
-			if ( absencesStartDate.getTime() < catalog.startDate.getTime() || absencesEndDate.getTime() > catalog.endDate.getTime() ) {
-				throw new Error( 'Les dates d\'absences doivent être comprises entre le début et la fin du contrat.' );
-			}
-		}
-	}
-
 	/**
 		update future distribs start/end Order Dates
 	**/
