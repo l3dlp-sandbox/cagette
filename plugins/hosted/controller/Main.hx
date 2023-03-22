@@ -1,4 +1,7 @@
 package hosted.controller;
+import mangopay.Mangopay;
+import mangopay.db.MangopayLegalUserGroup;
+import payment.Cash;
 import service.ProductService;
 import pro.payment.MangopayECPayment;
 import service.GroupService;
@@ -73,6 +76,34 @@ class Main extends controller.Controller
 			group.update();
 
 			throw Ok("/p/hosted/group/"+group.id,"Le groupe est configuré pour le dispatch");
+		}
+
+		
+
+		if( app.params.get("removeMangopay")=="1" ){
+
+			group.lock();
+
+			//delete LegalUserGroup if wallet is empty
+			var mgpLegalUserGroup = mangopay.MangopayPlugin.getGroupConfig(group);
+			if(mgpLegalUserGroup==null){
+				throw "No mgpLegalUserGroup";
+			}
+			var mgpLegalUser = mgpLegalUserGroup.legalUser;						
+			var wallet = Mangopay.getOrCreateGroupWallet(mgpLegalUser.mangopayUserId,group);
+
+			if(wallet.Balance.Amount > 0){
+				throw "Wallet "+wallet.Id+" is not empty";
+			}
+
+			mgpLegalUserGroup.delete();
+
+			//payments in cash
+			group.setAllowedPaymentTypes([Cash.TYPE]);
+			group.update();
+
+			throw Ok("/p/hosted/group/"+group.id,"Mangopay retiré, groupe passé en paiement sur place");
+
 		}
 
 		if( app.params.get("duplicate")=="1" ){
