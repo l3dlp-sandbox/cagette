@@ -25,6 +25,8 @@ class AmapAdmin extends Controller
 		
 		//lance un event pour demander aux plugins si ils veulent ajouter un item dans la nav
 		var nav = new Array<Link>();
+
+		nav.push({id: "stripe",name: "Paiement en ligne Stripe", 	link:"/amapadmin/stripe",icon:"bank-card"});				
 				
 		var e = Nav(nav,"groupAdmin");
 		app.event(e);
@@ -385,4 +387,8 @@ class AmapAdmin extends Controller
 		view.title = "Statistiques";
 	}
 
+	@tpl("amapadmin/stripe.mtt")
+	public function doStripe(){
+		view.group = app.getCurrentGroup();
+	}
 }
