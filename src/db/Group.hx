@@ -86,7 +86,6 @@ class Group extends Object
 	@hideInForms public var allowedPaymentsType:SNull<SSmallText>; //Array<String>
 	@hideInForms public var checkOrder:SNull<SString<64>>;
 	@hideInForms public var IBAN:SNull<SString<40>>;
-	@hideInForms public var allowMoneyPotWithNegativeBalance:SNull<SBool>;
 
 	//Volunteers for duty periods
 	@hideInForms public var volunteersMailDaysBeforeDutyPeriod: STinyInt;

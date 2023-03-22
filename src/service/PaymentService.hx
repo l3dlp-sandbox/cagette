@@ -252,7 +252,6 @@ class PaymentService {
 					new payment.Cash(),
 					new payment.Check(),
 					new payment.Transfer(),	
-					// new payment.MoneyPot(),
 					new payment.OnTheSpotPayment(),
 					new payment.OnTheSpotCardTerminal()						
 				];
@@ -295,10 +294,7 @@ class PaymentService {
 			
 			//when a coordinator does a manual refund or adds manually a payment
 			case PCManualEntry:
-				//Exclude the MoneyPot payment
 				var paymentTypesInAdmin = getPaymentTypes(PCGroupAdmin);
-				var moneyPot = Lambda.find(paymentTypesInAdmin, function(x) return x.type == payment.MoneyPot.TYPE);
-				paymentTypesInAdmin.remove(moneyPot);
 				#if plugins
 				//cannot make a mgp payment manually !!
 				var mgp = paymentTypesInAdmin.find( x -> x.type == pro.payment.MangopayECPayment.TYPE );
