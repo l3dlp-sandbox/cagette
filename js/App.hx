@@ -4,32 +4,7 @@ import Common;
 // import thx.semver.Version;
 
 //React lib
-import react.ReactMacro.jsx;
 import react.ReactDOM;
-import react.*;
-
-//mui
-import react.mui.CagetteTheme;
-import mui.core.CssBaseline;
-import mui.core.styles.MuiThemeProvider;
-
-//redux
-import redux.Redux;
-import redux.Store;
-import redux.StoreBuilder.*;
-import redux.thunk.Thunk;
-import redux.thunk.ThunkMiddleware;
-import redux.react.Provider as ReduxProvider;
-
-//custom components
-import react.order.OrdersDialog;
-import react.product.*;
-import react.map.*;
-import react.user.*;
-import react.vendor.*;
-import react.ReactComponent;
-
-
 class App {
 
     public static var instance : App;    
@@ -153,68 +128,6 @@ class App {
         });
 	}
 	
-	public function initOrderBox(
-        userId : Int,
-        multiDistribId : Int,
-        catalogId : Int,
-        catalogType : Int,
-        date : String,
-        place : String,
-        userName : String,
-        currency : String,
-        hasPayments : Bool,
-        callbackUrl : String,
-        hasCagette2 : Bool,
-        groupId : Int,
-        ?basketId : Int
-    ) {
-        var node = js.Browser.document.createDivElement();
-        node.id = "ordersdialog-container";
-        js.Browser.document.body.appendChild(node);
-        ReactDOM.unmountComponentAtNode(node); //the previous modal DOM element is still there, so we need to destroy it
-       
-        if (!hasCagette2) { 
-            var store = createOrderBoxReduxStore();
-            ReactDOM.render(jsx('
-                <ReduxProvider store=${store}>
-                    <MuiThemeProvider theme=${CagetteTheme.get()}>
-                        <>
-                            <CssBaseline />
-                            <OrdersDialog userId=$userId multiDistribId=$multiDistribId catalogId=$catalogId catalogType=$catalogType
-                            date=$date place=$place userName=$userName callbackUrl=$callbackUrl currency=$currency hasPayments=$hasPayments />							
-                        </>
-                    </MuiThemeProvider>
-                </ReduxProvider>
-            '), node );
-        } else {
-            var neo:Dynamic = Reflect.field(js.Browser.window, 'neo');
-            neo.createNeoModule(node.id, "ordersDialog", {
-                userId: userId,
-                multiDistribId: multiDistribId,
-                catalogId: catalogId,
-                groupId: groupId,
-                date: date,
-                place: place,
-                userName: userName,
-                callbackUrl: callbackUrl,
-                hasPayments: hasPayments,
-                basketId: basketId
-            });
-        }
-	}
-
-	private function createOrderBoxReduxStore() {
-        
-		// Store creation
-		var rootReducer = Redux.combineReducers({ reduxApp : mapReducer(react.order.redux.actions.OrderBoxAction, new react.order.redux.reducers.OrderBoxReducer()) });
-		// create middleware normally, excepted you must use
-		// 'StoreBuilder.mapMiddleware' to wrap the Enum-based middleware
-		var middleWare = Redux.applyMiddleware(mapMiddleware(Thunk, new ThunkMiddleware()));
-		return createStore( rootReducer, null, middleWare );
-	}
-
-	
-
 	public static function roundTo(n:Float, r:Int):Float {
 		return Math.round(n * Math.pow(10,r)) / Math.pow(10,r) ;
 	}
@@ -419,21 +332,6 @@ class App {
 			untyped el.classList.add("hidden");
 		}
 	}
-
-    // public function showTab(el){
-    //     tab(el).show();
-    // }
-
-    // public  function modal(el){
-    //     var m = new Modal(el);
-    //     m.show();
-
-    // }
-
-    public function addTmpBasketIdToSession(tmpBasketId:Int) {
-        var req = new haxe.Http("/shop/addTmpBasketId/"+tmpBasketId);
-        req.request();
-    }
 
     public function resetGroupInSession(groupId:Int) {
         var req = new haxe.Http("/account/quitGroup/"+groupId);

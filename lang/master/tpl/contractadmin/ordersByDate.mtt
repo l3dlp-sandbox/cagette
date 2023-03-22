@@ -17,9 +17,9 @@
 			</div>	
 		
 		<div class="text-center">
-
+			<div id="orders-dialog-container" />
 			<a class="btn btn-default btn-sm"
-				onclick="_Cagette.initOrderBox(null, ::distrib.id::, null, 1,'::escapeJS(hDate(date))::','::escapeJS(place.toString())::', null, '::currency()::', ::user.getGroup().hasPayments()::, '/contractAdmin/ordersByDate/::date::/::place.id::',true, ::user.getGroup().id::)">
+				onclick="neo.createNeoModule('orders-dialog-container', 'ordersDialog', { userId: null, multiDistribId: ::distrib.id::, catalogId: ::distribution._catalog.id::, groupId: ::user.getGroup().id::, date: '::escapeJS(hDate(date))::', place: '::escapeJS(place.toString())::', userName: null, callbackUrl: '/contractAdmin/ordersByDate/::date::/::place.id::', basketId: null });">
 				<i class="icon icon-plus"></i>
 				::_("New order")::
 			</a>
@@ -66,8 +66,9 @@
 							::end::
 							::set contractTotal = 0::
 
+							<div id="orders-dialog-container" />
 							<a class="btn btn-default btn-xs pull-right"
-						onclick="_Cagette.initOrderBox( ::m.userId::, ::distrib.id::, null, 1, '::escapeJS(hDate(date))::', '::escapeJS(place.toString())::', '::escapeJS(m.userName)::','::currency()::', ::user.getGroup().hasPayments()::,'/contractAdmin/ordersByDate/::date::/::place.id::', true, ::basket.id::)">
+							   onclick="neo.createNeoModule('orders-dialog-container', 'ordersDialog', { userId: ::m.userId::, multiDistribId: ::distrib.id::, catalogId: null, groupId: ::user.getGroup().id::, date: '::escapeJS(hDate(date))::', place: '::escapeJS(place.toString())::', userName: '::escapeJS(basket._user.getName())::', callbackUrl: '/contractAdmin/ordersByDate/::date::/::place.id::', basketId: ::basket.id:: });">
 							<i class="icon icon-edit"></i>
 								::_("Edit")::
 						</a>	

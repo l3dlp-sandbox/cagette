@@ -9,8 +9,9 @@
 	<div style="margin:8px 0;">
 		
 		::if(!catalog.isConstantOrdersCatalog() && !catalog._group.isDispatch())::
+		<div id="orders-dialog-container" />
 		<a class="btn btn-default btn-sm"
-			onclick="_Cagette.initOrderBox(null,::multiDistribId::,::distribution._catalog.id::,::catalog.type::,'::escapeJS(hDate(distribution.date))::','::escapeJS(distribution._place.toString())::',null,'::user.getGroup().currency::', ::user.getGroup().hasPayments()::, '/contractAdmin/orders/::catalog.id::?d=::distribution.id::', true, ::user.getGroup().id::)">
+			onclick="neo.createNeoModule('orders-dialog-container', 'ordersDialog', {userId:null, multiDistribId: ::multiDistribId::, catalogId: ::distribution._catalog.id::, groupId: ::user.getGroup().id::, date: '::escapeJS(hDate(distribution.date))::', place: '::escapeJS(distribution._place.toString())::', userName: null, callbackUrl: '/contractAdmin/orders/::catalog.id::?d=::distribution.id::', basketId: null})">
 			<i class="icon icon-plus"></i>
 			::_("New order")::
 		</a>							
@@ -68,8 +69,9 @@
 					</td>
 					<td>
 						::if(!catalog.isConstantOrdersCatalog())::
+						<div id="orders-dialog-container" />
 						<a class="btn btn-default btn-xs"
-							onclick="_Cagette.initOrderBox(::basket.userId::,::multiDistribId::,::distribution._catalog.id::,::distribution._catalog.type::,'::escapeJS(hDate(distribution.date))::','::escapeJS(distribution._place.toString())::','::escapeJS(basket._user.getName())::','::user.getGroup().currency::', ::user.getGroup().hasPayments()::, '/contractAdmin/orders/::c.id::?d=::distribution.id::', true, ::user.getGroup().id::, ::basket.id::)">
+							onclick="neo.createNeoModule('orders-dialog-container', 'ordersDialog', { userId: ::basket.userId::, multiDistribId: ::multiDistribId::, catalogId: ::distribution._catalog.id::, groupId: ::user.getGroup().id::, date: '::escapeJS(hDate(distribution.date))::', place: '::escapeJS(distribution._place.toString())::', userName: '::escapeJS(basket._user.getName())::', callbackUrl: '/contractAdmin/orders/::c.id::?d=::distribution.id::', basketId: ::basket.id:: });">
 							<i class="icon icon-edit"></i>
 							::_("Edit")::
 						</a>
