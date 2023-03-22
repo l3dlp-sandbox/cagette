@@ -63,14 +63,6 @@ class Distribution extends Controller {
 			function(v) return v.volunteerRole.catalog != null && v.volunteerRole.catalog.id == d.catalog.id);
 	}
 
-	@tpl('distribution/CSAList.mtt')
-	function doCsaList(d:db.Distribution){
-		if ( !app.user.canManageContract( d.catalog ) ) throw Error( "/", t._("You do not have the authorization to manage this contract") );
-		view.distribution = d;
-		view.c = d.catalog;
-		view.nav = [];
-	}
-
 	/**
 	 * Attendance sheet by product-user (single distrib)
 	 */
