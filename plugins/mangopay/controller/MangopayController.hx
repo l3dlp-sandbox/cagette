@@ -90,7 +90,7 @@ class MangopayController extends controller.Controller
 			try{
 				naturalUserId = Mangopay.createNaturalUser(user).Id;	
 			}catch(e:tink.core.Error){
-				throw Error("/transaction/pay/", "Erreur de création de compte Mangopay. "+e.message);
+				throw Error("/shop/basket/"+tmpBasket.id, "Erreur de création de compte Mangopay. "+e.message);
 			}		
 		} else {
 			naturalUserId = mangopayUser.mangopayUserId;
