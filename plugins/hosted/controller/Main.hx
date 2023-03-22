@@ -357,9 +357,6 @@ class Main extends controller.Controller
 					} else if(vendor.email==c.contact.email){
 						status = "gratuit";
 						break;
-					} else if(c.group.groupType==db.Group.GroupType.FarmShop || c.group.groupType==db.Group.GroupType.ProducerDrive){
-						status = "gratuit";
-						break;
 					}
 				}
 

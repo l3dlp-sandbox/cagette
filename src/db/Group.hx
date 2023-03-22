@@ -35,14 +35,6 @@ enum RegOption{
 	Full;
 }
 
-enum GroupType{
-	Amap; 			//CSA / GASAP / AMAP
-	GroupedOrders; 	//groupements d'achat
-	ProducerDrive;	//drive de producteurs
-	FarmShop;		//vente à la ferme
-}
-
-
 @:enum
 abstract GroupDisabledReason(String) {
   var BLOCKED_BY_ADMIN = "BLOCKED_BY_ADMIN";
@@ -77,8 +69,6 @@ class Group extends Object
 	public var betaFlags:SFlags<BetaFlags>;
 	@hideInForms public var hasMembership:SBool;
 
-	@hideInForms public var groupType:SNull<SEnum<GroupType>>;
-	
 	@hideInForms @:relation(imageId)
 	public var image : SNull<sugoi.db.File>;
 	
@@ -435,7 +425,6 @@ class Group extends Object
 			"membershipRenewalDate" => t._("Membership renewal date"),
 			"flags" 		=> t._("Options"),
 			"betaFlags" 	=> t._("Nouvelles fonctionnalités"),
-			"groupType" 	=> "Type de groupe (déclaratif)",
 			"regOption" 	=> t._("Registration setting"),
 			"contact" 		=> t._("Main contact"),
 			"legalRepresentative" => t._("Legal representative")			
