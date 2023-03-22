@@ -70,11 +70,6 @@ class Main extends Controller {
 		}
 		view.amap = group;
 
-		// contract not ended with UserCanOrder flag
-		if (!group.hasShopMode()) {
-			view.openContracts = group.getActiveContracts().filter((c) -> c.hasOpenOrders());
-		}
-
 		// freshly created group
 		view.newGroup = app.session.data.newGroup == true;
 

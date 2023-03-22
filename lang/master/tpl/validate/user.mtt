@@ -273,7 +273,6 @@
 		
 
 		<!-- BALANCE -->
-		::if (user.getGroup().hasShopMode())::
 		<div class="col-md-6">
 			<table class="table table-condensed table-bordered">
 				<tr style="background-color:#DDD;">
@@ -303,8 +302,6 @@
 
 			</table>
 		</div>
-		::end::
-
 			
 		<!-- Footer -->
 		<div class="col-md-12">

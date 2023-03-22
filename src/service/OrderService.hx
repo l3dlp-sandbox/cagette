@@ -48,8 +48,6 @@ class OrderService
 			}
 		}
 		
-		var shopMode = product.catalog.group.hasShopMode();
-
 		//quantity
 		if ( !canHaveFloatQt(product) ){
 			if( !tools.FloatTool.isInt(quantity)  ) {

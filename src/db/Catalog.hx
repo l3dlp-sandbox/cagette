@@ -133,23 +133,6 @@ class Catalog extends Object
 		return this.isVariableOrdersCatalog() && ( this.distribMinOrdersTotal>0  || this.catalogMinOrdersTotal>0 );
 	}
 
-	public function hasAbsencesManagement() : Bool {
-		//absence mgmt is available if CSA mode + constant orders or var orders with distribMinOrdersTotal>0
-		if(!this.group.hasShopMode() && (isConstantOrdersCatalog() || distribMinOrdersTotal>0)){
-			return this.absentDistribsMaxNb > 0 && this.absencesStartDate != null && this.absencesEndDate != null;
-		}else{
-			return false;
-		}		
-	}
-
-	public function hasDefaultOrdersManagement() : Bool{
-		if(!this.group.hasShopMode() && (isConstantOrdersCatalog() || distribMinOrdersTotal>0)){
-			return true;
-		}else{
-			return false;
-		}
-	}
-
 	/**
 	 * computes a 'percentage' fee
 	 */
@@ -284,18 +267,6 @@ class Catalog extends Object
 	}
 
 	public function getVisibleDocuments( user : db.User ) : List<sugoi.db.EntityFile> {
-
-		var isSubscribedToCatalog = false;
-		if ( user != null && !this.group.hasShopMode() ) { //CSA Mode
-
-			var userCatalogs : Array<db.Catalog> = user.getContracts(this.group);
-			isSubscribedToCatalog = Lambda.exists( userCatalogs, function( usercatalog ) return usercatalog.id == this.id ); 
-		}
-
-		if ( isSubscribedToCatalog ) {
-
-			return sugoi.db.EntityFile.manager.search( $entityType == 'catalog' && $entityId == this.id && $documentType == 'document', false);
-		}
 
 		if ( user != null && user.isMemberOf(group) ) {
 

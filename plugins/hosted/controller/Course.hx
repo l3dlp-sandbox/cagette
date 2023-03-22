@@ -79,24 +79,6 @@ if (App.current.getSettings().noCourse==true) {
 		}
 
 		view.emails = Lambda.array(emails);
-
-
-
-		/*if (app.params.exists("fix")){
-			Sys.println("fix :");
-			for( c in course.getCompanies()){
-				for ( cata in c.company.getCatalogs()){
-					for ( rc in connector.db.RemoteCatalog.getFromPCatalog(cata)){
-						var group = rc.getRelatedContract().amap;
-						group.lock();
-						group.flags.set(ShopMode);
-						group.flags.unset(CagetteNetwork);
-						group.update();
-						Sys.println("update flags for "+group.name);
-					}
-				}
-			}
-		}*/
 	}
 
 

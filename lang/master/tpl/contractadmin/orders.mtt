@@ -28,13 +28,8 @@
 				<i class="icon icon-print"></i> ::_("Attendance sheet")::
 			</button>
 			<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">					
-				::if(!catalog._group.hasShopMode())::
-				<li><a href="/distribution/csaList/::distribution.id::"> Liste d'émargement AMAP</a></li>
-				<li><a href="/distribution/listByProductUser/::distribution.id::"> ::_("By Product-User")::</a></li>			
-				::else::
 				<li><a href="/distribution/list/::distribution.id::"> ::_("Standard")::</a></li>
 				<li><a href="/distribution/listByProductUser/::distribution.id::"> ::_("By Product-User")::</a></li>			
-				::end::
 			</ul>
 		</div>
 	</div>

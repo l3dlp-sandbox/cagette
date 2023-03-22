@@ -111,16 +111,6 @@ class ContractAdmin extends Controller
 				CatalogService.checkFormData(catalog,  form );
 				catalog.update();
 
-				if(!catalog.group.hasShopMode()){
-					
-					//Update future distribs start and end orders dates
-					var newOrderStartDays = catalog.orderStartDaysBeforeDistrib != previousOrderStartDays ? catalog.orderStartDaysBeforeDistrib : null;
-					var newOrderEndHours = catalog.orderEndHoursBeforeDistrib != previousOrderEndHours ? catalog.orderEndHoursBeforeDistrib : null;
-					var msg = CatalogService.updateFutureDistribsStartEndOrdersDates( catalog, newOrderStartDays, newOrderEndHours );
-					if(msg!=null) messages.push(msg);  
-
-				}
-				
 				//update rights
 				if ( catalog.contact != null && (currentContact==null || catalog.contact.id!=currentContact.id) ) {
 					var ua = db.UserGroup.get( catalog.contact, catalog.group, true );
@@ -567,11 +557,6 @@ class ContractAdmin extends Controller
 		var form = new Form("duplicate");
 		
 		form.addElement(new StringInput("name", t._("Name of the new catalog"), catalog.name.substr(0,50)  + " - copie"));	
-		if( !catalog.group.hasShopMode() ) {
-
-			var catalogTypes = [ { label : 'Contrat AMAP classique', value : 0 }, { label : 'Contrat AMAP variable', value : 1 } ];
-			form.addElement( new sugoi.form.elements.IntSelect( 'catalogtype', 'Type de catalogue', catalogTypes, catalog.type, true ) );
-		}
 		form.addElement(new Checkbox("copyProducts", t._("Copy products"),true));
 		form.addElement(new Checkbox("copyDeliveries", t._("Copy deliveries"),true));
 		
@@ -586,27 +571,7 @@ class ContractAdmin extends Controller
 			nc.description = catalog.description;
 			nc.distributorNum = catalog.distributorNum;
 			nc.flags = catalog.flags;
-			if( catalog.group.hasShopMode() ) {
-
-				nc.type = Catalog.TYPE_VARORDER;
-			}
-			else {
-
-				nc.type = form.getValueOf("catalogtype");
-
-				nc.orderEndHoursBeforeDistrib = catalog.orderEndHoursBeforeDistrib;
-				nc.absentDistribsMaxNb = catalog.absentDistribsMaxNb;
-				// nc.absencesStartDate = catalog.absencesStartDate;
-				// nc.absencesEndDate = catalog.absencesEndDate;
-
-				if ( nc.type == Catalog.TYPE_VARORDER ) {
-
-					nc.orderStartDaysBeforeDistrib = catalog.type == Catalog.TYPE_VARORDER ? catalog.orderStartDaysBeforeDistrib : 365;
-					// nc.requiresOrdering = catalog.requiresOrdering;
-					nc.distribMinOrdersTotal = catalog.distribMinOrdersTotal;
-					nc.catalogMinOrdersTotal = catalog.catalogMinOrdersTotal;
-				}
-			}
+			nc.type = Catalog.TYPE_VARORDER;
 			nc.vendor = catalog.vendor;
 			nc.percentageName = catalog.percentageName;
 			nc.percentageValue = catalog.percentageValue;

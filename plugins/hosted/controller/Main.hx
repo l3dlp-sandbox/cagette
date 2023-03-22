@@ -80,7 +80,6 @@ class Main extends controller.Controller
 
 			var g = GroupService.duplicateGroup(group);
 			g.name = group.name+" (marché)";
-			g.flags.set(ShopMode);
 			// g.setAllowedPaymentTypes([MangopayECPayment.TYPE]);
 			g.update();
 

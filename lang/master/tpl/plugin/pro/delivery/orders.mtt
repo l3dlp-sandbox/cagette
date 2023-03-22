@@ -8,7 +8,7 @@
 
 <div style="margin:8px 0;">
 	
-	::if(catalog._group.hasShopMode() && !catalog._group.isDispatch() )::
+	::if( !catalog._group.isDispatch() )::
 	<div id="orders-dialog-container" />
 	<a class="btn btn-default btn-sm"
 		onclick="neo.createNeoModule('orders-dialog-container', 'ordersDialog', { userId: null, multiDistribId: ::multiDistribId::, catalogId: ::distribution._catalog.id::, groupId: ::catalog._group.id::, date: '::escapeJS(hDate(distribution.date))::', place: '::escapeJS(distribution._place.toString())::', userName: null, callbackUrl: '/p/pro/delivery/orders/::distribution.id::', basketId: null });">
@@ -29,13 +29,8 @@
 			<i class="icon icon-print"></i> ::_("Attendance sheet")::
 		</button>
 		<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">					
-			::if(!catalog._group.hasShopMode())::
-			<li><a href="/distribution/csaList/::distribution.id::"> Liste d'émargement AMAP</a></li>
-			<li><a href="/distribution/listByProductUser/::distribution.id::"> ::_("By Product-User")::</a></li>			
-			::else::
 			<li><a href="/distribution/list/::distribution.id::"> ::_("Standard")::</a></li>
 			<li><a href="/distribution/listByProductUser/::distribution.id::"> ::_("By Product-User")::</a></li>			
-			::end::
 		</ul>
 	</div>
 </div>

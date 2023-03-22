@@ -82,15 +82,8 @@
 			</tr>
 			<tr>
 				<td>Type de catalogue :</td>				
-				<td>::if(group.hasShopMode())::
-						Catalogue standard ( commande variable )
-					::else::
-						::if(notifContent.catalogType==0)::
-							Contrat AMAP classique
-						::else::
-							Contrat AMAP variable
-						::end::
-					::end::
+				<td>
+					Catalogue standard ( commande variable )
 				</td>
 			</tr>
 			::if(notifContent.message!="")::

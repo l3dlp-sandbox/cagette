@@ -304,7 +304,6 @@ class App extends sugoi.BaseApp {
 		out.set("desc", "Description");
 		
 		//group options
-		out.set("ShopMode", "Mode Marché");
 		out.set("CustomizedCategories", "Catégories personnalisées");
 		out.set("HidePhone", "Masquer le téléphone du responsable sur la page publique");
 		out.set("PhoneRequired", "Saisie du numéro de téléphone obligatoire");

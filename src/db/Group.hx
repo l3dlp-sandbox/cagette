@@ -9,7 +9,7 @@ using tools.DateTool;
 
 enum GroupFlags {
 	__HasMembership; 	//@deprecated membership management  
-	ShopMode; 		//shop mode / CSA mode
+	__ShopMode; 		//shop mode / CSA mode
 	__HasPayments; 	//@deprecated manage payments and user balance
 	__ComputeMargin;	//compute margin instead of percentage
 	CagetteNetwork; //register in cagette.net groups directory
@@ -112,7 +112,6 @@ class Group extends Object
 		super();
 		flags = cast 0;
 		flags.set(CagetteNetwork);
-		flags.set(ShopMode);
 		betaFlags = cast 0;
 		setVatRates([{label:"TVA alimentaire",value:5.5},{label:"TVA standard",value:20}]);
 		cdate = Date.now();
@@ -182,11 +181,6 @@ class Group extends Object
 				return null;	
 			}
 		}
-	}
-	
-	public function hasShopMode() {
-		if(flags==null) return true;
-		return flags.has(ShopMode);
 	}
 	
 	public function canExposePhone() {

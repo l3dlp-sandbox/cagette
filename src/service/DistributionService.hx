@@ -286,7 +286,7 @@ class DistributionService
 			}
 		}
 
-		if(md.group.hasShopMode() && catalog.vendor.isDisabled()){
+		if(catalog.vendor.isDisabled()){
 			throw new Error('Le compte de "${catalog.vendor.name}" est désactivé. Raison : "${catalog.vendor.getDisabledReason()}"');
 		} 
 
@@ -297,33 +297,10 @@ class DistributionService
 			}
 		}
 
-		var shopMode = catalog.group.hasShopMode();
-
-		if( !shopMode ){
-			//limitations with CSA mode
-			if(db.Subscription.manager.count( $catalogId == catalog.id ) > 0){
-				if( catalog.isConstantOrdersCatalog() ) {
-					throw new Error("Vous ne pouvez pas participer à cette distribution car il y a déjà des souscriptions. Vous devez maintenir le même nombre de distributions dans les souscriptions des adhérents.");
-				} else {
-					App.current.session.addMessage( "Attention, vous avez déjà des souscriptions enregistrées pour ce contrat. Si vous créez des distributions supplémentaires, le montant à payer va varier." , true);
-				}
-			}			
-		}
-
 		md.deleteProductsExcerpt();
 
 		var orderStartDate = md.orderStartDate;
 		var orderEndDate = md.orderEndDate;
-		if ( !shopMode ) {
-
-			if ( catalog.orderStartDaysBeforeDistrib != null && catalog.orderStartDaysBeforeDistrib != 0 ) {
-				orderStartDate = DateTools.delta( md.distribStartDate, -1000.0 * 60 * 60 * 24 * catalog.orderStartDaysBeforeDistrib );
-			}
-
-			if ( catalog.orderEndHoursBeforeDistrib != null && catalog.orderEndHoursBeforeDistrib != 0 ) {
-				orderEndDate = DateTools.delta( md.distribStartDate, -1000.0 * 60 * 60 * catalog.orderEndHoursBeforeDistrib );
-			}
-		}
 
 		var d = create( catalog, md.distribStartDate, md.distribEndDate, md.place.id, orderStartDate, orderEndDate, null, true, md );
 
@@ -487,13 +464,11 @@ class DistributionService
 		}
 
 		//recompute order operations for oldMd and newMd baskets
-		if(newMd.group.hasShopMode()){
-			for( b in oldMd.getBaskets()){
-				PaymentService.onOrderConfirm( b.getOrders() );
-			}
-			for( b in newMd.getBaskets()){
-				PaymentService.onOrderConfirm( b.getOrders() );
-			}
+		for( b in oldMd.getBaskets()){
+			PaymentService.onOrderConfirm( b.getOrders() );
+		}
+		for( b in newMd.getBaskets()){
+			PaymentService.onOrderConfirm( b.getOrders() );
 		}
 		
 		//renumbering baskets
@@ -546,8 +521,6 @@ class DistributionService
 	public static function cancelParticipation(d:db.Distribution,?dispatchEvent=true) {
 		var t = sugoi.i18n.Locale.texts;
 		
-		var shopMode = d.catalog.group.hasShopMode();
-
 		if ( !canDelete(d) ) {
 			throw new Error(t._("Deletion not possible: orders are recorded for ::vendorName:: on ::date::.",{vendorName:d.catalog.vendor.name,date:Formatting.hDate(d.date)}));
 		}
@@ -584,19 +557,6 @@ class DistributionService
 		d.multiDistrib.deleteProductsExcerpt();
 
 		d.delete();
-
-		//In case this is a distrib for an amap contract with payments enabled, it will update all the operations
-		// if ( !shopMode ) {
-		// 	service.SubscriptionService.updateCatalogSubscriptionsOperation( contract );
-		// }
-
-		//delete multidistrib if needed
-		/*if(d.multiDistrib!=null){
-			if(d.multiDistrib.getDistributions().length == 0){
-				deleteMd(d.multiDistrib);
-			}
-		}*/
-
 	}
 
 	/**

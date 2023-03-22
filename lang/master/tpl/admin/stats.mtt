@@ -146,23 +146,6 @@
 					<td class="col-md-6">::newGroups::</td>
 				</tr>	
 				<tr>
-					<td>Nouveaux groupes par type</td>
-					<td>
-
-						<table class='table'>							
-							<tr>
-								<td>AMAPs</td>
-								<td>::newCSAGroups::</td>
-							</tr>
-							<tr>
-								<td>mode Marché</td>
-								<td>::newMarketGroups::</td>
-							</tr>
-							
-						</table>
-					</td>
-				</tr>
-				<tr>
 					<td>Nouveaux groupes par type d'administrateur</td>
 					<td>
 						<table class='table'>		

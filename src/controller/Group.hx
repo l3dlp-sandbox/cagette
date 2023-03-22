@@ -168,24 +168,14 @@ class Group extends controller.Controller
 			}
 			
 			switch(type){
-			case null : 
+			case Amap, null : 
 				throw "unknown group type";
 
-			case Amap : 
-				g.flags.unset(ShopMode);
-				g.hasMembership=true;
-				g.regOption = WaitingList;
-
-				// if(!user.isAdmin()) 
-				throw Redirect('/group/csa?name='+g.name);
-				
 			case GroupedOrders :
-				g.flags.set(ShopMode);
 				g.hasMembership=true;
 				g.regOption = WaitingList;
 				
 			case ProducerDrive,FarmShop : 
-				g.flags.set(ShopMode);								
 				// g.flags.set(PhoneRequired);				
 				g.regOption = Open;
 			}
@@ -216,7 +206,7 @@ class Group extends controller.Controller
 			#if plugins
 			try{
 				//sync if this user is not cpro && market mode group
-				if( service.VendorService.getCagetteProFromUser(app.user).length==0 && g.hasShopMode() ){					
+				if( service.VendorService.getCagetteProFromUser(app.user).length==0 ){					
 					BridgeService.syncUserToHubspot(app.user);
 					service.BridgeService.triggerWorkflow(29805116, app.user.email);
 				}

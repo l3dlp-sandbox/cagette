@@ -31,13 +31,6 @@ class Product extends Controller
 
 			f.toSpod(product);
 
-			//manage stocks by distributions for CSA contracts
-			if(!product.catalog.group.hasShopMode() && product.catalog.hasStockManagement()){
-				var distribNum = product.catalog.getDistribs(false).length;
-				distribNum = distribNum == 0 ? 1 : distribNum;
-				product.stock = (f.getValueOf("stock"):Float) * distribNum;
-			}
-
 			try{
 				ProductService.check(product);
 			}catch(e:tink.core.Error){

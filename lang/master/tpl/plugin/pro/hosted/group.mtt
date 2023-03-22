@@ -5,11 +5,7 @@
 		<h2>::group.name::</h2>
 
 		<p>
-			<b>::if(group.hasShopMode())::
 			Mode Marché
-			::else::
-			Mode AMAP
-			::end::</b>
 		</p>
 
 		<p>Actif : $$bool(::groupStats.active::)</p>
@@ -49,10 +45,6 @@
 		<p>
 		::if(!group.isDispatch())::
 			<a href="?dispatch=1" class="btn btn-default">Passer en Dispatch</a>
-		::end::
-		
-		::if( !group.hasShopMode() )::
-		<a href="?duplicate=1" class="btn btn-default">Dupliquer en mode Marché</a>
 		::end::
 	</p>
 

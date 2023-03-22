@@ -3,7 +3,6 @@
 $$browserDetection()
 <div style="margin-top:12px;"></div>
 
-::set hasShopMode = amap.hasShopMode()::
 <div id="content" class="col-md-8">
 
 	<!-- Welcoming message + access to tutos-->
@@ -48,7 +47,7 @@ $$browserDetection()
 		::set ordersEndDate = md.getOrdersEndDate(true)::
 
 		<!-- header -->
-		<div class="header ::if (active && hasShopMode):: active ::end::">
+		<div class="header ::if (active):: active ::end::">
 
 			<!-- date box -->
 			<div class="dateBoxOffset">
@@ -74,128 +73,22 @@ $$browserDetection()
 
 		</div>
 
-		<!-- === CONSTANT order block === -->
-		::if(!hasShopMode)::
-			<div class="content myorder">Mes contrats AMAP classiques</div>
-			::if md.userHasOrders(user,0)::
-				<div class="content orders">
-					::foreach dist md.getDistributions(0)::
-						::set orders = dist.getUserOrders(user)::
-						::if orders.length>0::
-							<h4><a href="/contract/view/::dist._catalog.id::">::dist._catalog.name::</a></h4>
-
-							<div class="row">
-								::foreach c prepare(orders)::
-								<div class="col-xs-12 col-sm-6 col-lg-4" ::cond orders.length>0:: >
-
-									<div style="background-image:url('::c.productImage::');float:left;margin-right:12px;" class="productImg small" />
-									<span ::cond c.quantity>1:: ><b>::raw c.smartQt::</b></span>
-									<span style="background-color: #B00;color:white;padding: 2px;border-radius: 3px;margin-right:3px;" ::cond c.quantity==0::>
-										::_("Canceled")::
-									</span>
-									::c.productName::
-
-									<!--ALTERNATED ORDER-->
-									::if c.userId2!=null::
-										::if user.id==c.userId::
-											::set you = c.userName::
-											::set mate = c.userName2::
-										::else::
-											::set mate = c.userName::
-											::set you = c.userName2::
-										::end::
-										<br />(
-										::raw __("alternated with ::mate::",{mate:mate})::,
-										::if getWhosTurn(c.id,dist)==false::
-											::if c.userName == you::
-												<span style="color:#080">::_("It's your turn")::</span>
-											::else::
-												::_("It's his/her turn")::
-											::end::
-										::else::
-											::if c.userName2 == you::
-												<span style="color:#080">::_("It's your turn")::</span>
-											::else::
-												::_("It's his/her turn")::
-											::end::
-										::end::
-										)
-									::end::
-								</div>
-								::end::
-							</div>
-
-							<div class="orderFooter">
-								<!-- attendence list-->
-								::if user.isContractManager(dist._catalog) || md.getVolunteerForUser(user).length>0::
-								<a href="/distribution/list/::dist.id::"><i class="icon icon-print"></i> ::_("Distribution list")::</a>
-								::end::
-							</div>
-						::end::
-					::end::
-				</div>
-			::else::
-				<div class="content">
-					<span class="disabled">Vous n'avez rien à récupérer ce jour là.</span>
-				</div>
-			::end::
-		::end::
-		<!-- === END AMAP BLOCK === -->
-
-
-
-		<!--==== Variable order block ===-->
 		::if md.getDistributions(1).length>0::
 			::if md.userHasOrders(user,1)::
 			<!-- Variable order block with orders -->
-			<div class="content myorder" ::cond !hasShopMode::>Mes commandes variables</div>
 			<div class="content orders">
-				::if hasShopMode::
-				<!-- var orders for shopmode-->
 				<div class="text-center">
 					::set basket = md.getUserBasket(user)::
 					::set title = "Commande du "+hDate(md.getDate())::
 					<a onclick="_Cagette.overlay('/history/basket/::basket.id::/1','::title::')" class="btn btn-default btn-sm">
 						<i class="icon icon-basket"></i> ::_("My order"):: : ::formatNum(basket.getOrdersTotal(1)):: ::currency()::
 					</a>				
-					::if hasShopMode && active && !amap.isDispatch() && !basket.hasOnlinePayment()::
+					::if active && !amap.isDispatch() && !basket.hasOnlinePayment()::
 						$$edit(Modifier cette commande,/contract/editVarOrders/::md.id::)
 					::end::
 				</div>
-				::else::
-					<!-- var orders for CSA-->
-					::foreach dist md.getDistributions(1)::
-						::set orders = dist.getUserOrders(user)::
-						::if orders.length>0::
-						
-		
-						<div class="row">
-							<h4><a href="/contract/view/::dist._catalog.id::">::dist._catalog.name::</a></h4>
-							::foreach c prepare(orders)::
-							<div class="col-xs-12 col-sm-6 col-lg-4" ::cond orders.length>0:: >
-								<div style="background-image:url('::c.productImage::');float:left;margin-right:12px;" class="productImg small" />
-								<span ::cond c.quantity>1:: ><b>::raw c.smartQt::</b></span>
-								<span style="background-color: #B00;color:white;padding: 2px;border-radius: 3px;margin-right:3px;" ::cond c.quantity==0::>
-									::_("Canceled")::
-								</span>
-								::c.productName::
-							</div>
-							::end::
-						</div>
-		
-						<div class="orderFooter">
-							<!-- attendence list-->
-							::if user.isContractManager(dist._catalog) || md.getVolunteerForUser(user).length>0::
-							<a href="/distribution/list/::dist.id::"><i class="icon icon-print"></i> ::_("Distribution list")::</a>
-							::end::
-						</div>
-		
-						::end::
-	
-					::end::
-				::end::
 			</div>
-			::elseif(hasShopMode)::
+			::else::
 			<div class="content orders">
 				<!-- products previews-->
 				::foreach p md.getProductsExcerpt(8)::
@@ -205,8 +98,7 @@ $$browserDetection()
 			</div>
 			::end::
 
-			::if(hasShopMode)::
-			<!-- no var order && shopmode, display order btn -->
+			<!-- no var order, display order btn -->
 			<div class="content orders">
 				::set status = md.getState()::
 				<div class="text-center">
@@ -238,7 +130,6 @@ $$browserDetection()
 					::end::
 				</div>
 			</div>
-			::end::
 		::end::
 		<!--=== end VAR order block ===-->
 

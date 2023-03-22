@@ -30,8 +30,7 @@ class Transaction extends controller.Controller
 		var t = sugoi.i18n.Locale.texts;
 
 		var group = app.user.getGroup();
-		var hasShopMode = group.hasShopMode();
-			var returnUrl = '/member/payments/' + user.id;
+		var returnUrl = '/member/payments/' + user.id;
 	
 		var form = new sugoi.form.Form("payement");
 
@@ -46,12 +45,9 @@ class Transaction extends controller.Controller
 		form.addElement(new sugoi.form.elements.StringSelect("Mtype", t._("Payment type"), out, null, true));
 		
 		//related operation
-		if( hasShopMode ) {
-
-			var unpaid = db.Operation.manager.search($user == user && $group == group && $type != Payment ,{limit:20,orderBy:-date});
-			var data = unpaid.map(function(x) return {label:x.name, value:x.id}).array();
-			form.addElement(new sugoi.form.elements.IntSelect("unpaid", t._("As a payment for :"), data, null, false));
-		}
+		var unpaid = db.Operation.manager.search($user == user && $group == group && $type != Payment ,{limit:20,orderBy:-date});
+		var data = unpaid.map(function(x) return {label:x.name, value:x.id}).array();
+		form.addElement(new sugoi.form.elements.IntSelect("unpaid", t._("As a payment for :"), data, null, false));
 	
 		if (form.isValid()){
 
@@ -66,17 +62,14 @@ class Transaction extends controller.Controller
 			operation.group = group;
 			operation.user = user;
 			
-			if( hasShopMode ) {
-
-				if (form.getValueOf("unpaid") != null){
-					var t2 = db.Operation.manager.get(form.getValueOf("unpaid"));
-					operation.relation = t2;
-					if (t2.amount + operation.amount == 0) {
-						operation.pending = false;
-						t2.lock();
-						t2.pending = false;
-						t2.update();
-					}
+			if (form.getValueOf("unpaid") != null){
+				var t2 = db.Operation.manager.get(form.getValueOf("unpaid"));
+				operation.relation = t2;
+				if (t2.amount + operation.amount == 0) {
+					operation.pending = false;
+					t2.lock();
+					t2.pending = false;
+					t2.update();
 				}
 			}
 			
@@ -97,7 +90,6 @@ class Transaction extends controller.Controller
 		if(app.user==null){
 			throw Redirect("/");
 		}
-		var hasShopMode = operation.group.hasShopMode();
 		var returnUrl = '/member/payments/' + operation.user.id;
 
 		if ( !app.user.canAccessMembership() || operation.group.id != app.user.getGroup().id ) {
@@ -115,31 +107,25 @@ class Transaction extends controller.Controller
 		form.addElement(new form.CagetteDatePicker("date", t._("Date"), operation.date, NativeDatePickerType.date, true));
 
 		//related operation
-		if ( hasShopMode ) {
-
-			var unpaid = db.Operation.manager.search( $user == operation.user && $group == operation.group && $type != Payment ,{limit:20,orderBy:-date});
-			var data = unpaid.map(function(x) return {label:x.name, value:x.id}).array();
-			if (operation.relation != null) data.push({label:operation.relation.name,value:operation.relation.id});
-			form.addElement(new sugoi.form.elements.IntSelect("unpaid", t._("As a payment for :"), data, operation.relation!=null ? operation.relation.id : null, false));
-		}
+		var unpaid = db.Operation.manager.search( $user == operation.user && $group == operation.group && $type != Payment ,{limit:20,orderBy:-date});
+		var data = unpaid.map(function(x) return {label:x.name, value:x.id}).array();
+		if (operation.relation != null) data.push({label:operation.relation.name,value:operation.relation.id});
+		form.addElement(new sugoi.form.elements.IntSelect("unpaid", t._("As a payment for :"), data, operation.relation!=null ? operation.relation.id : null, false));
 		
 		if ( form.isValid() ) {
 
 			form.toSpod( operation );
 			operation.pending = false;
 			
-			if( hasShopMode ) {
+			if ( form.getValueOf("unpaid") != null ) {
 
-				if ( form.getValueOf("unpaid") != null ) {
-
-					var t2 = db.Operation.manager.get(form.getValueOf("unpaid"));
-					operation.relation = t2;
-					if (t2.amount + operation.amount == 0) {
-						operation.pending = false;
-						t2.lock();
-						t2.pending = false;
-						t2.update();
-					}
+				var t2 = db.Operation.manager.get(form.getValueOf("unpaid"));
+				operation.relation = t2;
+				if (t2.amount + operation.amount == 0) {
+					operation.pending = false;
+					t2.lock();
+					t2.pending = false;
+					t2.update();
 				}
 			}
 
@@ -160,8 +146,6 @@ class Transaction extends controller.Controller
 		if(app.user==null){
 			throw Redirect("/");
 		}
-		var hasShopMode = operation.group.hasShopMode();
-
 		var returnUrl = '/member/payments/' + operation.user.id;
 
 		if ( !app.user.canAccessMembership() || operation.group.id != app.user.getGroup().id ) throw Error("/member/payments/" + operation.user.id, t._("Action forbidden"));	

@@ -93,21 +93,13 @@
 	</div>
 </div>
 
-::set hasShopMode = user.getGroup().hasShopMode()::
-
 <div class="col-md-8">
 	<h3>
-		::if hasShopMode::
-			::_("Orders")::
-		::else::
-			Contrats
-		::end::
+		::_("Orders")::
 	</h3>
 
-	
-
 		<!-- VARYING ORDERS FOR SHOP MODE -->
-		::if hasShopMode && distribs.length > 0::
+		::if distribs.length > 0::
 		<div class="article">
 			<h4><i class="icon icon-basket"></i>  Commandes variables</h4>
 

@@ -329,12 +329,6 @@ class PCatalogService{
 		//create contract		
 		var contract = syncCatalog(null,pcatalog,contact,clientGroup);
 
-		//if CSA contract with constant orders
-		if(contractType==db.Catalog.TYPE_CONSTORDERS && !clientGroup.hasShopMode()){
-			contract.type = db.Catalog.TYPE_CONSTORDERS;
-			contract.update();
-		}
-		
 		//create remoteCatalog record
 		var rc = link(pcatalog,contract);
 		

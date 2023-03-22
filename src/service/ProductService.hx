@@ -107,15 +107,6 @@ class ProductService{
 		//stock mgmt ?
 		if (!product.catalog.hasStockManagement()){
 			f.removeElementByName('stock');	
-		} else {
-			if(!product.catalog.group.hasShopMode()){
-				//manage stocks by distributions for CSA contracts
-				var stock = f.getElement("stock");
-				stock.label = "Stock (par distribution)";				 
-				if(product.stock!=null){
-					stock.value = Math.floor( product.stock / product.catalog.getDistribs(false).length );
-				}		
-			}
 		}
 
 		var group = product.catalog.group;

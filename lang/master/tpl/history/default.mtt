@@ -1,20 +1,12 @@
 ::use 'design.mtt'::
 <div class="col-md-8">
 
-	::set hasShopMode = user.getGroup().hasShopMode()::
-
 	<h2>
-		::if hasShopMode::
-			Historique de commande
-		::else::
-			Mes contrats
-		::end::
+		Historique de commande
 	</h2>
 	
-	
-
 		<!-- VARYING ORDERS FOR SHOP MODE -->
-		::if hasShopMode && distribs.length > 0::
+		::if distribs.length > 0::
 		<div class="article">
 			<h4><i class="icon icon-basket"></i>  Commandes variables</h4>
 	
@@ -81,34 +73,18 @@
 
 <div class="col-md-4">
 	
-	::if hasShopMode::
 	<h3>::_("Payments")::</h3>
 	<div  class="article">
 		<span style="font-size:1.3em;">
-			
-			::if hasShopMode::
-				::_("Balance"):: :
-				::if userGroup.balance < 0:: 
-					::set color = "C00"::
-				::else::
-					::set color = "0C0"::
-				::end::
-				<span style="color:#::color::;">
-					::userGroup.balance:: ::currency()::
-				</span>
+			::_("Balance"):: :
+			::if userGroup.balance < 0:: 
+				::set color = "C00"::
 			::else::
-				Solde global :
-				::set background = ""::
-				::if userGroup.balance < 0::
-					::set background = "redBg"::
-				::else::
-					::set background = "greenBg"::
-				::end::
-				<span style="color: white;font-weight:bold;" class="::background::">
-					::formatNum(userGroup.balance)::&nbsp;::currency()::
-				</span>
+				::set color = "0C0"::
 			::end::
-			
+			<span style="color:#::color::;">
+				::userGroup.balance:: ::currency()::
+			</span>
 		</span>
 		
 		<span style="margin-left:30px;">
