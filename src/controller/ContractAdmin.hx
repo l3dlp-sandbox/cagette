@@ -94,8 +94,6 @@ class ContractAdmin extends Controller
 
 		var group = catalog.group;
 		var currentContact = catalog.contact;
-		var previousOrderStartDays = catalog.orderStartDaysBeforeDistrib;
-		var previousOrderEndHours = catalog.orderEndHoursBeforeDistrib;
 		var messages = new Array<String>() ;
 
 		var form = CatalogService.getForm(catalog);

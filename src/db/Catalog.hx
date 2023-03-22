@@ -31,27 +31,11 @@ class Catalog extends Object
 	public var percentageValue : SNull<SFloat>; 		//fees percentage
 	public var percentageName : SNull<SString<64>>;		//fee name
 	
-	public var orderStartDaysBeforeDistrib : SNull<SInt>;
-	public var orderEndHoursBeforeDistrib : SNull<SInt>;
-
-	// public var requiresOrdering : SNull<Bool>;			// ordering at each distrib is a compulsory
-	public var distribMinOrdersTotal : SFloat;
-	public var catalogMinOrdersTotal : SFloat;
-	// public var allowedOverspend : SNull<SFloat>;  //removed 
-
-	//absences in CSA groups
-	public var absentDistribsMaxNb : SInt;
-	public var absencesStartDate : SNull<SDateTime>;
-	public var absencesEndDate : SNull<SDateTime>;
-
-	@:skip var cache_hasActiveDistribs : Bool;
-
 	public function new() 
 	{
 		super();
 		flags = cast 0;
 		distributorNum = 0;	
-		orderEndHoursBeforeDistrib = 24;	
 		flags.set(UsersCanOrder);		
 	}	
 	
@@ -106,10 +90,6 @@ class Catalog extends Object
 	
 	public function hasStockManagement():Bool {
 		return flags.has(StockManagement);
-	}
-
-	public function hasConstraints() : Bool {
-		return this.distribMinOrdersTotal>0  || this.catalogMinOrdersTotal>0;
 	}
 
 	/**
@@ -309,15 +289,6 @@ class Catalog extends Object
 			"percentageName" 	=> t._("Fees label"),
 			"contact" 			=> t._("Contact"),
 			"vendor" 			=> t._("Farmer"),
-			"orderStartDaysBeforeDistrib" 	=> "Ouverture des commandes (nbre de jours avant distribution)",
-			"orderEndHoursBeforeDistrib" 	=> "Fermeture des commandes (nbre d'heures avant distribution)",
-			"requiresOrdering" 				=> "Commande obligatoire à chaque distribution",
-			"distribMinOrdersTotal" 		=> "Minimum de commande par distribution (en €)",
-			"catalogMinOrdersTotal" 		=> /*"Provision minimum initiale (en €)"*/"Minimum de commandes sur la durée du contrat (en €)",
-			// "allowedOverspend" 				=> "Dépassement autorisé (en €)",
-			"absentDistribsMaxNb" 			=> "Nombre maximum d'absences",
-			"absencesStartDate" 			=> "Date de début de la période d'absences",
-			"absencesEndDate" 				=> "Date de fin de la période d'absences",
 			"hasPayements" 					=> "Gestion des paiements",
 		];
 	}

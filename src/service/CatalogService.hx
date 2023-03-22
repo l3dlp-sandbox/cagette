@@ -26,21 +26,10 @@ class CatalogService{
 		form.removeElement(form.getElement("type"));
 		form.removeElement(form.getElement("vendorId"));
 
-		//not in this form
-		form.removeElement(form.getElement("absentDistribsMaxNb"));
-		form.removeElement(form.getElement("absencesStartDate"));
-		form.removeElement(form.getElement("absencesEndDate"));
-
 		//2022-02-01 remove percentage on orders
 		form.removeElementByName("percentageValue");
 		form.removeElementByName("percentageName");
 		untyped form.getElement("flags").excluded = [2];// remove "PercentageOnOrders" flag
-		
-		form.removeElement(form.getElement("orderStartDaysBeforeDistrib"));
-		form.removeElement(form.getElement("orderEndHoursBeforeDistrib"));
-		// form.removeElement(form.getElement("requiresOrdering"));
-		form.removeElement(form.getElement("distribMinOrdersTotal"));
-		form.removeElement(form.getElement("catalogMinOrdersTotal"));			
 		
 		//For all types and modes
 		if ( catalog.id != null ) {
