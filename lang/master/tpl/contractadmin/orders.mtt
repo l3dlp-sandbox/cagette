@@ -10,7 +10,7 @@
 		
 		::if(!catalog.isConstantOrdersCatalog() && !catalog._group.isDispatch())::
 		<a class="btn btn-default btn-sm"
-			onclick="_Cagette.initOrderBox(null,::multiDistribId::,::distribution._catalog.id::,::catalog.type::,'::escapeJS(hDate(distribution.date))::','::escapeJS(distribution._place.toString())::',null,'::user.getGroup().currency::', ::user.getGroup().hasPayments()::, '/contractAdmin/orders/::catalog.id::?d=::distribution.id::', ::user.getGroup().hasCagette2()::, ::user.getGroup().id::)">
+			onclick="_Cagette.initOrderBox(null,::multiDistribId::,::distribution._catalog.id::,::catalog.type::,'::escapeJS(hDate(distribution.date))::','::escapeJS(distribution._place.toString())::',null,'::user.getGroup().currency::', ::user.getGroup().hasPayments()::, '/contractAdmin/orders/::catalog.id::?d=::distribution.id::', true, ::user.getGroup().id::)">
 			<i class="icon icon-plus"></i>
 			::_("New order")::
 		</a>							
@@ -69,7 +69,7 @@
 					<td>
 						::if(!catalog.isConstantOrdersCatalog())::
 						<a class="btn btn-default btn-xs"
-							onclick="_Cagette.initOrderBox(::basket.userId::,::multiDistribId::,::distribution._catalog.id::,::distribution._catalog.type::,'::escapeJS(hDate(distribution.date))::','::escapeJS(distribution._place.toString())::','::escapeJS(basket._user.getName())::','::user.getGroup().currency::', ::user.getGroup().hasPayments()::, '/contractAdmin/orders/::c.id::?d=::distribution.id::', ::user.getGroup().hasCagette2()::, ::user.getGroup().id::, ::basket.id::)">
+							onclick="_Cagette.initOrderBox(::basket.userId::,::multiDistribId::,::distribution._catalog.id::,::distribution._catalog.type::,'::escapeJS(hDate(distribution.date))::','::escapeJS(distribution._place.toString())::','::escapeJS(basket._user.getName())::','::user.getGroup().currency::', ::user.getGroup().hasPayments()::, '/contractAdmin/orders/::c.id::?d=::distribution.id::', true, ::user.getGroup().id::, ::basket.id::)">
 							<i class="icon icon-edit"></i>
 							::_("Edit")::
 						</a>

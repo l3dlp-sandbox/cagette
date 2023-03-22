@@ -70,7 +70,7 @@ class Offer extends controller.Controller
 
 		if (f.isValid()) {
 			
-			var vatChanged = o.vat!=f.getValueOf("vat");
+			// var vatChanged = o.vat!=f.getValueOf("vat");
 			
 			f.toSpod(o); 
 
@@ -102,19 +102,19 @@ class Offer extends controller.Controller
 			}
 
 			//cannot change VAT if product is already sold.
-			if(vatChanged){
-				var pcatalogs = ObjectListTool.deduplicate(coffers.map(co->co.catalog));
-				var rcs = pcatalogs.map( cat -> RemoteCatalog.getFromPCatalog(cat) ).flatten();
-				var catalogs = rcs.map( rc -> rc.getContract() );
-				var products = catalogs.map( c -> c.getProducts(false) ).flatten();
-				products = products.filter(p -> p.ref==o.ref);
+			// if(vatChanged){
+			// 	var pcatalogs = ObjectListTool.deduplicate(coffers.map(co->co.catalog));
+			// 	var rcs = pcatalogs.map( cat -> RemoteCatalog.getFromPCatalog(cat) ).flatten();
+			// 	var catalogs = rcs.map( rc -> rc.getContract() );
+			// 	var products = catalogs.map( c -> c.getProducts(false) ).flatten();
+			// 	products = products.filter(p -> p.ref==o.ref);
 
-				//check if product is in orders
-				var userOrders = products.map(p -> db.UserOrder.manager.search($product==p,false)).flatten();
-				if(userOrders.length>0){
-					throw Error(sugoi.Web.getURI(),"Vous ne pouvez plus changer le taux de TVA de ce produit car il a déjà été commandé. Pour utiliser un nouveau taux de TVA, créez une nouvelle offre.");
-				}
-			}
+			// 	//check if product is in orders
+			// 	var userOrders = products.map(p -> db.UserOrder.manager.search($product==p,false)).flatten();
+			// 	if(userOrders.length>0){
+			// 		throw Error(sugoi.Web.getURI(),"Vous ne pouvez plus changer le taux de TVA de ce produit car il a déjà été commandé. Pour utiliser un nouveau taux de TVA, créez une nouvelle offre.");
+			// 	}
+			// }
 
 			o.update();
 			throw Ok('/p/pro/product#product'+o.product.id,'L\'offre a été mise à jour');

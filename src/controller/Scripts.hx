@@ -1,5 +1,6 @@
 package controller;
 
+import service.PaymentService;
 import payment.Check;
 import payment.Cash;
 
@@ -45,7 +46,40 @@ class Scripts extends Controller
                 b.update();
             }
         }
+	}
 
+    /**
+        recompute payment ops
+    **/
+    public function doRecomputeOps(from:Date,to:Date){
+
+		printTitle("Recompute ops from "+from.toString()+" to "+to.toString());
+        for(g in db.Group.manager.search($id>0,false)){
+            if(!g.hasShopMode()) continue; //no AMAPs
+            if(!g.hasPayments()) continue;
+            var dids = db.MultiDistrib.getFromTimeRange( g , from , to  ).map(d -> d.id);
+            print("group "+g.id+" has "+dids.length+" mds");
+            //get not validated baskets
+            var baskets = db.Basket.manager.search( $multiDistribId in dids);
+            baskets = baskets.filter( b -> b.status == "CONFIRMED");
+            
+            for ( b in baskets){
+                print('basket #${b.id}');
+                
+                
+                var orderOp = b.getOrderOperation(false);
+                if(orderOp == null){
+                    PaymentService.makeOrderOperation(b);
+                }else{
+                    PaymentService.updateOrderOperation(orderOp,b.getOrders(),b);
+                }
+
+                if(b.getPaymentsOperations().length==0){
+			        service.PaymentService.makePaymentOperation(b.user,b.getGroup(), payment.OnTheSpotPayment.TYPE, b.total, "paiement", orderOp );	
+                }
+
+            }
+        }
 	}
 
     /**
@@ -82,7 +116,7 @@ class Scripts extends Controller
     /**
         2023-02-01 enable massively cagette2 option + remove percentage on catalogs
     **/
-    function doCagette2(){
+    /*function doCagette2(){
 
 		var groups = 0;
 		var groupsWithPercentage = 0;
@@ -126,7 +160,7 @@ class Scripts extends Controller
                 g.update();
             }
         }
-	}
+	}*/
 
      /**
         2023-02-01 no more MoneyPot payment
@@ -165,7 +199,6 @@ class Scripts extends Controller
 
             //break linkage
             for( cat in g.getContracts() ){
-
                 var rc = connector.db.RemoteCatalog.getFromContract(cat,true);
 		        if(rc != null ){                    
                     rc.delete();

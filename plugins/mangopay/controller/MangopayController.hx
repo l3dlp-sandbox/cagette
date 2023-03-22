@@ -170,12 +170,10 @@ class MangopayController extends controller.Controller
 			view.status = "success";
 			var orders = MangopayPlugin.processOrder(tmpBasket,payIn,type);
 
-			//if cagette2 , go to confirmation screen
+			//go to confirmation screen
 			if(orders.length>0){
 				var basket = orders[0].basket;
-				if(basket.multiDistrib.group.hasCagette2()){
-					throw Redirect('/shop/basket/${basket.id}/#/confirmed?payment-completed=1');
-				}
+				throw Redirect('/shop/basket/${basket.id}/#/confirmed?payment-completed=1');
 			}
 			
 		}else{

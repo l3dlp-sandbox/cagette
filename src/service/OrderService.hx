@@ -99,6 +99,7 @@ class OrderService
 		order.product = product;
 		order.quantity = quantity;
 		order.productPrice = product.price;
+		order.vatRate = product.vat;
 		if ( product.catalog.hasPercentageOnOrders() ){
 			order.feesRate = product.catalog.percentageValue;
 		}
@@ -647,54 +648,6 @@ class OrderService
 			tb = makeTmpBasket(user,distrib);
 			App.current.session.data.tmpBasketId = tb.id;
 			return tb;
-		}
-	}
-
-	/**
-		Action triggered from controllers to check if we have a tmpBasket to validate
-	**/
-	public static function checkTmpBasket(user:db.User,group:db.Group){
-
-		if (group.hasCagette2()) {
-			return;
-		}
-
-		//check for a basket created when logged off ( tmpBasketId stored in session )
-		var tmpBasket = getTmpBasketFromSession(group);
-		if(tmpBasket!=null){
-			if(tmpBasket.user!=null && user!=null){
-				//same user ?
-				if(tmpBasket.user.id!=user.id) tmpBasket = null;
-
-			}else if(tmpBasket.user==null && user!=null){
-				//attribute to a user
-				tmpBasket.update();
-				tmpBasket.user = user;
-				tmpBasket.update();
-			}
-		}
-		
-		//check for a tmpBasket attached to a user
-		if(tmpBasket==null && user!=null ){
-			tmpBasket = getTmpBasket(user,group);
-		}
-		
-		if(tmpBasket!=null){
-
-			//basket is empty
-			if(tmpBasket.getData().products.length==0){
-				tmpBasket.lock();
-				tmpBasket.delete();
-				return;
-			}
-
-			//basket is related to a closed distribution
-			if(tmpBasket.multiDistrib.getOrdersEndDate(true).getTime() < Date.now().getTime()){
-				return;
-			}
-			
-			throw sugoi.ControllerAction.ControllerAction.RedirectAction("/transaction/tmpBasket/"+tmpBasket.id);
-			
 		}
 	}
 

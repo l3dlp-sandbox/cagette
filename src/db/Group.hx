@@ -23,7 +23,7 @@ enum GroupFlags {
 
 enum BetaFlags{
 	___ShopV2; 		//shop V2 @deprecated
-	Cagette2;		//BETA Cagette 2.0
+	___Cagette2;	//BETA Cagette 2.0 @deprecated
 	Dispatch;		//BETA DIspatch enabled group
 }
 
@@ -137,27 +137,6 @@ class Group extends Object
 		Cliquez sur \"calendrier des permanences\" pour vous inscrire !";
 		vacantVolunteerRolesMailDaysBeforeDutyPeriod = 7;
 		
-	}
-
-	/**
-		vérifie que le groupe est bien compatible cagette 2
-	**/
-	public function checkIsolate(){
-	
-		// if(this.hasCagette2()){
-			// var noCagette2Vendors = getVendors().filter(v->!v.betaFlags.has(db.Vendor.VendorBetaFlags.Cagette2));
-			// if ( noCagette2Vendors.length>0 ){
-			// 	var name = noCagette2Vendors.map(v -> v.name).join(", ");
-			// 	throw sugoi.ControllerAction.ControllerAction.ErrorAction("/user/choose",'Le groupe "${this.name}" a l\'option Cagette2 activée et ne peut pas fonctionner avec des producteurs qui n\'ont pas activé cette option ($name). Contactez nous sur <b>'+App.current.getTheme().supportEmail+'</b> pour régler le problème.');
-			// }
-
-			// var catalogs = this.getActiveContracts();
-			// if( catalogs.count(c -> c.percentageValue>0) > 0){
-			// 	throw sugoi.ControllerAction.ControllerAction.ErrorAction("/user/choose",'Le groupe "${this.name}" a l\'option Cagette2 activée et ne peut pas fonctionner avec des catalogues qui ont des frais. Contactez le support pour débloquer la situation.');
-			// }
-			
-			
-		// }
 	}
 
 	/**
@@ -515,20 +494,15 @@ class Group extends Object
 			return haxe.Json.parse(allowedPaymentsType);
 		}catch(e:Dynamic){
 			return [];
-		}
-		
+		}		
 	}
 
 	public function isDispatch():Bool{
 		return betaFlags.has(Dispatch);
 	}
 
-	public function hasCagette2(){
-
-		// return betaFlags.has(BetaFlags.Cagette2);
-
-		//since 2023-02-01 all shopMode groups are cagette2
-		return hasShopMode();
+	public function isDisabled():Bool{
+		return disabled!=null;
 	}
 
 	/**

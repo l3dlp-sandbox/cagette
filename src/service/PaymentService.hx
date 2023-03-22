@@ -79,43 +79,20 @@ class PaymentService {
 	/**
 	 * Create a new order operation
 	 */
-	 public static function makeOrderOperation( orders : Array<db.UserOrder>, basket : db.Basket ) {
+	 public static function makeOrderOperation( basket : db.Basket ) {
 		
-		if (orders == null) throw "orders are null";
-		if (orders.length == 0) throw "no orders";
-		if (orders[0].user == null ) throw "no user in order";
-
-		//check that we dont have a mix of variable and CSA
-		var catalog = orders[0].product.catalog;
-		for (o in orders) {
-			if (o.product.catalog.type != catalog.type)
-				throw new Error("Cannot record an order operation with catalogs of different types");
-		}
+		if (basket == null ) throw "no basket";
 
 		var t = sugoi.i18n.Locale.texts;
 
-		var _amount = 0.0;
-		for (o in orders) {
-			var a = o.quantity * o.productPrice;
-			//plus fees
-			a = a + a * (o.feesRate / 100);
-			//neko float bug
-			a = Std.string(a).parseFloat();
-			//round
-			_amount += Math.round(a*100)/100;
-		}
+		var _amount = basket.getOrdersTotal();
 
 		var op = new db.Operation();
-		var user = orders[0].user;
-		var group = catalog.group;
+		var user = basket.user;
+		var group = basket.getGroup();
+		var orders = basket.getOrders();
 		
-		if (basket == null)
-			throw new Error("variable orders should have a basket");
-		if (basket.user.id != user.id)
-			throw new Error("user and basket mismatch");
-
-		// varying orders
-		var date = App.current.view.dDate(orders[0].distribution.date);
+		var date = App.current.view.dDate(basket.multiDistrib.distribStartDate);
 		op.name = t._("Order for ::date::", {date: date});
 		op.amount = 0 - _amount;
 		op.date = Date.now();
@@ -124,7 +101,6 @@ class PaymentService {
 		op.user = user;
 		op.group = group;
 		op.pending = false;
-
 		op.insert();
 		updateUserBalance(op.user, op.group);
 		return op;
@@ -149,19 +125,23 @@ class PaymentService {
 			_amount += Math.round(a*100)/100;
 		}
 
-		var contract = orders[0].product.catalog;
-		if (contract.type == db.Catalog.TYPE_CONSTORDERS) {
-			// Constant orders
-			var dNum = contract.getDistribs(false).length;
-			op.name = "" + contract.name + " (" + contract.vendor.name + ") " + dNum + " " + t._("deliveries");
-			op.amount = dNum * (0 - _amount);
-		} else {
-			if (basket == null)
-				throw "varying contract orders should have a basket";
-			op.amount = 0 - _amount;
+		if(orders.length > 0){
+			var contract = orders[0].product.catalog;
+			if (contract.type == db.Catalog.TYPE_CONSTORDERS) {
+				// Constant orders
+				var dNum = contract.getDistribs(false).length;
+				op.name = "" + contract.name + " (" + contract.vendor.name + ") " + dNum + " " + t._("deliveries");
+				op.amount = dNum * (0 - _amount);
+			} else {
+				if (basket == null)
+					throw "varying contract orders should have a basket";
+				op.amount = 0 - _amount;
+			}
+	
+		}else{
+			op.amount = 0;
 		}
-
-		// op.date = Date.now();	//leave original date
+		
 		op.update();
 		service.PaymentService.updateUserBalance(op.user, op.group);
 		return op;
@@ -243,7 +223,7 @@ class PaymentService {
 			if (existing != null) {
 				op = updateOrderOperation(existing, allOrders, basket);
 			} else {
-				op = makeOrderOperation(allOrders, basket);
+				op = makeOrderOperation(basket);
 			}
 			out.push(op);
 

@@ -16,8 +16,7 @@ class Product extends Object
 	
 	@hideInForms  @:relation(catalogId) public var catalog : db.Catalog;
 	
-	//prix TTC
-	public var price : SFloat;
+	public var price : SFloat;	
 	public var vat : SFloat;			//VAT rate in percent
 	
 	public var desc : SNull<SText>;

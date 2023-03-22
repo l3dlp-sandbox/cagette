@@ -1,14 +1,13 @@
 ::use 'plugin/pro/company/design.mtt'::
 	
-    <h3>Comptabilité</h3>
-
     <div id="accounting-container"></div>
 
     <script>
     document.addEventListener("DOMContentLoaded", function(event) {
-        neo.createNeoModule("accounting-container", "vendor-accounting");
+        neo.createNeoModule("accounting-container", "vendor-accounting", {
+            vendorId: ::vendor.id::
+        });
     });
     </script>
-
 	
 ::end::

@@ -1,5 +1,6 @@
 package controller.admin;
 
+import pro.db.CagettePro;
 import db.Graph;
 import haxe.Json;
 import sugoi.form.elements.TextArea;
@@ -36,15 +37,9 @@ class Admin extends Controller {
 		view.now = Date.now();
 		view.ip = Web.getClientIP();
 
-		// db.Group.manager.count($betaFlags.has(Cagette2));
-		// db.Group.manager.count($betaFlags.has(Dispatch));
-
-		// tmp deploiement de l'option cagette2
 		var groups = db.Group.manager.unsafeCount('SELECT COUNT(g.id) FROM `Group` g, GroupStats gs WHERE gs.groupId=g.id AND gs.active=1');
-		var cg2groups = db.Group.manager.unsafeCount('SELECT COUNT(g.id) FROM `Group` g, GroupStats gs WHERE betaFlags & 2 != 0 AND gs.groupId=g.id AND gs.active=1');
 		var dispatchGroups = db.Group.manager.unsafeCount('SELECT COUNT(g.id) FROM `Group` g, GroupStats gs WHERE betaFlags & 4 != 0 AND gs.groupId=g.id AND gs.active=1');
 		view.groups = groups;
-		view.cg2groups = cg2groups;
 		view.dispatchGroups = dispatchGroups;
 
 		if (app.params.get("reloadSettings") == "1") {
@@ -486,6 +481,11 @@ class Admin extends Controller {
 		f.addElement(new sugoi.form.elements.StringSelect("type", "Type de groupe", data, defaultType, true, ""));
 		f.addElement(new sugoi.form.elements.StringInput("zipCodes", "Saisir des numéros de département séparés par des virgules ou laisser vide."));
 		f.addElement(new sugoi.form.elements.StringSelect("country", "Pays", db.Place.getCountries(), "FR", true, ""));
+		
+
+		var data = [{label: "Tous", value: "any"},{label: "Paiement en ligne Stripe", value: "stripe"}, {label: "Paiement sur place", value: "onthespot"},{label: "Paiement en ligne Mangopay", value: "mangopay"}];
+		f.addElement(new sugoi.form.elements.StringSelect("payment", "Moyen de paiement", data, "table", true, ""));
+
 		var data = [
 			{label: "Actifs", value: "active"},
 			{label: "Inactifs", value: "inactive"},
@@ -543,6 +543,20 @@ class Admin extends Controller {
 			if (f.getValueOf("groupName") != null) {
 				sql_where_and.push('g.name like "%${f.getValueOf("groupName")}%"');
 			}
+
+			//payment
+			if (f.getValueOf("payment") != null && f.getValueOf("payment") != "any") {
+				switch (f.getValueOf("payment")){
+					case "stripe" : sql_where_and.push('g.allowedPaymentsType LIKE "%stripe%"');
+					case "onthespot" : sql_where_and.push('( g.allowedPaymentsType LIKE "%cash%" OR g.allowedPaymentsType LIKE "%check%" OR g.allowedPaymentsType LIKE "%card-terminal%" )');
+					case "mangopay" : sql_where_and.push('g.allowedPaymentsType LIKE "%mangopay-ec%"');
+				}
+				
+			}
+			
+
+
+
 		} else {
 			// default settings
 			sql_where_and.push('active=1');
@@ -728,8 +742,8 @@ class Admin extends Controller {
 		var year = now.getFullYear();
 		var month = now.getMonth();
 
-		var from = new Date(year, month, 1, 0, 0, 0);
-		var to = new Date(year, month + 1, 0, 23, 59, 59);
+		var from = new Date(year, month-1, 1, 0, 0, 0);
+		var to 	 = new Date(year, month  , 1, 0, 0, 0);
 		var tf = new tools.Timeframe(from,to);
 
 		view.tf = tf;
@@ -741,10 +755,6 @@ class Admin extends Controller {
 				var group = md.group;
 
 				if(!group.hasShopMode()) continue;
-
-				var baskets = md.getBaskets();
-				var turnover = 0.0;
-				for(b in baskets) turnover += b.total;
 
 				var contactType = "";
 				if(group.contact!=null){
@@ -759,26 +769,45 @@ class Admin extends Controller {
 					contactType = "NONE";
 				}
 
-				data.push({
-					id: md.id,
-					marketId : group.id,
-					url : "https://app.cagette.net/p/hosted/group/"+group.id,
-					contactType:contactType,
-					membersNum : group.getMembersNum(),
-					date : md.distribStartDate.toString().substr(0,10),
-					zipCode : md.place.zipCode,
-					address : md.place.address1,
-					city : md.place.city,
-					turnover : Math.round(turnover),
-					basketNums : baskets.length,
-					vendorsInGroup : group.getActiveVendors().length,
-					// vendorsInDistrib: md.getVendors().length,
-				});
+				var baskets = md.getBaskets();
+				var turnover = 0.0;
+				
+				for( d in md.getDistributions()){
+
+					var v = d.catalog.vendor;
+					var cpro = v.getCpro();
+					var vendorStatus = cpro==null ? "Invited" : Std.string(cpro.offer);
+
+					data.push({
+						distributionId: md.id,
+						marketId : group.id,
+						url : "https://app.cagette.net/p/hosted/group/"+group.id,
+						vendorId : v.id,
+						vendorName : v.name,
+						vendorProfession : v.getProfession(),
+						vendorStatus : vendorStatus,
+						
+						contactType : contactType,
+						membersNum : group.getMembersNum(),
+						
+						day : md.distribStartDate.getDate(),
+						month : md.distribStartDate.getMonth()+1,
+						year : md.distribStartDate.getFullYear(),
+
+						zipCode : md.place.zipCode.substr(0,2),
+						address : md.place.address1,
+						city : md.place.city,
+						turnover : Math.round(d.getTurnOver()),
+						basketNums : baskets.length,
+						vendorsInGroup : group.getActiveVendors().length,						
+					});
+
+				}
 
 				baskets = [];
 				
 			}
-			var headers = ["id","marketId","url","contactType","membersNum","date","zipCode","address","city","turnover","basketNums","vendorsInGroup"];
+			var headers = ["distributionId","marketId","url","vendorId","vendorName","vendorStatus","vendorProfession","basketNums","contactType","membersNum","day","month","year","zipCode","address","city","turnover"];
 			sugoi.tools.Csv.printCsvDataFromObjects(data, headers, "Distributions");
 		}
 	}

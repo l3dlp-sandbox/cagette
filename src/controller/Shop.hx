@@ -32,11 +32,6 @@ class Shop extends Controller
 			}
 		}
 
-		//if not cagette2
-		if(args!=null && !args.continueShopping){
-			service.OrderService.checkTmpBasket(app.user,app.getCurrentGroup());			
-		}
-
 		view.category = 'shop';
 		view.md = md;
 		view.tmpBasketId = app.session.data.tmpBasketId;
@@ -284,10 +279,6 @@ class Shop extends Controller
 		var group = app.getCurrentGroup();
 		if(group==null){
 			throw Redirect("/");
-		}
-
-		if (!group.hasCagette2()) {
-			throw Redirect("/transaction/tmpBasket/"+basket.id);
 		}
 
 		view.group = app.getCurrentGroup();

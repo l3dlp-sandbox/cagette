@@ -47,6 +47,7 @@ class GraphService{
                 case "basket"   : service.GraphService.baskets(_from,_to);
                 case "turnover" : service.GraphService.turnover(_from,_to);
                 case "mangopay" : service.GraphService.mangopay(_from,_to);
+                case "stripe" : service.GraphService.stripe(_from,_to);
                 
                 default : throw "unknown graph key";
             }           
@@ -80,12 +81,20 @@ class GraphService{
 		return Math.round(value);
     }
 
-    public static  function mangopay(from:Date,to:Date):Int{
-        
+    public static  function mangopay(from:Date,to:Date):Int{        
         var ops = Operation.manager.search($type==OperationType.Payment && $date>=from && $date<to);
 		var value = 0.0;
 		for( op in ops){
 			if(op.getPaymentType()==MangopayECPayment.TYPE) value += op.amount;
+		}
+		return Math.round(value);
+    }
+
+    public static  function stripe(from:Date,to:Date):Int{        
+        var ops = Operation.manager.search($type==OperationType.Payment && $date>=from && $date<to);
+		var value = 0.0;
+		for( op in ops){
+			if(op.getPaymentType()==payment.Stripe.TYPE) value += op.amount;
 		}
 		return Math.round(value);
     }

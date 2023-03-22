@@ -46,7 +46,7 @@ class MangopayPlugin extends PlugIn implements IPlugIn{
 							nav.push({id: "mangopay-kyc", 	name: "Dossier Mangopay", link:"/p/pro/transaction/mangopay/group/module",icon:"book"});
 							nav.push({id: "mangopay-wallet",name: "Paiements Mangopay", 	link:"/p/pro/transaction/mangopay/group/wallet",icon:"bank-transfer"});				
 						}else{
-							nav.push({id: "mangopay-setup",name: "Paiement en ligne", 	link:"/p/pro/transaction/mangopay/group/module", icon:"bank-card"});				
+							// nav.push({id: "mangopay-setup",name: "Paiement en ligne", 	link:"/p/pro/transaction/mangopay/group/module", icon:"bank-card"});				
 						}
 				}
 

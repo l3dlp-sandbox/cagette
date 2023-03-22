@@ -29,49 +29,19 @@ using Std;
 using tools.DateTool;
 
 class Distribution extends Controller {
+
 	public function new() {
 		super();
 		view.category = "distribution";
 	}
 
+	function doDefault(){
+		throw Redirect('/distributions');
+	}
+
 	function checkHasDistributionSectionAccess() {
 		if (!app.user.canManageAllContracts())
 			throw Error('/', t._('Forbidden action'));
-	}
-
-	@tpl('distribution/default.mtt')
-	function doDefault() {
-		if (app.getCurrentGroup().hasCagette2()){
-			throw Redirect('/distributions');
-		}
-		checkHasDistributionSectionAccess();
-
-		var now = Date.now();
-		var from = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 0, 0, 0);
-		var to = DateTools.delta(from, 1000.0 * 60 * 60 * 24 * 28 * 3);
-		var timeframe = new tools.Timeframe(from, to);
-		var group = app.user.getGroup();
-
-		var distribs = db.MultiDistrib.getFromTimeRange(app.user.getGroup(), timeframe.from, timeframe.to);
-
-		if (group.hasPayments() && group.hasShopMode() && app.params.get("_from") == null) {
-			// include unvalidated distribs in the past
-			var unvalidated = db.MultiDistrib.getFromTimeRange(app.user.getGroup(), tools.DateTool.deltaDays(from, -60), tools.DateTool.deltaDays(from, -1));
-			for (md in unvalidated.copy()) {
-				if (!md.isValidated())
-					distribs.unshift(md);
-			}
-		}
-
-		view.distribs = distribs;
-		view.cycles = DistributionCycle.getFromTimeFrame(app.user.getGroup(), timeframe);
-		view.timeframe = timeframe;
-
-		// legal infos alert
-		// var vendors = app.user.getGroup().getActiveVendors();
-		// view.noSiret = vendors.filter(v -> v.companyNumber==null);
-
-		checkToken();
 	}
 
 	/**
@@ -172,97 +142,9 @@ class Distribution extends Controller {
 	 */
 	@tpl('distribution/listByDate.mtt')
 	function doListByDate(date:Date, place:db.Place, ?type:String, ?fontSize:String) {
-		checkHasDistributionSectionAccess();
-
 		var md = db.MultiDistrib.get(date, place);
-		if (md.getGroup().hasCagette2()){
-			throw Redirect('/distribution/export/'+md.id);
-		}
-
-		view.place = place;
-		view.onTheSpotAllowedPaymentTypes = service.PaymentService.getOnTheSpotAllowedPaymentTypes(app.user.getGroup());
-
-		if (type == null) {
-			// display form
-			var f = new sugoi.form.Form("listBydate", null, sugoi.form.Form.FormMethod.GET);
-			f.addElement(new sugoi.form.elements.RadioGroup("type", "Affichage", [
-				{value: "one", label: t._("One person per page")},
-				{value: "contract", label: t._("One person per page sorted by catalog")},
-				{value: "all", label: t._("All")},
-				{value: "allshort", label: t._("All but without prices and totals")},
-			], "all"));
-			f.addElement(new sugoi.form.elements.RadioGroup("fontSize", t._("Font size"), [
-				{value: "S", label: "S"},
-				{value: "M", label: "M"},
-				{value: "L", label: "L"},
-				{value: "XL", label: "XL"},
-			], "S", "S", false));
-
-			view.form = f;
-			app.setTemplate("form.mtt");
-
-			if (f.checkToken()) {
-				var suburl = f.getValueOf("type") + "/" + f.getValueOf("fontSize");
-				var url = '/distribution/listByDate/' + date.toString().substr(0, 10) + "/" + place.id + "/" + suburl;
-				throw Redirect(url);
-			}
-
-			return;
-		} else {
-			view.date = date;
-			view.fontRatio = switch (fontSize) {
-				case "M": 1; // 1em = 16px
-				case "L": 1.25;
-				case "XL": 1.50;
-				default: 0.75;
-			};
-
-			switch (type) {
-				case "one":
-					app.setTemplate("distribution/listByDateOnePage.mtt");
-				case "allshort":
-					app.setTemplate("distribution/listByDateShort.mtt");
-				case "contract":
-					app.setTemplate("distribution/listByDateOnePageContract.mtt");
-			}
-
-			var d1 = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0);
-			var d2 = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59);
-			var catalogs = app.user.getGroup().getActiveContracts(true);
-			var cids = Lambda.map(catalogs, function(c) return c.id);
-			var distribs = db.Distribution.manager.search(($catalogId in cids) && $date >= d1 && $date <= d2 && $place == place, false);
-			var orders = db.UserOrder.manager.search($distributionId in ObjectListTool.getIds(distribs), {orderBy: userId});
-			var orders = service.OrderService.prepare(orders);
-			view.orders = orders;
-			var md = db.MultiDistrib.get(date, place);
-			view.volunteers = md.getVolunteers();
-
-			if (type == "csv") {
-				var data = new Array<Dynamic>();
-
-				for (o in orders) {
-					data.push({
-						"userId": o.userId,
-						"userName": o.userName,
-						"productName": o.productName,
-						"ref": o.product.ref,
-						"catalogName": o.catalogName,
-						"catalogId": o.catalogId,
-						"vendorId": o.product.vendorId,
-						"price": view.formatNum(o.productPrice),
-						"quantity": o.quantity,
-						"fees": view.formatNum(o.fees),
-						"total": view.formatNum(o.total),
-						"paid": o.paid
-					});
-				}
-
-				sugoi.tools.Csv.printCsvDataFromObjects(data, [
-					"userId", "userName", "productName", "ref", "catalogName", "catalogId", "vendorId", "price", "quantity", "fees", "total", "paid"
-				], "Export-commandes-" + date.toString().substr(0, 10) + "-Cagette");
-				return;
-			}
-		}
+		throw Redirect('/distribution/export/'+md.id);
+		
 	}
 
 	/**
@@ -968,15 +850,7 @@ class Distribution extends Controller {
 	 */
 	@tpl('distribution/validate.mtt')
 	public function doValidate(multiDistrib:db.MultiDistrib) {
-		checkHasDistributionSectionAccess();
-		if (multiDistrib.getGroup().hasCagette2()){
-			throw Redirect('/distributions#/'+multiDistrib.id);
-		}
-		checkToken();
-
-		var baskets = multiDistrib.getBaskets();
-		view.baskets = baskets;
-		view.distribution = multiDistrib;
+		throw Redirect('/distributions#/'+multiDistrib.id);		
 	}
 
 	/**
@@ -1546,13 +1420,7 @@ class Distribution extends Controller {
 		view.partiallyPaid = partiallyPaid;
 	}
 
-	/**
 
-
-		@tpl("distribution/userTimeSlot.mtt")
-		function doUserTimeSlot(d:db.MultiDistrib){
-			view.distribution = d;
-	}**/
 	/**
 		See timeslot resolution for admins
 	**/
@@ -1576,11 +1444,6 @@ class Distribution extends Controller {
 	@tpl('distribution/export.mtt')
 	function doExport(multiDistrib: db.MultiDistrib) {
 		checkHasDistributionSectionAccess();
-
-		if (!multiDistrib.getGroup().hasCagette2()){
-			throw Error('/', t._('Forbidden action'));
-		}
-
 		view.multiDistribId = multiDistrib.id;
 	}
 

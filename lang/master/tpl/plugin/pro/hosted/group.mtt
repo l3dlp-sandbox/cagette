@@ -43,18 +43,14 @@
 		</p>
 		<hr/>
 		<h3>Fonctionnalités en beta</h3>
-		
-		Cagette2 : $$bool(::group.hasCagette2()::)<br/>
+				
 		Dispatch : $$bool(::group.isDispatch()::)<br/>
 
 		<p>
 		::if(!group.isDispatch())::
 			<a href="?dispatch=1" class="btn btn-default">Passer en Dispatch</a>
 		::end::
-		::if(!group.hasCagette2())::
-			<a href="?cagette2=1" class="btn btn-default">Passer en Cagette2</a>
-		::end::
-
+		
 		::if( !group.hasShopMode() )::
 		<a href="?duplicate=1" class="btn btn-default">Dupliquer en mode Marché</a>
 		::end::
@@ -92,7 +88,7 @@
 		<h3>Membres</h3>		
 		<div style="max-height:300px;overflow-y:scroll;">
 		
-					<table class="table table-condensed">
+				<table class="table table-condensed">
 				::foreach u group.getMembers()::
 				<tr>
 					<td>::u.id::</td>
@@ -107,7 +103,13 @@
 		
 		<h3>Producteurs</h3>
 		<div style="max-height:300px;overflow-y:scroll;">
-			<table class="table table-condensed">
+			<table class="table table-condensed table-bordered">
+				<tr>
+					<th>id</th>
+					<th>Nom</th>
+					<th>Statut</th>
+					<th>Compte Stripe Connect (dispatch)</th>
+				</tr>
 				::foreach v vendors::
 
 				::set stats = getVendorStats(v)::
@@ -115,6 +117,13 @@
 					<td>::v.id::</td>
 					<td><a href='/admin/vendor/view/::v.id::'>::v.name::</a></td>
 					<td>$$vendorType(::enumIndex(stats._type)::)</td>
+					<td>
+						::set d = v.getStripeConnectStatus()::
+
+						compte ouvert $$bool(::d.account_open::), compte validé $$bool(::d.details_submitted && d.charges_enabled::)
+						
+					</td>
+				
 				</tr>
 			
 				::end::
@@ -157,9 +166,9 @@
 			
 			<a href="/p/pro/transaction/mangopay/group/debug/::mangopay.groupId::">Debug bug de Brigitte</a><br/>
 			<a href="/p/pro/transaction/mangopay/group/debug2/::mangopay.groupId::">Debug compta au centime près</a><br/>
-
-			
 			<a href="/debug/neo?hash=::debugLegalUserModule::">Debug Dossier Mangopay (mangopay-legal-user-module)</a><br/>
+			
+			<a href="?removeMangopay=1">Couper la liaison</a>
 
 		</div>
 		::end::

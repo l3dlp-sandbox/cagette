@@ -20,29 +20,7 @@ class Validate extends controller.Controller
 	**/
 	@tpl('validate/user.mtt')
 	public function doDefault(){
-		if (multiDistrib.getGroup().hasCagette2()) {
-			throw Redirect('/distributions#/'+multiDistrib.id+'/'+basket.id);
-		}
-
-		if(basket.status==Std.string(OPEN)) throw "basket is OPEN";
-
-		view.member = user;
-		var place = multiDistrib.getPlace();
-		var date = multiDistrib.getDate();
-		
-		var ug = db.UserGroup.get(user, place.group);
-		view.balance = ug==null ? null : ug.balance;
-		view.orders = service.OrderService.prepare(basket.getOrders());
-		view.place = place;
-		view.date = date;
-		view.basket = basket;
-		view.onTheSpotAllowedPaymentTypes = service.PaymentService.getOnTheSpotAllowedPaymentTypes(app.user.getGroup());
-		view.md = multiDistrib;
-		view.distribution = multiDistrib;
-		view.userGroup = ug;
-		view.abs = Math.abs;
-		
-		checkToken();
+		throw Redirect('/distributions#/'+multiDistrib.id+'/'+basket.id);		
 	}
 	
 	/**

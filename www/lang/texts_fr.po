@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: francois@alilo.fr\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2022-04-20 11:05+0200\n"
+"PO-Revision-Date: 2023-03-09 16:08+0100\n"
 "Last-Translator: J. Lavoie <j.lavoie@net-c.ca>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/cagette/"
 "translations/fr/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Poedit 2.3\n"
+"X-Generator: Poedit 3.2.2\n"
 
 #: ../src/payment/Cash.hx:318
 msgid "Cash"
@@ -2336,7 +2336,7 @@ msgstr "Liste d'émargement"
 #: ../lang/master/tpl/home.mtt:10166
 msgid "Please be aware that you or your spouse is a volunteer for the role:"
 msgstr ""
-"Attention, vous ou votre conjoint(e) être enregistré(e) comme bénévole pour "
+"Attention, vous ou votre conjoint(e) êtes enregistré(e) comme bénévole pour "
 "ce rôle :"
 
 #: ../lang/master/tpl/home.mtt:10476
