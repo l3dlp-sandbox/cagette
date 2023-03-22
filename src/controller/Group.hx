@@ -125,27 +125,11 @@ class Group extends controller.Controller
 
 		var p = new db.Place();
 		var f = form.CagetteForm.fromSpod(p);
+		f.addElement(new sugoi.form.elements.Html("sqdqsd","<p class='desc' style='margin: 0px;'>Configuration par défaut : Groupe ouvert, n'importe qui peut s'inscrire et commander <a data-toggle='tooltip' title='En savoir plus' href='https://wiki.cagette.net/admin:admin_boutique#mode_marche' target='_blank'><i class='icon icon-info'></i></a></p>"),0);
+		
 		f.addElement(new sugoi.form.elements.StringSelect('country',t._("Country"),db.Place.getCountries(),p.country,true));			
 		f.addElement(new StringInput("groupName", t._("Name of your group"), "", true),1);
 		
-		//group type
-		if (App.current.getSettings().noCsa != true) {
-			var data = [
-				{
-					label:"Mode marché",
-					value:"2",
-					desc : "Drive de producteurs sans engagement.<br/>Configuration par défaut : Groupe ouvert, n'importe qui peut s'inscrire et commander <a data-toggle='tooltip' title='En savoir plus' href='https://wiki.cagette.net/admin:admin_boutique#mode_marche' target='_blank'><i class='icon icon-info'></i></a>"
-				},
-				{ 
-					label:"Mode AMAP",
-					value:"0",
-					desc : "<div class='alert alert-danger' style='font-size: 0.9em'>Il n'est plus possible d'ouvrir de groupe en mode AMAP sur Cagette.net</div>"
-				}
-			];	
-			var gt = new sugoi.form.elements.RadioGroup("type", t._("Group type"), data ,"2", true, true, true);
-			f.addElement(gt,2);
-		}
-
 		f.getElement("name").label = "Nom du lieu";
 		f.removeElementByName("lat");
 		f.removeElementByName("lng");
@@ -159,28 +143,7 @@ class Group extends controller.Controller
 			var g = new db.Group();
 			g.name = f.getValueOf("groupName");
 			g.contact = user;
-			
-			var type:GroupType;
-			if (App.current.getSettings().noCsa == true) {
-				type = GroupType.ProducerDrive;
-			}else {
-				type = Type.createEnumIndex(GroupType, Std.parseInt(f.getValueOf("type")) );
-			}
-			
-			switch(type){
-			case Amap, null : 
-				throw "unknown group type";
-
-			case GroupedOrders :
-				g.hasMembership=true;
-				g.regOption = WaitingList;
-				
-			case ProducerDrive,FarmShop : 
-				// g.flags.set(PhoneRequired);				
-				g.regOption = Open;
-			}
-			
-			g.groupType = type;
+			g.regOption = Open;
 			g.setAllowedPaymentTypes([payment.Cash.TYPE,payment.Check.TYPE]);
 			g.insert();
 			
