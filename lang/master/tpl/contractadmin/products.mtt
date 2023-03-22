@@ -4,10 +4,7 @@
 		
 	$$insert(::_("New product")::,/product/insert/::c.id::)
 
-	
-	
 	<div class="btn-group" role="group" style="display: inline-block;">
-		<a href="/product/import/::c.id::" class="btn btn-default btn-sm"><i class="icon icon-upload"></i> ::_("Import from Excel/CSV")::</a>
 		<a href="/product/export/::c.id::" class="btn btn-default btn-sm"><i class="icon icon-download"></i> Export CSV</a>
 	</div>
 

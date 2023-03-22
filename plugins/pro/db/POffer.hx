@@ -35,6 +35,11 @@ class POffer extends Object
 	override public function toString(){
 		return "#"+id+"-"+getName();		
 	}
+
+	public function getAvailableStock(){
+		if(stock==null) return null;
+		return stock - orderedStock;
+	}
 	
 	public function getCatalogOffers(?lock=false){		
 		return pro.db.PCatalogOffer.manager.search($offer == this,lock);		

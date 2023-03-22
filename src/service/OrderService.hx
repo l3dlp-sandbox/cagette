@@ -139,40 +139,38 @@ class OrderService
 		order.insert();
 		
 		//Stocks
-		if (order.product.stock != null) {
-			var c = order.product.catalog;
-			if (c.hasStockManagement()) {
+		if (order.product.pOffer != null && order.product.pOffer.stock!=null) {
+			
+			var off = order.product.pOffer;
 				
-				if (order.product.stock == 0) {
-					if (App.current.session != null) {
-						App.current.session.addMessage(t._("There is no more '::productName::' in stock, we removed it from your order", {productName:order.product.name}), true);
-					}
-					order.quantity -= quantity;
-					if ( order.quantity <= 0 ) {
-						order.delete();
-						return null;	
-					}
-				}else if (order.product.stock - quantity < 0) {
-					var canceled = quantity - order.product.stock;
-					order.quantity -= canceled;
-					order.update();
-					
-					if (App.current.session != null) {
-						var msg = t._("We reduced your order of '::productName::' to quantity ::oQuantity:: because there is no available products anymore", {productName:order.product.name, oQuantity:order.quantity});
-						App.current.session.addMessage(msg, true);
-					}
-					order.product.lock();
-					order.product.stock = 0;
-					order.product.update();
-					App.current.event(StockMove({product:order.product, move:0 - (quantity - canceled) }));
-					
-				}else {
-					order.product.lock();
-					order.product.stock -= quantity;
-					order.product.update();	
-					App.current.event(StockMove({product:order.product, move:0 - quantity}));
+			if (off.getAvailableStock() == 0) {
+				if (App.current.session != null) {
+					App.current.session.addMessage(t._("There is no more '::productName::' in stock, we removed it from your order", {productName:order.product.name}), true);
 				}
-			}	
+				order.quantity -= quantity;
+				if ( order.quantity <= 0 ) {
+					order.delete();
+					return null;	
+				}
+			}else if (off.getAvailableStock() - quantity < 0) {
+				var canceled = quantity - off.getAvailableStock();
+				order.quantity -= canceled;
+				order.update();
+				
+				if (App.current.session != null) {
+					var msg = t._("We reduced your order of '::productName::' to quantity ::oQuantity:: because there is no available products anymore", {productName:order.product.name, oQuantity:order.quantity});
+					App.current.session.addMessage(msg, true);
+				}
+				off.lock();
+				off.orderedStock += quantity - canceled;
+				off.update();
+				
+			}else {
+				off.lock();
+				off.orderedStock += quantity;
+				off.update();	
+			}
+				
 		}
 
 		return order;
@@ -216,46 +214,41 @@ class OrderService
 		}
 
 		//stocks
-		var e : Event = null;
-		if (order.product.stock != null) {
-			var c = order.product.catalog;
-			
-			if (c.hasStockManagement()) {
-				
-				if (newquantity < order.quantity) {
+		if (order.product.pOffer != null && order.product.pOffer.stock!=null) {
+			var off = order.product.pOffer;
 
-					//on commande moins que prévu : incrément de stock						
-					order.product.lock();
-					order.product.stock +=  (order.quantity-newquantity);
-					e = StockMove({product:order.product, move:0 - (order.quantity-newquantity) });
-					
-				}else {
+			if (newquantity < order.quantity) {
+
+				//on commande moins que prévu : incrément de stock						
+				off.lock();
+				off.orderedStock -= order.quantity;
+				off.orderedStock += newquantity;
 				
-					//on commande plus que prévu : décrément de stock
-					var addedquantity = newquantity - order.quantity;
+			}else {
+			
+				//on commande plus que prévu : décrément de stock
+				var addedquantity = newquantity - order.quantity;
+				
+				if (off.getAvailableStock() - addedquantity < 0) {
 					
-					if (order.product.stock - addedquantity < 0) {
-						
-						//stock is not enough, reduce order
-						newquantity = order.quantity + order.product.stock;
-						if( App.current.session!=null) App.current.session.addMessage(t._("We reduced your order of '::productName::' to quantity ::oQuantity:: because there is no available products anymore", {productName:order.product.name, oQuantity:newquantity}), true);
-						
-						e = StockMove({product:order.product, move: 0 - order.product.stock });
-						
-						order.product.lock();
-						order.product.stock = 0;
-						
-					}else{
-						
-						//stock is big enough
-						order.product.lock();
-						order.product.stock -= addedquantity;
-						
-						e = StockMove({ product:order.product, move: 0 - addedquantity });
-					}					
-				}
-				order.product.update();
-			}	
+					//stock is not enough, reduce order
+					newquantity = off.getAvailableStock();
+					if( App.current.session!=null) App.current.session.addMessage(t._("We reduced your order of '::productName::' to quantity ::oQuantity:: because there is no available products anymore", {productName:order.product.name, oQuantity:newquantity}), true);
+					
+					off.lock();
+					off.orderedStock -= order.quantity;
+					off.orderedStock += newquantity;
+					
+				}else{
+					
+					//stock is big enough
+					off.lock();
+					off.orderedStock -= order.quantity;
+					off.orderedStock += newquantity;
+				}					
+			}
+			off.update();
+			
 		}
 
 		//update order
@@ -272,8 +265,6 @@ class OrderService
 		var o = order;
 		if(o.distribution==null) throw new Error( "cant record an order which is not linked to a distribution");
 		if(o.basket==null) throw new Error( "this order should have a basket" );
-
-		App.current.event(e);	
 
 		return order;
 	}
@@ -339,13 +330,12 @@ class OrderService
 			var user = order.user;
 			var product = order.product;
 
-			//stock mgmt
-			if (contract.hasStockManagement() && product.stock!=null && order.quantity!=null) {
+			//Stocks
+			if (product.pOffer!=null && product.pOffer.stock!=null && order.quantity!=null) {
 				//re-increment stock
-				product.lock();
-				product.stock +=  order.quantity;
-				product.update();
-				// e = StockMove({product:product, move:0-order.quantity });
+				product.pOffer.lock();
+				product.pOffer.orderedStock -=  order.quantity;
+				product.pOffer.update();
 			}
 
 			if ( contract.group.hasShopMode() ) {

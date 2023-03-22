@@ -107,88 +107,10 @@ class ProPlugIn extends PlugIn implements IPlugIn{
 			case DailyCron(now):
 
 			case StockMove(e):
-				//an order has been made or modified
-				//get related offer in cpro
-				var rc = connector.db.RemoteCatalog.getFromContract(e.product.catalog);
-				if ( rc != null){
-					var catalog = rc.getPCatalog();
-					if(catalog==null) return ;
-					var offer = null;
-					for ( off in catalog.getOffers() ){
-						if (off.offer.ref == e.product.ref){
-							offer = off.offer;
-							break;
-						}
-					}
-			
-					if (offer != null){
-						var stockService = new pro.service.PStockService(catalog.company);
-						//update stock depending on stock strategy
-						//if(offer.product.stockStrategy==pro.db.PProduct.ProductStockStrategy.ByOffer){
-							stockService.updateStockInGroups(offer);	
-						/*}else{
-							pro.service.PStockService.updateStockInGroupsByProduct(offer.product);	
-						}*/
-					} 
-				}
+				
 			default :
 		}
 	}
-	
 
-	
-	
-	/**
-	 * synchronize stocks to Cagette Groups to avoid oders over available qt
-	 * 
-	 * @deprecated
-	 
-	public static function __syncStocks(){
-		
-		Sys.println("<h2>Synchro des stocks</h2>");
-		
-		for ( c in pro.db.Company.manager.all()){
-			
-			for ( o in c.getOffers()){
-				if (!o.active || o.stock==null) continue;
-				
-				//total stock available to buy
-				var availableStock = o.stock;
-				
-				//on déduit ce qui est commandé dans chaque groupe
-				availableStock -= o.countCurrentUndeliveredOrders();
-				
-				if (o.products.length > 0){
-					
-					Sys.println('${o.getName()} a ${o.products.length} commandes en cours<br>');
-					var stockToDispatch = tools.StockTool.dispatch(Math.floor(availableStock), o.products.length);
-					Sys.println('stock dispo $availableStock réparti  sur $stockToDispatch<br><br>');
-					
-					for ( i in 0...o.products.length){
-						var p = o.products[i];
-						p.lock();
-						p.stock = stockToDispatch[i];
-						p.update();
-						
-						if (!p.contract.flags.has(db.Contract.ContractFlags.StockManagement)){
-							p.contract.lock();
-							p.contract.flags.set(db.Contract.ContractFlags.StockManagement);
-							p.contract.update();
-						}
-					}
-				
-				}
-			
-				
-				//quand une distrib est finie, il faudrait mettre à jour le stock cpro en déduisant la livraison
-			}
-			
-		}
-		
-		
-	}*/
-	
-	
-	
 	
 }

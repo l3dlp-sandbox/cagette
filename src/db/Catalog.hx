@@ -129,7 +129,8 @@ class Catalog extends Object
 	}
 	
 	public function hasStockManagement():Bool {
-		return flags.has(StockManagement);
+		// return flags.has(StockManagement);
+		return true;
 	}
 
 	public function hasConstraints() : Bool {
