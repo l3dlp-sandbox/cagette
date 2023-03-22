@@ -30,7 +30,7 @@ $$browserDetection()
 
 	<!--display only on sm and xs screens-->
 	<div class="block hidden-md hidden-lg" style="margin-bottom:24px;">
-		<a href="/distribution/volunteersCalendar" class="btn btn-default btn-sm">
+		<a href="/distributions/volunteersCalendar" class="btn btn-default btn-sm">
 			<i class="icon icon-calendar"></i> ::_("Duty periods calendar")::
 		</a>
 	</div>
@@ -190,7 +190,7 @@ $$browserDetection()
 				<b>::r._volunteerRole.name::</b>,
 				::end::
 				<p style="margin-top:12px;">
-					<a href="/distribution/volunteersCalendar/::md.id::" class="btn btn-default btn-sm">
+					<a href="/distributions/volunteersCalendar/::md.id::" class="btn btn-default btn-sm">
 						<i class="icon icon-user"></i> ::_("Duty period details")::
 					</a>
 				</p>
@@ -207,7 +207,7 @@ $$browserDetection()
 					::end::
 				</div>
 				<p style="margin-top:12px;">
-					<a href="/distribution/volunteersCalendar/::md.id::" class="btn btn-danger btn-sm">
+					<a href="/distributions/volunteersCalendar/::md.id::" class="btn btn-danger btn-sm">
 						<i class="icon icon-chevron-right"></i> Inscription à une permanence</a>
 				</p>
 			</div>
@@ -281,7 +281,7 @@ $$browserDetection()
 	</div>
 
 	<div class="block hidden-sm hidden-xs">
-		<a href="/distribution/volunteersCalendar" class="btn btn-default btn-sm">
+		<a href="/distributions/volunteersCalendar" class="btn btn-default btn-sm">
 			<i class="icon icon-calendar"></i> ::_("Duty periods calendar")::
 		</a>
 	</div>

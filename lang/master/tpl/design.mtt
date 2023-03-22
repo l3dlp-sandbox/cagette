@@ -69,7 +69,7 @@
 								</a>
 							</li>
 							<li id="distributions" ::attr class if(category=="distribution") 	'active' ::>
-								<a href="/distribution" ::cond user.canManageAllContracts()::>
+								<a href="/distributions" ::cond user.canManageAllContracts()::>
 									<i class="icon icon-calendar"></i>  ::_("Distributions")::
 								</a>
 							</li>

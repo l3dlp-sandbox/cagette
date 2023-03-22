@@ -260,12 +260,6 @@ class Main extends Controller {
 	}
 
 	@logged
-	function doDistribution(d:Dispatch) {
-		addBc("distribution", "Distributions", "/distribution");
-		d.dispatch(new controller.Distribution());
-	}
-
-	@logged
 	function doDistributions(d:Dispatch) {
 		addBc("distribution", "Distributions", "/distributions");
 		d.dispatch(new controller.Distributions());
