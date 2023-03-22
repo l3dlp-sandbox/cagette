@@ -115,7 +115,6 @@
 							<th class="col-md-2">::_("Product")::</th>
 							<th class="col-md-1"><a href="#" data-toggle="tooltip" data-placement="top" title="::_('Unit price including taxes')::">::_("U.P||short version of unit price")::</a></th>
 							<th class="col-md-1">::_("Sub-total")::</th>
-							<th class="col-md-1">::_("Fees")::</th>
 							<th class="col-md-1">::_("Total")::</th>
 							<th class="col-md-4">::_("Catalog")::</th>
 							<th class="col-md-1">Payé</th>
@@ -127,14 +126,6 @@
 								<td>::p.productName::</td>
 								<td>::formatNum(p.productPrice)::&nbsp;::currency()::</td>
 								<td>::formatNum(p.subTotal)::&nbsp;::currency()::</td>
-								<td>
-									<!-- frais -->
-									::if p.percentageValue!=null::
-									<a href="#" data-toggle="tooltip" data-placement="top" title="::p.percentageName:: : ::p.percentageValue:: %">
-										::formatNum(p.fees)::&nbsp;::currency()::
-									</a>
-									::end::
-								</td>
 								<td>
 									<!-- total -->
 									::formatNum(p.total)::&nbsp;::currency()::

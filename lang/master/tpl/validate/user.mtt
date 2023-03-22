@@ -41,7 +41,6 @@
 					<th>::_("Product")::</th>
 					<th><a href="#" data-toggle="tooltip" data-placement="top" title="::_("Unit price incl. VAT")::">::_("U.P.")::</a></th>
 					<th>::_("Sub-total")::</th>
-					<th>::_("Fees")::</th>
 					<th>::_("Total")::</th>
 					<th>::_("Paid")::</th>
 				</tr>
@@ -66,14 +65,6 @@
 					</td>
 					<td>
 						::formatNum(o.subTotal)::&nbsp;::currency()::
-					</td>
-					<td>
-						<!-- fees -->
-						::if o.percentageValue!=null::
-						<a href="#" data-toggle="tooltip" data-placement="top" title="::o.percentageName:: : ::o.percentageValue:: %">
-							::formatNum(o.fees)::&nbsp;::currency()::
-						</a>
-						::end::
 					</td>
 					<td>
 						<!-- total -->

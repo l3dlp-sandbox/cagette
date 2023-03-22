@@ -26,11 +26,6 @@ class CatalogService{
 		form.removeElement(form.getElement("type"));
 		form.removeElement(form.getElement("vendorId"));
 
-		//2022-02-01 remove percentage on orders
-		form.removeElementByName("percentageValue");
-		form.removeElementByName("percentageName");
-		untyped form.getElement("flags").excluded = [2];// remove "PercentageOnOrders" flag
-		
 		//For all types and modes
 		if ( catalog.id != null ) {
 			form.removeElement(form.getElement("distributorNum"));

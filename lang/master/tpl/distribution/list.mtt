@@ -89,7 +89,6 @@
 						<th>::_("Product")::</th>
 						<th>::_("U.P.")::</th>
 						<th>::_("Sub-total")::</th>
-						<th>::_("Fees")::</th>
 						<th>::_("Total")::</th>
 						<th>::_("Signature")::</th>
 					</tr>
@@ -115,12 +114,6 @@
 					</td>
 					<td>
 						::formatNum(m.subTotal)::&nbsp;::currency()::
-					</td>
-					<td>
-						<!-- frais -->
-						::if m.percentageValue!=null::
-							::formatNum(m.fees)::&nbsp;::currency()::
-						::end::
 					</td>
 					<td>
 						<!-- total -->

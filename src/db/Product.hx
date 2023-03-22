@@ -87,7 +87,7 @@ class Product extends Object
 	 * get price including margins
 	 */
 	public function getPrice():Float{
-		return (price + catalog.computeFees(price)).clean();
+		return price.clean();
 	}
 	
 	/**
@@ -105,8 +105,6 @@ class Product extends Object
 			price : getPrice(),
 			vat : vat,
 			vatValue: (vat != 0 && vat != null) ? (  this.price - (this.price / (vat/100+1))  )  : null,
-			catalogTax : catalog.percentageValue,
-			catalogTaxName : catalog.percentageName,
 			desc : App.current.view.nl2br(desc),
 			categories : null,
 			subcategories:null,

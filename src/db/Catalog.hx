@@ -7,7 +7,6 @@ import sys.db.Types;
 enum CatalogFlags {
 	UsersCanOrder;  		//adhérents peuvent saisir eux meme la commande en ligne
 	StockManagement; 		//gestion des commandes
-	PercentageOnOrders;		//calcul d'une commission supplémentaire 
 }
 
 @:index(startDate,endDate)
@@ -27,9 +26,6 @@ class Catalog extends Object
 	@hideInForms @:relation(groupId) public var group:db.Group;
 	public var distributorNum:STinyInt;
 	public var flags : SFlags<CatalogFlags>;
-	
-	public var percentageValue : SNull<SFloat>; 		//fees percentage
-	public var percentageName : SNull<SString<64>>;		//fee name
 	
 	public function new() 
 	{
@@ -83,29 +79,8 @@ class Catalog extends Object
 		return contractOpen && d > 0;
 	}
 		
-	public function hasPercentageOnOrders():Bool {
-		return false;
-		// return flags.has(PercentageOnOrders) && percentageValue!=null && percentageValue!=0;
-	}
-	
 	public function hasStockManagement():Bool {
 		return flags.has(StockManagement);
-	}
-
-	/**
-	 * computes a 'percentage' fee
-	 */
-	public function computeFees(basePrice:Float) {
-		if (!hasPercentageOnOrders()) return 0.0;
-		
-		/*if (group.flags.has(ComputeMargin)) {
-			//commercial margin
-			return (basePrice / ((100 - percentageValue) / 100)) - basePrice;
-			
-		}else {*/
-			//add a percentage
-			return percentageValue / 100 * basePrice;
-		// }
 	}
 
 	public function check(){
@@ -285,8 +260,6 @@ class Catalog extends Object
 			"description" 		=> t._("Description"),
 			"distributorNum" 	=> t._("Number of required volunteers during a distribution"),
 			"flags" 			=> t._("Options"),
-			"percentageValue" 	=> t._("Fees percentage"),
-			"percentageName" 	=> t._("Fees label"),
 			"contact" 			=> t._("Contact"),
 			"vendor" 			=> t._("Farmer"),
 			"hasPayements" 					=> "Gestion des paiements",

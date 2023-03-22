@@ -73,11 +73,6 @@ class ContractAdmin extends Controller
 		view.places = app.user.getGroup().getPlaces();
 		view.group = app.user.getGroup();
 		
-		/*var contractsToFix = contracts.filter(c -> c.hasPercentageOnOrders());
-		if(contractsToFix.length>0){
-			app.session.addMessage('Attention, la gestion des "frais au pourcentage de la commande" va disparaître le 1er Février 2023.<br/>Les catalogues suivants l\'utilisent : <b>${contractsToFix.map(c->c.name).join(", ")}</b><br/><a href="https://wiki.cagette.net/basculecommissioncatalogue" target="_blank">Cliquez ici pour connaître un alternative.</a>',true);
-		}*/
-
 		checkToken();
 	}
 
@@ -531,9 +526,6 @@ class ContractAdmin extends Controller
 		for ( o in contract.getOrders(d)){
 			o.lock();
 			o.productPrice = o.product.price;
-			if (contract.hasPercentageOnOrders()){
-				o.feesRate = contract.percentageValue;
-			}
 			o.update();
 			
 		}
@@ -568,8 +560,6 @@ class ContractAdmin extends Controller
 			nc.distributorNum = catalog.distributorNum;
 			nc.flags = catalog.flags;
 			nc.vendor = catalog.vendor;
-			nc.percentageName = catalog.percentageName;
-			nc.percentageValue = catalog.percentageValue;
 			nc.insert();
 			
 			//give rights to this contract

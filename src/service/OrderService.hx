@@ -80,9 +80,6 @@ class OrderService
 		order.quantity = quantity;
 		order.productPrice = product.price;
 		order.vatRate = product.vat;
-		if ( product.catalog.hasPercentageOnOrders() ){
-			order.feesRate = product.catalog.percentageValue;
-		}
 		order.user = user;
 		if (user2 != null) {
 			order.user2 = user2;
@@ -355,8 +352,6 @@ class OrderService
 			if ( o.feesRate!=0 ) {
 				
 				x.fees = x.subTotal * (o.feesRate/100);
-				x.percentageName = c.percentageName;
-				x.percentageValue = o.feesRate;
 				x.total = x.subTotal + x.fees;
 				
 			}else {

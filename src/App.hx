@@ -293,9 +293,6 @@ class App extends sugoi.BaseApp {
 		out.set("UsersCanOrder", "Les membres peuvent saisir leur commande en ligne");
 		out.set("StockManagement", "Gestion des stocks");
 		out.set("contact", "Responsable");
-		out.set("PercentageOnOrders", "Ajouter des frais au pourcentage de la commande");
-		out.set("percentageValue", "Pourcentage des frais");
-		out.set("percentageName", "Libellé pour ces frais");
 		out.set("fees", "frais");
 		out.set("AmapAdmin", "Administrateur du groupe");
 		out.set("Membership", "Accès à la gestion des membres");
