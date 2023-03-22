@@ -394,14 +394,6 @@ class PaymentService {
 		// This will throw an error if for example there are pending payments of type on the spot
 		basket.canBeValidated();
 
-		// mark orders as paid
-		var orders = basket.getOrders();
-		for (order in orders) {
-			order.lock();
-			order.paid = true;
-			order.update();
-		}
-
 		basket.lock();
 		basket.status = Std.string(BasketStatus.VALIDATED);
 		basket.update();
@@ -421,6 +413,7 @@ class PaymentService {
 				}
 			}
 
+			var orders = basket.getOrders();
 			var o = orders[0];
 			if (o.distribution == null)
 				throw o.id + " order has no distrib";
@@ -441,15 +434,6 @@ class PaymentService {
 		basket.status = Std.string(BasketStatus.CONFIRMED);
 		basket.update();
 		
-
-		// mark orders as paid
-		var orders = basket.getOrders();
-		for (order in orders) {
-			order.lock();
-			order.paid = false;
-			order.update();
-		}
-
 		// validate order operation and payments
 		var operation = basket.getOrderOperation(false);
 		if (operation != null) {
@@ -465,6 +449,7 @@ class PaymentService {
 				}
 			}
 
+			var orders = basket.getOrders();
 			var o = orders[0];
 			updateUserBalance(o.user, o.distribution.place.group);
 		}

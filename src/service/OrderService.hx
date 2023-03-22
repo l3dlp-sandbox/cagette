@@ -23,7 +23,7 @@ class OrderService
 	 * @param	quantity
 	 * @param	productId
 	 */
-	public static function make(user:db.User, quantity:Float, product:db.Product, distribId:Int, ?paid:Bool, ?user2:db.User, ?invert:Bool, ?basket:db.Basket ) : Null<db.UserOrder> {
+	public static function make(user:db.User, quantity:Float, product:db.Product, distribId:Int, ?user2:db.User, ?invert:Bool, ?basket:db.Basket ) : Null<db.UserOrder> {
 		
 		var t = sugoi.i18n.Locale.texts;
 
@@ -65,7 +65,7 @@ class OrderService
 			var newOrder = null;
 
 			for ( i in 0...Math.round(quantity) ) {
-				newOrder = make( user, 1, product, distribId, paid, null , null, basket );
+				newOrder = make( user, 1, product, distribId, null , null, basket );
 			}
 			return newOrder;
 		}
@@ -90,16 +90,13 @@ class OrderService
 			order.user2 = user2;
 			if ( invert ) order.flags.set(InvertSharedOrder);
 		}
-		if (paid != null) order.paid = paid;
 		if (distribId != null) order.distribution = db.Distribution.manager.get(distribId,false);
 		
 		//cumulate quantities if there is a similar previous order
 		if (prevOrders.length > 0 && !product.multiWeight) {
 			for (prevOrder in prevOrders) {
-				//if (!prevOrder.paid) {
-					order.quantity += prevOrder.quantity;
-					prevOrder.delete();
-				//}
+				order.quantity += prevOrder.quantity;
+				prevOrder.delete();
 			}
 		}
 
@@ -159,7 +156,7 @@ class OrderService
 	/**
 	 * Edit an existing order (quantity)
 	 */
-	public static function edit(order:db.UserOrder, newquantity:Float, ?paid:Bool , ?user2:db.User,?invert:Bool):db.UserOrder {
+	public static function edit(order:db.UserOrder, newquantity:Float, ?user2:db.User,?invert:Bool):db.UserOrder {
 		
 		var t = sugoi.i18n.Locale.texts;
 		
@@ -175,13 +172,6 @@ class OrderService
 			}
 		}
 
-		//paid
-		if (paid != null) {
-			order.paid = paid;
-		}else {
-			if (order.quantity < newquantity) order.paid = false;	
-		}
-		
 		//shared order
 		if (user2 != null){
 			order.user2 = user2;	
@@ -238,7 +228,6 @@ class OrderService
 		//update order
 		if (newquantity == 0) {
 			order.quantity = 0;			
-			order.paid = true;
 			order.update();
 		}else {
 			order.quantity = newquantity;
@@ -377,7 +366,6 @@ class OrderService
 			}
 			
 			//flags
-			x.paid = o.paid;
 			x.invertSharedOrder = o.flags.has(InvertSharedOrder);
 			x.catalogId = c.id;
 			x.catalogName = c.name;
@@ -627,8 +615,7 @@ class OrderService
 					"price":view.formatNum(o.productPrice),
 					"quantity":view.formatNum(o.quantity),
 					"fees":view.formatNum(o.fees),
-					"total":view.formatNum(o.total),
-					"paid":o.paid
+					"total":view.formatNum(o.total)
 				});				
 			}
 			
@@ -639,7 +626,7 @@ class OrderService
 				exportName = contract.group.name + " - " + contract.name;
 			}
 			
-			sugoi.tools.Csv.printCsvDataFromObjects(data, ["name",  "productName", "price", "quantity", "fees", "total", "paid"], exportName+" - " + t._("Per member"));			
+			sugoi.tools.Csv.printCsvDataFromObjects(data, ["name",  "productName", "price", "quantity", "fees", "total"], exportName+" - " + t._("Per member"));			
 			return null;
 		}else{
 			return orders;
@@ -674,7 +661,7 @@ class OrderService
 	/**
 		Create or update orders for variable catalogs
 	**/ 
-	public static function createOrUpdateOrders( user:db.User, multiDistrib:db.MultiDistrib, catalog:db.Catalog, ordersData:Array<{id:Int, productId:Int, qt:Float, paid:Bool}> ) : Array<db.UserOrder> {
+	public static function createOrUpdateOrders( user:db.User, multiDistrib:db.MultiDistrib, catalog:db.Catalog, ordersData:Array<{id:Int, productId:Int, qt:Float}> ) : Array<db.UserOrder> {
 
 		if ( multiDistrib == null && catalog == null ) {
 			throw new Error('You should provide at least a catalog or a multiDistrib');
@@ -716,7 +703,7 @@ class OrderService
 			if ( existingOrder != null ) {
 
 				// Edit existing order
-				var updatedOrder = OrderService.edit( existingOrder, order.qt, order.paid );
+				var updatedOrder = OrderService.edit( existingOrder, order.qt );
 				if ( updatedOrder != null ) orders.push( updatedOrder );
 			} else {
 
@@ -726,7 +713,7 @@ class OrderService
 					distrib = multiDistrib.getDistributionFromProduct( product );
 				}
 
-				var newOrder =  OrderService.make( user, order.qt , product, distrib == null ? null : distrib.id, order.paid );
+				var newOrder =  OrderService.make( user, order.qt , product, distrib == null ? null : distrib.id );
 				if ( newOrder != null ) orders.push( newOrder );
 				
 			}

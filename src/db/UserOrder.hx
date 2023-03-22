@@ -27,8 +27,6 @@ class UserOrder extends Object
 	public var feesRate : SFloat; //fees in percentage
 	public var vatRate : SNull<SFloat>; // store vatRate
 	
-	public var paid : SBool;
-	
 	@:relation(distributionId)
 	public var distribution:db.Distribution;
 	
@@ -45,7 +43,6 @@ class UserOrder extends Object
 	{
 		super();
 		quantity = 1;
-		paid = false;
 		date = Date.now();
 		flags = cast 0;
 		feesRate = 0;
@@ -102,7 +99,7 @@ class UserOrder extends Object
 			can = this.product.catalog.isUserOrderAvailable();
 		}
 		
-		return can && !this.paid;
+		return can;
 	}
 	
 	function check(){

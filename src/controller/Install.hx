@@ -131,7 +131,6 @@ class Install extends controller.Controller
 				var uc = new db.UserOrder();
 				uc.user = user;
 				uc.product = p;
-				uc.paid = true;
 				uc.quantity = 1;
 				uc.productPrice = 10;
 				uc.insert();
