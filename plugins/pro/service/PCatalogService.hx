@@ -250,7 +250,6 @@ class PCatalogService{
 			//create it
 			groupCatalog = new db.Catalog();
 			groupCatalog.vendor = proCatalog.company.vendor;
-			groupCatalog.type = db.Catalog.TYPE_VARORDER;
 			groupCatalog.group = group;
 			groupCatalog.flags.set(db.Catalog.CatalogFlags.UsersCanOrder);
 			groupCatalog.contact = contact;
@@ -305,7 +304,7 @@ class PCatalogService{
 	/**
 	 * Link a pcatalog to a group
 	 */
-	public static function linkCatalogToGroup(pcatalog:pro.db.PCatalog,clientGroup:db.Group,remoteUserId:Int,?contractType=1):connector.db.RemoteCatalog{
+	public static function linkCatalogToGroup(pcatalog:pro.db.PCatalog,clientGroup:db.Group,remoteUserId:Int):connector.db.RemoteCatalog{
 		
 		//checks
 		var contracts = connector.db.RemoteCatalog.getContracts(pcatalog, clientGroup);

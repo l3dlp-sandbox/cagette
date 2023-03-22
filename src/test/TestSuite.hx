@@ -146,12 +146,10 @@ class TestSuite
 	public static var VENDOR1:db.Vendor = null;
 	public static var VENDOR2:db.Vendor = null;
 	public static var VENDOR3:db.Vendor = null;
-	public static var DISTRIB_CONTRAT_AMAP:db.Distribution = null;
 	public static var DISTRIB_FRUITS_PLACE_DU_VILLAGE:db.Distribution = null;
 	public static var DISTRIB_LEGUMES_RUE_SAUCISSE:db.Distribution = null;
 	public static var DISTRIB_LAITUE:db.Distribution = null;
 	public static var DISTRIB_CAROTTES:db.Distribution = null;
-	public static var CONTRAT_AMAP : db.Catalog = null;
 	public static var CONTRAT_LEGUMES:db.Catalog = null;
 	public static var PLACE_DU_VILLAGE:db.Place = null;	
 	
@@ -220,18 +218,6 @@ class TestSuite
 		v.city = "Bourligheim";
 		v.insert();
 		
-		var c = new db.Catalog();
-		c.name = "Contrat AMAP Légumes";
-		c.startDate = new Date(2017, 1, 1, 0, 0, 0);
-		c.endDate = new Date(2030, 12, 31, 23, 59, 0);
-		c.vendor = v;
-		c.group = a;
-		c.type = db.Catalog.TYPE_CONSTORDERS;
-		c.orderEndHoursBeforeDistrib = 24;
-		c.insert();
-
-		CONTRAT_AMAP = c;
-		
 		var p = new db.Product();
 		p.name = "Panier Légumes";
 		p.price = 13;
@@ -256,16 +242,6 @@ class TestSuite
 
 		SOUPE_AMAP = product;
 
-		var d = DistributionService.create(
-			c,
-			new Date(2017, 5, 1, 19, 0, 0),
-			new Date(2017, 5, 1, 20, 0, 0),
-			place.id,
-			new Date(2017, 4, 1, 20, 0, 0),
-			new Date(2017, 4, 30, 20, 0, 0)
-		);		
-		DISTRIB_CONTRAT_AMAP = d;
-
 		//varying contract for strawberries with stock mgmt
 		var c = new db.Catalog();
 		c.name = "Commande fruits";
@@ -273,7 +249,6 @@ class TestSuite
 		c.startDate = new Date(2017, 1, 1, 0, 0, 0);
 		c.endDate = new Date(2030, 12, 31, 23, 59, 0);
 		c.flags.set(db.Catalog.CatalogFlags.StockManagement);
-		c.type = db.Catalog.TYPE_VARORDER;
 		c.group = a;
 		c.insert();
 		
@@ -337,7 +312,6 @@ class TestSuite
 		c.endDate = new Date(2030, 12, 31, 23, 59, 0);
 		c.vendor = v;
 		c.group = a;
-		c.type = db.Catalog.TYPE_VARORDER;
 		c.insert();
 		
 		CONTRAT_LEGUMES = c;
@@ -386,7 +360,6 @@ class TestSuite
 		contract2.endDate = new Date(2017, 12, 31, 23, 59, 0);
 		contract2.vendor = vendor2;
 		contract2.group = a;
-		contract2.type = db.Catalog.TYPE_VARORDER;
 		contract2.insert();
 
 		var product2 = new db.Product();
@@ -418,7 +391,6 @@ class TestSuite
 		contract3.endDate = new Date(2017, 12, 31, 23, 59, 0);
 		contract3.vendor = vendor3;
 		contract3.group = a;
-		contract3.type = db.Catalog.TYPE_VARORDER;
 		contract3.insert();
 
 		var p = new db.Product();
@@ -454,7 +426,6 @@ class TestSuite
 		c.endDate = new Date(2017, 12, 31, 23, 59, 0);
 		c.vendor = boulanger;
 		c.group = a;
-		c.type = db.Catalog.TYPE_VARORDER;
 		c.insert();
 
 		var p = new db.Product();

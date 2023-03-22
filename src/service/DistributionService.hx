@@ -92,7 +92,7 @@ class DistributionService
 			throw new Error('La date de début de distribution doit se situer après la fermeture des commandes. (distrib#${d.id})');
 		} 
 		
-		if ( catalog.type == db.Catalog.TYPE_VARORDER && d.orderStartDate.getTime() > d.orderEndDate.getTime() ) {
+		if ( d.orderStartDate.getTime() > d.orderEndDate.getTime() ) {
 			throw new Error(t._("The orders end date must be set after the orders start date !"));
 		}			
 	}
@@ -109,9 +109,7 @@ class DistributionService
 		d.place = db.Place.manager.get(placeId);
 		//d.distributionCycle = distributionCycle;
 
-		if(contract.type==db.Catalog.TYPE_VARORDER){
-			d.orderStartDate = orderStartDate;
-		}
+		d.orderStartDate = orderStartDate;
 		d.orderEndDate = orderEndDate;
 
 		//end date cleaning			
@@ -290,11 +288,9 @@ class DistributionService
 			throw new Error('Le compte de "${catalog.vendor.name}" est désactivé. Raison : "${catalog.vendor.getDisabledReason()}"');
 		} 
 
-		if( catalog.type == db.Catalog.TYPE_VARORDER){
-			if(md.orderStartDate==null || md.orderEndDate==null){
-				var url = "/distribution/editMd/" + md.id;
-				throw new Error(t._("You can't participate to this distribution because no order start date has been defined. <a href='::url::' target='_blank'>Please update the general distribution first</a>.",{url:url}));
-			}
+		if(md.orderStartDate==null || md.orderEndDate==null){
+			var url = "/distribution/editMd/" + md.id;
+			throw new Error(t._("You can't participate to this distribution because no order start date has been defined. <a href='::url::' target='_blank'>Please update the general distribution first</a>.",{url:url}));
 		}
 
 		md.deleteProductsExcerpt();
@@ -328,9 +324,7 @@ class DistributionService
 				d.multiDistrib.lock();
 				d.multiDistrib.distribStartDate = date;
 				d.multiDistrib.distribEndDate = end; 
-				if(d.catalog.type==db.Catalog.TYPE_VARORDER){
-					d.multiDistrib.orderStartDate = orderStartDate;
-				}
+				d.multiDistrib.orderStartDate = orderStartDate;
 				d.multiDistrib.orderEndDate = orderEndDate;
 
 				d.multiDistrib.update();
@@ -354,9 +348,7 @@ class DistributionService
 
 		d.date = date;
 		d.place = db.Place.manager.get(placeId);
-		if(d.catalog.type==db.Catalog.TYPE_VARORDER){
-			d.orderStartDate = orderStartDate;
-		}
+		d.orderStartDate = orderStartDate;
 		d.orderEndDate = orderEndDate;
 		
 					
@@ -391,9 +383,7 @@ class DistributionService
 			throw new Error(t._("You cannot edit a distribution which has been already validated."));
 		}
 	
-		if(d.catalog.type==db.Catalog.TYPE_VARORDER){
-			d.orderStartDate = orderStartDate;
-		}
+		d.orderStartDate = orderStartDate;
 		d.orderEndDate = orderEndDate;
 		
 		checkDistrib(d);
@@ -498,14 +488,12 @@ class DistributionService
 
 
 	/**
-	 *  Checks whether there are orders with non zero quantity for non amap contract
+	 *  Checks whether there are orders with non zero quantity
 	 *  @param d - 
 	 *  @return Bool
 	 */
 	public static function canDelete(d:db.Distribution):Bool{
 
-		if (d.catalog.type == db.Catalog.TYPE_CONSTORDERS) return true;
-		
 		var quantity = 0.0;
 		for ( order in d.getOrders() ){
 			quantity += order.quantity;
@@ -572,18 +560,16 @@ class DistributionService
 		var startDate = new Date(datePointer.getFullYear(),datePointer.getMonth(),datePointer.getDate(),dc.startHour.getHours(),dc.startHour.getMinutes(),0);
 		var orderStartDate = null;
 		var orderEndDate = null;
-		//if (dc.contract.type == db.Catalog.TYPE_VARORDER){
 			
-			if (dc.daysBeforeOrderEnd == null || dc.daysBeforeOrderStart == null) throw new Error(t._("daysBeforeOrderEnd or daysBeforeOrderStart is null"));
-			
-			var a = DateTools.delta(startDate, -1.0 * dc.daysBeforeOrderStart * 1000 * 60 * 60 * 24);
-			var h : Date = dc.openingHour;
-			orderStartDate = new Date(a.getFullYear(), a.getMonth(), a.getDate(), h.getHours(), h.getMinutes(), 0);
-			
-			var a = DateTools.delta(startDate, -1.0 * dc.daysBeforeOrderEnd * 1000 * 60 * 60 * 24);
-			var h : Date = dc.closingHour;
-			orderEndDate = new Date(a.getFullYear(), a.getMonth(), a.getDate(), h.getHours(), h.getMinutes(), 0);			
-		//}
+		if (dc.daysBeforeOrderEnd == null || dc.daysBeforeOrderStart == null) throw new Error(t._("daysBeforeOrderEnd or daysBeforeOrderStart is null"));
+		
+		var a = DateTools.delta(startDate, -1.0 * dc.daysBeforeOrderStart * 1000 * 60 * 60 * 24);
+		var h : Date = dc.openingHour;
+		orderStartDate = new Date(a.getFullYear(), a.getMonth(), a.getDate(), h.getHours(), h.getMinutes(), 0);
+		
+		var a = DateTools.delta(startDate, -1.0 * dc.daysBeforeOrderEnd * 1000 * 60 * 60 * 24);
+		var h : Date = dc.closingHour;
+		orderEndDate = new Date(a.getFullYear(), a.getMonth(), a.getDate(), h.getHours(), h.getMinutes(), 0);			
 		return { date: startDate, orderStartDate: orderStartDate, orderEndDate: orderEndDate };
 	}
 

@@ -106,7 +106,6 @@ class Install extends controller.Controller
 				var contract = new db.Catalog();
 				contract.name = t._("Vegetables Contract Example");
 				contract.group  = amap;
-				contract.type = 0;
 				contract.vendor = vendor;
 				contract.startDate = Date.now();
 				contract.endDate = DateTools.delta(Date.now(), 1000.0 * 60 * 60 * 24 * 364);

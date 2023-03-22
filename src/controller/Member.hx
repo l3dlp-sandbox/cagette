@@ -56,7 +56,7 @@ class Member extends Controller
 		//variable orders
 		view.distribs = distribs;
 		view.getUserOrders = function(md:db.MultiDistrib){
-			return OrderService.prepare(md.getUserOrders(member,db.Catalog.TYPE_VARORDER));
+			return OrderService.prepare(md.getUserOrders(member));
 		}
 
 		//notifications

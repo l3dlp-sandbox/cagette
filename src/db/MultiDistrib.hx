@@ -117,7 +117,7 @@ class MultiDistrib extends Object
 			return cache;
 		}else{
 			cache = [];
-			for( d in getDistributions(db.Catalog.TYPE_VARORDER)){
+			for( d in getDistributions()){
 				for ( p in d.catalog.getProductsPreview(productNum)){
 					cache.push( {
 						rid : p.image!=null ? Std.random(500)+500 : Std.random(500),
@@ -145,7 +145,7 @@ class MultiDistrib extends Object
 
 	public function userHasOrders(user:db.User,type:Int):Bool{
 		if(user==null) return false;
-		for ( d in getDistributions(type)){
+		for ( d in getDistributions()){
 			if(d.hasUserOrders(user)) return true;						
 		}
 		return false;
@@ -172,7 +172,7 @@ class MultiDistrib extends Object
 			if(orderStartDate==null) return null;
 			//find earliest order start date 
 			var date = orderStartDate;
-			for(d in getDistributions(db.Catalog.TYPE_VARORDER)){
+			for(d in getDistributions()){
 				if(d.orderStartDate==null) continue;
 				if(d.orderStartDate.getTime() < date.getTime()) date = d.orderStartDate;
 			}
@@ -188,7 +188,7 @@ class MultiDistrib extends Object
 			if(orderEndDate==null) return null;
 			//find lates order end date 
 			var date = orderEndDate;
-			for(d in getDistributions(db.Catalog.TYPE_VARORDER)){
+			for(d in getDistributions()){
 				if(d.orderEndDate==null) continue;
 				if(d.orderEndDate.getTime() > date.getTime()) date = d.orderEndDate;
 			}
@@ -204,22 +204,13 @@ class MultiDistrib extends Object
 	**/
 	@:skip private var distributionsCache:Array<db.Distribution>;
 	@:skip public var useCache:Bool;
-	public function getDistributions(?type:Int){
+	public function getDistributions(){
 		
 		if(distributionsCache==null || !useCache){
 			distributionsCache = db.Distribution.manager.search($multiDistrib==this,false).array();
 		}
 
-		if(type==null){
-			return distributionsCache;
-		}else{
-			var out = [];
-			for ( d in distributionsCache){
-				if( d.catalog.type==type ) out.push(d);
-			}
-			return out;
-		} 
-		
+		return distributionsCache;
 	}
 
 	public function getDistributionForContract(contract:db.Catalog):db.Distribution{
@@ -232,9 +223,9 @@ class MultiDistrib extends Object
 	/**
 	 * Get all orders involved in this multidistrib
 	 */
-	public function getOrders(?type:Int){
+	public function getOrders(){
 		var out = [];
-		for ( d in getDistributions(type)){
+		for ( d in getDistributions()){
 			out = out.concat(d.getOrders().array());
 		}
 		return out;		
@@ -244,9 +235,9 @@ class MultiDistrib extends Object
 	 * Get orders for a user in this multidistrib
 	 * @param user 
 	 */
-	public function getUserOrders(user:db.User,?type:Int){
+	public function getUserOrders(user:db.User){
 		var out = [];
-		for ( d in getDistributions(type) ){
+		for ( d in getDistributions() ){
 			var pids = d.catalog.getProducts(false).map(x->x.id);		
 			var userOrders =  db.UserOrder.manager.search( $userId == user.id && $distributionId==d.id && $productId in pids , false);	
 			for( o in userOrders ){
@@ -262,9 +253,9 @@ class MultiDistrib extends Object
 		return vendors.array();
 	}
 	
-	public function getUsers(?type:Int){
+	public function getUsers(){
 		var users = [];
-		for ( o in getOrders(type)) users.push(o.user);
+		for ( o in getOrders()) users.push(o.user);
 		return users.deduplicate();		
 	}
 

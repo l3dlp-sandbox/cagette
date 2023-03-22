@@ -73,7 +73,6 @@ class Public extends controller.Controller
 				catalogId 	: catalog.id,
 				//placeId 	: f.getValueOf("placeId"),
 				userId 		: app.user.id,
-				catalogType : f.getValueOf("csa")==true ? db.Catalog.TYPE_CONSTORDERS : db.Catalog.TYPE_VARORDER
 			}
 
 			//var place = db.Place.manager.get(f.getValueOf("placeId"));

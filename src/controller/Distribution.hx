@@ -189,8 +189,6 @@ class Distribution extends Controller {
 	function doEdit(d:db.Distribution, ?args:{from:String}) {
 		if (!app.user.isContractManager(d.catalog))
 			throw Error('/', t._('Forbidden action'));
-		if (d.catalog.isConstantOrdersCatalog())
-			throw Error('/', "Impossible de changer les dates d'ouverture de commande pour un contrat AMAP classique");
 		var contract = d.catalog;
 
 		view.text = "Vous pouvez personnaliser les dates d'ouverture et de fermeture de commande uniquement pour ce catalogue.";
@@ -246,9 +244,6 @@ class Distribution extends Controller {
 		text += "<div class='alert alert-warning'><i class='icon icon-info'></i> Attention, reporter une distribution peut... :<ul>";
 		text += "<li>Provoquer une renumérotation des paniers de la distribution cible.</li>";
 		text += "<li>Provoquer la modification de la date de fin du catalogue/contrat pour prendre en compte la nouvelle date.</li>";
-		if (d.catalog.isConstantOrdersCatalog()) {
-			text += "<li>Provoquer l'extension des souscriptions pour prendre en compte la nouvelle date tout en préservant le même nombre de distributions. Pensez à vérifier les souscriptions après avec effectué cette action.</li>";
-		}
 		text += "</ul></div>";
 		view.text = text;
 
@@ -302,80 +297,8 @@ class Distribution extends Controller {
 
 	@tpl('form.mtt')
 	function doEditCycle(d:db.DistributionCycle) {
-		/*checkHasDistributionSectionAccess();
 
-			var form = sugoi.form.Form.fromSpod(d);
-			form.removeElement(form.getElement("contractId"));
-
-			if (form.isValid()) {
-				form.toSpod(d); //update model
-				d.update();
-				throw Ok('/contractAdmin/distributions/'+d.catalog.id, t._("The delivery is now up to date"));
-			}
-
-			view.form = form;
-			view.title = t._("Modify a delivery"); */
 	}
-
-	/**
-		Insert a distribution
-	**/
-	/*@tpl("form.mtt")
-	public function doInsert(contract:db.Catalog) {
-		if (!app.user.isContractManager(contract))
-			throw Error('/', t._('Forbidden action'));
-
-		var d = new db.Distribution();
-		d.place = contract.group.getMainPlace();
-		var form = form.CagetteForm.fromSpod(d);
-		form.removeElement(form.getElement("contractId"));
-		form.removeElement(form.getElement("distributionCycleId"));
-		form.removeElement(form.getElement("end"));
-		var x = new form.CagetteDatePicker("end", t._("End time"), null, NativeDatePickerType.time);
-		form.addElement(x, 3);
-
-		// default values
-		form.getElement("date").value = DateTool.now().deltaDays(30).setHourMinute(19, 0);
-		form.getElement("end").value = DateTool.now().deltaDays(30).setHourMinute(20, 0);
-
-		if (contract.type == db.Catalog.TYPE_VARORDER) {
-			form.addElement(new form.CagetteDatePicker("orderStartDate", t._("Orders opening date"), DateTool.now().deltaDays(10).setHourMinute(8, 0)));
-			form.addElement(new form.CagetteDatePicker("orderEndDate", t._("Orders closing date"), DateTool.now().deltaDays(20).setHourMinute(23, 59)));
-		}
-
-		if (form.isValid()) {
-			var createdDistrib = null;
-			var orderStartDate = null;
-			var orderEndDate = null;
-
-			try {
-				if (contract.type == db.Catalog.TYPE_VARORDER) {
-					orderStartDate = form.getValueOf("orderStartDate");
-					orderEndDate = form.getValueOf("orderEndDate");
-				}
-
-				createdDistrib = service.DistributionService.create(contract, form.getValueOf("date"), form.getValueOf("end"), form.getValueOf("placeId"),
-					orderStartDate, orderEndDate);
-			} catch (e:tink.core.Error) {
-				throw Error('/contractAdmin/distributions/' + contract.id, e.message);
-			}
-
-			if (createdDistrib.date == null) {
-				var html = 'Votre demande de distribution a été envoyée à ${contract.vendor.name}. Vous recevrez un courriel vous indiquant si la demande a été acceptée ou refusée';
-				var btn = "<a href='/contractAdmin/distributions/" + contract.id + "' class='btn btn-primary'>OK</a>";
-				App.current.view.extraNotifBlock = App.current.processTemplate("block/modal.mtt",
-					{html: html, title: t._("Distribution request sent"), btn: btn});
-			} else {
-				throw Ok('/contractAdmin/distributions/' + createdDistrib.catalog.id, t._("The distribution has been recorded"));
-			}
-		} else {
-			// event
-			app.event(PreNewDistrib(contract));
-		}
-
-		view.form = form;
-		view.title = t._("Create a distribution");
-	}*/
 
 	/**
 		Invite farmers to a single distrib
@@ -647,95 +570,7 @@ class Distribution extends Controller {
 	 */
 	@tpl("form.mtt")
 	public function doInsertCycle(contract:db.Catalog) {
-		/*if (!app.user.isContractManager(contract)) throw Error('/', t._("Forbidden action"));
-
-			var dc = new db.DistributionCycle();
-			dc.place = contract.amap.getMainPlace();
-			var form = sugoi.form.Form.fromSpod(dc);
-			form.removeElementByName("contractId");
-
-			form.getElement("startDate").value = DateTool.now();
-			form.getElement("endDate").value  = DateTool.now().deltaDays(30);
-
-			//start hour
-			form.removeElementByName("startHour");
-			var x = new HourDropDowns("startHour", t._("Start time"), DateTool.now().setHourMinute( 19, 0) , true);
-			form.addElement(x, 5);
-
-			//end hour
-			form.removeElement(form.getElement("endHour"));
-			var x = new HourDropDowns("endHour", t._("End time"), DateTool.now().setHourMinute(20, 0), true);
-			form.addElement(x, 6);
-
-			if (contract.type == db.Catalog.TYPE_VARORDER){
-				
-				form.getElement("daysBeforeOrderStart").value = 10;
-				form.getElement("daysBeforeOrderStart").required = true;
-				form.removeElementByName("openingHour");
-				var x = new HourDropDowns("openingHour", t._("Opening time"), DateTool.now().setHourMinute(8, 0) , true);
-				form.addElement(x, 8);
-				
-				form.getElement("daysBeforeOrderEnd").value = 2;
-				form.getElement("daysBeforeOrderEnd").required = true;
-				form.removeElementByName("closingHour");
-				var x = new HourDropDowns("closingHour", t._("Closing time"), DateTool.now().setHourMinute(23, 0) , true);
-				form.addElement(x, 10);
-				
-			}else{
-				
-				form.removeElementByName("daysBeforeOrderStart");
-				form.removeElementByName("daysBeforeOrderEnd");	
-				form.removeElementByName("openingHour");
-				form.removeElementByName("closingHour");
-			}
-
-			if (form.isValid()) {
-
-				var createdDistribCycle = null;
-				var daysBeforeOrderStart = null;
-				var daysBeforeOrderEnd = null;
-				var openingHour = null;
-				var closingHour = null;
-
-				try{
-					
-					if (contract.type == db.Catalog.TYPE_VARORDER) {
-						daysBeforeOrderStart = form.getValueOf("daysBeforeOrderStart");
-						daysBeforeOrderEnd = form.getValueOf("daysBeforeOrderEnd");
-						openingHour = form.getValueOf("openingHour");
-						closingHour = form.getValueOf("closingHour");
-					}
-
-					createdDistribCycle = service.DistributionService.createCycle(
-					contract,
-					form.getElement("cycleType").getValue(),
-					form.getValueOf("startDate"),	
-					form.getValueOf("endDate"),	
-					form.getValueOf("startHour"),
-					form.getValueOf("endHour"),											
-					daysBeforeOrderStart,											
-					daysBeforeOrderEnd,											
-					openingHour,	
-					closingHour,																	
-					form.getValueOf("placeId"));
-				}
-				catch(e:tink.core.Error){
-					throw Error('/contractAdmin/distributions/' + contract.id,e.message);
-				}
-
-				if (createdDistribCycle != null) {
-					throw Ok('/contractAdmin/distributions/'+ contract.id, t._("The delivery has been saved"));
-				}
-				 
-			}
-			else{
-				dc.contract = contract;
-				app.event(PreNewDistribCycle(dc));
-			}
-
-			view.form = form;
-			view.title = t._("Schedule a recurrent delivery");
-		 */
+		
 	}
 
 	/**
@@ -850,7 +685,7 @@ class Distribution extends Controller {
 			// reset orders
 			for (b in distrib.getBaskets()) {
 				b.lock();
-				var orders = b.getOrders(Catalog.TYPE_VARORDER);
+				var orders = b.getOrders();
 				for (o in orders) {
 					o.lock();
 					o.quantity = 0;
@@ -1207,7 +1042,7 @@ class Distribution extends Controller {
 		var form = new sugoi.form.Form("missingProduct");
 
 		var datas = [];
-		for (d in distrib.getDistributions(db.Catalog.TYPE_VARORDER)) {
+		for (d in distrib.getDistributions()) {
 			datas.push({label: d.catalog.name.toUpperCase(), value: null});
 			for (p in d.catalog.getProducts(false)) {
 				datas.push({label: "---- " + p.getName() + " : " + p.getPrice() + view.currency(), value: p.id});
@@ -1223,7 +1058,7 @@ class Distribution extends Controller {
 				throw Error(sugoi.Web.getURI(), t._("Please select a product"));
 			}
 			var count = 0;
-			for (order in distrib.getOrders(db.Catalog.TYPE_VARORDER)) {
+			for (order in distrib.getOrders()) {
 				if (product.id == order.product.id) {
 					// set qt to 0
 					service.OrderService.edit(order, 0);
@@ -1247,7 +1082,7 @@ class Distribution extends Controller {
 		var form = new sugoi.form.Form("changePrice");
 
 		var datas = [];
-		for (d in distrib.getDistributions(db.Catalog.TYPE_VARORDER)) {
+		for (d in distrib.getDistributions()) {
 			datas.push({label: d.catalog.name.toUpperCase(), value: null});
 			for (p in d.catalog.getProducts(false)) {
 				datas.push({label: "---- " + p.getName() + " : " + p.getPrice() + view.currency(), value: p.id});
@@ -1266,7 +1101,7 @@ class Distribution extends Controller {
 			var price:Float = form.getValueOf("price");
 
 			var count = 0;
-			for (order in distrib.getOrders(db.Catalog.TYPE_VARORDER)) {
+			for (order in distrib.getOrders()) {
 				if (product.id == order.product.id) {
 					// change price
 					order.lock();

@@ -15,7 +15,6 @@ class Catalog extends Object
 {
 	public var id : SId;
 	public var name : SString<64>;
-	public var type : SInt;
 	
 	//responsable
 	@formPopulate("populate") @:relation(userId) public var contact : SNull<User>;
@@ -45,8 +44,6 @@ class Catalog extends Object
 	public var absencesStartDate : SNull<SDateTime>;
 	public var absencesEndDate : SNull<SDateTime>;
 
-	@:skip inline public static var TYPE_CONSTORDERS = 0; 	//constant orders catalog (contrat AMAP classique)
-	@:skip inline public static var TYPE_VARORDER = 1;		//variable orders catalog (contrat AMAP variable)
 	@:skip var cache_hasActiveDistribs : Bool;
 
 	public function new() 
@@ -67,29 +64,16 @@ class Catalog extends Object
 	public function isUserOrderAvailable():Bool {
 		
 		if(userOrderAvailableCache!=null) return userOrderAvailableCache;
-
-		if (type == TYPE_CONSTORDERS ) {
-			userOrderAvailableCache = isVisibleInShop();
-		}else {
 		
-			var n = Date.now();			
-			var d = db.Distribution.manager.count( $orderStartDate <= n && $orderEndDate >= n && $catalogId==this.id);
-		
-			userOrderAvailableCache = d>0 && isVisibleInShop();
-		}
+		var n = Date.now();			
+		var d = db.Distribution.manager.count( $orderStartDate <= n && $orderEndDate >= n && $catalogId==this.id);
+	
+		userOrderAvailableCache = d>0 && isVisibleInShop();
 
 		return userOrderAvailableCache;
 		
 	}
 
-	public function isConstantOrdersCatalog(){
-		return type == TYPE_CONSTORDERS;
-	}
-
-	public function isVariableOrdersCatalog(){
-		return type == TYPE_VARORDER;
-	}
-	
 	/**
 	 * The products can be displayed in a shop ?
 	 */
@@ -111,13 +95,8 @@ class Catalog extends Object
 	public function hasOpenOrders(){
 		var now = Date.now();
 		var contractOpen = flags.has(UsersCanOrder) && now.getTime() < this.endDate.getTime() && now.getTime() > this.startDate.getTime();
-
-		if(this.isConstantOrdersCatalog()){
-			return contractOpen;
-		}else{			
-			var d = db.Distribution.manager.count( $orderStartDate <= now && $orderEndDate > now && $catalogId==this.id);
-			return contractOpen && d > 0;
-		}		
+		var d = db.Distribution.manager.count( $orderStartDate <= now && $orderEndDate > now && $catalogId==this.id);
+		return contractOpen && d > 0;
 	}
 		
 	public function hasPercentageOnOrders():Bool {
@@ -130,7 +109,7 @@ class Catalog extends Object
 	}
 
 	public function hasConstraints() : Bool {
-		return this.isVariableOrdersCatalog() && ( this.distribMinOrdersTotal>0  || this.catalogMinOrdersTotal>0 );
+		return this.distribMinOrdersTotal>0  || this.catalogMinOrdersTotal>0;
 	}
 
 	/**

@@ -121,7 +121,6 @@ class Main extends controller.Controller
 				newcat.name = c.name;
 				newcat.startDate = c.startDate;
 				newcat.endDate = c.endDate;
-				newcat.type = c.type;
 				newcat.description = c.description;
 				newcat.contact = c.contact;
 				newcat.vendor = c.vendor;

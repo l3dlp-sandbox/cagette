@@ -127,16 +127,9 @@ class PaymentService {
 
 		if(orders.length > 0){
 			var contract = orders[0].product.catalog;
-			if (contract.type == db.Catalog.TYPE_CONSTORDERS) {
-				// Constant orders
-				var dNum = contract.getDistribs(false).length;
-				op.name = "" + contract.name + " (" + contract.vendor.name + ") " + dNum + " " + t._("deliveries");
-				op.amount = dNum * (0 - _amount);
-			} else {
-				if (basket == null)
-					throw "varying contract orders should have a basket";
-				op.amount = 0 - _amount;
-			}
+			if (basket == null)
+				throw "varying contract orders should have a basket";
+			op.amount = 0 - _amount;
 	
 		}else{
 			op.amount = 0;
@@ -214,7 +207,7 @@ class PaymentService {
 			var distrib = basket.multiDistrib;
 
 			// get all orders for the same multidistrib, in order to update related operation.
-			var allOrders = distrib.getUserOrders(user, db.Catalog.TYPE_VARORDER);
+			var allOrders = distrib.getUserOrders(user);
 
 			// existing transaction
 			var existing = basket.getOrderOperation(false);

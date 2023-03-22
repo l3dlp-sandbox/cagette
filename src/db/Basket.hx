@@ -101,18 +101,8 @@ class Basket extends Object
 	/**
 	 *  Get basket's orders
 	 */
-	public function getOrders(?type:Int):Array<db.UserOrder> {
-		if(type==null){
-			//get all orders
-			return db.UserOrder.manager.search($basket == this, false).array();
-		}else{
-			//get CSA/variable orders 
-			var out = new Array<db.UserOrder>();
-			for( d in getDistribution().getDistributions(type)){
-				out = out.concat( d.getUserOrders(this.user).array() );
-			}
-			return out;
-		}		
+	public function getOrders():Array<db.UserOrder> {
+		return db.UserOrder.manager.search($basket == this, false).array();
 	}
 
 	/**
@@ -155,14 +145,14 @@ class Basket extends Object
 	 * Returns the total amount of all the orders in this basket
 	 /!\ never forget to round each order line 
 	 */
-	public function getOrdersTotal(?type:Int) : Float {
+	public function getOrdersTotal() : Float {
 		/*var total = 0.0;
 		for( order in getOrders(type)){
 			total += order.quantity * (order.productPrice * (1+order.feesRate/100));
 		}
 		return total;
 		*/
-		return getOrders(type).fold( 
+		return getOrders().fold( 
 			(order,total)-> {
 				var a = order.quantity * (order.productPrice * (1+order.feesRate/100));
 				//neko float bug

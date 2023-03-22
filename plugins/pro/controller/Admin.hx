@@ -175,7 +175,7 @@ class Admin extends controller.Controller {
 					throw "various users in basket " + b.id;
 
 				if (o.distribution == null) {
-					Sys.print('basket#${b.id} : $o has null distrib, its from a ${o.product.catalog.type} type<br/>');
+					Sys.print('basket#${b.id} : $o has null distrib<br/>');
 					Sys.print('date : ' + b.cdate + '<br/>');
 					Sys.print('all orders are : ' + orders + '<br/>');
 					ok = false;
@@ -185,15 +185,6 @@ class Admin extends controller.Controller {
 						if (ord.quantity == 0) {
 							ord.lock();
 							ord.delete();
-						}
-					}
-
-					// fix : si c'est un contrat AMAP, ça n'a rien à faire dans un basket.
-					for (ord in orders) {
-						if (ord.product.catalog.type == db.Catalog.TYPE_CONSTORDERS) {
-							ord.lock();
-							ord.basket = null;
-							ord.update();
 						}
 					}
 
@@ -210,7 +201,7 @@ class Admin extends controller.Controller {
 				}
 
 				if (o.distribution.multiDistrib == null) {
-					Sys.print('basket#${b.id} : $o has null multidistrib, its from a ${o.product.catalog.type} type<br/>');
+					Sys.print('basket#${b.id} : $o has null multidistrib<br/>');
 					Sys.print('date : ' + b.cdate + '<br/>');
 					Sys.print('all orders are : ' + orders + '<br/>');
 					ok = false;

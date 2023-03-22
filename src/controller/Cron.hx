@@ -696,8 +696,6 @@ class Cron extends Controller
 		task.title('Look for distribs with orderStartDate between $from to $to (${distribs.length})');
  		if (distribs.length == 0) return;		
 		
-		//exclude CSA catalogs
-		distribs = distribs.filter( (d) -> return d.catalog.type!=db.Catalog.TYPE_CONSTORDERS );
 		//exclude disabled groups
 		distribs = distribs.filter(d -> d.multiDistrib.group.isDisabled()==false);
 		distribs.map( d -> task.log("Distrib : "+d.date+" de "+d.catalog.name+", groupe : "+d.catalog.group.name) );

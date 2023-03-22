@@ -51,9 +51,6 @@ class Shop extends Controller
 		contracts = db.Catalog.getActiveContracts(app.getCurrentGroup());
 	
 		for (c in Lambda.array(contracts)) {
-			//only varying orders
-			if (c.type != db.Catalog.TYPE_VARORDER) contracts.remove(c);
-			
 			if (!c.isVisibleInShop()) contracts.remove(c);
 		}
 

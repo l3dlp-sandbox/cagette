@@ -128,7 +128,6 @@ class Contract extends Controller
 		
 		t._("Create a catalog");
 		var catalog = new db.Catalog();
-		catalog.type = type;
 		catalog.group = app.user.getGroup();
 		catalog.vendor = vendor;
 
@@ -189,7 +188,7 @@ class Contract extends Controller
 		var cids = Lambda.map(app.user.getGroup().getActiveContracts(true), function(c) return c.id);
 		var distribs = db.Distribution.manager.search(($catalogId in cids) && $date >= d1 && $date <=d2 , false);
 		var orders = db.UserOrder.manager.search($userId==app.user.id && $distributionId in Lambda.map(distribs,function(d)return d.id)  );*/
-		var orders = basket.getOrders(Catalog.TYPE_VARORDER);
+		var orders = basket.getOrders();
 		view.orders = service.OrderService.prepare(orders);
 		view.date = distrib.getDate();
 		

@@ -9,8 +9,8 @@ class CatalogService{
 
     public static function getForm( catalog:db.Catalog ) : sugoi.form.Form {
 
-		if ( catalog.group == null || catalog.type == null || catalog.vendor == null ) {
-			throw new tink.core.Error( "Un des éléments suivants est manquant : le groupe, le type, ou le producteur." );
+		if ( catalog.group == null || catalog.vendor == null ) {
+			throw new tink.core.Error( "Un des éléments suivants est manquant : le groupe ou le producteur." );
 		}
 
 		var t = sugoi.i18n.Locale.texts;

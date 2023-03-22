@@ -242,13 +242,6 @@ class ProReportService{
 		if (options.distribution != null){
 			
 			//by distrib
-			//var d = options.distribution;
-			//scopedDistributions = Lambda.list([d]);
-			//exportName = d.contract.amap.name+" - Distribution "+d.contract.name+" du " + d.date.toString().substr(0, 10);
-			//where += ' and p.contractId = ${d.contract.id}';
-			//if (d.contract.type == db.Catalog.TYPE_VARORDER ) {
-				//where += ' and up.distributionId = ${d.id}';
-			//}
 			throw "not implemented";
 			
 		}else if(options.startDate!=null && options.endDate!=null && options.allCatalogs!=null){

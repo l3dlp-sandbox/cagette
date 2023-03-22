@@ -523,14 +523,12 @@ class ContractAdmin extends Controller
 		sendNav(contract);
 		
 		if (!app.user.canManageContract(contract)) throw Error("/", t._("You do not have the authorization to manage this contract"));
-		if (contract.type == db.Catalog.TYPE_VARORDER && args.d == null ) { 
+		if (args.d == null ) { 
 			throw Redirect("/contractAdmin/selectDistrib/" + contract.id); 
 		}
 		var d = null;
-		if (contract.type == db.Catalog.TYPE_VARORDER ){
-			view.distribution = args.d;
-			d = args.d;
-		}
+		view.distribution = args.d;
+		d = args.d;
 		
 		for ( o in contract.getOrders(d)){
 			o.lock();
@@ -571,7 +569,6 @@ class ContractAdmin extends Controller
 			nc.description = catalog.description;
 			nc.distributorNum = catalog.distributorNum;
 			nc.flags = catalog.flags;
-			nc.type = Catalog.TYPE_VARORDER;
 			nc.vendor = catalog.vendor;
 			nc.percentageName = catalog.percentageName;
 			nc.percentageValue = catalog.percentageValue;
@@ -629,7 +626,7 @@ class ContractAdmin extends Controller
 		
 		sendNav(contract);		
 		if (!app.user.canManageContract(contract)) throw Error("/", t._("You do not have the authorization to manage this contract"));
-		if (contract.type == db.Catalog.TYPE_VARORDER && args.d == null ) throw Redirect("/contractAdmin/selectDistrib/" + contract.id); 
+		if (args.d == null ) throw Redirect("/contractAdmin/selectDistrib/" + contract.id); 
 		
 		var d = args != null ? args.d : null;
 		if (d == null) d = contract.getDistribs(false).first();

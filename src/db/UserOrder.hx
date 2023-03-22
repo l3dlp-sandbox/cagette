@@ -87,16 +87,12 @@ class UserOrder extends Object
 	public function canModify():Bool {
 	
 		var can = false;
-		if (this.product.catalog.type == db.Catalog.TYPE_VARORDER) {
-			if(this.distribution==null) return false;
-			if (this.distribution.orderStartDate == null) {
-				can = true;
-			}else {
-				var n = Date.now().getTime();
-				can = n > this.distribution.orderStartDate.getTime() && n < this.distribution.orderEndDate.getTime();
-			}
+		if(this.distribution==null) return false;
+		if (this.distribution.orderStartDate == null) {
+			can = true;
 		}else {
-			can = this.product.catalog.isUserOrderAvailable();
+			var n = Date.now().getTime();
+			can = n > this.distribution.orderStartDate.getTime() && n < this.distribution.orderEndDate.getTime();
 		}
 		
 		return can;

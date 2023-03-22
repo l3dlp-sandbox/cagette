@@ -142,7 +142,7 @@ class Group extends controller.Controller
 					desc : "<div class='alert alert-danger' style='font-size: 0.9em'>Il n'est plus possible d'ouvrir de groupe en mode AMAP sur Cagette.net</div>"
 				}
 			];	
-			var gt = new sugoi.form.elements.RadioGroup("type", t._("Group type"), data ,"2", Std.string( db.Catalog.TYPE_VARORDER ), true, true, true);
+			var gt = new sugoi.form.elements.RadioGroup("type", t._("Group type"), data ,"2", true, true, true);
 			f.addElement(gt,2);
 		}
 

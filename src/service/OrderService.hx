@@ -640,7 +640,7 @@ class OrderService
 		if( catalog == null ) {
 
 			//We edit a whole multidistrib, edit only var orders.
-			orders = multiDistrib.getUserOrders(user , db.Catalog.TYPE_VARORDER);
+			orders = multiDistrib.getUserOrders(user);
 		} else {
 			
 			//Edit a single catalog, may be CSA or variable

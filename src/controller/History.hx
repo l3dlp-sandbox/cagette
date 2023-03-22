@@ -52,9 +52,9 @@ class History extends Controller
 	**/
 	@logged
 	@tpl('history/basket.mtt')
-	function doBasket(basket : db.Basket, ?type:Int){
+	function doBasket(basket : db.Basket){
 		view.basket = basket;
-		view.orders = service.OrderService.prepare(basket.getOrders(type));
+		view.orders = service.OrderService.prepare(basket.getOrders());
 		view.print = app.params["print"]!=null;
 	}
 	

@@ -9,11 +9,10 @@ import Common;
  */
 class Order extends Controller
 {
-	public function doCatalogs( multiDistrib : db.MultiDistrib, ?args : { catalogType : Int } ) {
+	public function doCatalogs( multiDistrib : db.MultiDistrib ) {
 
 		var catalogs = new Array<ContractInfo>();
-		var type = ( args != null && args.catalogType != null ) ? args.catalogType : null;
-		for( distrib in multiDistrib.getDistributions(type) ) {
+		for( distrib in multiDistrib.getDistributions() ) {
 
 			//check if the vendor is banned
 			var vendor = distrib.catalog.vendor;
@@ -39,7 +38,6 @@ class Order extends Controller
 	function checkRights(user:db.User,catalog:db.Catalog,multiDistrib:db.MultiDistrib){
 
 		if( catalog==null && multiDistrib==null ) throw new Error("You should provide at least a catalog or a multiDistrib");
-		if( catalog!=null && catalog.type==db.Catalog.TYPE_CONSTORDERS && multiDistrib!=null ) throw new Error("You cant edit a CSA catalog for a multiDistrib");
 		
 		//rights	
 		if (catalog==null && !app.user.canManageAllContracts()) throw new Error(403,t._("Forbidden access"));
