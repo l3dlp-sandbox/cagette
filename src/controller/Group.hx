@@ -251,14 +251,6 @@ class Group extends controller.Controller
 	// 	view.addr = view.escapeJS(addr);
 	// }
 
-	@tpl("group/csa.mtt")
-	public function doCsa(args:{name:String}){
-
-		view.groupName = args.name;
-
-	}
-
-
 	@tpl("group/map.mtt")
 	public function doMap(?args:{?lat:Float,?lng:Float,?address:String}){
 
