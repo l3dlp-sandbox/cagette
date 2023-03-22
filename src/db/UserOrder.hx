@@ -33,9 +33,6 @@ class UserOrder extends Object
 	@:relation(basketId)
 	public var basket:db.Basket;
 
-	@:relation(subscriptionId)
-	public var subscription : SNull<db.Subscription>;
-	
 	public var date : SDateTime;	
 	public var flags : SFlags<OrderFlags>;
 	

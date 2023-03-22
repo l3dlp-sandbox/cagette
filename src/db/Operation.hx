@@ -42,7 +42,6 @@ class Operation extends sys.db.Object
 
 	//new fields
 	@hideInForms @:relation(basketId) public var basket : SNull<db.Basket>; 	//relation to basket for variable orders
-	@hideInForms @:relation(subscriptionId) public var subscription : SNull<Subscription>; 	//relation to contract for CSA orders
 	@hideInForms public var data : SNull<SString<256>>; 						//json data
 
 	public function setData(data:Dynamic){
