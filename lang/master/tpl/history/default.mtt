@@ -94,7 +94,6 @@
 			</a>
 		</span>
 	</div>
-	::end::
 
 	<!--Membership-->
 	::if user.getGroup().hasMembership::
