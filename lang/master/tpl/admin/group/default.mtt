@@ -43,9 +43,6 @@
 		</td>
 		
 		<td>			
-			Mode Marché
-		</td>		
-		<td>			
 			$$bool(::g.active::)			
 		</td>
 
