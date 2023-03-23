@@ -12,7 +12,6 @@
 -dce no
 -D debug
 -D no-deprecation-warnings
--D react-auto-jsx
 -js ../www/js/app.js
 
 
