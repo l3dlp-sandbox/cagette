@@ -4,7 +4,6 @@
 
 -lib sugoi
 -lib modular
--lib tink_json
 
 
 -main App

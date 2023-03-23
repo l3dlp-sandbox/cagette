@@ -4,7 +4,6 @@ import js.Browser;
 class App {
 
     public static var instance : App;    
-    // public static var VERSION = ([0,14]  : Version).withPre(GitMacros.getGitShortSHA(), GitMacros.getGitCommitDate());
     	
 	public var currency : String; //currency symbol like &euro; or $
 	public var Modal = bootstrap.Modal;
