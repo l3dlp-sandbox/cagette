@@ -427,7 +427,7 @@ class Admin extends Controller {
 				vendorNum: vendors.length,
 				cproCatalogNum: untyped g.cproContractNum,
 				catalogNum: untyped g.contractNum,
-				useStocks: db.Product.manager.count(($catalogId in cids) && $active == true && $stock > 0) > 0,
+				useStocks: true,
 				// turnover12months:Math.round(turnOver),
 				distribNum12months: distributions.length,
 				payments: g.allowedPaymentsType

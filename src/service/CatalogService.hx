@@ -35,7 +35,7 @@ class CatalogService{
 		//2022-02-01 remove percentage on orders
 		form.removeElementByName("percentageValue");
 		form.removeElementByName("percentageName");
-		untyped form.getElement("flags").excluded = [2];// remove "PercentageOnOrders" flag
+		untyped form.getElement("flags").excluded = [1,2];// remove "PercentageOnOrders" flag
 		
 		if ( catalog.group.hasShopMode() ) {
 			//SHOP MODE
@@ -171,16 +171,6 @@ class CatalogService{
 
 				if ( catalog.hasPercentageOnOrders() && catalog.percentageValue == null ) {
 					throw new Error( t._("If you would like to add fees to the order, define a rate (%) and a label.") );
-				}
-				
-				if ( catalog.hasStockManagement()) {
-
-					for ( p in catalog.getProducts()) {
-						if ( p.stock == null ) {
-							App.current.session.addMessage(t._("Warning about management of stock. Please fill the field \"stock\" for all your products"), true );
-							break;
-						}
-					}
 				}
 
 			}

@@ -49,11 +49,11 @@ class WholesaleOrderService {
 	 */
 	public function getLinks(?excludeIdenticalProducts = false ):Array<{p1:db.Product,p2:db.Product}>{
 
-		if(!conf.active) return [];
 		var out = [];
+		if(!conf.active) return out;
 		
 		var rc = connector.db.RemoteCatalog.getFromContract(contract);
-		if (rc == null) return [];
+		if (rc == null) return out;
 
 		//get from cache
 		var cache : Array<{p1:Int,p2:Int}> = sugoi.db.Cache.get("wholesale_links_contract"+contract.id);
@@ -69,6 +69,7 @@ class WholesaleOrderService {
 
 		//populate a map by productId containing related offers
 		var catOffers = new Map<Int,Array<pro.db.POffer>>(); 
+		var products = contract.getProducts(false);
 		for( o in rc.getPCatalog().getOffers()){
 			var arr = catOffers[o.offer.product.id];
 			if(arr==null) arr = [];
@@ -87,7 +88,7 @@ class WholesaleOrderService {
 
 			//find the big offer
 			var bigOffer = offers[0];
-			var big = db.Product.getByRef(contract,bigOffer.ref);
+			var big = products.find(p -> p.pOffer!=null && p.pOffer.id == bigOffer.id);
 			if (big == null) continue;//throw new tink.core.Error("unable to find wholesale product with ref "+bigOffer.ref);
 			offers.remove(bigOffer);
 
@@ -101,9 +102,8 @@ class WholesaleOrderService {
 				cat.toSync();
 			}
 			
-			for ( off in offers ){
-				
-				var little = db.Product.getByRef(contract,off.ref);
+			for ( off in offers ){				
+				var little = products.find(p -> p.pOffer!=null && p.pOffer.id == off.id);
 				if (little == null) continue;//throw new tink.core.Error("unable to find retail product with ref "+off.ref);
 				if(excludeIdenticalProducts && little.id==big.id) continue;
 				out.push({p1:little,p2:big});
@@ -118,7 +118,7 @@ class WholesaleOrderService {
 		//save cache
 		if(cache==null){
 			var cache = [];
-			for(o in out) cache.push({p1:o.p1.id,p2:o.p2.id});
+			for(o in out) cache.push({p1:o.p1.id, p2:o.p2.id});
 			sugoi.db.Cache.set("wholesale_links_contract"+contract.id,cache,60*10); //store for 10 mn
 		}
 

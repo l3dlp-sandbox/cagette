@@ -70,7 +70,6 @@ typedef ProductInfo = {
 	categories : Null<Array<Int>>,	//used in old shop
 	subcategories : Null<Array<Int>>,  //used in new shop
 	orderable : Bool,			//can be currently ordered
-	stock: Null<Float>,			//available stock
 	// hasFloatQt : Bool,
 	qt:Null<Float>,
 	unitType:Null<Unit>,

@@ -73,7 +73,6 @@ class ProductService{
 		p.image = source_p.image;
 		p.desc = source_p.desc;
 		p.ref = source_p.ref;
-		p.stock = source_p.stock;
 		p.vat = source_p.vat;
 		p.organic = source_p.organic;
 		p.txpProduct = source_p.txpProduct;
@@ -103,20 +102,6 @@ class ProductService{
 		f.getElement("bulk").description = "Ce produit est vendu en vrac ( sans conditionnement ). Le poids/volume commandé peut être corrigé après pesée.";		
 		f.getElement("variablePrice").description = "Comme au marché, le prix final sera calculé en fonction du poids réel après pesée.";
 		f.getElement("multiWeight").description = "Permet de peser séparément chaque produit. Idéal pour la volaille par exemple.";
-
-		//stock mgmt ?
-		if (!product.catalog.hasStockManagement()){
-			f.removeElementByName('stock');	
-		} else {
-			if(!product.catalog.group.hasShopMode()){
-				//manage stocks by distributions for CSA contracts
-				var stock = f.getElement("stock");
-				stock.label = "Stock (par distribution)";				 
-				if(product.stock!=null){
-					stock.value = Math.floor( product.stock / product.catalog.getDistribs(false).length );
-				}		
-			}
-		}
 
 		var group = product.catalog.group;
 		
