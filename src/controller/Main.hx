@@ -308,15 +308,6 @@ class Main extends Controller {
 		d.dispatch(new AmapAdmin());
 	}
 
-	@logged
-	function doValidate(basket:db.Basket, d:haxe.web.Dispatch) {
-		var v = new controller.Validate();
-		v.basket = basket;
-		v.user = basket.user;
-		v.multiDistrib = basket.multiDistrib;
-		d.dispatch(v);
-	}
-
 	@admin
 	function doAdmin(d:Dispatch) {
 		d.dispatch(new controller.admin.Admin());
