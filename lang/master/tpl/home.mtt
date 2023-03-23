@@ -244,10 +244,11 @@ $$browserDetection()
 		</p>
 
 		::if (user==null)::		
-		<a href="#" class="btn btn-primary" onclick="_Cagette.registerBox('/user/joingroup','::loginBoxOptions.sid::',null,::loginBoxOptions.phoneRequired::,::loginBoxOptions.addressRequired::)">
+		<a href="#" class="btn btn-primary" onclick="neo.createNeoModule('login-registration-container', 'loginRegistration', { redirectUrl: '/user/joingroup', sid: '::loginBoxOptions.sid::', message: null, phoneRequired: ::loginBoxOptions.phoneRequired::, addressRequired: ::loginBoxOptions.addressRequired::, openRegistration:true})" >
 			<span class="glyphicon glyphicon-plus"></span>
 			M'inscrire à ce groupe
 		</a>
+		<div id='login-registration-container'></div>
 		::else::
 		<a href="/user/joingroup" class="btn btn-primary">
 			<span class="glyphicon glyphicon-plus"></span>

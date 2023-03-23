@@ -676,4 +676,6 @@
 		<link rel="icon" type="image/x-icon" href="/theme/::theme.id::/favicon.ico"/>
 	</macro>
 
+	<macro name="openImageUploader(context, entityId, width, height, ?imageType, ?cProId)" onclick="neo.createNeoModule('image-uploader-container', 'imageUploaderDialog', { context: ::context::, entityId: ::entityId::, width: ::width::, height: ::height::, imageType: ::imageType::, currentCagetteProId: ::cProId:: });" />
+
 </macros>

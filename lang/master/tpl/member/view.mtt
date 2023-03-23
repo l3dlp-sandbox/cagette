@@ -214,7 +214,10 @@
 			::_("for the period||full sentence : Membership up to date for the period 2017-2018"):: <b>::user.getGroup().getPeriodName(null)::</b>
 			<br/>
 			
-			<a onclick="_Cagette.membershipBox(::member.id::,`::member.getName()::`,::userGroup._group.id::,'/member/view/::member.id::')" class="btn btn-default btn-sm">::_("Manage membership fees")::</a>
+			<a onclick="neo.createNeoModule('membership-neo-container', 'membershipDialog', {groupId: ::userGroup._group.id::,userId: ::member.id::,userName: '::member.getName()::',callbackUrl: '/member/view/::member.id::'});" class="btn btn-default btn-sm">
+				::_("Manage membership fees")::
+			</a>
+			<div id="membership-neo-container"/>
 		</div>
 </div>
 
