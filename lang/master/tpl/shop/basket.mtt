@@ -7,9 +7,9 @@
             neo.createNeoModule("neo-container", "transaction", {
                     basketId: ::basket.id::,
                     groupId: ::group.id::,
-                    sid: "::getSid()::"
+                    sid: "::getSid()::",
+                    differenciatedPricingSetting: ::settings.differenciatedPricing::
                 });
         });
     </script>
-    
 ::end::

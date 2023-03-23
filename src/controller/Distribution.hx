@@ -1124,7 +1124,10 @@ class Distribution extends Controller {
 			throw Ok(returnUrl, t._("You have been successfully removed from this role."));
 		}
 
-		view.title = t._("Enter the reason why you are leaving this role.");
+		view.title = 'Saisissez la raison pour laquelle vous vous désistez.';
+		if (App.current.getSettings().unsubscribeVolunteerRoleReasonOnlyForAdmin==true){
+			view.text = "La raison de votre désistement sera uniquement communiquée aux administrateurs de ce groupe";
+		}
 		view.form = form;
 	}
 

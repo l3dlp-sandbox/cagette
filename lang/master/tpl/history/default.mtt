@@ -192,6 +192,21 @@
 	</div>
 	::end::
 
+	::if settings.differenciatedPricing==true::
+	<h3>Tarification différenciée</h3>
+	<div  class="article">
+		<div id="neo-container"></div>
+	</div>
+	<script>
+		document.addEventListener("DOMContentLoaded", function(event) {
+			neo.createNeoModule("neo-container", "current-differenciated-pricing", {
+					userId: ::user.id::,
+					groupId: ::user.getGroup().id::
+				});
+		});
+	</script>
+	::end::
+
 	
 </div>
 

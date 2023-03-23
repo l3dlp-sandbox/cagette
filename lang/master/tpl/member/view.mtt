@@ -78,7 +78,25 @@
 			</div>
 		</div>
 
-	
+		::if settings.differenciatedPricing==true::
+		<div class="panel panel-default ">
+			<div class="panel-heading">Tarification différenciée</div>
+			
+			<div class="panel-body" style="font-size:0.8em;">
+				<div id="neo-container" style="margin-bottom: 8px;"></div>
+				<script>
+					document.addEventListener("DOMContentLoaded", function(event) {
+						neo.createNeoModule("neo-container", "current-differenciated-pricing", {
+								userId: ::member.id::,
+								groupId: ::userGroup._group.id::,
+								forAdmin: true
+							});
+					});
+				</script>
+			</div>
+		</div>
+		::end::
+
 		<p>
 			<!--$$edit(::_("Edit")::,/member/edit/::member.id::) -->
 			$$delete(::_("Remove from group")::,/member/delete/::member.id::?token=::token::)
