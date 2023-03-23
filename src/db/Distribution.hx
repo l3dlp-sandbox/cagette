@@ -22,7 +22,7 @@ class Distribution extends Object
 	
 	//when orders are open
 	@hideInForms public var orderStartDate : SDateTime; 
-	@hideInForms public var orderEndDate : SDateTime; //cannot be null since CSA contracts also have orderEndDate
+	@hideInForms public var orderEndDate : SDateTime;
 	
 	public static var DISTRIBUTION_VALIDATION_LIMIT = 10;
 	

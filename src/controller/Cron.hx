@@ -261,31 +261,24 @@ class Cron extends Controller
 
 			var stats = {
 				totalTurnoverMarket:0,
-				totalTurnoverAmap:0,
 
 				invitedTurnoverMarket:0,
-				invitedTurnoverAmap:0,
 
 				cproInvitedTurnoverMarket:0,
-				cproInvitedTurnoverAmap:0,
 
 				discoveryTurnoverMarket:0,
-				discoveryTurnoverAmap:0,
 
 				proTurnoverMarket:0,
-				proTurnoverAmap:0,
 
 				memberTurnoverMarket:0,
-				memberTurnoverAmap:0,
 
 				marketplaceTurnoverMarket:0,
-				marketplaceTurnoverAmap:0,
 			};
 
-			var summaries = sys.db.Manager.cnx.request('select sum(turnoverCSA) as turnoverAMAPSum, sum(turnoverMarket) as turnoverMarketSum , vendorId
+			var summaries = sys.db.Manager.cnx.request('selectsum(turnoverMarket) as turnoverMarketSum , vendorId
 			from vendorDailySummary 
 			where date >= "${from.toString()}" and date < "${to.toString()}"
-			and turnoverCSA+turnoverMarket > 0
+			and turnoverMarket > 0
 			group by vendorId').results();
 
 			var vendorIds:Array<Int> = summaries.array().map(s -> Std.parseInt(s.vendorId));
@@ -302,27 +295,20 @@ class Cron extends Controller
 				switch (vs.type){
 					case VendorType.VTCpro : 
 						stats.memberTurnoverMarket += summary.turnoverMarketSum;
-						stats.memberTurnoverAmap += summary.turnoverAMAPSum;
 					case VendorType.VTCproTest,VTStudent : null;
 					case VendorType.VTFree,VendorType.VTInvited : 
 						stats.invitedTurnoverMarket += summary.turnoverMarketSum;
-						stats.invitedTurnoverAmap += summary.turnoverAMAPSum;
 					case VendorType.VTCproSubscriberMontlhy, VendorType.VTCproSubscriberYearly : 
 						stats.proTurnoverMarket += summary.turnoverMarketSum;
-						stats.proTurnoverAmap += summary.turnoverAMAPSum;
 					case VendorType.VTDiscovery : 
 						stats.discoveryTurnoverMarket += summary.turnoverMarketSum;
-						stats.discoveryTurnoverAmap += summary.turnoverAMAPSum;
 					case VendorType.VTInvitedPro : 
 						stats.cproInvitedTurnoverMarket += summary.turnoverMarketSum;
-						stats.cproInvitedTurnoverAmap += summary.turnoverAMAPSum;
 					case VendorType.VTMarketplace : 
 						stats.marketplaceTurnoverMarket += summary.turnoverMarketSum;
-						stats.marketplaceTurnoverAmap += summary.turnoverAMAPSum;
 				}
 				
 				stats.totalTurnoverMarket += summary.turnoverMarketSum;
-				stats.totalTurnoverAmap += summary.turnoverAMAPSum;
 
 			}
 
@@ -355,31 +341,24 @@ class Cron extends Controller
 
 			var stats = {
 				totalTurnoverMarket:0,
-				totalTurnoverAmap:0,
 
 				invitedTurnoverMarket:0,
-				invitedTurnoverAmap:0,
 
 				cproInvitedTurnoverMarket:0,
-				cproInvitedTurnoverAmap:0,
 
 				discoveryTurnoverMarket:0,
-				discoveryTurnoverAmap:0,
 
 				proTurnoverMarket:0,
-				proTurnoverAmap:0,
 
 				memberTurnoverMarket:0,
-				memberTurnoverAmap:0,
 
 				marketplaceTurnoverMarket:0,
-				marketplaceTurnoverAmap:0,
 			};
 
-			var summaries = sys.db.Manager.cnx.request('select sum(turnoverCSA) as turnoverAMAPSum, sum(turnoverMarket) as turnoverMarketSum , vendorId
+			var summaries = sys.db.Manager.cnx.request('select sum(turnoverMarket) as turnoverMarketSum , vendorId
 			from vendorDailySummary 
 			where date >= "${from.toString()}" and date < "${to.toString()}"
-			and turnoverCSA+turnoverMarket > 0
+			and turnoverMarket > 0
 			group by vendorId').results();
 
 			var vendorIds:Array<Int> = summaries.array().map(s -> Std.parseInt(s.vendorId));
@@ -395,27 +374,20 @@ class Cron extends Controller
 				switch (vs.type){
 					case VendorType.VTCpro : 
 						stats.memberTurnoverMarket += summary.turnoverMarketSum;
-						stats.memberTurnoverAmap += summary.turnoverAMAPSum;
 					case VendorType.VTCproTest,VTStudent : null;
 					case VendorType.VTFree,VendorType.VTInvited : 
 						stats.invitedTurnoverMarket += summary.turnoverMarketSum;
-						stats.invitedTurnoverAmap += summary.turnoverAMAPSum;
 					case VendorType.VTCproSubscriberMontlhy, VendorType.VTCproSubscriberYearly : 
 						stats.proTurnoverMarket += summary.turnoverMarketSum;
-						stats.proTurnoverAmap += summary.turnoverAMAPSum;
 					case VendorType.VTDiscovery : 
 						stats.discoveryTurnoverMarket += summary.turnoverMarketSum;
-						stats.discoveryTurnoverAmap += summary.turnoverAMAPSum;
 					case VendorType.VTInvitedPro : 
 						stats.cproInvitedTurnoverMarket += summary.turnoverMarketSum;
-						stats.cproInvitedTurnoverAmap += summary.turnoverAMAPSum;
 					case VendorType.VTMarketplace : 
 						stats.marketplaceTurnoverMarket += summary.turnoverMarketSum;
-						stats.marketplaceTurnoverAmap += summary.turnoverAMAPSum;
 				}
 				
 				stats.totalTurnoverMarket += summary.turnoverMarketSum;
-				stats.totalTurnoverAmap += summary.turnoverAMAPSum;
 			}
 
 			Graph.recordData("global",stats,from);

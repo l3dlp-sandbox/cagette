@@ -240,18 +240,6 @@ class OrderService
 	}
 
 	/**
-		edit a multiweight product order from a single qty input ( CSA order form ).
-	**/
-	public static function editMultiWeight( order:db.UserOrder, newquantity:Float ):db.UserOrder {
-
-		if( !tools.FloatTool.isInt(newquantity) ) {
-			throw new Error( "Erreur : la quantité du produit" + order.product.name + " devrait être un entier." );
-		}
-
-		return order;
-	}
-
-	/**
 	 *  Delete an order
 	 */
 	public static function delete( order : db.UserOrder, ?force = false ) {

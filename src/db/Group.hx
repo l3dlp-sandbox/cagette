@@ -9,7 +9,7 @@ using tools.DateTool;
 
 enum GroupFlags {
 	__HasMembership; 	//@deprecated membership management  
-	__ShopMode; 		//shop mode / CSA mode
+	__ShopMode; 		//@deprecated shop mode / CSA mode
 	__HasPayments; 	//@deprecated manage payments and user balance
 	__ComputeMargin;	//compute margin instead of percentage
 	CagetteNetwork; //register in cagette.net groups directory
