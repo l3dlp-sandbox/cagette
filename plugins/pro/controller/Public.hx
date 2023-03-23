@@ -42,7 +42,6 @@ class Public extends controller.Controller
 		}
 		var id = app.user.getGroup()==null ? null : app.user.getGroup().id;
 		f.addElement( new sugoi.form.elements.IntSelect("group","Groupe " + App.current.getTheme().name + " qui accueillera le catalogue", datas, id , true) );
-		f.addElement( new sugoi.form.elements.Checkbox("csa","Ce catalogue sera un contrat AMAP classique",false));
 		if(!isVendor){
 			f.addElement( new sugoi.form.elements.TextArea("message","Message au producteur","Bonjour, \nJe souhaiterais proposer vos produits aux membres de mon groupe " + App.current.getTheme().name + "...",false,null,"rows='10'") );
 		}

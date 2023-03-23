@@ -80,12 +80,6 @@
 					::end::
 				</td>
 			</tr>
-			<tr>
-				<td>Type de catalogue :</td>				
-				<td>
-					Catalogue standard ( commande variable )
-				</td>
-			</tr>
 			::if(notifContent.message!="")::
 				<tr>
 					<td>Message</td>

@@ -4,24 +4,6 @@
 		
 		<table class="table table-bordered" style="width:600px;">
 			<tr>
-				<td class="col-md-3">
-					Type de catalogue
-				</td>
-				<td>
-					::if contract.type==0::
-					<div class="tag big" style="background-color:#e5d3bf;width:48px;display:inline-block;" >
-						<i class="icon icon-refresh"></i>
-					</div>
-					::else::
-					<div class="tag big" style="background-color:#e5d3bf;width:48px;display:inline-block;" >
-						<i class="icon icon-basket"></i>
-					</div>
-					::end::
-
-					Catalogue standard
-				</td>
-			</tr>
-			<tr>
 				<td>::_("Start date")::</td>
 				<td>::dDate(contract.startDate)::</td>
 			</tr>
