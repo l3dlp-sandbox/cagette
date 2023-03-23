@@ -241,7 +241,6 @@ class PCatalogService{
 			//create it
 			groupCatalog = new db.Catalog();
 			groupCatalog.vendor = proCatalog.company.vendor;
-			groupCatalog.type = db.Catalog.TYPE_VARORDER;
 			groupCatalog.group = group;
 			groupCatalog.flags.set(db.Catalog.CatalogFlags.UsersCanOrder);
 			groupCatalog.contact = contact;
@@ -296,7 +295,7 @@ class PCatalogService{
 	/**
 	 * Link a pcatalog to a group
 	 */
-	public static function linkCatalogToGroup(pcatalog:pro.db.PCatalog,clientGroup:db.Group,remoteUserId:Int,?contractType=1):connector.db.RemoteCatalog{
+	public static function linkCatalogToGroup(pcatalog:pro.db.PCatalog,clientGroup:db.Group,remoteUserId:Int):connector.db.RemoteCatalog{
 		
 		//checks
 		var contracts = connector.db.RemoteCatalog.getContracts(pcatalog, clientGroup);
@@ -314,22 +313,12 @@ class PCatalogService{
 			}
 		}
 
-		if(pcatalog.company.offer==CagetteProOffer.Marketplace){
-			clientGroup.enablePayments();
-		}
-
 		//coordinator
 		var contact = db.User.manager.get(remoteUserId);
 		
 		//create contract		
 		var contract = syncCatalog(null,pcatalog,contact,clientGroup);
 
-		//if CSA contract with constant orders
-		if(contractType==db.Catalog.TYPE_CONSTORDERS && !clientGroup.hasShopMode()){
-			contract.type = db.Catalog.TYPE_CONSTORDERS;
-			contract.update();
-		}
-		
 		//create remoteCatalog record
 		var rc = link(pcatalog,contract);
 		

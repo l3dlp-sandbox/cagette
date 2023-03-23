@@ -43,14 +43,6 @@ class Api extends Controller
 		d.dispatch(new controller.api.Places(place));
 	}
 
-	public function doCatalog(d:haxe.web.Dispatch) {
-		d.dispatch(new controller.api.Catalog());
-	}
-	
-	public function doSubscription(d:haxe.web.Dispatch) {
-		d.dispatch(new controller.api.Subscription());
-	}
-
 	/**
 	 * Get distribution planning for this group
 	 * 

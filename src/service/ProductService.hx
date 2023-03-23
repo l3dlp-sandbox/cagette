@@ -58,7 +58,15 @@ class ProductService{
 
 	public static function getCategorizerHtml(productName:String,categId:Int,formName:String){
 		productName = Formatting.escapeJS(productName);
-		return '<div id="pInput"></div><script language="javascript">_.getProductInput("pInput","${productName}",$categId,"${formName}");</script>';
+		return '<div id="txp-neo-container"></div><script language="javascript">
+			document.addEventListener("DOMContentLoaded", function(event) {
+				neo.createNeoModule("txp-neo-container", "productCategorizer", {
+					originalProductName: "${productName}",
+					originalTxpProductId: $categId,
+					formName: "${formName}"
+				});
+			});
+		</script>';
 	}
 
 	/**

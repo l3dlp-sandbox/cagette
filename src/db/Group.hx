@@ -9,8 +9,8 @@ using tools.DateTool;
 
 enum GroupFlags {
 	__HasMembership; 	//@deprecated membership management  
-	ShopMode; 		//shop mode / CSA mode
-	HasPayments; 	//manage payments and user balance
+	__ShopMode; 		//@deprecated shop mode / CSA mode
+	__HasPayments; 	//@deprecated manage payments and user balance
 	__ComputeMargin;	//compute margin instead of percentage
 	CagetteNetwork; //register in cagette.net groups directory
 	__CustomizedCategories;  //the custom categories are not used anymore, use product taxonomy instead
@@ -34,14 +34,6 @@ enum RegOption{
 	Open;
 	Full;
 }
-
-enum GroupType{
-	Amap; 			//CSA / GASAP / AMAP
-	GroupedOrders; 	//groupements d'achat
-	ProducerDrive;	//drive de producteurs
-	FarmShop;		//vente à la ferme
-}
-
 
 @:enum
 abstract GroupDisabledReason(String) {
@@ -77,8 +69,6 @@ class Group extends Object
 	public var betaFlags:SFlags<BetaFlags>;
 	@hideInForms public var hasMembership:SBool;
 
-	@hideInForms public var groupType:SNull<SEnum<GroupType>>;
-	
 	@hideInForms @:relation(imageId)
 	public var image : SNull<sugoi.db.File>;
 	
@@ -96,7 +86,6 @@ class Group extends Object
 	@hideInForms public var allowedPaymentsType:SNull<SSmallText>; //Array<String>
 	@hideInForms public var checkOrder:SNull<SString<64>>;
 	@hideInForms public var IBAN:SNull<SString<40>>;
-	@hideInForms public var allowMoneyPotWithNegativeBalance:SNull<SBool>;
 
 	//Volunteers for duty periods
 	@hideInForms public var volunteersMailDaysBeforeDutyPeriod: STinyInt;
@@ -112,7 +101,6 @@ class Group extends Object
 		super();
 		flags = cast 0;
 		flags.set(CagetteNetwork);
-		flags.set(ShopMode);
 		betaFlags = cast 0;
 		setVatRates([{label:"TVA alimentaire",value:5.5},{label:"TVA standard",value:20}]);
 		cdate = Date.now();
@@ -184,22 +172,9 @@ class Group extends Object
 		}
 	}
 	
-	public function hasShopMode() {
-		if(flags==null) return true;
-		return flags.has(ShopMode);
-	}
-	
 	public function canExposePhone() {
  		return !flags.has(HidePhone);
  	}
-	
-	public function hasPayments(){		
-		//CSA group cannot have global payment option enabled
-		// return flags != null && flags.has(HasPayments) && flags.has(ShopMode);
-
-		//since 2023, all shopMode groups have payments
-		return hasShopMode();
-	}
 	
 	/*public function hasTaxonomy(){
 		return flags != null && !flags.has(CustomizedCategories);
@@ -449,7 +424,6 @@ class Group extends Object
 			"membershipRenewalDate" => t._("Membership renewal date"),
 			"flags" 		=> t._("Options"),
 			"betaFlags" 	=> t._("Nouvelles fonctionnalités"),
-			"groupType" 	=> "Type de groupe (déclaratif)",
 			"regOption" 	=> t._("Registration setting"),
 			"contact" 		=> t._("Main contact"),
 			"legalRepresentative" => t._("Legal representative")			
@@ -503,43 +477,6 @@ class Group extends Object
 
 	public function isDisabled():Bool{
 		return disabled!=null;
-	}
-
-	/**
-		enable payments
-	**/
-	public function enablePayments(){
-		if(!this.hasPayments() && this.hasShopMode()){
-			
-			this.lock();
-			this.flags.set(HasPayments);
-			this.setAllowedPaymentTypes([payment.Cash.TYPE,payment.Check.TYPE]);			
-			this.update();
-
-			// var twoWeeksAgo = DateTools.delta(Date.now(),-1000*60*60*24*14);
-
-			//validate old distribs that are not validated
-			var mds = db.MultiDistrib.manager.search($group==this && $validatedStatus != Std.string(MultiDistribValidatedStatus.PAID) && $distribEndDate < Date.now(),true);
-			for(md in mds) {
-				/*try{
-					service.PaymentService.validateDistribution(md);
-				}catch(e:Dynamic){
-					//fail silently ( ie if unspecified OntheSpotPayment )
-				}*/
-
-				//REAL validation is to slow because of bridges, so we perform a simplifed validation
-
-				md.validatedStatus = Std.string(MultiDistribValidatedStatus.PAID);
-				md.validatedDate = Date.now();
-				md.update();
-
-				for(basket in md.getBaskets()){
-					basket.lock();
-					basket.status = Std.string(db.Basket.BasketStatus.VALIDATED);
-					basket.update();
-				}		
-			}
-		}
 	}
 
 }

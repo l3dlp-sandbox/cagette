@@ -28,26 +28,11 @@
 				</a>
 			</li>
 			
-			::if (!c._group.hasShopMode() && (c.distribMinOrdersTotal>0 || c.type==0) )::
-			<li id="absences" ::attr class if(nav[1]=="absences") 'active'::>
-				<a href="/contractAdmin/absences/::c.id::">
-					<i class="icon icon-vacation"></i>  Période d'absences
-				</a>
-			</li>
-			::end::
-
 			<li id="orders" ::attr class if(nav[1]=="orders") 'active'::>
 				<a href="/contractAdmin/selectDistrib/::c.id::">
 					<i class="icon icon-basket"></i> ::_("Orders")::
 				</a>
 			</li>
-			::if !c._group.hasShopMode()::
-				<li id="subscriptions" ::attr class if(nav[1]=="subscriptions") 'active'::>
-					<a href="/contractAdmin/subscriptions/::c.id::">
-						<i class="icon icon-calendar-check"></i> Souscriptions
-					</a>
-				</li>
-			::end::
 			<li id="documents" ::attr class if(nav[1]=="documents") 'active'::>
 				<a href="/contractAdmin/documents/::c.id::">
 					<i class="icon icon-file-pdf"></i> Documents

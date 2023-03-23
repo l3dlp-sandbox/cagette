@@ -1,6 +1,5 @@
 package controller;
 
-import payment.MoneyPot;
 import db.Basket;
 import Common;
 import db.Distribution;
@@ -69,11 +68,6 @@ class Main extends Controller {
 			}
 		}
 		view.amap = group;
-
-		// contract not ended with UserCanOrder flag
-		if (!group.hasShopMode()) {
-			view.openContracts = group.getActiveContracts().filter((c) -> c.hasOpenOrders());
-		}
 
 		// freshly created group
 		view.newGroup = app.session.data.newGroup == true;
@@ -265,12 +259,6 @@ class Main extends Controller {
 	}
 
 	@logged
-	function doDistribution(d:Dispatch) {
-		addBc("distribution", "Distributions", "/distribution");
-		d.dispatch(new controller.Distribution());
-	}
-
-	@logged
 	function doDistributions(d:Dispatch) {
 		addBc("distribution", "Distributions", "/distributions");
 		d.dispatch(new controller.Distributions());
@@ -309,11 +297,6 @@ class Main extends Controller {
 	}
 
 	@logged
-	function doSubscriptions(dispatch:Dispatch) {
-		dispatch.dispatch(new Subscriptions());
-	}
-
-	@logged
 	function doMessages(d:Dispatch) {
 		addBc("messages", "Messagerie", "/messages");
 		d.dispatch(new Messages());
@@ -323,15 +306,6 @@ class Main extends Controller {
 	function doAmapadmin(d:Dispatch) {
 		addBc("amapadmin", "Paramètres", "/amapadmin");
 		d.dispatch(new AmapAdmin());
-	}
-
-	@logged
-	function doValidate(basket:db.Basket, d:haxe.web.Dispatch) {
-		var v = new controller.Validate();
-		v.basket = basket;
-		v.user = basket.user;
-		v.multiDistrib = basket.multiDistrib;
-		d.dispatch(v);
 	}
 
 	@admin

@@ -9,7 +9,6 @@ import form.CagetteForm;
 import plugin.Tutorial;
 import service.CatalogService;
 import service.OrderService;
-import service.SubscriptionService;
 import service.VendorService;
 import sugoi.Web;
 import sugoi.form.Form;
@@ -40,8 +39,6 @@ class Contract extends Controller
 	**/
 	@tpl("contract/view.mtt")
 	public function doView( catalog : db.Catalog ) {
-
-		if(!catalog.group.hasShopMode()) throw Redirect("/contract/order/"+catalog.id);
 
 		view.category = 'amap';
 		view.catalog = catalog;
@@ -93,7 +90,6 @@ class Contract extends Controller
 			view.name = f.getValueOf('name');
 		}
 		
-		view.shopMode = app.user.getGroup().hasShopMode();
 		view.form = f;
 	}
 
@@ -111,38 +107,6 @@ class Contract extends Controller
 		if(vendor!=null) view.vendor = vendor;
 	}
 
-	/**
-	  2- create vendor
-	**/
-	@logged @tpl("form.mtt")
-	public function doInsertVendor(?name:String) {
-		if (App.current.getSettings().noVendorSignup==true) {
-			throw Redirect("/");
-		}
-		if(app.user.getGroup().hasShopMode()) throw Error("/", t._("Access forbidden"));
-
-		var form = VendorService.getForm(new db.Vendor());
-				
-		if (form.isValid()) {
-			var vendor = null;
-			try{
-				vendor = VendorService.create(form.getDatasAsObject());
-			}catch(e:Error){
-				throw Error(Web.getURI(),e.message);
-			}
-			
-			throw Ok('/contract/insert/'+vendor.id, t._("This supplier has been saved"));
-		}else{
-			form.getElement("name").value = name;
-		}
-
-		view.title = t._("Key-in a new vendor");
-		view.form = form;
-	}
-
-	/**
-		Select CSA Variable / CSA Constant Contract
-	**/
 	@tpl("contract/insertChoose.mtt")
 	function doInsertChoose(vendor:db.Vendor) {
 
@@ -159,15 +123,8 @@ class Contract extends Controller
 
 		if (!app.user.canManageAllContracts()) throw Error('/', t._("Forbidden action"));
 		
-		view.title = if(app.getCurrentGroup().hasShopMode()){
-			t._("Create a catalog");
-		}else if (type==1){
-			"Créer un contrat AMAP variable";
-		}else{
-			"Créer un contrat AMAP classique";
-		}		
+		t._("Create a catalog");
 		var catalog = new db.Catalog();
-		catalog.type = type;
 		catalog.group = app.user.getGroup();
 		catalog.vendor = vendor;
 
@@ -208,7 +165,7 @@ class Contract extends Controller
 	@logged @tpl("contract/editVarOrders.mtt")
 	function doEditVarOrders(distrib:db.MultiDistrib) {
 		var basket = distrib.getUserBasket(app.user);
-		if ( app.user.getGroup().isDispatch() || !app.user.getGroup().hasShopMode() || basket.hasOnlinePayment()) {
+		if ( app.user.getGroup().isDispatch() || basket.hasOnlinePayment()) {
 			//when this basket has been payed online, the user cannot modify his/her order
 			throw Redirect("/");
 		}
@@ -222,7 +179,7 @@ class Contract extends Controller
 			throw Error("/account", msg);
 		}
 		
-		var orders = basket.getOrders(Catalog.TYPE_VARORDER);
+		var orders = basket.getOrders();
 		view.orders = service.OrderService.prepare(orders);
 		view.date = distrib.getDate();
 		view.md = distrib;

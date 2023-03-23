@@ -127,16 +127,9 @@ class PaymentService {
 
 		if(orders.length > 0){
 			var contract = orders[0].product.catalog;
-			if (contract.type == db.Catalog.TYPE_CONSTORDERS) {
-				// Constant orders
-				var dNum = contract.getDistribs(false).length;
-				op.name = "" + contract.name + " (" + contract.vendor.name + ") " + dNum + " " + t._("deliveries");
-				op.amount = dNum * (0 - _amount);
-			} else {
-				if (basket == null)
-					throw "varying contract orders should have a basket";
-				op.amount = 0 - _amount;
-			}
+			if (basket == null)
+				throw "varying contract orders should have a basket";
+			op.amount = 0 - _amount;
 	
 		}else{
 			op.amount = 0;
@@ -214,7 +207,7 @@ class PaymentService {
 			var distrib = basket.multiDistrib;
 
 			// get all orders for the same multidistrib, in order to update related operation.
-			var allOrders = distrib.getUserOrders(user, db.Catalog.TYPE_VARORDER);
+			var allOrders = distrib.getUserOrders(user);
 
 			// existing transaction
 			var existing = basket.getOrderOperation(false);
@@ -259,7 +252,6 @@ class PaymentService {
 					new payment.Cash(),
 					new payment.Check(),
 					new payment.Transfer(),	
-					// new payment.MoneyPot(),
 					new payment.OnTheSpotPayment(),
 					new payment.OnTheSpotCardTerminal()						
 				];
@@ -302,10 +294,7 @@ class PaymentService {
 			
 			//when a coordinator does a manual refund or adds manually a payment
 			case PCManualEntry:
-				//Exclude the MoneyPot payment
 				var paymentTypesInAdmin = getPaymentTypes(PCGroupAdmin);
-				var moneyPot = Lambda.find(paymentTypesInAdmin, function(x) return x.type == payment.MoneyPot.TYPE);
-				paymentTypesInAdmin.remove(moneyPot);
 				#if plugins
 				//cannot make a mgp payment manually !!
 				var mgp = paymentTypesInAdmin.find( x -> x.type == pro.payment.MangopayECPayment.TYPE );
@@ -394,14 +383,6 @@ class PaymentService {
 		// This will throw an error if for example there are pending payments of type on the spot
 		basket.canBeValidated();
 
-		// mark orders as paid
-		var orders = basket.getOrders();
-		for (order in orders) {
-			order.lock();
-			order.paid = true;
-			order.update();
-		}
-
 		basket.lock();
 		basket.status = Std.string(BasketStatus.VALIDATED);
 		basket.update();
@@ -421,6 +402,7 @@ class PaymentService {
 				}
 			}
 
+			var orders = basket.getOrders();
 			var o = orders[0];
 			if (o.distribution == null)
 				throw o.id + " order has no distrib";
@@ -441,15 +423,6 @@ class PaymentService {
 		basket.status = Std.string(BasketStatus.CONFIRMED);
 		basket.update();
 		
-
-		// mark orders as paid
-		var orders = basket.getOrders();
-		for (order in orders) {
-			order.lock();
-			order.paid = false;
-			order.update();
-		}
-
 		// validate order operation and payments
 		var operation = basket.getOrderOperation(false);
 		if (operation != null) {
@@ -465,6 +438,7 @@ class PaymentService {
 				}
 			}
 
+			var orders = basket.getOrders();
 			var o = orders[0];
 			updateUserBalance(o.user, o.distribution.place.group);
 		}

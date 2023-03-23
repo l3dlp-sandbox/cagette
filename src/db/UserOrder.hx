@@ -27,17 +27,12 @@ class UserOrder extends Object
 	public var feesRate : SFloat; //fees in percentage
 	public var vatRate : SNull<SFloat>; // store vatRate
 	
-	public var paid : SBool;
-	
 	@:relation(distributionId)
 	public var distribution:db.Distribution;
 	
 	@:relation(basketId)
 	public var basket:db.Basket;
 
-	@:relation(subscriptionId)
-	public var subscription : SNull<db.Subscription>;
-	
 	public var date : SDateTime;	
 	public var flags : SFlags<OrderFlags>;
 	
@@ -45,7 +40,6 @@ class UserOrder extends Object
 	{
 		super();
 		quantity = 1;
-		paid = false;
 		date = Date.now();
 		flags = cast 0;
 		feesRate = 0;
@@ -90,19 +84,15 @@ class UserOrder extends Object
 	public function canModify():Bool {
 	
 		var can = false;
-		if (this.product.catalog.type == db.Catalog.TYPE_VARORDER) {
-			if(this.distribution==null) return false;
-			if (this.distribution.orderStartDate == null) {
-				can = true;
-			}else {
-				var n = Date.now().getTime();
-				can = n > this.distribution.orderStartDate.getTime() && n < this.distribution.orderEndDate.getTime();
-			}
+		if(this.distribution==null) return false;
+		if (this.distribution.orderStartDate == null) {
+			can = true;
 		}else {
-			can = this.product.catalog.isUserOrderAvailable();
+			var n = Date.now().getTime();
+			can = n > this.distribution.orderStartDate.getTime() && n < this.distribution.orderEndDate.getTime();
 		}
 		
-		return can && !this.paid;
+		return can;
 	}
 	
 	function check(){

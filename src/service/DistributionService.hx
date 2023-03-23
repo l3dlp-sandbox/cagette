@@ -1,7 +1,6 @@
 package service;
 import Common;
 import db.Distribution;
-import db.Subscription;
 import pro.db.CagettePro;
 import pro.payment.MangopayECPayment;
 import service.PaymentService.PaymentContext;
@@ -92,7 +91,7 @@ class DistributionService
 			throw new Error('La date de début de distribution doit se situer après la fermeture des commandes. (distrib#${d.id})');
 		} 
 		
-		if ( catalog.type == db.Catalog.TYPE_VARORDER && d.orderStartDate.getTime() > d.orderEndDate.getTime() ) {
+		if ( d.orderStartDate.getTime() > d.orderEndDate.getTime() ) {
 			throw new Error(t._("The orders end date must be set after the orders start date !"));
 		}			
 	}
@@ -109,9 +108,7 @@ class DistributionService
 		d.place = db.Place.manager.get(placeId);
 		//d.distributionCycle = distributionCycle;
 
-		if(contract.type==db.Catalog.TYPE_VARORDER){
-			d.orderStartDate = orderStartDate;
-		}
+		d.orderStartDate = orderStartDate;
 		d.orderEndDate = orderEndDate;
 
 		//end date cleaning			
@@ -151,13 +148,6 @@ class DistributionService
 			return d;
 		} else {
 			d.insert();
-
-			//In case this is a distrib for an amap contract with payments enabled, it will update all the operations
-			//names and amounts with the new number of distribs
-			// if( !contract.group.hasShopMode() && contract.group.hasPayments() )  {
-			// 	service.SubscriptionService.updateCatalogSubscriptionsOperation( d.catalog );
-			// }
-
 			return d;
 		}
 	}
@@ -293,44 +283,19 @@ class DistributionService
 			}
 		}
 
-		if(md.group.hasShopMode() && catalog.vendor.isDisabled()){
+		if(catalog.vendor.isDisabled()){
 			throw new Error('Le compte de "${catalog.vendor.name}" est désactivé. Raison : "${catalog.vendor.getDisabledReason()}"');
 		} 
 
-		if( catalog.type == db.Catalog.TYPE_VARORDER){
-			if(md.orderStartDate==null || md.orderEndDate==null){
-				var url = "/distribution/editMd/" + md.id;
-				throw new Error(t._("You can't participate to this distribution because no order start date has been defined. <a href='::url::' target='_blank'>Please update the general distribution first</a>.",{url:url}));
-			}
-		}
-
-		var shopMode = catalog.group.hasShopMode();
-
-		if( !shopMode ){
-			//limitations with CSA mode
-			if(db.Subscription.manager.count( $catalogId == catalog.id ) > 0){
-				if( catalog.isConstantOrdersCatalog() ) {
-					throw new Error("Vous ne pouvez pas participer à cette distribution car il y a déjà des souscriptions. Vous devez maintenir le même nombre de distributions dans les souscriptions des adhérents.");
-				} else {
-					App.current.session.addMessage( "Attention, vous avez déjà des souscriptions enregistrées pour ce contrat. Si vous créez des distributions supplémentaires, le montant à payer va varier." , true);
-				}
-			}			
+		if(md.orderStartDate==null || md.orderEndDate==null){
+			var url = "/distribution/editMd/" + md.id;
+			throw new Error(t._("You can't participate to this distribution because no order start date has been defined. <a href='::url::' target='_blank'>Please update the general distribution first</a>.",{url:url}));
 		}
 
 		md.deleteProductsExcerpt();
 
 		var orderStartDate = md.orderStartDate;
 		var orderEndDate = md.orderEndDate;
-		if ( !shopMode ) {
-
-			if ( catalog.orderStartDaysBeforeDistrib != null && catalog.orderStartDaysBeforeDistrib != 0 ) {
-				orderStartDate = DateTools.delta( md.distribStartDate, -1000.0 * 60 * 60 * 24 * catalog.orderStartDaysBeforeDistrib );
-			}
-
-			if ( catalog.orderEndHoursBeforeDistrib != null && catalog.orderEndHoursBeforeDistrib != 0 ) {
-				orderEndDate = DateTools.delta( md.distribStartDate, -1000.0 * 60 * 60 * catalog.orderEndHoursBeforeDistrib );
-			}
-		}
 
 		var d = create( catalog, md.distribStartDate, md.distribEndDate, md.place.id, orderStartDate, orderEndDate, null, true, md );
 
@@ -358,9 +323,7 @@ class DistributionService
 				d.multiDistrib.lock();
 				d.multiDistrib.distribStartDate = date;
 				d.multiDistrib.distribEndDate = end; 
-				if(d.catalog.type==db.Catalog.TYPE_VARORDER){
-					d.multiDistrib.orderStartDate = orderStartDate;
-				}
+				d.multiDistrib.orderStartDate = orderStartDate;
 				d.multiDistrib.orderEndDate = orderEndDate;
 
 				d.multiDistrib.update();
@@ -384,9 +347,7 @@ class DistributionService
 
 		d.date = date;
 		d.place = db.Place.manager.get(placeId);
-		if(d.catalog.type==db.Catalog.TYPE_VARORDER){
-			d.orderStartDate = orderStartDate;
-		}
+		d.orderStartDate = orderStartDate;
 		d.orderEndDate = orderEndDate;
 		
 					
@@ -421,9 +382,7 @@ class DistributionService
 			throw new Error(t._("You cannot edit a distribution which has been already validated."));
 		}
 	
-		if(d.catalog.type==db.Catalog.TYPE_VARORDER){
-			d.orderStartDate = orderStartDate;
-		}
+		d.orderStartDate = orderStartDate;
 		d.orderEndDate = orderEndDate;
 		
 		checkDistrib(d);
@@ -477,7 +436,7 @@ class DistributionService
 		var orders = d.getOrders();
 
 		#if plugins
-		if(d.catalog.group.hasPayments() && orders.length>0){
+		if(orders.length>0){
 			var paymentTypes = PaymentService.getPaymentTypes( PaymentContext.PCPayment , newMd.getGroup() );
 			if( paymentTypes.find( p -> return p.type==MangopayECPayment.TYPE ) != null ){
 				throw new Error("Les décalages de distributions sont interdits lorsque le paiement en ligne est activé et que des commandes sont déjà enregistrées.");
@@ -494,13 +453,11 @@ class DistributionService
 		}
 
 		//recompute order operations for oldMd and newMd baskets
-		if(newMd.group.hasShopMode() && newMd.group.hasPayments()){
-			for( b in oldMd.getBaskets()){
-				PaymentService.onOrderConfirm( b.getOrders() );
-			}
-			for( b in newMd.getBaskets()){
-				PaymentService.onOrderConfirm( b.getOrders() );
-			}
+		for( b in oldMd.getBaskets()){
+			PaymentService.onOrderConfirm( b.getOrders() );
+		}
+		for( b in newMd.getBaskets()){
+			PaymentService.onOrderConfirm( b.getOrders() );
 		}
 		
 		//renumbering baskets
@@ -514,26 +471,6 @@ class DistributionService
 			catalog.lock();
 			catalog.endDate = newMd.distribStartDate;
 			catalog.update();
-		}
-
-		//extends subscriptions
-		if( !d.catalog.group.hasShopMode() ) { 
-			var ss = new SubscriptionService();
-			ss.adminMode = true;
-
-			//get subscriptions that were concerned by this distribution
-			var subscriptions = Subscription.manager.search($catalog==d.catalog && $startDate <= d.date && $endDate >= d.date , true );
-			for ( sub in subscriptions ){
-				//if the subscription is closing before the new date, extends it
-				if(sub.endDate.getTime() < newMd.getDate().getTime()){
-					ss.updateSubscription( sub, sub.startDate, newMd.getDate() );
-				}					
-			}
-			/**
-			2020-03-04 francois :
-			il peut se produire un bug pour une souscription concernée par la distrib reportée, si cette souscription est terminée de maniere anticipée.
-			le code actuel va reporter sa date de fin à la distrib reportée, ce qui va certainement englober d'autres distribs non souhaitées.
-			**/
 		}
 
 		checkDistrib(d);
@@ -550,14 +487,12 @@ class DistributionService
 
 
 	/**
-	 *  Checks whether there are orders with non zero quantity for non amap contract
+	 *  Checks whether there are orders with non zero quantity
 	 *  @param d - 
 	 *  @return Bool
 	 */
 	public static function canDelete(d:db.Distribution):Bool{
 
-		if (d.catalog.type == db.Catalog.TYPE_CONSTORDERS) return true;
-		
 		var quantity = 0.0;
 		for ( order in d.getOrders() ){
 			quantity += order.quantity;
@@ -573,17 +508,6 @@ class DistributionService
 	public static function cancelParticipation(d:db.Distribution,?dispatchEvent=true) {
 		var t = sugoi.i18n.Locale.texts;
 		
-		var shopMode = d.catalog.group.hasShopMode();
-		if( !shopMode && (d.catalog.type==db.Catalog.TYPE_CONSTORDERS || d.catalog.distribMinOrdersTotal>0) ) {
-			//if there is at least one validated subscription, cancelation is not possible
-			var subscriptions = db.Subscription.manager.search( $catalog == d.catalog );
-			if( subscriptions.count( s -> s.paid() ) > 0) {
-				throw new Error("Vous ne pouvez pas annuler cette distribution car il y a déjà des souscriptions payées. Vous pouvez cependant décaler cette distribution en fin de contrat afin de maintenir le même nombre dans les souscriptions des adhérents. Pour décaler une distribution, cliquez sur le bouton \"Dates\".");
-			} else if( subscriptions.length > 0 ) {
-				App.current.session.addMessage( "Attention, vous avez déjà des souscriptions enregistrées pour ce contrat. Si vous supprimez des distributions, le montant à payer va varier." , true);
-			}
-		}
-
 		if ( !canDelete(d) ) {
 			throw new Error(t._("Deletion not possible: orders are recorded for ::vendorName:: on ::date::.",{vendorName:d.catalog.vendor.name,date:Formatting.hDate(d.date)}));
 		}
@@ -620,19 +544,6 @@ class DistributionService
 		d.multiDistrib.deleteProductsExcerpt();
 
 		d.delete();
-
-		//In case this is a distrib for an amap contract with payments enabled, it will update all the operations
-		// if ( !shopMode ) {
-		// 	service.SubscriptionService.updateCatalogSubscriptionsOperation( contract );
-		// }
-
-		//delete multidistrib if needed
-		/*if(d.multiDistrib!=null){
-			if(d.multiDistrib.getDistributions().length == 0){
-				deleteMd(d.multiDistrib);
-			}
-		}*/
-
 	}
 
 	/**
@@ -648,18 +559,16 @@ class DistributionService
 		var startDate = new Date(datePointer.getFullYear(),datePointer.getMonth(),datePointer.getDate(),dc.startHour.getHours(),dc.startHour.getMinutes(),0);
 		var orderStartDate = null;
 		var orderEndDate = null;
-		//if (dc.contract.type == db.Catalog.TYPE_VARORDER){
 			
-			if (dc.daysBeforeOrderEnd == null || dc.daysBeforeOrderStart == null) throw new Error(t._("daysBeforeOrderEnd or daysBeforeOrderStart is null"));
-			
-			var a = DateTools.delta(startDate, -1.0 * dc.daysBeforeOrderStart * 1000 * 60 * 60 * 24);
-			var h : Date = dc.openingHour;
-			orderStartDate = new Date(a.getFullYear(), a.getMonth(), a.getDate(), h.getHours(), h.getMinutes(), 0);
-			
-			var a = DateTools.delta(startDate, -1.0 * dc.daysBeforeOrderEnd * 1000 * 60 * 60 * 24);
-			var h : Date = dc.closingHour;
-			orderEndDate = new Date(a.getFullYear(), a.getMonth(), a.getDate(), h.getHours(), h.getMinutes(), 0);			
-		//}
+		if (dc.daysBeforeOrderEnd == null || dc.daysBeforeOrderStart == null) throw new Error(t._("daysBeforeOrderEnd or daysBeforeOrderStart is null"));
+		
+		var a = DateTools.delta(startDate, -1.0 * dc.daysBeforeOrderStart * 1000 * 60 * 60 * 24);
+		var h : Date = dc.openingHour;
+		orderStartDate = new Date(a.getFullYear(), a.getMonth(), a.getDate(), h.getHours(), h.getMinutes(), 0);
+		
+		var a = DateTools.delta(startDate, -1.0 * dc.daysBeforeOrderEnd * 1000 * 60 * 60 * 24);
+		var h : Date = dc.closingHour;
+		orderEndDate = new Date(a.getFullYear(), a.getMonth(), a.getDate(), h.getHours(), h.getMinutes(), 0);			
 		return { date: startDate, orderStartDate: orderStartDate, orderEndDate: orderEndDate };
 	}
 

@@ -62,7 +62,6 @@ class Main extends controller.Controller
 			group.lock();
 			group.betaFlags.set(Dispatch);
 			group.setAllowedPaymentTypes(["stripe"]);
-			group.flags.set(HasPayments);
 			
 			//get active and non disabled vendors
 			var vendors = group.getActiveContracts(false).map(c -> c.vendor).filter(v -> !v.isDisabled()).array();
@@ -112,8 +111,6 @@ class Main extends controller.Controller
 
 			var g = GroupService.duplicateGroup(group);
 			g.name = group.name+" (marché)";
-			g.flags.set(HasPayments);
-			g.flags.set(ShopMode);
 			// g.setAllowedPaymentTypes([MangopayECPayment.TYPE]);
 			g.update();
 
@@ -155,7 +152,6 @@ class Main extends controller.Controller
 				newcat.name = c.name;
 				newcat.startDate = c.startDate;
 				newcat.endDate = c.endDate;
-				newcat.type = c.type;
 				newcat.description = c.description;
 				newcat.contact = c.contact;
 				newcat.vendor = c.vendor;
@@ -390,9 +386,6 @@ class Main extends controller.Controller
 						}
 						break;
 					} else if(vendor.email==c.contact.email){
-						status = "gratuit";
-						break;
-					} else if(c.group.groupType==db.Group.GroupType.FarmShop || c.group.groupType==db.Group.GroupType.ProducerDrive){
 						status = "gratuit";
 						break;
 					}

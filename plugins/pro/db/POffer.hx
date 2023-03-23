@@ -126,8 +126,6 @@ class POffer extends Object
 			price : this.price,
 			vat : this.vat,
 			vatValue : null,			//montant de la TVA incluse dans le prix
-			catalogTax : null, 	
-			catalogTaxName : null,	
 			desc : product.desc,
 			categories : [],	//used in old shop
 			subcategories : [],  //used in new shop

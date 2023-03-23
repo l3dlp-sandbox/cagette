@@ -81,8 +81,6 @@ typedef ProductInfo = {
 	bulk:Bool,
 
 	catalogId : Int,
-	catalogTax : Null<Float>, 		//pourcentage de commission défini dans le contrat
-	catalogTaxName : Null<String>,	//label pour la commission : ex: "frais divers"
 	?vendorId : Int,
 	?distributionId:Null<Int>, //in the context of a distrib
 
@@ -165,8 +163,6 @@ typedef UserOrder = {
 	subTotal:Float,
 	
 	?fees:Null<Float>,
-	?percentageName:Null<String>,
-	?percentageValue:Null<Float>,
 	total:Float,
 	
 	//flags
@@ -333,7 +329,6 @@ typedef Theme = {
 
 typedef Settings = {
 	var ?noVendorSignup: Bool;
-	var ?noCsa: Bool;
 	var ?onlyVendorsCanCreateGroup: Bool;
 	var ?noCourse: Bool;
 	var ?differenciatedPricing: Bool;

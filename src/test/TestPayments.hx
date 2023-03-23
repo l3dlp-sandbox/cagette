@@ -41,7 +41,6 @@ class TestPayments extends utest.Test
 		PaymentService.validateDistribution(md);
 		
 		//distrib should be validated
-		Assert.isTrue(contract.group.hasPayments());
 		Assert.isTrue(md.validated);
 		
 		//orders should be marked as paid

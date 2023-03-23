@@ -9,7 +9,19 @@
 </div>
 
 <script>
-	_Cagette.getVATBox(::price::,"::currency()::","::rates::",::vat::,"::form.name::");
+	document.addEventListener("DOMContentLoaded", function(event) {
+		var input = document.querySelector('form input[name="::form.name::_price"]');
+		var vatRateInputToRemove = document.querySelector('form input[name="::form.name::_vat"]').parentElement.parentElement;
+		vatRateInputToRemove.parentElement.removeChild(vatRateInputToRemove);	
+		input.parentElement.id = "vat-box-neo-container";
+		neo.createNeoModule(input.parentElement.id, "vatBox", {
+			initialTtc: ::price::,
+			currency: "::currency()::",
+			vatRates: "::rates::",
+			initialVat: ::vat::,
+			formName: "::form.name::"
+		});
+	});
 </script>
 
 ::end::

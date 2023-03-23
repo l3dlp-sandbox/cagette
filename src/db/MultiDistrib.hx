@@ -93,124 +93,6 @@ class MultiDistrib extends Object
 		return multidistribs;
 	}
 
-	/**
-	 * TODO : refacto this to use getFromTimeRange();
-	 */
-	/*public static function getNextMultiDeliveries(group:db.Group){
-		
-		var out = new Map < String, {
-			place:db.Place, 		//common delivery place
-			startDate:Date, 		//global delivery start
-			endDate:Date,			//global delivery stop
-			orderStartDate:Date, 	//global orders opening date
-			orderEndDate:Date,		//global orders closing date
-			active:Bool,
-			products:Array<ProductInfo>, //available products ( if no order )
-			myOrders:Array<{distrib:db.Distribution,orders:Array<UserOrder>}>	//my orders			
-		}>();
-		
-		var n = Date.now();
-		var now = new Date(n.getFullYear(), n.getMonth(), n.getDate(), 0, 0, 0);
-	
-		var contracts = db.Catalog.getActiveContracts(group);
-		var cids = Lambda.map(contracts, function(p) return p.id);
-		
-		//var pids = Lambda.map(db.Product.manager.search($catalogId in cids,false), function(x) return x.id);
-		//var out =  UserOrder.manager.search(($userId == id || $userId2 == id) && $productId in pids, lock);	
-		
-		//available deliveries
-		var inSixMonth = DateTools.delta(now, 1000.0 * 60 * 60 * 24 * 30 * 6);
-		var distribs = db.Distribution.manager.search(($catalogId in cids) && $date >= now && $date <= inSixMonth , { orderBy:date }, false);
-		
-		for (d in distribs) {			
-			
-			//we had the distribution key ( place+date ) and the contract type in order to separate constant and varying contracts
-			var key = d.getKey() + "|" + d.contract.type;
-			var o = out.get(key);
-			if (o == null) o = {place:d.place, startDate:d.date, active:null, endDate:d.end, products:[], myOrders:[], orderStartDate:null,orderEndDate:null};
-			
-			//user orders
-			var orders = [];
-			if(App.current.user!=null) orders = d.contract.getUserOrders(App.current.user,d);
-			if (orders.length > 0){
-				o.myOrders.push({distrib:d,orders:service.OrderService.prepare(orders)});
-			}else{
-				//no "order block" if no shop mode	
-				if (!group.hasShopMode() ) {		
-					continue;		
-				}		
-
-				//if its a constant order contract, skip this delivery		
-				if (d.contract.type == db.Catalog.TYPE_CONSTORDERS){		
-					continue;		
-				}
-				
-				//products preview if no orders
-				for ( p in d.contract.getProductsPreview(9)){
-					o.products.push( p.infos(null,false) );	
-				}	
-			}
-			
-			if (d.contract.type == db.Catalog.TYPE_VARORDER){
-				
-				//old distribs may have an empty orderStartDate
-				if (d.orderStartDate == null) {
-					continue;
-				}
-				
-				//if order opening is more far than 1 month, skip it
-				// if (d.orderStartDate.getTime() > inOneMonth.getTime() ){
-				// 	continue;
-				// }
-				
-				//display closest opening date
-				if (o.orderStartDate == null){
-					o.orderStartDate = d.orderStartDate;
-				}else if (o.orderStartDate.getTime() > d.orderStartDate.getTime()){
-					o.orderStartDate = d.orderStartDate;
-				}
-				
-				//display most far closing date
-				if (o.orderEndDate == null){
-					o.orderEndDate = d.orderEndDate;
-				}else if (o.orderEndDate.getTime() < d.orderEndDate.getTime()){
-					o.orderEndDate = d.orderEndDate;
-				}
-				
-				out.set(key, o);	
-				
-			}else{
-				//in constant orders, add block only if there is an order
-				if(o.myOrders.length>0) out.set(key, o);
-				
-			}
-		}
-		
-		//shuffle and limit product lists		
-		for ( o in out){
-			o.products = thx.Arrays.shuffle(o.products);			
-			o.products = o.products.slice(0, 9);
-		}
-		
-		//decide if active or not
-		var now = Date.now();
-		for( o in out){
-			
-			if (o.orderStartDate == null) continue; //constant orders
-			
-			if (now.getTime() >= o.orderStartDate.getTime()  && now.getTime() <= o.orderEndDate.getTime() ){
-				//order currently open
-				o.active = true;
-				
-			}else {
-				o.active = false;
-				
-			}
-		}	
-		
-		return Lambda.array(out);
-	}*/
-
 	public function getPlace(){
 		return place;
 	}
@@ -235,7 +117,7 @@ class MultiDistrib extends Object
 			return cache;
 		}else{
 			cache = [];
-			for( d in getDistributions(db.Catalog.TYPE_VARORDER)){
+			for( d in getDistributions()){
 				for ( p in d.catalog.getProductsPreview(productNum)){
 					cache.push( {
 						rid : p.image!=null ? Std.random(500)+500 : Std.random(500),
@@ -263,7 +145,7 @@ class MultiDistrib extends Object
 
 	public function userHasOrders(user:db.User,type:Int):Bool{
 		if(user==null) return false;
-		for ( d in getDistributions(type)){
+		for ( d in getDistributions()){
 			if(d.hasUserOrders(user)) return true;						
 		}
 		return false;
@@ -290,7 +172,7 @@ class MultiDistrib extends Object
 			if(orderStartDate==null) return null;
 			//find earliest order start date 
 			var date = orderStartDate;
-			for(d in getDistributions(db.Catalog.TYPE_VARORDER)){
+			for(d in getDistributions()){
 				if(d.orderStartDate==null) continue;
 				if(d.orderStartDate.getTime() < date.getTime()) date = d.orderStartDate;
 			}
@@ -306,7 +188,7 @@ class MultiDistrib extends Object
 			if(orderEndDate==null) return null;
 			//find lates order end date 
 			var date = orderEndDate;
-			for(d in getDistributions(db.Catalog.TYPE_VARORDER)){
+			for(d in getDistributions()){
 				if(d.orderEndDate==null) continue;
 				if(d.orderEndDate.getTime() > date.getTime()) date = d.orderEndDate;
 			}
@@ -322,22 +204,13 @@ class MultiDistrib extends Object
 	**/
 	@:skip private var distributionsCache:Array<db.Distribution>;
 	@:skip public var useCache:Bool;
-	public function getDistributions(?type:Int){
+	public function getDistributions(){
 		
 		if(distributionsCache==null || !useCache){
 			distributionsCache = db.Distribution.manager.search($multiDistrib==this,false).array();
 		}
 
-		if(type==null){
-			return distributionsCache;
-		}else{
-			var out = [];
-			for ( d in distributionsCache){
-				if( d.catalog.type==type ) out.push(d);
-			}
-			return out;
-		} 
-		
+		return distributionsCache;
 	}
 
 	public function getDistributionForContract(contract:db.Catalog):db.Distribution{
@@ -350,9 +223,9 @@ class MultiDistrib extends Object
 	/**
 	 * Get all orders involved in this multidistrib
 	 */
-	public function getOrders(?type:Int){
+	public function getOrders(){
 		var out = [];
-		for ( d in getDistributions(type)){
+		for ( d in getDistributions()){
 			out = out.concat(d.getOrders().array());
 		}
 		return out;		
@@ -362,9 +235,9 @@ class MultiDistrib extends Object
 	 * Get orders for a user in this multidistrib
 	 * @param user 
 	 */
-	public function getUserOrders(user:db.User,?type:Int){
+	public function getUserOrders(user:db.User){
 		var out = [];
-		for ( d in getDistributions(type) ){
+		for ( d in getDistributions() ){
 			var pids = d.catalog.getProducts(false).map(x->x.id);		
 			var userOrders =  db.UserOrder.manager.search( $userId == user.id && $distributionId==d.id && $productId in pids , false);	
 			for( o in userOrders ){
@@ -380,9 +253,9 @@ class MultiDistrib extends Object
 		return vendors.array();
 	}
 	
-	public function getUsers(?type:Int){
+	public function getUsers(){
 		var users = [];
-		for ( o in getOrders(type)) users.push(o.user);
+		for ( o in getOrders()) users.push(o.user);
 		return users.deduplicate();		
 	}
 

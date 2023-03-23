@@ -46,42 +46,4 @@
         <td>::formatNum(s.marketplaceTurnoverMarket)::</td>
         ::end::
     </tr>
-
-    <!-- AMAP-->              
-    <tr>
-        <td>invités</td>
-        ::foreach s stats::
-        <td>::formatNum(s.invitedTurnoverAmap)::</td>
-        ::end::
-    </tr>
-    <tr>
-        <td>invités sur cpro</td>
-        ::foreach s stats::
-        <td>::formatNum(s.cproInvitedTurnoverAmap)::</td>
-        ::end::
-    </tr>
-    <tr>
-        <td>Découverte</td>
-        ::foreach s stats::
-        <td>::formatNum(s.discoveryTurnoverAmap)::</td>
-        ::end::
-    </tr>
-    <tr>
-        <td>Formule pro</td>
-        ::foreach s stats::
-        <td>::formatNum(s.proTurnoverAmap)::</td>
-        ::end::
-    </tr>
-    <tr>
-        <td>Formule Membre</td>
-        ::foreach s stats::
-        <td>::formatNum(s.memberTurnoverAmap)::</td>
-        ::end::
-    </tr>
-    <tr>
-        <td>Marketplace</td>
-        ::foreach s stats::
-        <td>::formatNum(s.marketplaceTurnoverAmap)::</td>
-        ::end::
-    </tr>
 </table>

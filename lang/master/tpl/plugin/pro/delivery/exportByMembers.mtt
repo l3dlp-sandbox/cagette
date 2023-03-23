@@ -67,7 +67,6 @@
 						<th>Produit</th>
 						<th><a href="#" data-toggle="tooltip" data-placement="top" title="Prix unitaire TTC">P.U</a></th>
 						<th>Sous-total</th>
-						<th>Frais</th>
 						<th>Total</th>
 					</tr>
 			
@@ -94,14 +93,6 @@
 					</td>
 					<td>
 						::formatNum(m.subTotal)::&nbsp;::currency()::
-					</td>
-					<td>
-						<!-- fees -->
-						::if m.percentageValue!=null::
-						<a href="#" data-toggle="tooltip" data-placement="top" title="::m.percentageName:: : ::m.percentageValue:: %">
-							::formatNum(m.fees)::&nbsp;::currency()::
-						</a>
-						::end::
 					</td>
 					<td>
 						<!-- total -->

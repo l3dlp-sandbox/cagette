@@ -11,8 +11,6 @@ using Std;
 class View extends sugoi.BaseView {
 	var t:sugoi.i18n.GetText;
 	var VERSION:String;
-	var TYPE_CONSTORDERS:Int;
-	var TYPE_VARORDER:Int;
 
 	var tuto:{name:String, step:Int};
 
@@ -23,8 +21,6 @@ class View extends sugoi.BaseView {
 		super();
 		this.VERSION = App.VERSION.toString();
 		this.t = sugoi.i18n.Locale.texts;
-		this.TYPE_CONSTORDERS = db.Catalog.TYPE_CONSTORDERS; // CSA catalog
-		this.TYPE_VARORDER = db.Catalog.TYPE_VARORDER; // variable orders catalog
 	}
 
 	public function count(i) {
@@ -279,10 +275,6 @@ class View extends sugoi.BaseView {
 		if (App.current.session.data == null)
 			return 0;
 		return App.current.session.data.whichUser == null ? 0 : App.current.session.data.whichUser;
-	}
-
-	public function isAmap() {
-		return App.current.user.getGroup().groupType == db.Group.GroupType.Amap;
 	}
 
 	public function getBasket(id) {

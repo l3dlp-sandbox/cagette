@@ -75,10 +75,11 @@
 							::else::
 								::if user==null::
 								<p>
-									<a href="#" class="btn btn-primary" onclick="_Cagette.registerBox('/group/list/::group.id::','::loginBoxOptions.sid::',null,::loginBoxOptions.phoneRequired::,::loginBoxOptions.addressRequired::)">
+									<a href="#" class="btn btn-primary" onclick="neo.createNeoModule('login-registration-container', 'loginRegistration', { redirectUrl: '/group/list/::group.id::', sid: '::loginBoxOptions.sid::', message: null, phoneRequired: ::loginBoxOptions.phoneRequired::, addressRequired: ::loginBoxOptions.addressRequired::, openRegistration:true})" >
 									<i class="icon icon-chevron-right"></i>
 										::_("Subscription on waiting list")::
 									</a>
+									<div id='login-registration-container'></div>
 								</p>
 								::else::
 								<p>
@@ -112,8 +113,9 @@
 						<hr />
 						<h4>::_("Already member? Log in:")::</h4>
 						<div class="text-center">
-							<a href="#" onclick="_Cagette.loginBox('/group/::group.id::','::loginBoxOptions.sid::',null,::loginBoxOptions.phoneRequired::,::loginBoxOptions.addressRequired::)" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-user"></span> ::_("Log in")::</a>
+							<a href="#" onclick="neo.createNeoModule('login-registration-container', 'loginRegistration', { redirectUrl: '/group/::group.id::', sid: '::loginBoxOptions.sid::', message: null, phoneRequired: ::loginBoxOptions.phoneRequired::, addressRequired: ::loginBoxOptions.addressRequired::})" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-user"></span> ::_("Log in")::</a>
 						</div>
+						<div id="login-registration-container" />
 					::end::
 					
 				</div>

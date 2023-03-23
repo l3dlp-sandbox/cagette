@@ -2,9 +2,7 @@ package controller;
 import Common;
 import db.MultiDistrib;
 import db.Operation;
-import db.Subscription;
 import service.OrderService;
-import service.SubscriptionService;
 import sugoi.form.Form;
 import sugoi.form.elements.StringSelect;
 
@@ -35,10 +33,6 @@ class History extends Controller
 		var from  = DateTools.delta(Date.now(), -1000.0 * 60 * 60 * 24 * 30);
 		var to 	  = DateTools.delta(Date.now(), 1000.0 * 60 * 60 * 24 * 30 * 6);
 		
-		//constant orders
-		view.subscriptionsByCatalog = SubscriptionService.getActiveSubscriptionsByCatalog( app.user, group );
-		view.subscriptionService = SubscriptionService;
-				
 		//variable orders, grouped by date
 		var distribs = MultiDistrib.getFromTimeRange( group , from , to  );
 		//sort by date desc
@@ -58,9 +52,9 @@ class History extends Controller
 	**/
 	@logged
 	@tpl('history/basket.mtt')
-	function doBasket(basket : db.Basket, ?type:Int){
+	function doBasket(basket : db.Basket){
 		view.basket = basket;
-		view.orders = service.OrderService.prepare(basket.getOrders(type));
+		view.orders = service.OrderService.prepare(basket.getOrders());
 		view.print = app.params["print"]!=null;
 	}
 	
@@ -85,54 +79,4 @@ class History extends Controller
 		view.balance = db.UserGroup.get(m,app.user.getGroup()).balance;
 	}
 
-	/**
-		view orders of current user for a catalog
-	**/
-	@logged
-	@tpl("history/csaorders.mtt")
-	function doOrders( catalog:db.Catalog ) {
-		
-		var ug = db.UserGroup.get(app.user, app.user.getGroup());
-		if (ug == null) throw Error("/", t._("You are not a member of this group"));
-	
-		var	catalogDistribs = db.Distribution.manager.search( $catalog == catalog , { orderBy : date }, false ).array();
-		view.distribs = catalogDistribs;
-		view.prepare = OrderService.prepare;
-		view.catalog = catalog;
-		view.now = Date.now();
-		view.member = app.user;
-	}
-
-	/**
-		view orders of a subscription
-	**/
-	@logged
-	@tpl("history/csaorders.mtt")
-	function doSubscriptionOrders( sub : Subscription ) {
-		
-		var ug = db.UserGroup.get(app.user, app.user.getGroup());
-		if (ug == null) throw Error("/", t._("You are not a member of this group"));
-	
-		view.distribs = SubscriptionService.getSubscriptionDistributions(sub,"allIncludingAbsences");
-		view.prepare = OrderService.prepare;
-		view.catalog = sub.catalog;
-		view.now = Date.now();
-		view.member = sub.user;
-	}
-	
-	@logged
-	@tpl("history/subscriptionpayments.mtt")
-	function doSubscriptionPayments( subscription : db.Subscription ) {
-		
-		var ug = db.UserGroup.get(app.user, app.user.getGroup());
-		if (ug == null) throw Error("/", t._("You are not a member of this group"));
-
-		var user = subscription.user;
-		view.subscriptionTotal = /*subscription.getTotalOperation()*/service.SubscriptionService.createOrUpdateTotalOperation( subscription );		
-		view.payments = db.Operation.manager.search( $subscription == subscription && $type == OperationType.Payment, { orderBy : -date }, false );
-		view.member = user;
-		view.subscription = subscription;
-		
-	}
-	
 }

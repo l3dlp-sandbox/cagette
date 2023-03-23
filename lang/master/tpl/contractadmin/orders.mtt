@@ -8,9 +8,10 @@
 	
 	<div style="margin:8px 0;">
 		
-		::if(!catalog.isConstantOrdersCatalog() && !catalog._group.isDispatch())::
+		::if(!catalog._group.isDispatch())::
+		<div id="orders-dialog-container" />
 		<a class="btn btn-default btn-sm"
-			onclick="_Cagette.initOrderBox(null,::multiDistribId::,::distribution._catalog.id::,::catalog.type::,'::escapeJS(hDate(distribution.date))::','::escapeJS(distribution._place.toString())::',null,'::user.getGroup().currency::', ::user.getGroup().hasPayments()::, '/contractAdmin/orders/::catalog.id::?d=::distribution.id::', true, ::user.getGroup().id::, ::settings.differenciatedPricing::)">
+			onclick="neo.createNeoModule('orders-dialog-container', 'ordersDialog', {userId:null, multiDistribId: ::multiDistribId::, catalogId: ::distribution._catalog.id::, groupId: ::user.getGroup().id::, date: '::escapeJS(hDate(distribution.date))::', place: '::escapeJS(distribution._place.toString())::', userName: null, callbackUrl: '/contractAdmin/orders/::catalog.id::?d=::distribution.id::', basketId: null, differenciatedPricingSetting: ::settings.differenciatedPricing::})">
 			<i class="icon icon-plus"></i>
 			::_("New order")::
 		</a>							
@@ -27,13 +28,8 @@
 				<i class="icon icon-print"></i> ::_("Attendance sheet")::
 			</button>
 			<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">					
-				::if(!catalog._group.hasShopMode())::
-				<li><a href="/distribution/csaList/::distribution.id::"> Liste d'émargement AMAP</a></li>
-				<li><a href="/distribution/listByProductUser/::distribution.id::"> ::_("By Product-User")::</a></li>			
-				::else::
 				<li><a href="/distribution/list/::distribution.id::"> ::_("Standard")::</a></li>
 				<li><a href="/distribution/listByProductUser/::distribution.id::"> ::_("By Product-User")::</a></li>			
-				::end::
 			</ul>
 		</div>
 	</div>
@@ -67,13 +63,12 @@
 						<a href="/member/view/::basket.userId::" target="_blank">::basket._user.getName()::</a> 						
 					</td>
 					<td>
-						::if(!catalog.isConstantOrdersCatalog())::
+						<div id="orders-dialog-container" />
 						<a class="btn btn-default btn-xs"
-							onclick="_Cagette.initOrderBox(::basket.userId::,::multiDistribId::,::distribution._catalog.id::,::distribution._catalog.type::,'::escapeJS(hDate(distribution.date))::','::escapeJS(distribution._place.toString())::','::escapeJS(basket._user.getName())::','::user.getGroup().currency::', ::user.getGroup().hasPayments()::, '/contractAdmin/orders/::c.id::?d=::distribution.id::', true, ::user.getGroup().id::, ::settings.differenciatedPricing::, ::basket.id::)">
+							onclick="neo.createNeoModule('orders-dialog-container', 'ordersDialog', { userId: ::basket.userId::, multiDistribId: ::multiDistribId::, catalogId: ::distribution._catalog.id::, groupId: ::user.getGroup().id::, date: '::escapeJS(hDate(distribution.date))::', place: '::escapeJS(distribution._place.toString())::', userName: '::escapeJS(basket._user.getName())::', callbackUrl: '/contractAdmin/orders/::c.id::?d=::distribution.id::', basketId: ::basket.id::, differenciatedPricingSetting: ::settings.differenciatedPricing:: });">
 							<i class="icon icon-edit"></i>
 							::_("Edit")::
 						</a>
-						::end::
 					</td>
 				</tr>
 				<tr>
@@ -82,7 +77,6 @@
 					<th class="col-md-4">::_("Product")::</th>
 					<th class="col-md-1"><a href="#" data-toggle="tooltip" data-placement="top" title="::_("Unit price including taxes")::">::_("U.P||price per unit")::</a></th>
 					<th class="col-md-1">Ss-total</th>
-					<th class="col-md-1">::_("Fees")::</th>
 					<th class="col-md-1">::_("Total")::</th>						
 					<th class="col-md-2"></th>
 				</tr>
@@ -115,14 +109,6 @@
 						</td>
 						<td>
 							::formatNum(o.subTotal)::&nbsp;::currency()::
-						</td>
-						<td>
-							<!-- frais -->
-							::if o.percentageValue!=null::
-							<a href="#" data-toggle="tooltip" data-placement="top" title="::o.percentageName:: : ::o.percentageValue:: %">
-								::formatNum(o.fees)::&nbsp;::currency()::
-							</a>
-							::end::
 						</td>
 						<td>
 							<!-- total -->
