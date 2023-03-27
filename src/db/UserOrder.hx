@@ -24,7 +24,6 @@ class UserOrder extends Object
 	
 	//store price (1 unit price without fees) and fees (percentage not amount) rate when the order is done
 	public var productPrice : SFloat;
-	public var feesRate : SFloat; //fees in percentage
 	public var vatRate : SNull<SFloat>; // store vatRate
 	
 	@:relation(distributionId)
@@ -42,7 +41,6 @@ class UserOrder extends Object
 		quantity = 1;
 		date = Date.now();
 		flags = cast 0;
-		feesRate = 0;
 	}
 	
 	public function populate() {

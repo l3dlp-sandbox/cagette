@@ -326,15 +326,7 @@ class OrderService
 			x.subTotal = o.quantity * o.productPrice;
 
 			var c = o.product.catalog;
-			
-			if ( o.feesRate!=0 ) {
-				
-				x.fees = x.subTotal * (o.feesRate/100);
-				x.total = x.subTotal + x.fees;
-				
-			}else {
-				x.total = x.subTotal;
-			}
+			x.total = x.subTotal;
 			
 			//flags
 			x.invertSharedOrder = o.flags.has(InvertSharedOrder);

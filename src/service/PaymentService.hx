@@ -117,8 +117,6 @@ class PaymentService {
 		var _amount = 0.0;
 		for (o in orders) {
 			var a = o.quantity * o.productPrice;
-			//plus fees
-			a = a + a * (o.feesRate / 100);
 			//neko float bug
 			a = Std.string(a).parseFloat();
 			//round
