@@ -21,18 +21,12 @@
 			
 		<!-- BOOTSTRAP 	-->
 		<link rel="stylesheet" href="/theme/::theme.id::/css/::getVariable('css')::/bootstrap.min.css" />
-
-				
-		<!-- polyfill for IE11 : Object.assign() doesnt exists in IE11 , error in libs.prod.js -->
-		<script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
-
-		<!-- Haxe JS + libs bundled with browserify -->
-		::if(DEBUG)::
-		<script type="text/javascript" src="/js/::getVariable('js')::/libs.dev.js"></script>
-		::else::
-		<script type="text/javascript" src="/js/::getVariable('js')::/libs.prod.js"></script>
-		::end::
-		<script type="text/javascript" src="/js/::getVariable('js')::/app.js"></script>
+	
+	::if(DEBUG)::
+    <script type="text/javascript" src="/js/::getVariable('js')::/libs.dev.js"></script>
+    ::else::
+    <script type="text/javascript" src="/js/::getVariable('js')::/libs.prod.js"></script>
+    ::end::
 	</head>
 
 	::if bgcolor==null:: ::set bgcolor="#bad096":: ::end::
@@ -44,34 +38,20 @@
 		::end::
 		
 		<!-- Modal window -->
-		<div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-		  <div class="modal-dialog modal-lg" role="document">
-			<div class="modal-content">
-			  <div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h2 class="modal-title" id="myModalLabel"></h2>
-			  </div>
-			  <div class="modal-body">
-				...
-			  </div>
-			  <div class="modal-footer" style="clear:both;">
-				<button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
-				
-			  </div>
-			</div>
-		  </div>
-		</div>
+		<div id="myModal" />
 		
 		::raw __content__::
 		
 		$$googleTagManagerNoScript(::getVariable("googleTagManagerId")::)
 		  
 		<script type="text/javascript">
-			_Cagette.theme = {
+			window._Cagette = {
+			theme: {
 				id: "::theme.id::",
 				name: "::theme.name::",
 				supportEmail: "::theme.supportEmail::"
-			}			
+			}
+		}	
 		</script>
 
 		::foreach script getNeoModuleScripts()::
