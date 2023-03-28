@@ -47,13 +47,6 @@ class App {
 		r.request();
 	}
 
-    /**
-	 * Used in TS code after leaving a group
-	 */
-    public function resetGroupInSession(groupId:Int) {
-        var req = new haxe.Http("/account/quitGroup/"+groupId);
-        req.request();
-    }
 
 }
 
