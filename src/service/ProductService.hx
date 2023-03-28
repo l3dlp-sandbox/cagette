@@ -60,6 +60,8 @@ class ProductService{
 		productName = Formatting.escapeJS(productName);
 		return '<div id="txp-neo-container"></div><script language="javascript">
 			document.addEventListener("DOMContentLoaded", function(event) {
+				document.querySelector("form input[name=\'${formName}_name\']").parentElement.parentElement.remove();
+				document.querySelector("form select[name=\'${formName}_txpProductId\']").parentElement.parentElement.remove();
 				neo.createNeoModule("txp-neo-container", "productCategorizer", {
 					originalProductName: "${productName}",
 					originalTxpProductId: $categId,
