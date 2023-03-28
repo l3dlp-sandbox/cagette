@@ -108,7 +108,14 @@
             _Cagette.userName = "::user.getName()::";
             _Cagette.userEmail = "::user.email::";
             :: end::
-            _Cagette.antiDoubleClick();
+			for( n of document.querySelectorAll(".btn:not(.btn-noAntiDoubleClick)") ){
+				n.addEventListener("click",function(e){
+					e.target.classList.add("disabled");
+					setTimeout(function(){
+						e.target.classList.remove("disabled");
+					}, 3000);
+				});
+			}
         })
 
     </script>

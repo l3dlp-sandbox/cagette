@@ -47,24 +47,6 @@ class App {
 		r.request();
 	}
 
-	/**
-	 * Anti Doubleclick with btn elements.
-	 * Can be bypassed by adding a .btn-noAntiDoubleClick class
-	 */
-	public function antiDoubleClick(){
-
-		for( n in js.Browser.document.querySelectorAll(".btn:not(.btn-noAntiDoubleClick)") ){
-			n.addEventListener("click",function(e:js.html.MouseEvent){
-				var x = untyped e.target;
-				x.classList.add("disabled");
-				haxe.Timer.delay(function(){
-					x.classList.remove("disabled");
-				},3000);
-			});
-		}
-		
-	}
-
     /**
 	 * Used in TS code after leaving a group
 	 */
