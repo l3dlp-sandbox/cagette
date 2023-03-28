@@ -40,7 +40,6 @@ COPY --chown=www-data:www-data .git /srv/.git
 COPY --chown=www-data:www-data common/ /srv/common/
 COPY --chown=www-data:www-data data/ /srv/data/
 COPY --chown=www-data:www-data devLibs/ /srv/devLibs/
-COPY --chown=www-data:www-data js/ /srv/js/
 COPY --chown=www-data:www-data lang/ /srv/lang/
 COPY --chown=www-data:www-data src/ /srv/src/
 COPY --chown=www-data:www-data www/ /srv/www/
