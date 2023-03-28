@@ -25,11 +25,11 @@ jobs:
           echo "project_name=$PROJ" >> $GITHUB_ENV
 
       - name: set azure credentials to access cluster
-        uses: azure/aks-set-context@v1
+        uses: azure/aks-set-context@v3
         with:
-          creds: '${{ secrets.AZURE_CREDENTIALS }}'
+          creds: "${{ secrets.AZURE_CREDENTIALS }}"
           resource-group: ${{ env.CLUSTER_RESOURCE_GROUP }}
-          cluster-name: 'alilo-dev'
+          cluster-name: "alilo-dev"
         id: login
 
       - name: remove cagette service
