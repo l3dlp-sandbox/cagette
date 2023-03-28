@@ -14,7 +14,7 @@
 
 				::set basket = d.getUserBasket(user)::
 				::if(basket!=null)::
-					::set orders = basket.getOrders(1)::
+					::set orders = basket.getOrders()::
 				::else:: 
 					::set orders = null::
 				::end::
@@ -37,7 +37,7 @@
 									::raw o.smartQt::
 								</td>
 								<td>
-									<a href="#" onclick="_Cagette.overlay('/shop/productInfo/::o.productId::','::o.productName::')">
+									<a href="#" onclick="neo.createNeoModule('myModal', 'dialog-url', { url: '/shop/productInfo/::o.productId::', title:'::o.productName::' })">
 										<img src="::o.productImage::" style="width:32px;height:32px;" />
 										::o.productName::
 									</a>

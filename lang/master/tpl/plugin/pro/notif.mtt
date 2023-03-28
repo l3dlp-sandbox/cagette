@@ -43,7 +43,7 @@
 	
 	
 </div>
-<div class="col-md-8">
+<div class="col-md-8" style="margin-bottom: 16px;">
 	
 	::switch notif._type::
 		<!-- default -->

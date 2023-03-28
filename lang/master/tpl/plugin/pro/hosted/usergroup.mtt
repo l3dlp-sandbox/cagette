@@ -23,7 +23,7 @@
 				</td>
 				<td class="col-md-6">
 					<!-- BASKETS -->
-					::set orders = md.getUserOrders(member,null)::
+					::set orders = md.getUserOrders(member)::
 					::if orders.length > 0::
 						
 						::set basket = orders[0]._basket::
@@ -53,7 +53,7 @@
 					$$operation(::op::)
 					
 					<td>
-						<a onclick="_Cagette.overlay('/p/hosted/operation/::op.id::','',false)" class="btn btn-default btn-xs">Detail</a>
+						<a onclick="neo.createNeoModule('myModal', 'dialog-url', { url: '/p/hosted/operation/::op.id::', title:'Détail' })" class="btn btn-default btn-xs">Détail</a>
 					</td>
 				</tr>
 				::end::
