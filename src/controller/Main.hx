@@ -350,6 +350,9 @@ class Main extends Controller {
 		d.dispatch(new controller.Debug());
 	}
 
+	/**
+		Landing page when a user is invited in a group.
+	**/
 	@tpl('invite.mtt')
 	function doInvite(hash:String, userEmail:String, group:db.Group, ?user:db.User){
 
@@ -361,6 +364,7 @@ class Main extends Controller {
 
 		if (user!=null) {
 			db.UserGroup.getOrCreate(user,group);
+			
 			throw Ok("/", t._("You're now a member of \"::group::\" ! You'll receive an email as soon as next order will open", {group:group.name}));
 		} else {
 			service.UserService.prepareLoginBoxOptions(view, group);
