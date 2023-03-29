@@ -90,7 +90,7 @@
 		<table class="table table-bordered" style="width:600px;">
 			<tr>
 				<td class="col-md-3">::_("Name")::</td>
-				<td><b>::contract._vendor.name::</b></td>
+				<td><a href="::contract._vendor.getLink()::" target="_blank">::contract._vendor.name::</a></td>
 			</tr>
 			<tr>
 				<td>Email</td>
@@ -149,18 +149,6 @@
 				</td>
 			</tr>
 		</table>
-		
-		<h4><a href="/contractAdmin/products/::c.id::">::_("Products")::</a></h4>
-		<div style="max-height:400px;overflow:auto;">
-			<table class="table table-bordered" style="width:600px;">
-				::foreach p contract.getProducts(true)::
-				<tr>
-					<td><img src="::p.getImage()::" style="width:32px;height:32px;" />	</td>
-					<td>::p.getName()::</td>
-					<td>::formatNum(p.price)::&nbsp;::currency()::</td>					
-				</tr>
-				::end::
-			</table>
-		</div>
+			
 
 ::end::

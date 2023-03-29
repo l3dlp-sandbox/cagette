@@ -46,12 +46,12 @@ class VendorService{
 
 
 	/**
-		Search vendors.
+		Search vendors
 	**/
-	public static function findVendors(search:{?name:String,?email:String,?geoloc:Bool,?profession:Int,?fromLat:Float,?fromLng:Float}){
+	public static function findVendors(search:{?name:String/*,?email:String*/,?geoloc:Bool,?profession:Int,?fromLat:Float,?fromLng:Float}){
 		var vendors = [];
 		var names = [];
-		var where = [];
+		var where = ["CagettePro.offer!=3"];
 		if(search.name!=null){
 			for( n in search.name.split(" ")){
 				n = n.toLowerCase();
@@ -63,11 +63,6 @@ class VendorService{
 			where.push('(' + names.map(n -> 'name LIKE "%$n%"').join(' OR ') + ')');
 		}
 		
-		//search by mail
-		// if(search.email!=null){
-		// 	where.push('email LIKE "${search.email}"');
-		// }
-
 		//search by profession
 		if(search.profession!=null){
 			where.push('(profession = ${search.profession} OR production2 = ${search.profession} OR production3 = ${search.profession})');
@@ -83,19 +78,7 @@ class VendorService{
 		}
 
 		//search for each term
-		vendors = Lambda.array(db.Vendor.manager.unsafeObjects('SELECT * $selectDist FROM Vendor WHERE ${where.join(' AND ')} $orderBy LIMIT 30',false));
-
-		// vendors = tools.ObjectListTool.deduplicate(vendors);
-
-		#if plugins
-		//cpro first
-		for( v in vendors.copy() ){
-			var cpro = v.getCpro();
-			if( cpro != null){				
-				if(cpro.offer==Training) vendors.remove(v);				
-			} 			
-		}
-		#end
+		vendors = db.Vendor.manager.unsafeObjects('SELECT Vendor.* $selectDist FROM Vendor INNER JOIN CagettePro ON CagettePro.vendorId=Vendor.id WHERE ${where.join(' AND ')} $orderBy LIMIT 30',false).array();
 
 		return vendors;
 	}

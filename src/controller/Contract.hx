@@ -50,16 +50,15 @@ class Contract extends Controller
 	}
 	
 	/**
-		1- define the vendor
+		Search a vendor
 	**/
-	@logged @tpl("form.mtt")
-	function doDefineVendor(?type=1){
+	@logged @tpl("contractadmin/searchVendor.mtt")
+	function doSearchVendor(?type=1){
 		if (!app.user.canManageAllContracts()) throw Error('/', t._("Forbidden action"));
 		
-		view.title = "Chercher un producteur";
-		// view.text = t._("Before creating a record for the vendor you want to work with, let's search our database to check if he's not already referenced.");
 
 		var f = new sugoi.form.Form("defVendor");
+		f.submitButtonLabel = "Rechercher";
 		f.addElement(new sugoi.form.elements.StringInput("name",t._("Vendor or farm name"),null,false));
 		// f.addElement(new sugoi.form.elements.StringInput("email","Email du producteur",null,false));
 		var place = app.getCurrentGroup().getMainPlace();
@@ -68,31 +67,29 @@ class Contract extends Controller
 		}
 
 		//profession
-		f.addElement(new sugoi.form.elements.IntSelect('profession',t._("Profession"),sugoi.form.ListData.fromSpod(service.VendorService.getVendorProfessions()),null,false));
+		var professions = service.VendorService.getVendorProfessions();
+		professions[0].name = "Toutes";
+		f.addElement(new sugoi.form.elements.IntSelect('profession',t._("Profession"),sugoi.form.ListData.fromSpod(professions),null,false));
 
-		if(f.isValid()){
+		// populate form from request
+		f.isValid();
 
-			if(f.getValueOf('name')==null && (f.getElement("geoloc")==null || f.getValueOf("geoloc")==false) && f.getValueOf("profession")==null){
-				throw Error('/contract/defineVendor/','Vous devez au moins rechercher par nom ou par profession');
-			}
-			
-			//look for identical names
-			var vendors = service.VendorService.findVendors( {
-				name:f.getValueOf('name'),
-				email:null/*f.getValueOf('email')*/,
-				geoloc : f.getElement("geoloc")==null ? false : f.getValueOf("geoloc"),
-				profession:f.getValueOf("profession"),
-				fromLng: if(place!=null) place.lng else null, 
-				fromLat: if(place!=null) place.lat else null,
-				
-			});
-
-			app.setTemplate('contractadmin/defineVendor.mtt');
-			view.vendors = vendors;
-			// view.email = f.getValueOf('email');
-			view.name = f.getValueOf('name');
-		}
+		// if(f.getValueOf('name')==null && (f.getElement("geoloc")==null || f.getValueOf("geoloc")==false) && f.getValueOf("profession")==null){
+		// 	throw Error('/contract/searchVendor/','Vous devez au moins rechercher par nom ou par profession');
+		// }
 		
+		//look for identical names
+		var vendors = service.VendorService.findVendors( {
+			name:f.getValueOf('name'),
+			geoloc : f.getElement("geoloc")==null ? false : f.getValueOf("geoloc"),
+			profession:f.getValueOf("profession"),
+			fromLng: if(place!=null) place.lng else null, 
+			fromLat: if(place!=null) place.lat else null,				
+		});
+
+		view.vendors = vendors;
+		view.name = f.getValueOf('name');
+	
 		view.shopMode = app.user.getGroup().hasShopMode();
 		view.form = f;
 	}
