@@ -24,10 +24,14 @@ jobs:
           echo "project to delete: $PROJ"
           echo "project_name=$PROJ" >> $GITHUB_ENV
 
+      - name: login to azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       - name: set azure credentials to access cluster
         uses: azure/aks-set-context@v3
         with:
-          creds: "${{ secrets.AZURE_CREDENTIALS }}"
           resource-group: ${{ env.CLUSTER_RESOURCE_GROUP }}
           cluster-name: "alilo-dev"
         id: login
