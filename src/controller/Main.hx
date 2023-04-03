@@ -325,20 +325,28 @@ class Main extends Controller {
 	}
 
 	@tpl('invite.mtt')
-	function doInvite(hash:String, userEmail:String, group:db.Group, ?user:db.User){
+	function doInvite(hash:String){
 
-		if (haxe.crypto.Sha1.encode(App.config.KEY+userEmail) != hash){
+		var cacheStringified = sugoi.db.Cache.manager.get(hash).value;
+		var cache:{firstName:String,lastName:String,email:String,groupId:Int,?id:Int,?differenciatedPricingId:Int} = haxe.Json.parse(cacheStringified);
+		if (cache == null){
 			throw Error("/","Lien invalide");
 		}
 
-		app.session.data.amapId = group.id;
+		var group = db.Group.manager.get(cache.groupId);
+		app.session.data.amapId = cache.groupId;
 
-		if (user!=null) {
-			db.UserGroup.getOrCreate(user,group);
+		if (cache.id!=null) {
+			var user = db.User.manager.get(cache.id);
+			var userGroup = db.UserGroup.getOrCreate(user,group);
+			if (cache.differenciatedPricingId!=null){
+				userGroup.differenciatedPricingId = cache.differenciatedPricingId;
+				userGroup.update();
+			}
 			throw Ok("/", t._("You're now a member of \"::group::\" ! You'll receive an email as soon as next order will open", {group:group.name}));
 		} else {
 			service.UserService.prepareLoginBoxOptions(view, group);
-			view.invitedUserEmail = userEmail;
+			view.invitedUserEmail = cache.email;
 			view.invitedGroupId = group.id;
 		}
 	}
