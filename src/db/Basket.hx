@@ -8,6 +8,7 @@ import pro.payment.MangopayECPayment;
 @:enum
 abstract BasketStatus(String) {
   var OPEN = "OPEN";
+  var PAYMENT_PROCESSING = "PAYMENT_PROCESSING";
   var CONFIRMED = "CONFIRMED";
   var VALIDATED = "VALIDATED";
 }
