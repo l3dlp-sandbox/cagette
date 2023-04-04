@@ -1,7 +1,9 @@
 package controller;
+import db.UserOrder;
 import service.VolunteerService;
 import sugoi.form.elements.TextArea;
 import sugoi.form.elements.IntSelect;
+import Common;
 
 using Formatting;
 
@@ -468,6 +470,86 @@ class Distributions extends Controller {
 
 		view.form = form;
 		view.title = t._("Remove an undelivered product from orders");
+	}
+
+	/**
+	 * Attendance sheet by user-product (single distrib)
+	 */
+	@tpl('distribution/list.mtt')
+	function doList(d:db.Distribution) {
+		view.distrib = d;
+		view.place = d.place;
+		view.contract = d.catalog;
+		view.orders = service.OrderService.prepare(d.getOrders());
+		// volunteers whose role is linked to this contract
+		view.volunteers = Lambda.filter(d.multiDistrib.getVolunteers(),
+			function(v) return v.volunteerRole.catalog != null && v.volunteerRole.catalog.id == d.catalog.id);
+	}
+
+	/**
+	 * Attendance sheet by product-user (single distrib)
+	 */
+	@tpl('distribution/listByProductUser.mtt')
+	function doListByProductUser(d:db.Distribution) {
+		view.distrib = d;
+		view.place = d.place;
+		view.contract = d.catalog;
+		// view.orders = UserOrder.prepare(d.getOrders());
+
+		// make a 2 dimensons table :  data[userId][productId]
+		// WARNING : BUGS WILL APPEAR if there is many Order line for the same product
+		var data = new Map<Int, Map<Int, UserOrder>>();
+		var products = [];
+		var uo = d.getOrders();
+
+		for (o in uo) {
+			products.push(o.product);
+		}
+
+		for (o in service.OrderService.prepare(uo)) {
+			var user = data[o.userId];
+			if (user == null)
+				user = new Map();
+			user[o.productId] = o;
+			data[o.userId] = user;
+		}
+
+		// products
+		var products = tools.ObjectListTool.deduplicate(products);
+		products.sort(function(b, a) {
+			return (a.name < b.name) ? 1 : -1;
+		});
+		view.products = products;
+
+		// users
+		var users = d.getUsers().array();
+		// var usersMap = tools.ObjectListTool.toIdMap(users);
+		users.sort(function(b, a) {
+			return (a.lastName.toUpperCase() < b.lastName.toUpperCase()) ? 1 : -1;
+		});
+		view.users = users;
+		// view.usersMap = usersMap;
+
+		view.orders = data;
+
+		// total to pay by user
+		view.totalByUser = function(uid:Int) {
+			var total = 0.0;
+			for (o in data[uid])
+				total += o.total;
+			return total;
+		}
+
+		// total qty of product
+		view.totalByProduct = function(pid:Int) {
+			var total = 0.0;
+			for (uid in data.keys()) {
+				var x = data[uid][pid];
+				if (x != null)
+					total += x.quantity;
+			}
+			return total;
+		}
 	}
 
 }

@@ -29,8 +29,8 @@
 			<i class="icon icon-print"></i> ::_("Attendance sheet")::
 		</button>
 		<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">					
-			<li><a href="/distribution/list/::distribution.id::"> ::_("Standard")::</a></li>
-			<li><a href="/distribution/listByProductUser/::distribution.id::"> ::_("By Product-User")::</a></li>			
+			<li><a href="/distributions/list/::distribution.id::"> ::_("Standard")::</a></li>
+			<li><a href="/distributions/listByProductUser/::distribution.id::"> ::_("By Product-User")::</a></li>			
 		</ul>
 	</div>
 </div>
