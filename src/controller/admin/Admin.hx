@@ -292,8 +292,6 @@ class Admin extends Controller {
 			.getIntResult(0);
 
 		view.newGroups = db.Group.manager.count($cdate >= from && $cdate < to);
-		view.newCSAGroups = db.Group.manager.count($cdate >= from && $cdate < to && !$flags.has(ShopMode));
-		view.newMarketGroups = db.Group.manager.count($cdate >= from && $cdate < to && $flags.has(ShopMode));
 
 		view.newGroupsByAdmin = sys.db.Manager.cnx.request('SELECT count(gs.contactType) as count,gs.contactType FROM `Group` g, GroupStats gs 
 		where gs.groupId=g.id 
@@ -308,32 +306,6 @@ class Admin extends Controller {
 		group by contactType
 		order by count desc')
 			.results();
-
-		// db.Group.manager.search($flags.has(ShopMode));
-		// db.Group.manager.search(!$flags.has(ShopMode));
-
-		// BASKETS
-		/*var marketBaskets = db.Basket.manager.unsafeObjects('
-				select * from Basket where cdate >= "${from.toString()}" and cdate < "${to.toString()}"
-				and multiDistribId in (
-				select id from MultiDistrib where groupId in (
-					#group AVEC shopMode
-					SELECT id FROM `Group` WHERE flags & 2 != 0 
-				) and distribStartDate > NOW() )',false);
-
-
-			view.marketBasketsNum = marketBaskets.length;
-
-			var amapBaskets = db.Basket.manager.unsafeObjects('
-				select * from Basket where cdate >= "${from.toString()}" and cdate < "${to.toString()}"
-				and multiDistribId in (
-				select id from MultiDistrib where groupId in (
-					#group SANS shopMode
-					SELECT id FROM `Group` WHERE !(flags & 2 != 0) 
-				) and distribStartDate > NOW() )',false);
-
-
-			view.amapBasketsNum = amapBaskets.length; */
 
 		// global stats
 		var stats = Graph.getData("global", from);
@@ -385,13 +357,6 @@ class Admin extends Controller {
 		var f = new sugoi.form.Form("groups");
 		f.method = GET;
 		f.addElement(new sugoi.form.elements.StringInput("groupName", "Nom du groupe"));
-		var data = [
-			{label: "Tous", value: "all"},
-			{label: "Mode marché", value: "shopMode"},
-			{label: "Mode AMAP", value: "CSAMode"},
-
-		];
-		f.addElement(new sugoi.form.elements.StringSelect("type", "Type de groupe", data, defaultType, true, ""));
 		f.addElement(new sugoi.form.elements.StringInput("zipCodes", "Saisir des numéros de département séparés par des virgules ou laisser vide."));
 		f.addElement(new sugoi.form.elements.StringSelect("country", "Pays", db.Place.getCountries(), "FR", true, ""));
 		
@@ -434,19 +399,6 @@ class Admin extends Controller {
 				case "inactive":
 					sql_where_and.push("active=0");
 				default:
-			}
-
-			// type
-			if (f.getValueOf("type") != "all") {
-				var type = f.getValueOf("type");
-				switch (type) {
-					case "marketMode", "shopMode":
-						sql_where_and.push("g.flags&2 != 0");
-					case "CSAMode":
-						sql_where_and.push("g.flags&2 = 0");
-					default:
-						throw "unknown type";
-				}
 			}
 
 			// country
@@ -516,7 +468,7 @@ class Admin extends Controller {
 					data.push({
 						id: g.id,
 						name: g.name,
-						mode: g.hasShopMode() ? "Marché" : "AMAP",
+						mode: "Marché",
 						placeName: untyped g.pname,
 						address1: untyped g.address1,
 						address2: untyped g.address2,
@@ -586,52 +538,6 @@ class Admin extends Controller {
 		}
 	}
 
-	public function doStats202211() {
-		for (vs in pro.db.VendorStats.manager.search($type == VTFree || $type == VTInvited || $type == VTInvitedPro, false)) {
-			var v = vs.vendor;
-
-			// remove those who have only AMAP clients
-			var catalogs = v.getActiveContracts();
-			var AMAPcatalogs = catalogs.filter(c -> !c.group.hasShopMode());
-
-			if (AMAPcatalogs.length == catalogs.length) {
-				continue;
-			}
-
-			Sys.print(v.id + ";" + v.name + ";" + v.email + "<br/>");
-		}
-	}
-
-	public function doStatsCoordo202211() {
-		for (vs in pro.db.VendorStats.manager.search($type == VTFree || $type == VTInvited || $type == VTInvitedPro, false)) {
-			var v = vs.vendor;
-
-			var catalogs = v.getActiveContracts();
-			for (c in catalogs) {
-				var g = c.group;
-
-				// if AMAP continue...
-				if (!g.hasShopMode()) {
-					continue;
-				}
-
-				for (ua in g.getGroupAdmins()) {
-					// people who manage this contract
-					if (ua.hasRight(db.UserGroup.Right.ContractAdmin(c.id))) {
-						var u = ua.user;
-						Sys.print(u.id + ";" + u.email + "<br/>");
-					}
-				}
-
-				// group admin
-				if (g.contact != null) {
-					var u = g.contact;
-					Sys.print(u.id + ";" + u.email + "<br/>");
-				}
-			}
-		}
-	}
-
 	@tpl('admin/settings.mtt')
 	function doSettings() {}
 
@@ -669,8 +575,6 @@ class Admin extends Controller {
 			for(md in db.MultiDistrib.manager.search($distribStartDate > tf.from && $distribStartDate <= tf.to,false)){
 
 				var group = md.group;
-
-				if(!group.hasShopMode()) continue;
 
 				var contactType = "";
 				if(group.contact!=null){

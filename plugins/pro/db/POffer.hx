@@ -14,13 +14,13 @@ class POffer extends Object
 	@hideInForms @:relation(productId) public var product : pro.db.PProduct;
 	@hideInForms @:relation(imageId) public var image : SNull<sugoi.db.File>; //custom image
 	public var quantity : SNull<SFloat>; //quantity of units (kg,L,g,units)
-	//@hideInForms public var htPrice : SFloat; //price excluding VAT @deprecated
 	public var price : SFloat; //price including VAT
 	public var vat : SFloat;
 	public var smallQt : SNull<SFloat>; //if bulk is true, a smallQt should be defined
 	public var active : SBool; 	//if false, product disabled, not visible on front office
 	
 	@hideInForms public var stock : SNull<SFloat>; // Current stock of this offer (available for sale + undelivered orders)
+	@hideInForms public var orderedStock : SNull<SFloat>; // Current undelivered orders stock
 	
 	public function new() 
 	{
@@ -34,6 +34,11 @@ class POffer extends Object
 	
 	override public function toString(){
 		return "#"+id+"-"+getName();		
+	}
+
+	public function getAvailableStock(){
+		if(stock==null) return null;
+		return stock - orderedStock;
 	}
 	
 	public function getCatalogOffers(?lock=false){		
@@ -121,13 +126,10 @@ class POffer extends Object
 			price : this.price,
 			vat : this.vat,
 			vatValue : null,			//montant de la TVA incluse dans le prix
-			catalogTax : null, 	
-			catalogTaxName : null,	
 			desc : product.desc,
 			categories : [],	//used in old shop
 			subcategories : [],  //used in new shop
 			orderable : false,			//can be currently ordered
-			stock: null,			//available stock
 			qt:this.quantity,
 			unitType:this.product.unitType,
 			organic:this.product.organic,

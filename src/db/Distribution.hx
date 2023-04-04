@@ -22,7 +22,7 @@ class Distribution extends Object
 	
 	//when orders are open
 	@hideInForms public var orderStartDate : SDateTime; 
-	@hideInForms public var orderEndDate : SDateTime; //cannot be null since CSA contracts also have orderEndDate
+	@hideInForms public var orderEndDate : SDateTime;
 	
 	public static var DISTRIBUTION_VALIDATION_LIMIT = 10;
 	
@@ -93,14 +93,7 @@ class Distribution extends Object
 	}
 	
 	public function getOrders() {
-			
-		// if ( this.catalog.type == db.Catalog.TYPE_CONSTORDERS){
-		// 	var pids = db.Product.manager.search($catalog == this.catalog, false);
-		// 	var pids = Lambda.map(pids, function(x) return x.id);		
-		// 	return db.UserOrder.manager.search( ($productId in pids), false); 
-		// }else{
 		return db.UserOrder.manager.search($distribution == this, false); 
-		// }
 	}
 
 	/**
@@ -116,11 +109,7 @@ class Distribution extends Object
 	**/
 	public function getUserOrders(user:db.User):Array<db.UserOrder>{
 		if( user == null || user.id == null ) throw new tink.core.Error( "user is null" );
-		if ( this.catalog.type == db.Catalog.TYPE_CONSTORDERS){
-		 	return db.UserOrder.manager.search($distribution == this  && ($user==user || $user2==user) , false).array(); 
-		}else{
-			return db.UserOrder.manager.search($distribution == this  && $user==user, false).array(); 
-		}
+		return db.UserOrder.manager.search($distribution == this  && $user==user, false).array(); 
 	}
 	
 	public function getUsers():Iterable<db.User>{		
@@ -146,9 +135,7 @@ class Distribution extends Object
 		var products = catalog.getProducts(false);
 		if(products.length==0) return 0.0;
 		var sql = "select SUM(quantity * productPrice) from UserOrder  where productId IN (" + tools.ObjectListTool.getIds(products).join(",") +") ";
-		// if (catalog.type == db.Catalog.TYPE_VARORDER) {
-			sql += " and distributionId=" + this.id;	
-		// }
+		sql += " and distributionId=" + this.id;	
 	
 		return sys.db.Manager.cnx.request(sql).getFloatResult(0);
 	}
@@ -163,10 +150,7 @@ class Distribution extends Object
 		var sql = "select SUM(uc.quantity *  (p.price/(1+p.vat/100)) ) from UserOrder uc, Product p ";
 		sql += "where uc.productId IN (" + pids.join(",") +") ";
 		sql += "and p.id=uc.productId ";
-		
-		if (catalog.type == db.Catalog.TYPE_VARORDER) {
-			sql += " and uc.distributionId=" + this.id;	
-		}
+		sql += " and uc.distributionId=" + this.id;	
 	
 		return sys.db.Manager.cnx.request(sql).getFloatResult(0);
 	}

@@ -101,28 +101,6 @@ class VendorService{
 	}
 
 
-	/**
-		Create a vendor
-	**/
-	public static function create(data:VendorDto):db.Vendor{
-
-		//already exists ?
-		var vendors = db.Vendor.manager.search($email==data.email,false).array();
-		#if plugins
-		for( v in vendors.copy()){
-			//remove training pro accounts
-			var cpro = pro.db.CagettePro.getFromVendor(v);
-			if(cpro!=null && cpro.offer==Training) vendors.remove(v);
-		}
-		#end
-		if(vendors.length>0) throw new Error("Un producteur est déjà référencé avec cet email dans notre base de données");
-
-		var vendor = update(new db.Vendor(),cast data);
-
-		vendor.insert();
-		return vendor;
-	}
-
 	public static function get(email:String,status:String){
 		return db.Vendor.manager.select($email==email && $status==status,false);
 	}
@@ -314,7 +292,6 @@ class VendorService{
 		var remoteCatalogs = connector.db.RemoteCatalog.manager.search($remoteCatalogId in company.getCatalogs().map(x -> x.id), false); 
 		var vendor = company.vendor;
 		var catalogs = vendor.getActiveContracts().array();
-		catalogs = catalogs.filter( c -> c.group.hasShopMode() );//remove CSA group
 		catalogs = catalogs.filter( c -> {
 			return remoteCatalogs.find( rc -> rc.getContract().id==c.id) == null;
 		}); //remove linked catalogs

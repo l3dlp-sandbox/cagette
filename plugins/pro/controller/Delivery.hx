@@ -333,10 +333,8 @@ class Delivery extends controller.Controller
 		var x = new form.CagetteDatePicker("end", t._("End time"), d.end, NativeDatePickerType.time, true);
 		form.addElement(x, 3);
 		
-		if (d.catalog.type == db.Catalog.TYPE_VARORDER ) {
-			form.addElement(new form.CagetteDatePicker("orderStartDate", t._("Orders opening date"), d.orderStartDate));	
-			form.addElement(new form.CagetteDatePicker("orderEndDate", t._("Orders closing date"), d.orderEndDate));
-		}		
+		form.addElement(new form.CagetteDatePicker("orderStartDate", t._("Orders opening date"), d.orderStartDate));	
+		form.addElement(new form.CagetteDatePicker("orderEndDate", t._("Orders closing date"), d.orderEndDate));
 		
 		if (form.isValid()) {
 
@@ -345,10 +343,8 @@ class Delivery extends controller.Controller
 
 			try{
 
-				if (d.catalog.type == db.Catalog.TYPE_VARORDER ) {
-					orderStartDate = form.getValueOf("orderStartDate");
-					orderEndDate = form.getValueOf("orderEndDate");
-				}
+				orderStartDate = form.getValueOf("orderStartDate");
+				orderEndDate = form.getValueOf("orderEndDate");
 
 				d = service.DistributionService.edit(
 					d,

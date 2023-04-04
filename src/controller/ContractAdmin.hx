@@ -11,7 +11,6 @@ import form.CagetteDatePicker;
 import service.CatalogService;
 import service.OrderService;
 import service.ProductService;
-import service.SubscriptionService;
 import sugoi.form.Form;
 import sugoi.form.elements.Checkbox;
 import sugoi.form.elements.IntInput;
@@ -74,11 +73,6 @@ class ContractAdmin extends Controller
 		view.places = app.user.getGroup().getPlaces();
 		view.group = app.user.getGroup();
 		
-		/*var contractsToFix = contracts.filter(c -> c.hasPercentageOnOrders());
-		if(contractsToFix.length>0){
-			app.session.addMessage('Attention, la gestion des "frais au pourcentage de la commande" va disparaître le 1er Février 2023.<br/>Les catalogues suivants l\'utilisent : <b>${contractsToFix.map(c->c.name).join(", ")}</b><br/><a href="https://wiki.cagette.net/basculecommissioncatalogue" target="_blank">Cliquez ici pour connaître un alternative.</a>',true);
-		}*/
-
 		checkToken();
 	}
 
@@ -95,8 +89,6 @@ class ContractAdmin extends Controller
 
 		var group = catalog.group;
 		var currentContact = catalog.contact;
-		var previousOrderStartDays = catalog.orderStartDaysBeforeDistrib;
-		var previousOrderEndHours = catalog.orderEndHoursBeforeDistrib;
 		var messages = new Array<String>() ;
 
 		var form = CatalogService.getForm(catalog);
@@ -112,16 +104,6 @@ class ContractAdmin extends Controller
 				CatalogService.checkFormData(catalog,  form );
 				catalog.update();
 
-				if(!catalog.group.hasShopMode()){
-					
-					//Update future distribs start and end orders dates
-					var newOrderStartDays = catalog.orderStartDaysBeforeDistrib != previousOrderStartDays ? catalog.orderStartDaysBeforeDistrib : null;
-					var newOrderEndHours = catalog.orderEndHoursBeforeDistrib != previousOrderEndHours ? catalog.orderEndHoursBeforeDistrib : null;
-					var msg = CatalogService.updateFutureDistribsStartEndOrdersDates( catalog, newOrderStartDays, newOrderEndHours );
-					if(msg!=null) messages.push(msg);  
-
-				}
-				
 				//update rights
 				if ( catalog.contact != null && (currentContact==null || catalog.contact.id!=currentContact.id) ) {
 					var ua = db.UserGroup.get( catalog.contact, catalog.group, true );
@@ -534,21 +516,16 @@ class ContractAdmin extends Controller
 		sendNav(contract);
 		
 		if (!app.user.canManageContract(contract)) throw Error("/", t._("You do not have the authorization to manage this contract"));
-		if (contract.type == db.Catalog.TYPE_VARORDER && args.d == null ) { 
+		if (args.d == null ) { 
 			throw Redirect("/contractAdmin/selectDistrib/" + contract.id); 
 		}
 		var d = null;
-		if (contract.type == db.Catalog.TYPE_VARORDER ){
-			view.distribution = args.d;
-			d = args.d;
-		}
+		view.distribution = args.d;
+		d = args.d;
 		
 		for ( o in contract.getOrders(d)){
 			o.lock();
 			o.productPrice = o.product.price;
-			if (contract.hasPercentageOnOrders()){
-				o.feesRate = contract.percentageValue;
-			}
 			o.update();
 			
 		}
@@ -568,11 +545,6 @@ class ContractAdmin extends Controller
 		var form = new Form("duplicate");
 		
 		form.addElement(new StringInput("name", t._("Name of the new catalog"), catalog.name.substr(0,50)  + " - copie"));	
-		if( !catalog.group.hasShopMode() ) {
-
-			var catalogTypes = [ { label : 'Contrat AMAP classique', value : 0 }, { label : 'Contrat AMAP variable', value : 1 } ];
-			form.addElement( new sugoi.form.elements.IntSelect( 'catalogtype', 'Type de catalogue', catalogTypes, catalog.type, true ) );
-		}
 		form.addElement(new Checkbox("copyProducts", t._("Copy products"),true));
 		form.addElement(new Checkbox("copyDeliveries", t._("Copy deliveries"),true));
 		
@@ -587,32 +559,7 @@ class ContractAdmin extends Controller
 			nc.description = catalog.description;
 			nc.distributorNum = catalog.distributorNum;
 			nc.flags = catalog.flags;
-			if( catalog.group.hasShopMode() ) {
-
-				nc.type = Catalog.TYPE_VARORDER;
-			}
-			else {
-
-				nc.type = form.getValueOf("catalogtype");
-
-				nc.orderEndHoursBeforeDistrib = catalog.orderEndHoursBeforeDistrib;
-				nc.absentDistribsMaxNb = catalog.absentDistribsMaxNb;
-				// nc.absencesStartDate = catalog.absencesStartDate;
-				// nc.absencesEndDate = catalog.absencesEndDate;
-
-				if ( nc.type == Catalog.TYPE_VARORDER ) {
-
-					nc.orderStartDaysBeforeDistrib = catalog.type == Catalog.TYPE_VARORDER ? catalog.orderStartDaysBeforeDistrib : 365;
-					// nc.requiresOrdering = catalog.requiresOrdering;
-					nc.distribMinOrdersTotal = catalog.distribMinOrdersTotal;
-					nc.catalogMinOrdersTotal = catalog.catalogMinOrdersTotal;
-					// var defaultAllowedOverspend = app.user.getGroup().hasPayments() ? 10 : 500;
-					// nc.allowedOverspend = catalog.type == Catalog.TYPE_VARORDER ? catalog.allowedOverspend : defaultAllowedOverspend;
-				}
-			}
 			nc.vendor = catalog.vendor;
-			nc.percentageName = catalog.percentageName;
-			nc.percentageValue = catalog.percentageValue;
 			nc.insert();
 			
 			//give rights to this contract
@@ -667,7 +614,7 @@ class ContractAdmin extends Controller
 		
 		sendNav(contract);		
 		if (!app.user.canManageContract(contract)) throw Error("/", t._("You do not have the authorization to manage this contract"));
-		if (contract.type == db.Catalog.TYPE_VARORDER && args.d == null ) throw Redirect("/contractAdmin/selectDistrib/" + contract.id); 
+		if (args.d == null ) throw Redirect("/contractAdmin/selectDistrib/" + contract.id); 
 		
 		var d = args != null ? args.d : null;
 		if (d == null) d = contract.getDistribs(false).first();
@@ -766,10 +713,6 @@ class ContractAdmin extends Controller
 		dispatch.dispatch( new controller.Documents() );
 	}
 
-	function doSubscriptions( dispatch : haxe.web.Dispatch ) {
-		dispatch.dispatch( new controller.SubscriptionAdmin() );
-	}
-	
 	@tpl("contractadmin/stats.mtt")
 	function doStats(contract:db.Catalog, ?args: { stat:Int } ) {
 		sendNav(contract);
@@ -835,58 +778,6 @@ class ContractAdmin extends Controller
 	function doTmpBaskets(md:db.MultiDistrib){
 		view.md = md;
 		view.tmpBaskets = db.Basket.manager.search($multiDistrib == md && $status==Std.string(BasketStatus.OPEN),false);
-	}
-
-
-	/**
-		the catalog admin updates absences options
-	**/
-	@tpl("contractadmin/form.mtt")
-	function doAbsences(catalog:db.Catalog){
-		view.category = 'contractadmin';
-		view.nav.push("absences");
-		if (!app.user.isContractManager( catalog )) throw Error('/', t._("Forbidden action"));
-
-		view.title = 'Période d\'absences du contrat \"${catalog.name}\"';
-
-		var form = new sugoi.form.Form("absences");
-	
-		var html = "<div class='alert alert-warning'><p><i class='icon icon-info'></i> 
-		Vous pouvez définir une période pendant laquelle les membres pourront choisir d'être absent.<br/>
-		<b>Saisissez la période d'absence uniquement après avoir défini votre planning de distribution définitif sur toute la durée du contrat.</b><br/>
-		<a href='https://wiki.cagette.net/admin:absences' target='_blank'>Consulter la documentation.</a>
-		</p></div>";
-		
-		form.addElement( new sugoi.form.elements.Html( 'absences', html, '' ) );
-		form.addElement(new IntInput("absentDistribsMaxNb","Nombre maximum d'absences autorisées",catalog.absentDistribsMaxNb,true));
-		var start = catalog.absencesStartDate==null ? catalog.startDate : catalog.absencesStartDate;
-		var end = catalog.absencesEndDate==null ? catalog.endDate : catalog.absencesEndDate;
-		form.addElement(new CagetteDatePicker("absencesStartDate","Début de la période d'absence",start));
-		form.addElement(new CagetteDatePicker("absencesEndDate","Fin de la période d'absence",end));
-		
-		if ( form.checkToken() ) {
-			catalog.lock();
-			form.toSpod( catalog );
-			var absencesStartDate : Date = form.getValueOf('absencesStartDate');
-			var absencesEndDate : Date = form.getValueOf('absencesEndDate');
-			catalog.absencesStartDate = new Date( absencesStartDate.getFullYear(), absencesStartDate.getMonth(), absencesStartDate.getDate(), 0, 0, 0 );
-			catalog.absencesEndDate = new Date( absencesEndDate.getFullYear(), absencesEndDate.getMonth(), absencesEndDate.getDate(), 23, 59, 59 );
-			catalog.update();
-		
-			try{
-				
-				CatalogService.checkAbsences(catalog);
-
-			} catch ( e : Error ) {
-				throw Error( '/contractAdmin/absences/'+catalog.id, e.message );
-			}
-			
-			throw Ok( "/contractAdmin/view/" + catalog.id,  "Catalogue mis à jour." );
-		}
-		 
-		view.form = form;
-		view.c = catalog;
-		
 	}
 
 	/**

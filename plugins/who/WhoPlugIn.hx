@@ -83,7 +83,7 @@ class WhoPlugIn extends PlugIn implements IPlugIn{
 				var distributions = [];
 
 				if(md!=null){
-					distributions = md.getDistributions(db.Catalog.TYPE_VARORDER);
+					distributions = md.getDistributions();
 				}
 
 				// display a button on the homepage

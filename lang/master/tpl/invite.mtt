@@ -1,9 +1,19 @@
 ﻿::use 'design.mtt'::
 <div class="col-md-9">
 	<div class="article">
+		<div id="login-registration-container"/>
 		<script>
 			document.addEventListener("DOMContentLoaded", function(event) {
-				_Cagette.registerBox('/home','::loginBoxOptions.sid::',"Le formulaire de création de compte a été pré-rempli avec les informations fournies par la personne qui vous a invitée.",::loginBoxOptions.phoneRequired::,::loginBoxOptions.addressRequired::, "::invitedUserEmail::", ::invitedGroupId::)
+				neo.createNeoModule("login-registration-container", "loginRegistration", {
+					redirectUrl: '/home',
+					sid: '::loginBoxOptions.sid::',
+					message: "Le formulaire de création de compte a été pré-rempli avec les informations fournies par la personne qui vous a invitée.",
+					phoneRequired: ::loginBoxOptions.phoneRequired::,
+					addressRequired: ::loginBoxOptions.addressRequired::,
+					openRegistration: true,
+					invitedUserEmail: "::invitedUserEmail::",
+					invitedGroupId: ::invitedGroupId::
+			});
 			});
 		</script>
 	</div>

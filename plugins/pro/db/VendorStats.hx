@@ -153,7 +153,7 @@ class VendorStats extends sys.db.Object
 		//freemium turnover 
 		var from = vendor.freemiumResetDate;
 		vs.marketTurnoverSinceFreemiumResetDate = 0;
-		var cids = vendor.getContracts().array().filter( cat -> cat.group.hasShopMode() ).map(c -> c.id);//only shopMode
+		var cids = vendor.getContracts().array().map(c -> c.id);
 		for( d in db.Distribution.manager.search($date > from && $date < now && ($catalogId in cids), false)){
 			vs.marketTurnoverSinceFreemiumResetDate += d.getTurnOver();
 		}

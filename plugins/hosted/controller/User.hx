@@ -1,6 +1,5 @@
 package hosted.controller;
 
-import db.Operation.COrderInfos;
 import pro.db.PUserCompany;
 import tools.ObjectListTool;
 
@@ -58,10 +57,6 @@ class User extends sugoi.BaseController
 		
 			var h = hosted.db.GroupStats.getOrCreate(g.id);
 			if(!h.active) continue;
-
-			if(type=="AMAP"){
-				if(g.hasShopMode()) continue;
-			}
 
 			if (g.contact != null) {
 				users.push(g.contact);

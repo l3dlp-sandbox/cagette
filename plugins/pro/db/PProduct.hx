@@ -79,14 +79,6 @@ class PProduct extends Object
 		return pro.db.POffer.manager.search($product == this,{orderBy:-quantity}, lock);
 	}
 	
-	/**
-	 * Search a product by reference
-	 * @param	ref
-	 */
-	public static function searchByRef(ref:String,company:pro.db.CagettePro,?lock=false){
-		return manager.search($ref == ref && $company==company, lock);
-	}
-	
 	public static function getByRef(ref:String,company:pro.db.CagettePro,?lock=false){
 		return manager.select($ref == ref && $company==company, lock);
 	}

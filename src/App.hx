@@ -1,5 +1,4 @@
 import Common;
-import GitMacros;
 import db.User;
 import thx.semver.Version;
 
@@ -20,7 +19,7 @@ class App extends sugoi.BaseApp {
 	 * Version management
 	 * @doc https://github.com/fponticelli/thx.semver
 	 */ 
-	public static var VERSION = ([0,14]  : Version)/*.withPre(GitMacros.getGitShortSHA(), GitMacros.getGitCommitDate())*/;
+	public static var VERSION = ([0,14]  : Version);
 	
 	public function new(){
 		super();
@@ -293,9 +292,6 @@ class App extends sugoi.BaseApp {
 		out.set("UsersCanOrder", "Les membres peuvent saisir leur commande en ligne");
 		out.set("StockManagement", "Gestion des stocks");
 		out.set("contact", "Responsable");
-		out.set("PercentageOnOrders", "Ajouter des frais au pourcentage de la commande");
-		out.set("percentageValue", "Pourcentage des frais");
-		out.set("percentageName", "Libellé pour ces frais");
 		out.set("fees", "frais");
 		out.set("AmapAdmin", "Administrateur du groupe");
 		out.set("Membership", "Accès à la gestion des membres");
@@ -304,13 +300,11 @@ class App extends sugoi.BaseApp {
 		out.set("desc", "Description");
 		
 		//group options
-		out.set("ShopMode", "Mode Marché");
 		out.set("CustomizedCategories", "Catégories personnalisées");
 		out.set("HidePhone", "Masquer le téléphone du responsable sur la page publique");
 		out.set("PhoneRequired", "Saisie du numéro de téléphone obligatoire");
 		out.set("AddressRequired", "Saisie de l'adresse obligatoire");
 		out.set("CagetteNetwork", "Lister ce groupe sur la carte et sur les annuaires partenaires");
-		out.set("HasPayments", "Gestion des paiements");
 		out.set("Show3rdCategoryLevel", "Classer les produits de la boutique par catégorie de troisième niveau");	
 
 		out.set("ref", "Référence");

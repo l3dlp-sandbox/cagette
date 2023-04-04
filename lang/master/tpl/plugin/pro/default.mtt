@@ -12,7 +12,7 @@
 	<div class="article">
 		
 			::foreach n notifs::
-			<a href="#" class="clickable" onclick="_Cagette.overlay('/p/pro/notif/view/::n.id::','Notification')">
+			<a href="#" class="clickable" onclick="neo.createNeoModule('myModal', 'dialog-url', { url: '/p/pro/notif/view/::n.id::', title:'Notification' })">
 			<table class="notifs">
 				<tr>
 				<td class="col-md-1">

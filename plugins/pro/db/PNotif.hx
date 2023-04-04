@@ -16,7 +16,6 @@ typedef CatalogImportContent = {
  	catalogId:Int, //pcatalog id
 	userId:Int, //client remote id
 	message : String,
-	catalogType : Int,
 }
 
 typedef DeliveryRequestContent = {

@@ -349,9 +349,6 @@ class MangopayPlugin extends PlugIn implements IPlugIn{
 						out.onTheSpotTurnover.ttc += op.amount;
 						//throw new Error("A validated distribution should not contain undefined 'on the spot' payments.");
 
-					case payment.MoneyPot.TYPE : 
-					//do nothing
-
 					case MangopayECPayment.TYPE :
 												
 						var amountAndFees = getAmountAndFees(op.amount,conf);
