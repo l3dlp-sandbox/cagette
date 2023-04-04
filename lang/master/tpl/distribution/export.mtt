@@ -4,7 +4,7 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function(event) {
-       neo.createNeoModule("attendance-sheet-neo-container", "attendanceSheetShopMode", {
+       neo.createNeoModule("attendance-sheet-neo-container", "attendanceSheet", {
             multiDistribId: ::multiDistribId::
         });
     });
