@@ -1,5 +1,9 @@
 package controller;
 
+import db.Operation;
+import db.Membership;
+import db.Catalog;
+import db.MultiDistrib;
 import service.PaymentService;
 import payment.Check;
 import payment.Cash;
@@ -204,8 +208,23 @@ class Scripts extends Controller
                     rc.delete();
                 }
             }
-
         }
+    }
 
+    /**
+        2023-04-04 delete AMAPs datas : 
+        supprime les UserOrder / basket / distributions multdistrib / operations / adhésions / catalog / products des AMAP.  On ne garde que Group/User/UserGroup
+    **/
+    function doDeleteAmapData(){
+
+        for( g in db.Group.manager.search( $flags.has(ShopMode)==false ,false)){
+
+            print('delete data of #'+g.id+" "+g.name);
+
+            db.MultiDistrib.manager.delete($groupId == g.id);
+            db.Catalog.manager.delete($groupId == g.id);
+            db.Membership.manager.delete($groupId == g.id);
+            db.Operation.manager.delete($groupId == g.id);            
+        }
     }
 }
