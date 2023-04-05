@@ -19,7 +19,7 @@
 		<div class="text-center">
 			<div id="orders-dialog-container" />
 			<a class="btn btn-default btn-sm"
-				onclick="neo.createNeoModule('orders-dialog-container', 'ordersDialog', { userId: null, multiDistribId: ::distrib.id::, catalogId: ::distribution._catalog.id::, groupId: ::user.getGroup().id::, date: '::escapeJS(hDate(date))::', place: '::escapeJS(place.toString())::', userName: null, callbackUrl: '/contractAdmin/ordersByDate/::date::/::place.id::', basketId: null, differenciatedPricingSetting: ::settings.differenciatedPricing:: });">
+				onclick="neo.createNeoModule('orders-dialog-container', 'ordersDialog', { userId: null, multiDistribId: ::distrib.id::, catalogId: null, groupId: ::user.getGroup().id::, date: '::escapeJS(hDate(date))::', place: '::escapeJS(place.toString())::', userName: null, callbackUrl: '/contractAdmin/ordersByDate/::date::/::place.id::', basketId: null, differenciatedPricingSetting: ::settings.differenciatedPricing:: });">
 				<i class="icon icon-plus"></i>
 				::_("New order")::
 			</a>
