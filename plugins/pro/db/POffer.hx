@@ -38,7 +38,7 @@ class POffer extends Object
 
 	public function getAvailableStock(){
 		if(stock==null) return null;
-		return stock - orderedStock;
+		return stock - (orderedStock!=null?orderedStock:0);
 	}
 	
 	public function getCatalogOffers(?lock=false){		
