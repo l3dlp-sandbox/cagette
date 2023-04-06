@@ -131,11 +131,13 @@ class OrderService
 					App.current.session.addMessage(msg, true);
 				}
 				off.lock();
+				if(off.orderedStock==null) off.orderedStock=0;
 				off.orderedStock += quantity - canceled;
 				off.update();
 				
 			}else {
 				off.lock();
+				if(off.orderedStock==null) off.orderedStock=0;
 				off.orderedStock += quantity;
 				off.update();	
 			}

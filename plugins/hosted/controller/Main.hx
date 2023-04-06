@@ -1,4 +1,5 @@
 package hosted.controller;
+import mangopay.MangopayPlugin;
 import mangopay.Mangopay;
 import mangopay.db.MangopayLegalUserGroup;
 import payment.Cash;
@@ -340,10 +341,28 @@ class Main extends controller.Controller
 		view.ua = ua;
 		view.operations = db.Operation.getLastOperations(u, g);
 
+		view.getAllBaskets = function(user:db.User,md:db.MultiDistrib){
+			return db.Basket.manager.search($multiDistrib==md && $user==user,false).array();
+		};
+
 		var timeframe = new Timeframe( DateTools.delta(Date.now() ,-1000.0*60*60*24*30.5*3) , DateTools.delta(Date.now() , 1000.0*60*60*24*30.5*3) );
 		var mds = db.MultiDistrib.getFromTimeRange(g,timeframe.from,timeframe.to);
+		mds.reverse();
 		view.mds = mds;
 		view.timeframe = timeframe;
+
+	}
+
+	//check bug de brigitte
+	function doCheckBasket(b:db.Basket){
+
+		var orders = MangopayPlugin.checkTmpBasket(b);
+		if(orders!=null) {
+			throw Ok("/p/hosted/userGroup/"+b.user.id+"/"+b.multiDistrib.group.id,"basket #"+b.id+" confirmed !");
+		}else{
+			throw Ok("/p/hosted/userGroup/"+b.user.id+"/"+b.multiDistrib.group.id,"pas de bug de brigitte pour basket #"+b.id);
+		}
+
 	}
 
 	/**
