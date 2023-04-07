@@ -480,10 +480,12 @@ class Distributions extends Controller {
 		view.distrib = d;
 		view.place = d.place;
 		view.contract = d.catalog;
-		view.orders = service.OrderService.prepare(d.getOrders());
+		var baskets = d.getBaskets();
+		//sort by user name
+		baskets.sort((a,b)-> return (a.user.lastName.toUpperCase() > b.user.lastName.toUpperCase() ? 1 : -1) );
+		view.baskets = baskets;
 		// volunteers whose role is linked to this contract
-		view.volunteers = Lambda.filter(d.multiDistrib.getVolunteers(),
-			function(v) return v.volunteerRole.catalog != null && v.volunteerRole.catalog.id == d.catalog.id);
+		view.volunteers = d.multiDistrib.getVolunteers().filter(v -> v.volunteerRole.catalog != null && v.volunteerRole.catalog.id == d.catalog.id);
 	}
 
 	/**

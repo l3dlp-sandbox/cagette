@@ -55,7 +55,7 @@
 			<table class="table table-bordered table-hover table-condensed"  style="width:100%;">
 				
 				<tr class="darkhead">
-					<td colspan="7">
+					<td colspan="4">
 						<div class="basketNumber" ::cond basket!=null:: >
 							<i class="fa fa-shopping-basket" aria-hidden="true"></i> N°::basket.num::
 						</div>
@@ -76,9 +76,7 @@
 					<th class="col-md-1">::_("Qty")::</th>						
 					<th class="col-md-4">::_("Product")::</th>
 					<th class="col-md-1"><a href="#" data-toggle="tooltip" data-placement="top" title="::_("Unit price including taxes")::">::_("U.P||price per unit")::</a></th>
-					<th class="col-md-1">Ss-total</th>
 					<th class="col-md-1">::_("Total")::</th>						
-					<th class="col-md-2"></th>
 				</tr>
 				
 				::foreach o distribOrders::
@@ -106,31 +104,18 @@
 						</td>
 						<td>
 							::formatNum(o.productPrice)::&nbsp;::currency()::
-						</td>
-						<td>
-							::formatNum(o.subTotal)::&nbsp;::currency()::
-						</td>
+						</td>					
 						<td>
 							<!-- total -->
 							::formatNum(o.total)::&nbsp;::currency()::
 							::set total = total + o.total::
-						</td>
-						<td>
-							::if(o.quantity==0)::
-								&nbsp;&nbsp;&nbsp;&nbsp;
-								<a href="/contractAdmin/orders/::c.id::?d=::distribution.id::&delete=::o.id::&token=::token::" $$confirm(::__("Do you really want to delete this order row for the product \"::o.productName::\" ?",{productName:o.productName})::) class="btn btn-danger btn-xs" >
-									<i class="icon icon-delete"></i>
-									::_("Delete")::
-								</a>
-							::end::
-						</td>
+						</td>						
 					</tr>
 				::end::
 				
 				<tr style="background:#DDD;">
-					<th colspan="6">::_("Total")::</th>
-					<th>::formatNum(total)::&nbsp;::currency()::</th>
-					<th></th>
+					<th colspan="4">::_("Total")::</th>
+					<th>::formatNum(total)::&nbsp;::currency()::</th>					
 				</tr>
 			</table>
 			::end::

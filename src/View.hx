@@ -170,21 +170,7 @@ class View extends sugoi.BaseView {
 	}
 
 	public function currency() {
-		if (App.current.user == null || App.current.user.getGroup() == null) {
-			return "€";
-		} else {
-			return App.current.user.getGroup().getCurrency();
-		}
-	}
-
-	public function initDate() {
-		/*t = sugoi.i18n.Locale.texts;
-			DAYS = [t._("Sunday"), t._("Monday"), t._("Tuesday"), t._("Wednesday"), t._("Thursday"), t._("Friday"), t._("Saturday")];
-			MONTHS = [t._("January"), t._("February"), t._("March"), t._("April"), t._("May"), t._("June"), t._("July"), t._("August"), t._("September"), t._("October"), t._("November"), t._("December")];
-			this.days = DAYS;
-			this.months = MONTHS;
-			this.hours = HOURS;
-			this.minutes = MINUTES; */
+		return "€";
 	}
 
 	/**

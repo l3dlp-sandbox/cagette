@@ -345,7 +345,7 @@ class MultiDistrib extends Object
 		//sort by user lastname
 		baskets.sort((a,b)-> {
 			if(a.user==null || b.user==null) return -1;
-			return a.user.lastName > b.user.lastName ? 1 : -1 ;
+			return a.user.lastName.toUpperCase() > b.user.lastName.toUpperCase() ? 1 : -1 ;
 		});
 
 		return baskets;

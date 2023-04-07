@@ -307,7 +307,6 @@ class Delivery extends controller.Controller
 		
 		checkToken();
 		
-		//var orders = pro.service.ProReportService.getOrdersByProduct({distribution:d}, app.params.exists("csv"));
 		var orders = service.ReportService.getOrdersByProduct(d, app.params.exists("csv"));
 		
 		if (!app.params.exists("csv")){

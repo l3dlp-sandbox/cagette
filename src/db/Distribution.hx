@@ -3,6 +3,7 @@ import Common;
 import sugoi.form.ListData;
 import sys.db.Object;
 import sys.db.Types;
+import db.Basket;
 
 /**
  * Distrib
@@ -65,26 +66,7 @@ class Distribution extends Object
 		return out;
 	}
 	
-	/*public function hasEnoughDistributors() {
-		var n = contract.distributorNum;
-		
-		var d = 0;
-		if (distributor1 != null) d++;
-		if (distributor2 != null) d++;
-		if (distributor3 != null) d++;
-		if (distributor4 != null) d++;
-		
-		return (d >= n) ;
-	}
-	
-	public function isDistributor(u:User) {
-		if (u == null) return false;
-		return (distributor1!=null && u.id == distributor1.id) || 
-			(distributor2!=null && u.id == distributor2.id) || 
-			(distributor3!=null && u.id == distributor3.id) || 
-			(distributor4!=null && u.id == distributor4.id);
-	}*/
-	
+
 	/**
 	 * String to identify this distribution (debug use only)
 	 */
@@ -92,6 +74,9 @@ class Distribution extends Object
 		return "#" + id + " Distribution du "+date.toString().substr(0,10)+" - " + catalog.name;		
 	}
 	
+	/**
+		@deprecated
+	**/
 	public function getOrders() {
 		return db.UserOrder.manager.search($distribution == this, false); 
 	}
@@ -124,7 +109,7 @@ class Distribution extends Object
 		for( o in getOrders()){
 			if(o.basket!=null) baskets.set(o.basket.id,o.basket);
 		}
-		return baskets.array();
+		return baskets.array().filter(b -> b.status!=Std.string(BasketStatus.OPEN) && b.status!=Std.string(BasketStatus.PAYMENT_PROCESSING));
 	}
 
 	
@@ -236,17 +221,6 @@ class Distribution extends Object
 		};
 	}
 
-	/**
-		Trick for retrocompat with code made before Multidistrib entity (2019-04)
-	**/
-	public function populate(){
-		date =  date==null ? multiDistrib.distribStartDate : date;
-		end  =  end==null ? multiDistrib.distribEndDate : end;
-		orderStartDate = orderStartDate==null ? multiDistrib.orderStartDate : orderStartDate;
-		orderEndDate = orderEndDate==null ? multiDistrib.orderEndDate : orderEndDate;
-		place = null;
-
-	}
 	
 	/**
 	 * Return a string like $placeId-$date.
