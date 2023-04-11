@@ -428,7 +428,7 @@ class MangopayPlugin extends PlugIn implements IPlugIn{
 							var mp_type = Lambda.find(paymentTypes, function(pt) return pt.type==pro.payment.MangopayECPayment.TYPE );
 							
 							if(mp_type==null){
-								throw 'unable to find MPpayement among '+paymentTypes.map(p -> return p.type)+' for tmpBasket '+tmpBasket.id;
+								throw 'unable to find "mangopay-ec" among '+paymentTypes.map(p -> return p.type)+' for tmpBasket '+tmpBasket.id;
 							}
 
 							//OK, process order !

@@ -123,161 +123,9 @@ class Admin extends controller.Controller {
 		view.getStats = pro.db.VendorStats.getOrCreate;
 	}
 
-	@admin
-	function doUserOrderFix(){
-		/**
-			2022-05-25
-			need to assign basketId to UserOrders... there is still userOrder without basketId
-		**/
-		for( order in db.UserOrder.manager.search($basket==null,{limit:1000},true)){
+	
 
-			order.basket = db.Basket.getOrCreate(order.user, order.distribution.multiDistrib);	
-			order.update();
-			Sys.println('order ${order.id} fixed<br>');
-		}
-		var count = db.UserOrder.manager.count($basket==null);
-		Sys.println('Still ${count} userOrder without basket<br>');
-	}
-
-	@admin
-	function doBasketFixes() {
-		/*
-			vérifie la cohérence des datas des paniers
-			- tout doit etre du meme user
-			- tout doit etre pour la même multidistrib
-
-			Les peuple avec les champs "user" et "multidistrib"
-		 */
-		/*var lastId:Int = sugoi.db.Variable.getInt("basketFixCounter");
-			if(lastId==null) lastId = 0;
-			Sys.print("<h2>Start from "+lastId+"</h2>"); */
-
-		Sys.print("<h2>Still " + db.Basket.manager.count($multiDistrib == null) + " non migrated baskets</h2>");
-
-		// Populate md and user field in baskets
-		var baskets = db.Basket.manager.search($multiDistrib == null, {limit: 10000}, true);
-		for (b in baskets) {
-			// lastId = b.id;
-			var ok = true;
-
-			// check orders are for the same user and same md
-			var orders = Lambda.array(b.getOrders());
-
-			if (orders.length == 0) {
-				b.delete();
-				continue;
-			}
-
-			for (o in orders) {
-				if (o == null)
-					throw "null order in " + orders;
-				if (o.user.id != orders[0].user.id)
-					throw "various users in basket " + b.id;
-
-				if (o.distribution == null) {
-					Sys.print('basket#${b.id} : $o has null distrib<br/>');
-					Sys.print('date : ' + b.cdate + '<br/>');
-					Sys.print('all orders are : ' + orders + '<br/>');
-					ok = false;
-
-					// fix : effacer les commandes avec qt zero, puisque la distrib derrière a été effacée
-					for (ord in orders) {
-						if (ord.quantity == 0) {
-							ord.lock();
-							ord.delete();
-						}
-					}
-
-					// fix : c'est une commande d'un groupe pédagogique
-					// dont la distrib a été effacée sauvagement au moment de la coupure du compte pedago
-					for (ord in orders) {
-						if (ord.product.catalog.vendor.status == "formation") {
-							ord.lock();
-							ord.delete();
-						}
-					}
-
-					break;
-				}
-
-				if (o.distribution.multiDistrib == null) {
-					Sys.print('basket#${b.id} : $o has null multidistrib<br/>');
-					Sys.print('date : ' + b.cdate + '<br/>');
-					Sys.print('all orders are : ' + orders + '<br/>');
-					ok = false;
-					break;
-				}
-
-				if (o.distribution.multiDistrib.id != orders[0].distribution.multiDistrib.id) {
-					Sys.print("various multidistrib in basket " + b.id + "<br/>");
-					Sys.print('date : ' + b.cdate + '<br/>');
-					Sys.print('all orders are : <br/>');
-					for (o in orders) {
-						if (o.distribution == null || o.distribution.multiDistrib == null)
-							continue;
-						Sys.print(o + " , MD = " + o.distribution.multiDistrib + " , producteur = " + o.distribution.catalog.vendor.name + "<br/>");
-					}
-					ok = false;
-
-					// FIX IT
-					var ordersByMd = new Map<Int, Array<db.UserOrder>>();
-					for (o in orders) {
-						if (o.distribution == null)
-							continue;
-						if (ordersByMd[o.distribution.multiDistrib.id] == null)
-							ordersByMd[o.distribution.multiDistrib.id] = [];
-						ordersByMd[o.distribution.multiDistrib.id].push(o);
-					}
-					var user = orders[0].user;
-
-					for (mdid in ordersByMd.keys()) {
-						var md = db.MultiDistrib.manager.get(mdid, false);
-						var basket = new db.Basket();
-						basket.insert();
-						for (ord in ordersByMd[mdid]) {
-							ord.lock();
-							ord.basket = basket;
-							ord.update();
-						}
-					}
-
-					break;
-				}
-			}
-
-			if (ok) {
-				b.multiDistrib = orders[0].distribution.multiDistrib;
-				b.user = orders[0].user;
-				b.update();
-				Sys.print("--------- updated basket " + b.id + "<br/>");
-			}
-		}
-
-		// sugoi.db.Variable.set("basketFixCounter",lastId);
-	}
-
-	@admin @tpl('plugin/pro/admin/siret.mtt')
-	function doSiret() {
-		var badVendors = db.Vendor.manager.unsafeCount("SELECT count(v.id) FROM Vendor v, VendorStats vs where v.id=vs.vendorId and vs.active=1 and v.companyNumber is null");
-		var total = db.Vendor.manager.unsafeCount("SELECT count(v.id) FROM Vendor v, VendorStats vs where v.id=vs.vendorId and vs.active=1");
-		view.badVendors = badVendors;
-		view.total = total;
-
-		if (app.params["type"] == "good") {
-			view.vendors = db.Vendor.manager.unsafeObjects("SELECT v.* FROM Vendor v, VendorStats vs where v.id=vs.vendorId and vs.active=1 and v.companyNumber is not null",
-				false);
-		}
-
-		if (app.params["type"] == "bad") {
-			view.vendors = db.Vendor.manager.unsafeObjects("SELECT v.* FROM Vendor v, VendorStats vs where v.id=vs.vendorId and vs.active=1 and v.companyNumber is null",
-				false);
-		}
-
-		view.type = app.params["type"];
-
-		// view.vendors = db.Vendor.manager.search($isTest,{orderBy:-id});
-	}
-
+	
 	/**
 		Vendors to delete
 	**/
@@ -347,75 +195,11 @@ class Admin extends controller.Controller {
 		}
 	}
 
-	@admin
-	function doMigrateOperations() {
-		// 2020-07-31 : refacto payment ops
-		/*var from = Date.fromString(app.params.get("from"));
-		var to = Date.fromString(app.params.get("to"));
-
-			for( op in db.Operation.manager.search($date >= from && $date < to && $data2 == null ,true)){
-				try{
-
-					switch(op.type){
-						case VOrder:
-							var data :VOrderInfos = op.data;
-							var basket = data==null ? null : db.Basket.manager.get(data.basketId);
-							// on peut migrer une op si le basket n'existe plus, pas la peine d'essayer de fixer un autre problème.
-							
-							if(basket!=null){
-								op.basket = basket;
-								op.setData({basketId:basket.id});
-								Sys.print('Op ${op.id} OK<br/>');
-							}else{
-
-								//sometimes op.basket is null in data, but populated in op.basket
-								if(op.basket!=null){
-									op.setData({basketId:op.basket.id});
-								}else{
-									op.setData({basketId:null});
-									Sys.print('Warning "basket null" avec op <a href="/db/db.Operation/edit/${op.id}">#${op.id}</a><br>');
-								}								
-								
-							}
-						
-						//case COrder :
-							//delete this, it it exists its shit
-							// op.delete();	
-						case SubscriptionTotal:
-
-							//no need to migrate
-
-						case Payment :
-							var data :PaymentInfos = op.data;
-							op.setData({type:data.type,remoteOpId:data.remoteOpId});
-
-						case Membership :
-							var data :MembershipInfos = op.data;
-							op.setData({year:data.year});							
-					}
-
-					try{
-						op.unsafeUpdate();
-					}catch(e:Error){
-						Sys.print("Error : "+e.message);
-					}
-
-				}catch(e:Dynamic){
-
-					Sys.print('Erreur "$e" avec op <a href="/db/db.Operation/edit/${op.id}">#${op.id}</a><br>');
-
-				}
-				
-		}*/
-	}
-
 	/**
 		check and recompute payments ops
 	**/
 	@admin @tpl('plugin/pro/admin/checkOperations.mtt')
 	function doCheckOperations(group:db.Group,from:Date,to:Date,?autoFix=false) {
-
-		// var g = db.Group.manager.get(6598);
 		var out = [];
 
 		// for ( md in db.MultiDistrib.getFromTimeRange(g,new Date(2021,3,1,0,0,0), new Date(2021,11,30,0,0,0))){
@@ -1035,23 +819,4 @@ class Admin extends controller.Controller {
 		var s = new who.service.WholesaleOrderService(catalog);
 		s.fixDuplicateRefs();
 	}
-
-	/**
-		https://go.mangopay.com/webmail/307741/669277924/5dba440638d2ee7e9bb8b5d00ee7291f52e450a7d392384fe7f73846cf6691f0
-	**/
-	/*public function doMangopayMigration2023(){
-
-		for(mgpLegalUser in MangopayLegalUser.manager.search($disabled==false,false)){
-
-			var m = Mangopay.getLegalUser(mgpLegalUser.mangopayUserId);
-
-			if(m.TermsAndConditionsAccepted) continue;
-
-			Sys.println('get ${m.Id}<pre>$m</pre>');
-			var res = Mangopay.updateLegalUser(m);
-			Sys.println('RES <pre>$res</pre>');
-
-			// break;
-		}
-	}*/
 }

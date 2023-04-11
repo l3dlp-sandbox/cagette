@@ -94,6 +94,11 @@ class POffer extends Object
 	override public function update(){
 		if(quantity==0.0) quantity = null;
 		price = Formatting.roundTo(price,2);
+
+		//avoid negative values
+		this.orderedStock = Math.max(this.orderedStock,0);
+		this.stock = Math.max(this.stock,0);
+
 		super.update();
 	}
 	

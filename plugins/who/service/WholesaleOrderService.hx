@@ -260,35 +260,26 @@ class WholesaleOrderService {
 		var refMap = new Map<String,Array<db.Product>>();
 
 		for( p in contract.getProducts(false)){
-
 			if(refMap.get(p.ref)==null){
 				refMap.set(p.ref,[p]);
 			}else{
 				refMap.get(p.ref).push(p);
 			}
-
 		}
 
 		for( ref in refMap.keys()){
 			if(refMap.get(ref).length>1){
-
 				//trace("duplicate : "+refMap.get(ref));
 				var productToKeep = refMap.get(ref)[0];
 				var productToDelete = refMap.get(ref)[1];
-
 				for( o in db.UserOrder.manager.search($product==productToDelete,true) ){
 					o.product = productToKeep;
 					o.update();
 				}
-
 				productToDelete.delete();
-
 			}
 		}
-
 		sugoi.db.Cache.destroy("wholesale_links_contract"+contract.id);
-
 	}
-
 
 }
