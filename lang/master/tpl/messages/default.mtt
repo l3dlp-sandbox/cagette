@@ -1,12 +1,13 @@
 ::use 'design.mtt'::
 
-	<div id="messages-neo-container" style="margin-right: 15px; margin-left: 15px;"></div>
+	<div id="messages-neo-container" style="margin-right: 15px; margin-left: 15px; transform: translateY(-24px);"></div>
 
 	<script>
 		document.addEventListener("DOMContentLoaded", function () {
 			neo.createNeoModule("messages-neo-container", "messages", {
 				groupId: parseInt("::user.getGroup().id::", 10),
-				whichUser: !!parseInt("::whichUser()::")
+				whichUser: !!parseInt("::whichUser()::"),
+            	differenciatedPricingSetting: ::settings.differenciatedPricing::
 			});
 		});
 	</script>

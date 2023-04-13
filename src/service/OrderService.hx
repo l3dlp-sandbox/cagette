@@ -23,7 +23,7 @@ class OrderService
 	 * @param	quantity
 	 * @param	productId
 	 */
-	public static function make(user:db.User, quantity:Float, product:db.Product, distribId:Int, ?paid:Bool, ?subscription : db.Subscription, ?user2:db.User, ?invert:Bool, ?basket:db.Basket ) : Null<db.UserOrder> {
+	public static function make(user:db.User, quantity:Float, product:db.Product, distribId:Int, ?user2:db.User, ?invert:Bool, ?basket:db.Basket ) : Null<db.UserOrder> {
 		
 		var t = sugoi.i18n.Locale.texts;
 
@@ -41,28 +41,13 @@ class OrderService
 				var whitelist : Array<Int> = vendor.turnoverLimitReachedDistribsWhiteList.split(",").map(Std.parseInt);
 				if(whitelist.has(distribId)) isVendorDisabled = false;
 
-				//Exception : do not block if TurnoverLimitReached && CSA subscription
-				if(subscription!=null) isVendorDisabled = false;
 			}
-
-			//do not block for these reason if group is AMAP
-			if(subscription!=null){
-				switch (vendor.disabled){
-					case db.Vendor.DisabledReason.DisabledInvited : isVendorDisabled=false;
-					case db.Vendor.DisabledReason.MarketplaceDisabled : isVendorDisabled=false;
-					case db.Vendor.DisabledReason.MarketplaceNotActivated : isVendorDisabled=false;
-					default :
-				}
-			}
-			
 
 			if (isVendorDisabled) {
 				throw new Error('${vendor.name} est désactivé. Raison : ${vendor.getDisabledReason()}');
 			}
 		}
 		
-		var shopMode = product.catalog.group.hasShopMode();
-
 		//quantity
 		if ( !canHaveFloatQt(product) ){
 			if( !tools.FloatTool.isInt(quantity)  ) {
@@ -78,12 +63,7 @@ class OrderService
 			var newOrder = null;
 
 			for ( i in 0...Math.round(quantity) ) {
-
-				if( shopMode ) {
-					newOrder = make( user, 1, product, distribId, paid, null, null , null, basket );
-				} else {
-					newOrder = make( user, 1, product, distribId, paid, subscription, user2, invert, basket);
-				}
+				newOrder = make( user, 1, product, distribId, null , null, basket );
 			}
 			return newOrder;
 		}
@@ -100,24 +80,18 @@ class OrderService
 		order.quantity = quantity;
 		order.productPrice = product.price;
 		order.vatRate = product.vat;
-		if ( product.catalog.hasPercentageOnOrders() ){
-			order.feesRate = product.catalog.percentageValue;
-		}
 		order.user = user;
 		if (user2 != null) {
 			order.user2 = user2;
 			if ( invert ) order.flags.set(InvertSharedOrder);
 		}
-		if (paid != null) order.paid = paid;
 		if (distribId != null) order.distribution = db.Distribution.manager.get(distribId,false);
 		
 		//cumulate quantities if there is a similar previous order
 		if (prevOrders.length > 0 && !product.multiWeight) {
 			for (prevOrder in prevOrders) {
-				//if (!prevOrder.paid) {
-					order.quantity += prevOrder.quantity;
-					prevOrder.delete();
-				//}
+				order.quantity += prevOrder.quantity;
+				prevOrder.delete();
 			}
 		}
 
@@ -130,49 +104,44 @@ class OrderService
 		//checks
 		if(order.distribution==null) throw new Error( "cant record an order for a variable catalog without a distribution linked" );
 		if(order.basket==null) throw new Error( "this order should have a basket" );
-		if( !shopMode ) {
-			if( subscription != null && subscription.id == null ) throw new Error( "La souscription a un id null." );
-			if( subscription == null ) throw new Error( "Impossible d'enregistrer une commande sans souscription." );
-			order.subscription = subscription;
-		} 
 
 		order.insert();
 		
 		//Stocks
-		if (order.product.stock != null) {
-			var c = order.product.catalog;
-			if (c.hasStockManagement()) {
+		if (order.product.pOffer != null && order.product.pOffer.stock!=null) {
+			
+			var off = order.product.pOffer;
 				
-				if (order.product.stock == 0) {
-					if (App.current.session != null) {
-						App.current.session.addMessage(t._("There is no more '::productName::' in stock, we removed it from your order", {productName:order.product.name}), true);
-					}
-					order.quantity -= quantity;
-					if ( order.quantity <= 0 ) {
-						order.delete();
-						return null;	
-					}
-				}else if (order.product.stock - quantity < 0) {
-					var canceled = quantity - order.product.stock;
-					order.quantity -= canceled;
-					order.update();
-					
-					if (App.current.session != null) {
-						var msg = t._("We reduced your order of '::productName::' to quantity ::oQuantity:: because there is no available products anymore", {productName:order.product.name, oQuantity:order.quantity});
-						App.current.session.addMessage(msg, true);
-					}
-					order.product.lock();
-					order.product.stock = 0;
-					order.product.update();
-					App.current.event(StockMove({product:order.product, move:0 - (quantity - canceled) }));
-					
-				}else {
-					order.product.lock();
-					order.product.stock -= quantity;
-					order.product.update();	
-					App.current.event(StockMove({product:order.product, move:0 - quantity}));
+			if (off.getAvailableStock() == 0) {
+				if (App.current.session != null) {
+					App.current.session.addMessage(t._("There is no more '::productName::' in stock, we removed it from your order", {productName:order.product.name}), true);
 				}
-			}	
+				order.quantity -= quantity;
+				if ( order.quantity <= 0 ) {
+					order.delete();
+					return null;	
+				}
+			}else if (off.getAvailableStock() - quantity < 0) {
+				var canceled = quantity - off.getAvailableStock();
+				order.quantity -= canceled;
+				order.update();
+				
+				if (App.current.session != null) {
+					var msg = t._("We reduced your order of '::productName::' to quantity ::oQuantity:: because there is no available products anymore", {productName:order.product.name, oQuantity:order.quantity});
+					App.current.session.addMessage(msg, true);
+				}
+				off.lock();
+				if(off.orderedStock==null) off.orderedStock=0;
+				off.orderedStock += quantity - canceled;
+				off.update();
+				
+			}else {
+				off.lock();
+				if(off.orderedStock==null) off.orderedStock=0;
+				off.orderedStock += quantity;
+				off.update();	
+			}
+				
 		}
 
 		return order;
@@ -182,7 +151,7 @@ class OrderService
 	/**
 	 * Edit an existing order (quantity)
 	 */
-	public static function edit(order:db.UserOrder, newquantity:Float, ?paid:Bool , ?user2:db.User,?invert:Bool):db.UserOrder {
+	public static function edit(order:db.UserOrder, newquantity:Float, ?user2:db.User,?invert:Bool):db.UserOrder {
 		
 		var t = sugoi.i18n.Locale.texts;
 		
@@ -198,13 +167,6 @@ class OrderService
 			}
 		}
 
-		//paid
-		if (paid != null) {
-			order.paid = paid;
-		}else {
-			if (order.quantity < newquantity) order.paid = false;	
-		}
-		
 		//shared order
 		if (user2 != null){
 			order.user2 = user2;	
@@ -216,52 +178,46 @@ class OrderService
 		}
 
 		//stocks
-		var e : Event = null;
-		if (order.product.stock != null) {
-			var c = order.product.catalog;
-			
-			if (c.hasStockManagement()) {
-				
-				if (newquantity < order.quantity) {
+		if (order.product.pOffer != null && order.product.pOffer.stock!=null) {
+			var off = order.product.pOffer;
 
-					//on commande moins que prévu : incrément de stock						
-					order.product.lock();
-					order.product.stock +=  (order.quantity-newquantity);
-					e = StockMove({product:order.product, move:0 - (order.quantity-newquantity) });
-					
-				}else {
+			if (newquantity < order.quantity) {
+
+				//on commande moins que prévu : incrément de stock						
+				off.lock();
+				off.orderedStock -= order.quantity;
+				off.orderedStock += newquantity;
 				
-					//on commande plus que prévu : décrément de stock
-					var addedquantity = newquantity - order.quantity;
+			}else {
+			
+				//on commande plus que prévu : décrément de stock
+				var addedquantity = newquantity - order.quantity;
+				
+				if (off.getAvailableStock() - addedquantity < 0) {
 					
-					if (order.product.stock - addedquantity < 0) {
-						
-						//stock is not enough, reduce order
-						newquantity = order.quantity + order.product.stock;
-						if( App.current.session!=null) App.current.session.addMessage(t._("We reduced your order of '::productName::' to quantity ::oQuantity:: because there is no available products anymore", {productName:order.product.name, oQuantity:newquantity}), true);
-						
-						e = StockMove({product:order.product, move: 0 - order.product.stock });
-						
-						order.product.lock();
-						order.product.stock = 0;
-						
-					}else{
-						
-						//stock is big enough
-						order.product.lock();
-						order.product.stock -= addedquantity;
-						
-						e = StockMove({ product:order.product, move: 0 - addedquantity });
-					}					
-				}
-				order.product.update();
-			}	
+					//stock is not enough, reduce order
+					newquantity = off.getAvailableStock();
+					if( App.current.session!=null) App.current.session.addMessage(t._("We reduced your order of '::productName::' to quantity ::oQuantity:: because there is no available products anymore", {productName:order.product.name, oQuantity:newquantity}), true);
+					
+					off.lock();
+					off.orderedStock -= order.quantity;
+					off.orderedStock += newquantity;
+					
+				}else{
+					
+					//stock is big enough
+					off.lock();
+					off.orderedStock -= order.quantity;
+					off.orderedStock += newquantity;
+				}					
+			}
+			off.update();
+			
 		}
 
 		//update order
 		if (newquantity == 0) {
 			order.quantity = 0;			
-			order.paid = true;
 			order.update();
 		}else {
 			order.quantity = newquantity;
@@ -273,55 +229,6 @@ class OrderService
 		if(o.distribution==null) throw new Error( "cant record an order which is not linked to a distribution");
 		if(o.basket==null) throw new Error( "this order should have a basket" );
 
-		App.current.event(e);	
-
-		return order;
-	}
-
-	/**
-		edit a multiweight product order from a single qty input ( CSA order form ).
-	**/
-	public static function editMultiWeight( order:db.UserOrder, newquantity:Float ):db.UserOrder {
-
-		if( !tools.FloatTool.isInt(newquantity) ) {
-			throw new Error( "Erreur : la quantité du produit" + order.product.name + " devrait être un entier." );
-		}
-
-		if( !order.product.catalog.group.hasShopMode() && order.product.multiWeight ) {
-
-			var currentOrdersNb = db.UserOrder.manager.count( $subscription == order.subscription && $distribution == order.distribution && $product == order.product && $quantity > 0 );
-			if ( newquantity == currentOrdersNb ) return order;
-			
-			var orders = db.UserOrder.manager.search( $subscription == order.subscription && $distribution == order.distribution && $product == order.product && $quantity > 0, false).array();
-			if ( newquantity != 0 ) {
-
-				var quantityDiff = Std.int(newquantity) - currentOrdersNb;
-				if ( quantityDiff < 0 ) {
-
-					for ( i in 0...-quantityDiff ) {
-						edit( orders[i], 0 );
-						// orders.remove( orders[i] );
-					}
-				} else if ( quantityDiff > 0 ) {
-					make( order.user, 1, order.product, order.distribution.id, null, order.subscription );
-					// for ( i in 0...quantityDiff ) {
-					// 	orders.push( make( order.user, 1, order.product, order.distribution.id, null, order.subscription ) );
-					// }
-				}
-
-				// for ( order in orders ) {
-				// 	edit( order , 1 );
-				// }
-			}else{
-
-				//set all orders to zero
-				for ( order in orders ) {
-					edit( order , 0 );
-				}
-			}
-			
-		}
-		
 		return order;
 	}
 
@@ -339,34 +246,24 @@ class OrderService
 			var user = order.user;
 			var product = order.product;
 
-			//stock mgmt
-			if (contract.hasStockManagement() && product.stock!=null && order.quantity!=null) {
+			//Stocks
+			if (product.pOffer!=null && product.pOffer.stock!=null && order.quantity!=null) {
 				//re-increment stock
-				product.lock();
-				product.stock +=  order.quantity;
-				product.update();
-				// e = StockMove({product:product, move:0-order.quantity });
+				product.pOffer.lock();
+				product.pOffer.orderedStock -=  order.quantity;
+				product.pOffer.update();
 			}
 
-			if ( contract.group.hasShopMode() ) {
-				if( contract.group.hasPayments() ) {
-
-					//Get the basket for this user
-					var basket = db.Basket.get(user, order.distribution.multiDistrib);
-					var orders = basket.getOrders();
-					//Check if it is the last order, if yes then delete the related operation
-					if( orders.length == 1 && orders[0].id==order.id ){
-						var operation = basket.getOrderOperation(false);
-						if(operation!=null) operation.delete();
-					}
-				}
-
-				order.delete();
-			} else {
-
-				order.delete();
-				service.SubscriptionService.createOrUpdateTotalOperation( order.subscription );
+			//Get the basket for this user
+			var basket = db.Basket.get(user, order.distribution.multiDistrib);
+			var orders = basket.getOrders();
+			//Check if it is the last order, if yes then delete the related operation
+			if( orders.length == 1 && orders[0].id==order.id ){
+				var operation = basket.getOrderOperation(false);
+				if(operation!=null) operation.delete();
 			}
+
+			order.delete();
 	
 		} else {
 			throw new Error( t._( "Deletion not possible: quantity is not zero." ) );
@@ -431,20 +328,9 @@ class OrderService
 			x.subTotal = o.quantity * o.productPrice;
 
 			var c = o.product.catalog;
-			
-			if ( o.feesRate!=0 ) {
-				
-				x.fees = x.subTotal * (o.feesRate/100);
-				x.percentageName = c.percentageName;
-				x.percentageValue = o.feesRate;
-				x.total = x.subTotal + x.fees;
-				
-			}else {
-				x.total = x.subTotal;
-			}
+			x.total = x.subTotal;
 			
 			//flags
-			x.paid = o.paid;
 			x.invertSharedOrder = o.flags.has(InvertSharedOrder);
 			x.catalogId = c.id;
 			x.catalogName = c.name;
@@ -694,8 +580,7 @@ class OrderService
 					"price":view.formatNum(o.productPrice),
 					"quantity":view.formatNum(o.quantity),
 					"fees":view.formatNum(o.fees),
-					"total":view.formatNum(o.total),
-					"paid":o.paid
+					"total":view.formatNum(o.total)
 				});				
 			}
 			
@@ -706,7 +591,7 @@ class OrderService
 				exportName = contract.group.name + " - " + contract.name;
 			}
 			
-			sugoi.tools.Csv.printCsvDataFromObjects(data, ["name",  "productName", "price", "quantity", "fees", "total", "paid"], exportName+" - " + t._("Per member"));			
+			sugoi.tools.Csv.printCsvDataFromObjects(data, ["name",  "productName", "price", "quantity", "fees", "total"], exportName+" - " + t._("Per member"));			
 			return null;
 		}else{
 			return orders;
@@ -716,13 +601,13 @@ class OrderService
 
 
 	// Get orders of a user for a multi distrib or a catalog
-	public static function getUserOrders( user : db.User, ?catalog : db.Catalog, ?multiDistrib : db.MultiDistrib, ?subscription : db.Subscription ) : Array<db.UserOrder> {
+	public static function getUserOrders( user : db.User, ?catalog : db.Catalog, ?multiDistrib : db.MultiDistrib ) : Array<db.UserOrder> {
 	 
 		var orders : Array<db.UserOrder>;
 		if( catalog == null ) {
 
 			//We edit a whole multidistrib, edit only var orders.
-			orders = multiDistrib.getUserOrders(user , db.Catalog.TYPE_VARORDER);
+			orders = multiDistrib.getUserOrders(user);
 		} else {
 			
 			//Edit a single catalog, may be CSA or variable
@@ -731,12 +616,7 @@ class OrderService
 				distrib = multiDistrib.getDistributionForContract(catalog);
 			}
 
-			if ( catalog.type == db.Catalog.TYPE_VARORDER ) {
-				orders = catalog.getUserOrders( user, distrib, false );
-			} else {
-				orders = SubscriptionService.getCSARecurrentOrders( subscription, null );
-			}
-				
+			orders = catalog.getUserOrders( user, distrib, false );
 		}
 
 		return orders;
@@ -746,7 +626,7 @@ class OrderService
 	/**
 		Create or update orders for variable catalogs
 	**/ 
-	public static function createOrUpdateOrders( user:db.User, multiDistrib:db.MultiDistrib, catalog:db.Catalog, ordersData:Array<{id:Int, productId:Int, qt:Float, paid:Bool}> ) : Array<db.UserOrder> {
+	public static function createOrUpdateOrders( user:db.User, multiDistrib:db.MultiDistrib, catalog:db.Catalog, ordersData:Array<{id:Int, productId:Int, qt:Float}> ) : Array<db.UserOrder> {
 
 		if ( multiDistrib == null && catalog == null ) {
 			throw new Error('You should provide at least a catalog or a multiDistrib');
@@ -775,16 +655,6 @@ class OrderService
 
 		var group : db.Group = multiDistrib != null ? multiDistrib.group : catalog.group;
 		if ( group == null ) { throw new Error('Impossible de déterminer le groupe.'); }
-		var shopMode = group.hasShopMode();
-		var subscriptions = new Array< db.Subscription >();
-		if( !shopMode && catalog != null ) {
-
-			var subscription = db.Subscription.manager.select( $user == user && $catalog == catalog && $startDate <= multiDistrib.distribStartDate && multiDistrib.distribEndDate <= $endDate );
-			if ( subscription == null ) { 
-				throw new Error('Il n\'y a pas de souscription pour cette personne. Vous devez d\'abord créer une souscription avant de commander.');
-			}			
-			subscriptions.push( subscription );
-		}
 		
 		for ( order in ordersData ) {
 			
@@ -798,7 +668,7 @@ class OrderService
 			if ( existingOrder != null ) {
 
 				// Edit existing order
-				var updatedOrder = OrderService.edit( existingOrder, order.qt, order.paid );
+				var updatedOrder = OrderService.edit( existingOrder, order.qt );
 				if ( updatedOrder != null ) orders.push( updatedOrder );
 			} else {
 
@@ -808,27 +678,7 @@ class OrderService
 					distrib = multiDistrib.getDistributionFromProduct( product );
 				}
 
-				var newOrder : db.UserOrder = null;
-				if ( shopMode ) {
-					newOrder =  OrderService.make( user, order.qt , product, distrib == null ? null : distrib.id, order.paid );
-				} else {
-
-					//Let's find the subscription for that user, catalog and distrib
-					var subscription : db.Subscription = null;
-					if ( catalog != null ) {
-						subscription = subscriptions[0];
-					} else {
-						subscription = db.Subscription.manager.select( $user == user && $catalog == distrib.catalog && $startDate <= distrib.date && distrib.date <= $endDate );
-					}
-					if ( subscription == null ) { throw new Error('Il n\'y a pas de souscription pour cette personne. Vous devez d\'abord créer une souscription avant de commander.'); }
-
-					newOrder =  OrderService.make( user, order.qt , product, distrib == null ? null : distrib.id, order.paid, subscription );
-
-					if ( catalog == null && subscriptions.find( x -> x.id == subscription.id ) == null ) {
-						subscriptions.push( subscription );
-					}
-				}
-				
+				var newOrder =  OrderService.make( user, order.qt , product, distrib == null ? null : distrib.id );
 				if ( newOrder != null ) orders.push( newOrder );
 				
 			}
@@ -843,13 +693,8 @@ class OrderService
 			b.update();
 		}
 
-		if ( shopMode ) {
-			service.PaymentService.onOrderConfirm( orders );
-		} else {
-			for( subscription in subscriptions ) {
-				service.SubscriptionService.createOrUpdateTotalOperation( subscription );				
-			}
-		}
+		service.PaymentService.onOrderConfirm( orders );
+		
 		return orders;
 	}
 }

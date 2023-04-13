@@ -271,11 +271,7 @@
 				::end::</td>
 				<td><a href="/p/hosted/group/::c._group.id::">::c._group.name::</a></td>
 				<td>
-					::if(c._group.hasShopMode())::
 					Boutique
-					::else::
-					AMAP
-					::end::
 				</td>
 				<td>::c.name::</td>
 				<td>du ::sDate(c.startDate):: au ::sDate(c.endDate)::</td>

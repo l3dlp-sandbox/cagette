@@ -33,7 +33,6 @@ class GroupService
 		d.membershipFee = g.membershipFee;
 		d.setVatRates(g.getVatRates());
 		d.flags = g.flags;
-		d.groupType = g.groupType;
 		d.image = g.image;
 		d.regOption = g.regOption;
 		d.currency = g.currency;

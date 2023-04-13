@@ -1,0 +1,13 @@
+::use 'design.mtt'::
+
+	<div id="new-market-neo-container" style="margin-right: 16px; margin-left: 16px; margin-bottom: 16px;"></div>
+
+	<script>
+		document.addEventListener("DOMContentLoaded", function(event) {
+			neo.createNeoModule("new-market-neo-container", "new-market-form", {
+				sid: ::if sid!=null:: "::sid::" ::else:: null ::end::
+			});
+		});
+	</script>
+
+::end::

@@ -48,42 +48,6 @@
 						</table>
 					</td>
 				</tr>
-				<tr>
-					<td class="col-md-6">Mode AMAP</td>
-					<td class="col-md-6">
-						<table class="table">
-							<tr>
-								<th>TOTAL</th>
-								<td>::formatNum(stats.totalTurnoverAmap)::</td>
-							</tr>
-							<tr>
-								<td>invités</td>
-								<td>::formatNum(stats.invitedTurnoverAmap)::</td>
-							</tr>
-							<tr>
-								<td>invités sur cpro</td>
-								<td>::formatNum(stats.cproInvitedTurnoverAmap)::</td>
-							</tr>
-							<tr>
-								<td>Découverte</td>
-								<td>::formatNum(stats.discoveryTurnoverAmap)::</td>
-							</tr>
-							<tr>
-								<td>Formule pro</td>
-								<td>::formatNum(stats.proTurnoverAmap)::</td>
-							</tr>
-							<tr>
-								<td>Formule Membre</td>
-								<td>::formatNum(stats.memberTurnoverAmap)::</td>
-							</tr>
-							<tr>
-								<td>Marketplace</td>
-								<td>::formatNum(stats.marketplaceTurnoverAmap)::</td>
-							</tr>
-						</table>
-
-					</td>
-				</tr>		
 			</table>
 
 <!--
@@ -145,23 +109,6 @@
 					<td class="col-md-6">Nouveaux groupes</td>
 					<td class="col-md-6">::newGroups::</td>
 				</tr>	
-				<tr>
-					<td>Nouveaux groupes par type</td>
-					<td>
-
-						<table class='table'>							
-							<tr>
-								<td>AMAPs</td>
-								<td>::newCSAGroups::</td>
-							</tr>
-							<tr>
-								<td>mode Marché</td>
-								<td>::newMarketGroups::</td>
-							</tr>
-							
-						</table>
-					</td>
-				</tr>
 				<tr>
 					<td>Nouveaux groupes par type d'administrateur</td>
 					<td>

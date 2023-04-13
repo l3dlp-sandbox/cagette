@@ -292,8 +292,6 @@ class Admin extends Controller {
 			.getIntResult(0);
 
 		view.newGroups = db.Group.manager.count($cdate >= from && $cdate < to);
-		view.newCSAGroups = db.Group.manager.count($cdate >= from && $cdate < to && !$flags.has(ShopMode));
-		view.newMarketGroups = db.Group.manager.count($cdate >= from && $cdate < to && $flags.has(ShopMode));
 
 		view.newGroupsByAdmin = sys.db.Manager.cnx.request('SELECT count(gs.contactType) as count,gs.contactType FROM `Group` g, GroupStats gs 
 		where gs.groupId=g.id 
@@ -308,32 +306,6 @@ class Admin extends Controller {
 		group by contactType
 		order by count desc')
 			.results();
-
-		// db.Group.manager.search($flags.has(ShopMode));
-		// db.Group.manager.search(!$flags.has(ShopMode));
-
-		// BASKETS
-		/*var marketBaskets = db.Basket.manager.unsafeObjects('
-				select * from Basket where cdate >= "${from.toString()}" and cdate < "${to.toString()}"
-				and multiDistribId in (
-				select id from MultiDistrib where groupId in (
-					#group AVEC shopMode
-					SELECT id FROM `Group` WHERE flags & 2 != 0 
-				) and distribStartDate > NOW() )',false);
-
-
-			view.marketBasketsNum = marketBaskets.length;
-
-			var amapBaskets = db.Basket.manager.unsafeObjects('
-				select * from Basket where cdate >= "${from.toString()}" and cdate < "${to.toString()}"
-				and multiDistribId in (
-				select id from MultiDistrib where groupId in (
-					#group SANS shopMode
-					SELECT id FROM `Group` WHERE !(flags & 2 != 0) 
-				) and distribStartDate > NOW() )',false);
-
-
-			view.amapBasketsNum = amapBaskets.length; */
 
 		// global stats
 		var stats = Graph.getData("global", from);
@@ -350,93 +322,6 @@ class Admin extends Controller {
 			usergroup.group = group;
 			usergroup.insert();
 		}
-	}
-
-	/*function doVendorNum(){
-		//nbre de vendor actifs dans des groupes qui ont eu des payout mangopay en octobre
-		var vendorsNum = 0;
-		var payoutNum = 0;
-		var vendors = [];
-		var mds = db.MultiDistrib.manager.search($distribStartDate >= Date.fromString("2021-10-01 00:00:00") && $distribStartDate < Date.fromString("2021-11-01 00:00:00"));
-		Sys.print('<h3>${mds.length} distribs</h3>');
-		for( md in mds ){
-
-			var payout = MangopayGroupPayOut.get(md);
-			if(payout==null) continue;
-			payoutNum++;
-
-			Sys.print('distrib ${md.id} of ${md.group.name} : ${md.distribStartDate.toString()}<br/>');
-			var distribVendors = md.getVendors();
-			vendorsNum += distribVendors.length;
-			for( v in distribVendors) vendors.push(v);
-		}
-		Sys.print('estimation à ${vendorsNum} payouts pour chaque prod à chaque distrib<br/>');
-		Sys.print('${payoutNum} payouts mgp');
-		vendors = ObjectListTool.deduplicate(vendors);
-		Sys.print('${vendors.length} vendors actifs');
-
-	}*/
-	/**
-		Stats sur les groupes actifs
-	**/
-	function doGroupStats() {
-		/*Caractérisation des groupes ( condition : les groupes actifs) :, 
-			mode du groupe, 
-			nombre de membres, 
-			réglage des inscriptions, 
-			nombre de produits différents vendus sur un an, 
-			nombre de producteurs par type (formés, invités...), 
-			bouléen sur utilisation des stocks dans un des catalogues, 
-			CA réalisé, 
-			nombre de distributions au cours des 12 derniers mois, 
-			a activé la gestion des paiements ou pas, 
-			modalités de paiement le cas échéant
-		 */
-
-		var sql = "SELECT g.*,h.membersNum,h.cproContractNum,h.contractNum";
-		sql += " FROM `Group` g LEFT JOIN  GroupStats gs ON g.id=gs.groupId WHERE gs.active=1";
-		sql += " ORDER BY g.id ASC";
-
-		var groups = db.Group.manager.unsafeObjects(sql, false);
-		var headers = [
-			"id", "name", "mode", "membersNum", "inscriptions", "productNum", "vendorNum", "cproCatalogNum", "catalogNum", "useStocks", "turnover23months",
-			"distribNum12months", "payments"
-		];
-
-		var data = [];
-		var now = Date.now();
-		for (g in groups) {
-			var catalogs = g.getActiveContracts();
-			var cids = catalogs.map(c -> c.id);
-			var vendors = tools.ObjectListTool.deduplicate(catalogs.map(c -> c.vendor));
-			var from = DateTools.delta(now, -1000.0 * 60 * 60 * 24 * 365);
-			var to = now;
-			var distributions = MultiDistrib.getFromTimeRange(g, from, to);
-			// var turnOver = 0.0;
-			// for( d in distributions){
-			// 	turnOver += d.getTotalIncome();
-			// }
-
-			data.push({
-				id: g.id,
-				name: g.name,
-				mode: g.hasShopMode() ? "BOUTIQUE" : "AMAP",
-				membersNum: untyped g.membersNum,
-				inscriptions: Std.string(g.regOption),
-				productNum: db.Product.manager.count($catalogId in cids),
-				vendorNum: vendors.length,
-				cproCatalogNum: untyped g.cproContractNum,
-				catalogNum: untyped g.contractNum,
-				useStocks: db.Product.manager.count(($catalogId in cids) && $active == true && $stock > 0) > 0,
-				// turnover12months:Math.round(turnOver),
-				distribNum12months: distributions.length,
-				payments: g.allowedPaymentsType
-			});
-		}
-
-		sugoi.tools.Csv.printCsvDataFromObjects(data, headers, "stats_groupes");
-		// var t = new sugoi.helper.Table();
-		// Sys.print(t.toString(data));
 	}
 
 	/**
@@ -472,13 +357,6 @@ class Admin extends Controller {
 		var f = new sugoi.form.Form("groups");
 		f.method = GET;
 		f.addElement(new sugoi.form.elements.StringInput("groupName", "Nom du groupe"));
-		var data = [
-			{label: "Tous", value: "all"},
-			{label: "Mode marché", value: "shopMode"},
-			{label: "Mode AMAP", value: "CSAMode"},
-
-		];
-		f.addElement(new sugoi.form.elements.StringSelect("type", "Type de groupe", data, defaultType, true, ""));
 		f.addElement(new sugoi.form.elements.StringInput("zipCodes", "Saisir des numéros de département séparés par des virgules ou laisser vide."));
 		f.addElement(new sugoi.form.elements.StringSelect("country", "Pays", db.Place.getCountries(), "FR", true, ""));
 		
@@ -521,19 +399,6 @@ class Admin extends Controller {
 				case "inactive":
 					sql_where_and.push("active=0");
 				default:
-			}
-
-			// type
-			if (f.getValueOf("type") != "all") {
-				var type = f.getValueOf("type");
-				switch (type) {
-					case "marketMode", "shopMode":
-						sql_where_and.push("g.flags&2 != 0");
-					case "CSAMode":
-						sql_where_and.push("g.flags&2 = 0");
-					default:
-						throw "unknown type";
-				}
 			}
 
 			// country
@@ -603,7 +468,7 @@ class Admin extends Controller {
 					data.push({
 						id: g.id,
 						name: g.name,
-						mode: g.hasShopMode() ? "Marché" : "AMAP",
+						mode: "Marché",
 						placeName: untyped g.pname,
 						address1: untyped g.address1,
 						address2: untyped g.address2,
@@ -673,52 +538,6 @@ class Admin extends Controller {
 		}
 	}
 
-	public function doStats202211() {
-		for (vs in pro.db.VendorStats.manager.search($type == VTFree || $type == VTInvited || $type == VTInvitedPro, false)) {
-			var v = vs.vendor;
-
-			// remove those who have only AMAP clients
-			var catalogs = v.getActiveContracts();
-			var AMAPcatalogs = catalogs.filter(c -> !c.group.hasShopMode());
-
-			if (AMAPcatalogs.length == catalogs.length) {
-				continue;
-			}
-
-			Sys.print(v.id + ";" + v.name + ";" + v.email + "<br/>");
-		}
-	}
-
-	public function doStatsCoordo202211() {
-		for (vs in pro.db.VendorStats.manager.search($type == VTFree || $type == VTInvited || $type == VTInvitedPro, false)) {
-			var v = vs.vendor;
-
-			var catalogs = v.getActiveContracts();
-			for (c in catalogs) {
-				var g = c.group;
-
-				// if AMAP continue...
-				if (!g.hasShopMode()) {
-					continue;
-				}
-
-				for (ua in g.getGroupAdmins()) {
-					// people who manage this contract
-					if (ua.hasRight(db.UserGroup.Right.ContractAdmin(c.id))) {
-						var u = ua.user;
-						Sys.print(u.id + ";" + u.email + "<br/>");
-					}
-				}
-
-				// group admin
-				if (g.contact != null) {
-					var u = g.contact;
-					Sys.print(u.id + ";" + u.email + "<br/>");
-				}
-			}
-		}
-	}
-
 	@tpl('admin/settings.mtt')
 	function doSettings() {}
 
@@ -735,6 +554,9 @@ class Admin extends Controller {
 	function doShowcase(){
 	}
 
+	/**
+		export des distribs pour Charlotte
+	**/
 	@tpl('admin/exportDistribs.mtt')
 	function doExportDistribs(){
 
@@ -753,8 +575,6 @@ class Admin extends Controller {
 			for(md in db.MultiDistrib.manager.search($distribStartDate > tf.from && $distribStartDate <= tf.to,false)){
 
 				var group = md.group;
-
-				if(!group.hasShopMode()) continue;
 
 				var contactType = "";
 				if(group.contact!=null){
@@ -810,5 +630,63 @@ class Admin extends Controller {
 			var headers = ["distributionId","marketId","url","vendorId","vendorName","vendorStatus","vendorProfession","basketNums","contactType","membersNum","day","month","year","zipCode","address","city","turnover"];
 			sugoi.tools.Csv.printCsvDataFromObjects(data, headers, "Distributions");
 		}
+	}
+
+	/**
+		Stats sur les groupes actifs
+	**/
+	function doGroupStats() {
+		
+		var sql = "SELECT g.id as marketId,g.name as marketName,g.userId,u.firstName,u.lastName,u.email,
+		v.id as vendorId,v.name as vendorName,v.zipCode
+		FROM `Group` g
+		inner join GroupStats gs on g.id=gs.groupId
+		inner join User u on g.userId=u.id
+		left join Vendor v on v.email=u.email 
+		where gs.active = 1 and gs.mode = \"MARKET\"
+		order by g.id";
+
+		var groups = sys.db.Manager.cnx.request(sql).results();
+		var data = [];
+		var now = Date.now();
+		for (g in groups) {
+			// var catalogs = g.getActiveContracts();
+			// var cids = catalogs.map(c -> c.id);
+			// var vendors = tools.ObjectListTool.deduplicate(catalogs.map(c -> c.vendor));
+			// var from = DateTools.delta(now, -1000.0 * 60 * 60 * 24 * 365);
+			// var to = now;
+			// var distributions = MultiDistrib.getFromTimeRange(g, from, to);		
+			var vendor = db.Vendor.manager.get(g.vendorId);
+			var cpro = CagettePro.manager.select($vendor == vendor,false);
+
+			data.push({
+				marketId: g.marketId,
+				marketName: g.marketName,
+				userId: g.userId,
+				firstName : g.firstName,
+				lastName : g.lastName,
+				email : g.email,
+				vendorId : g.vendorId,
+				vendorName : g.vendorName,
+				zipCode : g.zipCode,
+				vendorStatus : cpro==null ? null : Std.string(cpro.offer),
+				vendorProfession : cpro==null ? null : vendor.getProfession(),
+
+
+
+				// membersNum: untyped g.membersNum,
+				// inscriptions: Std.string(g.regOption),
+				// productNum: db.Product.manager.count($catalogId in cids),
+				// vendorNum: vendors.length,
+				// cproCatalogNum: untyped g.cproContractNum,
+				// catalogNum: untyped g.contractNum,
+				// turnover12months:Math.round(turnOver),
+				// distribNum12months: distributions.length,
+				// payments: g.allowedPaymentsType
+			});
+		}
+		var headers = Reflect.fields(data[0]);
+		sugoi.tools.Csv.printCsvDataFromObjects(data, headers, "stats_groupes");
+
 	}
 }

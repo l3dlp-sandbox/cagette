@@ -7,7 +7,6 @@ import sys.db.Types;
 enum CatalogFlags {
 	UsersCanOrder;  		//adhérents peuvent saisir eux meme la commande en ligne
 	StockManagement; 		//gestion des commandes
-	PercentageOnOrders;		//calcul d'une commission supplémentaire 
 }
 
 @:index(startDate,endDate)
@@ -15,7 +14,6 @@ class Catalog extends Object
 {
 	public var id : SId;
 	public var name : SString<64>;
-	public var type : SInt;
 	
 	//responsable
 	@formPopulate("populate") @:relation(userId) public var contact : SNull<User>;
@@ -29,35 +27,11 @@ class Catalog extends Object
 	public var distributorNum:STinyInt;
 	public var flags : SFlags<CatalogFlags>;
 	
-	public var percentageValue : SNull<SFloat>; 		//fees percentage
-	public var percentageName : SNull<SString<64>>;		//fee name
-	
-	public var orderStartDaysBeforeDistrib : SNull<SInt>;
-	public var orderEndHoursBeforeDistrib : SNull<SInt>;
-
-	// public var requiresOrdering : SNull<Bool>;			// ordering at each distrib is a compulsory
-	public var distribMinOrdersTotal : SFloat;
-	public var catalogMinOrdersTotal : SFloat;
-	// public var allowedOverspend : SNull<SFloat>;  //removed 
-
-	//absences in CSA groups
-	public var absentDistribsMaxNb : SInt;
-	public var absencesStartDate : SNull<SDateTime>;
-	public var absencesEndDate : SNull<SDateTime>;
-
-	// public var hasPayments : SBool; //only for CSA groups
-
-	@:skip inline public static var TYPE_CONSTORDERS = 0; 	//constant orders catalog (contrat AMAP classique)
-	@:skip inline public static var TYPE_VARORDER = 1;		//variable orders catalog (contrat AMAP variable)
-	// @:skip inline public static var CATALOG_ID_HASPAYMENTS = 53442;		//payments is mandatory when id > CATALOG_ID_HASPAYMENTS
-	@:skip var cache_hasActiveDistribs : Bool;
-
 	public function new() 
 	{
 		super();
 		flags = cast 0;
 		distributorNum = 0;	
-		orderEndHoursBeforeDistrib = 24;	
 		flags.set(UsersCanOrder);		
 	}	
 	
@@ -70,29 +44,16 @@ class Catalog extends Object
 	public function isUserOrderAvailable():Bool {
 		
 		if(userOrderAvailableCache!=null) return userOrderAvailableCache;
-
-		if (type == TYPE_CONSTORDERS ) {
-			userOrderAvailableCache = isVisibleInShop();
-		}else {
 		
-			var n = Date.now();			
-			var d = db.Distribution.manager.count( $orderStartDate <= n && $orderEndDate >= n && $catalogId==this.id);
-		
-			userOrderAvailableCache = d>0 && isVisibleInShop();
-		}
+		var n = Date.now();			
+		var d = db.Distribution.manager.count( $orderStartDate <= n && $orderEndDate >= n && $catalogId==this.id);
+	
+		userOrderAvailableCache = d>0 && isVisibleInShop();
 
 		return userOrderAvailableCache;
 		
 	}
 
-	public function isConstantOrdersCatalog(){
-		return type == TYPE_CONSTORDERS;
-	}
-
-	public function isVariableOrdersCatalog(){
-		return type == TYPE_VARORDER;
-	}
-	
 	/**
 	 * The products can be displayed in a shop ?
 	 */
@@ -114,59 +75,13 @@ class Catalog extends Object
 	public function hasOpenOrders(){
 		var now = Date.now();
 		var contractOpen = flags.has(UsersCanOrder) && now.getTime() < this.endDate.getTime() && now.getTime() > this.startDate.getTime();
-
-		if(this.isConstantOrdersCatalog()){
-			return contractOpen;
-		}else{			
-			var d = db.Distribution.manager.count( $orderStartDate <= now && $orderEndDate > now && $catalogId==this.id);
-			return contractOpen && d > 0;
-		}		
+		var d = db.Distribution.manager.count( $orderStartDate <= now && $orderEndDate > now && $catalogId==this.id);
+		return contractOpen && d > 0;
 	}
 		
-	public function hasPercentageOnOrders():Bool {
-		return false;
-		// return flags.has(PercentageOnOrders) && percentageValue!=null && percentageValue!=0;
-	}
-	
 	public function hasStockManagement():Bool {
-		return flags.has(StockManagement);
-	}
-
-	public function hasConstraints() : Bool {
-		return this.isVariableOrdersCatalog() && ( this.distribMinOrdersTotal>0  || this.catalogMinOrdersTotal>0 );
-	}
-
-	public function hasAbsencesManagement() : Bool {
-		//absence mgmt is available if CSA mode + constant orders or var orders with distribMinOrdersTotal>0
-		if(!this.group.hasShopMode() && (isConstantOrdersCatalog() || distribMinOrdersTotal>0)){
-			return this.absentDistribsMaxNb > 0 && this.absencesStartDate != null && this.absencesEndDate != null;
-		}else{
-			return false;
-		}		
-	}
-
-	public function hasDefaultOrdersManagement() : Bool{
-		if(!this.group.hasShopMode() && (isConstantOrdersCatalog() || distribMinOrdersTotal>0)){
-			return true;
-		}else{
-			return false;
-		}
-	}
-
-	/**
-	 * computes a 'percentage' fee
-	 */
-	public function computeFees(basePrice:Float) {
-		if (!hasPercentageOnOrders()) return 0.0;
-		
-		/*if (group.flags.has(ComputeMargin)) {
-			//commercial margin
-			return (basePrice / ((100 - percentageValue) / 100)) - basePrice;
-			
-		}else {*/
-			//add a percentage
-			return percentageValue / 100 * basePrice;
-		// }
+		// return flags.has(StockManagement);
+		return true;
 	}
 
 	public function check(){
@@ -288,18 +203,6 @@ class Catalog extends Object
 
 	public function getVisibleDocuments( user : db.User ) : List<sugoi.db.EntityFile> {
 
-		var isSubscribedToCatalog = false;
-		if ( user != null && !this.group.hasShopMode() ) { //CSA Mode
-
-			var userCatalogs : Array<db.Catalog> = user.getContracts(this.group);
-			isSubscribedToCatalog = Lambda.exists( userCatalogs, function( usercatalog ) return usercatalog.id == this.id ); 
-		}
-
-		if ( isSubscribedToCatalog ) {
-
-			return sugoi.db.EntityFile.manager.search( $entityType == 'catalog' && $entityId == this.id && $documentType == 'document', false);
-		}
-
 		if ( user != null && user.isMemberOf(group) ) {
 
 			return sugoi.db.EntityFile.manager.search( $entityType == 'catalog' && $entityId == this.id && $documentType == 'document' && $data != 'subscribers', false);
@@ -358,19 +261,8 @@ class Catalog extends Object
 			"description" 		=> t._("Description"),
 			"distributorNum" 	=> t._("Number of required volunteers during a distribution"),
 			"flags" 			=> t._("Options"),
-			"percentageValue" 	=> t._("Fees percentage"),
-			"percentageName" 	=> t._("Fees label"),
 			"contact" 			=> t._("Contact"),
 			"vendor" 			=> t._("Farmer"),
-			"orderStartDaysBeforeDistrib" 	=> "Ouverture des commandes (nbre de jours avant distribution)",
-			"orderEndHoursBeforeDistrib" 	=> "Fermeture des commandes (nbre d'heures avant distribution)",
-			"requiresOrdering" 				=> "Commande obligatoire à chaque distribution",
-			"distribMinOrdersTotal" 		=> "Minimum de commande par distribution (en €)",
-			"catalogMinOrdersTotal" 		=> /*"Provision minimum initiale (en €)"*/"Minimum de commandes sur la durée du contrat (en €)",
-			// "allowedOverspend" 				=> "Dépassement autorisé (en €)",
-			"absentDistribsMaxNb" 			=> "Nombre maximum d'absences",
-			"absencesStartDate" 			=> "Date de début de la période d'absences",
-			"absencesEndDate" 				=> "Date de fin de la période d'absences",
 			"hasPayements" 					=> "Gestion des paiements",
 		];
 	}

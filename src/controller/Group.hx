@@ -6,7 +6,6 @@ import payment.Cash;
 import service.BridgeService;
 import service.DistributionService;
 import service.OrderService;
-import service.SubscriptionService;
 import service.WaitingListService;
 import sugoi.form.elements.StringInput;
 
@@ -112,8 +111,10 @@ class Group extends controller.Controller
 	/**
 	 * create a new group
 	 */
-	@tpl("form.mtt")
+	@tpl("group/create.mtt")
 	function doCreate() {
+		App.current.session.data.amapId = null;
+
 		var cagettePros = service.VendorService.getCagetteProFromUser(App.current.user);
 		if (!(App.current.getSettings().onlyVendorsCanCreateGroup==null
 			 || App.current.getSettings().onlyVendorsCanCreateGroup==false 
@@ -121,119 +122,12 @@ class Group extends controller.Controller
 			 ) {
 			throw Redirect("/");
 		}
-
-		view.title = "Créer un nouveau groupe " + App.current.getTheme().name;
-
-		var p = new db.Place();
-		var f = form.CagetteForm.fromSpod(p);
-		f.addElement(new sugoi.form.elements.StringSelect('country',t._("Country"),db.Place.getCountries(),p.country,true));			
-		f.addElement(new StringInput("groupName", t._("Name of your group"), "", true),1);
 		
-		//group type
-		if (App.current.getSettings().noCsa != true) {
-			var data = [
-				{
-					label:"Mode marché",
-					value:"2",
-					desc : "Drive de producteurs sans engagement.<br/>Configuration par défaut : Groupe ouvert, n'importe qui peut s'inscrire et commander <a data-toggle='tooltip' title='En savoir plus' href='https://wiki.cagette.net/admin:admin_boutique#mode_marche' target='_blank'><i class='icon icon-info'></i></a>"
-				},
-				{ 
-					label:"Mode AMAP",
-					value:"0",
-					desc : "<div class='alert alert-danger' style='font-size: 0.9em'>Il n'est plus possible d'ouvrir de groupe en mode AMAP sur Cagette.net</div>"
-				}
-			];	
-			var gt = new sugoi.form.elements.RadioGroup("type", t._("Group type"), data ,"2", Std.string( db.Catalog.TYPE_VARORDER ), true, true, true);
-			f.addElement(gt,2);
+		if(app.user==null) {
+			view.userName = "";
+			view.sid = App.current.session.sid;
+			return;
 		}
-
-		f.getElement("name").label = "Nom du lieu";
-		f.removeElementByName("lat");
-		f.removeElementByName("lng");
-
-		f.addElement(new sugoi.form.elements.Html("infos","<h4>Lieu de distribution</h4>Renseignez le nom et adresse du lieu qui acceuillera les distributions de produits.<br/>Vous pourrez changer cette adresse plus tard si nécéssaire."),3);
-		
-		if (f.checkToken()) {
-			
-			var user = app.user;
-			
-			var g = new db.Group();
-			g.name = f.getValueOf("groupName");
-			g.contact = user;
-			
-			var type:GroupType;
-			if (App.current.getSettings().noCsa == true) {
-				type = GroupType.ProducerDrive;
-			}else {
-				type = Type.createEnumIndex(GroupType, Std.parseInt(f.getValueOf("type")) );
-			}
-			
-			switch(type){
-			case null : 
-				throw "unknown group type";
-
-			case Amap : 
-				g.flags.unset(ShopMode);
-				g.flags.set(HasPayments);
-				g.hasMembership=true;
-				g.regOption = WaitingList;
-
-				// if(!user.isAdmin()) 
-				throw Redirect('/group/csa?name='+g.name);
-				
-			case GroupedOrders :
-				g.flags.set(ShopMode);
-				g.hasMembership=true;
-				g.regOption = WaitingList;
-				
-			case ProducerDrive,FarmShop : 
-				g.flags.set(ShopMode);								
-				// g.flags.set(PhoneRequired);				
-				g.regOption = Open;
-			}
-			
-			g.groupType = type;
-			g.flags.set(HasPayments);
-			g.setAllowedPaymentTypes([payment.Cash.TYPE,payment.Check.TYPE]);
-			g.insert();
-			
-			var ua = new db.UserGroup();
-			ua.user = user;
-			ua.group = g;
-			ua.insert();
-			ua.giveRight(Right.GroupAdmin);
-			ua.giveRight(Right.Membership);
-			ua.giveRight(Right.Messages);
-			ua.giveRight(Right.ContractAdmin(null));
-			
-			//insert place
-			f.toSpod(p); 	
-			p.group = g;		
-			p.insert();
-
-			service.PlaceService.geocode(p);
-
-			App.current.session.data.amapId  = g.id;
-			app.session.data.newGroup = true;
-
-			#if plugins
-			try{
-				//sync if this user is not cpro && market mode group
-				if( service.VendorService.getCagetteProFromUser(app.user).length==0 && g.hasShopMode() ){					
-					BridgeService.syncUserToHubspot(app.user);
-					service.BridgeService.triggerWorkflow(29805116, app.user.email);
-				}
-			}catch(e:Dynamic){
-				//fail silently
-				app.logError(Std.string(e));
-			}
-			#end
-
-			throw Redirect("/");
-		}
-		
-		view.form= f;
-		
 	}
 
 	@admin
@@ -263,14 +157,6 @@ class Group extends controller.Controller
 		
 	// 	view.addr = view.escapeJS(addr);
 	// }
-
-	@tpl("group/csa.mtt")
-	public function doCsa(args:{name:String}){
-
-		view.groupName = args.name;
-
-	}
-
 
 	@tpl("group/map.mtt")
 	public function doMap(?args:{?lat:Float,?lng:Float,?address:String}){

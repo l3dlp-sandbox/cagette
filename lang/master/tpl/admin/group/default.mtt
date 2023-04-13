@@ -43,13 +43,6 @@
 		</td>
 		
 		<td>			
-			::if(g.hasShopMode())::
-			Mode Marché
-			::else::
-			Mode AMAP
-			::end::
-		</td>		
-		<td>			
 			$$bool(::g.active::)			
 		</td>
 

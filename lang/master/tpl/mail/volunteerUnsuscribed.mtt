@@ -1,11 +1,17 @@
 :: use 'mail/layout-group.mtt'::
 
-<p>
-    ::raw __( "<b>::fullname::</b> has left the role <b>::role::</b> for the following reason:",{fullname:fullname,role:role})::
-</p>
-<p>
-    "<i>::reason::</i>"
-</p>
+::if reason!=null::
+    <p>
+        <b>::fullname::</b> s'est désisté pour le rôle <b>::role::</b> et a indiqué la raison suivante :
+    </p>
+    <p>
+        "<i>::reason::</i>"
+    </p>
+::else::
+    <p>
+        <b>::fullname::</b> s'est désisté pour le rôle <b>::role::</b>.
+    </p>
+::end::
 <p>
     ::raw _("This role needs to be assigned to another person.")::
 </p>

@@ -6,14 +6,6 @@
 		
 		::raw form::
 		
-		<hr/>
-
-		<div class="alert alert-warning">
-			<i class="icon icon-info"></i>
-			<b>Option "Ce catalogue sera un contrat AMAP classique"</b><br/>
-			Si vous cochez cette option, les commandes seront identiques pour chaque distribution, sans possibilité de variation.<br/>
-			Si vous décochez cette option, vous créérez un catalogue standard (commandes variables) qui permet de faire une commande différente à chaque distribution.			
-		</div>
 	</div>
 </div>
 

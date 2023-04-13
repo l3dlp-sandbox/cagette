@@ -301,14 +301,12 @@ class Catalog extends controller.Controller
 		
 		var form = new sugoi.form.Form("publicGroup");
 		form.addElement(new sugoi.form.elements.IntSelect("group","Groupe",data,null,true));
-		form.addElement(new sugoi.form.elements.RadioGroup("type","Mode commande",[{label:"Commande variable",value:"1"},{label:"Contrat AMAP",value:"0"}],"1",true));
 
 		if(form.isValid()){
 			var gid : Int = form.getValueOf("group");
 			var group = db.Group.manager.get(gid,false);
-			var type = form.getValueOf("type")=="1" ? 1 : 0;
 			try{
-				pro.service.PCatalogService.linkCatalogToGroup(catalog,group,app.user.id, type);
+				pro.service.PCatalogService.linkCatalogToGroup(catalog,group,app.user.id);
 			}catch(e:tink.core.Error){
 				throw Error("/p/pro/catalog/publishGroup/"+catalog.id,e.message);
 			}
@@ -335,7 +333,7 @@ class Catalog extends controller.Controller
 		var content : CatalogImportContent = haxe.Json.parse(notif.content);		
 		var catalog = pro.db.PCatalog.manager.get( content.catalogId );		
 		try{
-			pro.service.PCatalogService.linkCatalogToGroup(catalog, notif.group , content.userId, content.catalogType );
+			pro.service.PCatalogService.linkCatalogToGroup(catalog, notif.group , content.userId );
 		}catch(e:tink.core.Error){
 			throw Error('/p/pro/',e.message);
 		}		

@@ -4,10 +4,7 @@
 		
 	$$insert(::_("New product")::,/product/insert/::c.id::)
 
-	
-	
 	<div class="btn-group" role="group" style="display: inline-block;">
-		<a href="/product/import/::c.id::" class="btn btn-default btn-sm"><i class="icon icon-upload"></i> ::_("Import from Excel/CSV")::</a>
 		<a href="/product/export/::c.id::" class="btn btn-default btn-sm"><i class="icon icon-download"></i> Export CSV</a>
 	</div>
 
@@ -27,7 +24,11 @@
 	
 	//enable checked products
 	var enableProducts = function(){
-		var ids = _Cagette.getCheckboxesId('form.products');
+		var ids = [];
+		var checkboxes = document.querySelectorAll("form.products input[type=checkbox]");
+		for ( input of checkboxes ){
+			if ( input.checked ) ids.push(input.value);
+		}
 		if(ids.length==0){
 			alert("::_("You need to select at least one product to perform this action")::");
 		}else{
@@ -39,7 +40,11 @@
 	
 	//disable checked products
 	var disableProducts = function(){
-		var ids = _Cagette.getCheckboxesId('form.products');
+		var ids = [];
+		var checkboxes = document.querySelectorAll("form.products input[type=checkbox]");
+		for ( input of checkboxes ){
+			if ( input.checked ) ids.push(input.value);
+		}
 		if(ids.length==0){
 			alert("::_("You need to select at least one product to perform this action")::");
 		}else{
@@ -138,12 +143,13 @@
 						::end::
 					
 					
-						<a class="btn btn-default btn-sm" onclick="_Cagette.openImageUploader('product', ::p.id::, 300, 300)">
+						<a class="btn btn-default btn-sm" $$openImageUploader('product', ::p.id::, 300, 300)>
 							<i class="icon icon-image"></i> ::_("Picture")::
 						</a>
 						
-						
 						$$delete(::_("Del.")::,/product/delete/::p.id::?token=::token::)
+
+						<div id="image-uploader-container" />
 					::end::
 				</div>
 				<div id="imageUploader"></div>

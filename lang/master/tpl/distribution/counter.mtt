@@ -219,7 +219,7 @@
             </div>
 
             <div class="col-md-12">
-                    <a href="/distribution/validate/::distribution.id::" class="btn btn-default btn-sm">
+                    <a href="/distributions#/::distribution.id::" class="btn btn-default btn-sm">
                         <i class="icon icon-chevron-left"></i> Retour
                     </a>
 
