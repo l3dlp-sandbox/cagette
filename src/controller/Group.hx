@@ -113,6 +113,8 @@ class Group extends controller.Controller
 	 */
 	@tpl("group/create.mtt")
 	function doCreate() {
+		App.current.session.data.amapId = null;
+
 		var cagettePros = service.VendorService.getCagetteProFromUser(App.current.user);
 		if (!(App.current.getSettings().onlyVendorsCanCreateGroup==null
 			 || App.current.getSettings().onlyVendorsCanCreateGroup==false 
@@ -120,7 +122,7 @@ class Group extends controller.Controller
 			 ) {
 			throw Redirect("/");
 		}
-
+		
 		if(app.user==null) {
 			view.userName = "";
 			view.sid = App.current.session.sid;
