@@ -158,9 +158,10 @@ class Scripts extends Controller
             if(already!=null) already.delete();
 
             //move to target group
-            userGroup.group = targetGroup;
-            userGroup.differenciatedPricingId = sourcePrice.id;
-            userGroup.update();
+            // userGroup.group = targetGroup;
+            // userGroup.differenciatedPricingId = sourcePrice.id;
+            // userGroup.update();
+            sys.db.Manager.cnx.request('update UserGroup set groupId=${targetGroup.id},differenciatedPricingId=${sourcePrice.id} where groupId=${sourceGroup.id} and userId=${userGroup.user.id}');
 
             //move memberships
             for( m in db.Membership.manager.search($user == userGroup.user && $group == userGroup.group,true)){
