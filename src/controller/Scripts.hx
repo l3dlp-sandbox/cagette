@@ -1,5 +1,7 @@
 package controller;
 
+import db.Group.RegOption;
+import db.UserGroup;
 import db.Operation;
 import db.Membership;
 import db.Catalog;
@@ -120,5 +122,53 @@ class Scripts extends Controller
             db.Membership.manager.delete($groupId == g.id);
             db.Operation.manager.delete($groupId == g.id);            
         }
+    }
+
+
+    /**
+        2023-04-17 migrate VRAC groups to differentiated pricing
+
+        targetGroup : the group we keep
+        targetPricing : the pricing given to the members of targetGroup
+        sourceGroup : the group we empty        
+        sourcePricing : the pricing given to the members of sourceGroup        
+    **/
+    function doMigratePricing(sourceGroup:db.Group,sourcePrice:db.DifferenciatedPricing,targetGroup:db.Group,targetPrice:db.DifferenciatedPricing){
+
+        //give targetPrice to targetGroup
+        for( userGroup in db.UserGroup.manager.search($groupId == targetGroup.id,true)){
+
+            userGroup.differenciatedPricingId = targetPrice.id;
+            userGroup.update();
+
+            print("give "+userGroup.user.getName()+" price #"+targetPrice.id+"-"+targetPrice.name);
+        }
+
+        print("==== MOVE users from "+sourceGroup.name+" to "+targetGroup.name);
+
+        for( userGroup in db.UserGroup.manager.search($groupId == sourceGroup.id,true)){
+
+            //if user is group admin, keep it
+            if(userGroup.hasRight(GroupAdmin)) continue;
+
+            //move to target group
+            userGroup.group = targetGroup;
+            userGroup.differenciatedPricingId = sourcePrice.id;
+            userGroup.update();
+
+            print(userGroup.user.getName()+" moved");
+            print("give "+userGroup.user.getName()+" price #"+sourcePrice.id+"-"+sourcePrice.name);
+
+        }
+
+        //close source group
+        sourceGroup.lock();
+        sourceGroup.regOption = RegOption.Closed;
+        // sourceGroup.disabled = 
+        sourceGroup.update();
+
+       
+
+
     }
 }

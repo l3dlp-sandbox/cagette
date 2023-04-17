@@ -83,10 +83,10 @@ class Cron extends Controller
 			}));
 
 			//debug in error log db
-			app.logError(haxe.Json.stringify({
-				now:this.now,
-				jobs:out
-			}));
+			// app.logError(haxe.Json.stringify({
+			// 	now:this.now,
+			// 	jobs:out
+			// }));
 		}
 	}
 	
