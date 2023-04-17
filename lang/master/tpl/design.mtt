@@ -33,7 +33,11 @@
 
 		<div id='header-neo-container'/>
 
-		<div id='navigation-neo-container'/>
+		<div style="width: 270px;">
+			<div style="background-color: white; position: absolute; top: 0; bottom: 0; left: 0; width: 240px; border-right: 1px solid rgba(0, 0, 0, 0.12);"/>
+			<img src="/theme/::theme.id::/logo3.png" style="width: 270px; opacity: 0;"/>
+			<div id='navigation-neo-container' style="background-color: white; position: fixed; top: 0px; left: 0px;" />
+		</div>
 
 		<script language="javascript">
 
