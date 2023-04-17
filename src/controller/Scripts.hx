@@ -163,27 +163,35 @@ class Scripts extends Controller
             // userGroup.update();
             sys.db.Manager.cnx.request('update UserGroup set groupId=${targetGroup.id},differenciatedPricingId=${sourcePrice.id} where groupId=${sourceGroup.id} and userId=${userGroup.user.id}');
 
-            //move memberships
-            for( m in db.Membership.manager.search($user == userGroup.user && $group == userGroup.group,true)){
-                //linked distribution is not moved
-                m.group = targetGroup;
-                if(m.operation!=null){
-                    //move membership debt op
-                    m.operation.lock();
-                    m.operation.group = targetGroup;
-                    m.update();
-                    //move payment op
-                    var paymentOp = db.Operation.manager.select($relation == m.operation,true);
-                    if(paymentOp!=null){
-                        paymentOp.group = targetGroup;
-                        paymentOp.update();
-                    }
-                }
-                m.update();
-            }   
-
             print(userGroup.user.getName()+" moved and give price #"+sourcePrice.id+"-"+sourcePrice.name);            
         }
+
+        //move memberships
+        print("==== MOVE memberships from "+sourceGroup.name+" to "+targetGroup.name);
+
+        for( m in db.Membership.manager.search($group == sourceGroup,false)){
+
+            //note : linked distribution is not moved
+            var n = db.Membership.get(m.user,m.group,m.year,true);
+            n.group = targetGroup;
+            n.update();
+
+            if(n.operation!=null){
+
+                //move membership debt op
+                var op = db.Operation.manager.get(n.operation.id,true);               
+                op.group = targetGroup;
+                n.update();
+
+                //move payment op
+                var paymentOp = db.Operation.manager.select($relation == n.operation,true);
+                if(paymentOp!=null){
+                    paymentOp.group = targetGroup;
+                    paymentOp.update();
+                }
+            }
+            
+        }   
 
         //close source group
         sourceGroup.lock();
@@ -193,4 +201,7 @@ class Scripts extends Controller
 
         print("END");
     }
+
+
+    
 }
