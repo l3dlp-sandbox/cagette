@@ -1,4 +1,12 @@
 package hosted.controller;
+import mangopay.MangopayPlugin;
+import mangopay.Mangopay;
+import mangopay.db.MangopayLegalUserGroup;
+import payment.Cash;
+import service.ProductService;
+import pro.payment.MangopayECPayment;
+import service.GroupService;
+import tools.ObjectListTool;
 import Common;
 import db.Operation;
 import hosted.HostedPlugIn;
@@ -49,6 +57,126 @@ class Main extends controller.Controller
 				md.update();
 			}
 		}
+
+		if( app.params.get("dispatch")=="1" ){
+			//ENABLE DISPATCH
+			group.lock();
+			group.betaFlags.set(Dispatch);
+			group.setAllowedPaymentTypes(["stripe"]);
+			
+			//get active and non disabled vendors
+			var vendors = group.getActiveContracts(false).map(c -> c.vendor).filter(v -> !v.isDisabled()).array();
+			vendors = ObjectListTool.deduplicate(vendors);
+
+			if( vendors.length > vendors.filter(v -> v.isDispatchReady()).length){
+				var badVendors = vendors.filter(v -> !v.isDispatchReady());
+				throw Error("/p/hosted/group/"+group.id,"Les producteurs suivants ne sont pas prêts pour le dispatch : <b>"+badVendors.map(v-> "#"+v.id+"-"+v.name).join(", ")+"</b>");
+			}
+
+			group.update();
+
+			throw Ok("/p/hosted/group/"+group.id,"Le groupe est configuré pour le dispatch");
+		}
+
+		
+
+		if( app.params.get("removeMangopay")=="1" ){
+
+			group.lock();
+
+			//delete LegalUserGroup if wallet is empty
+			var mgpLegalUserGroup = mangopay.MangopayPlugin.getGroupConfig(group);
+			if(mgpLegalUserGroup==null){
+				throw "No mgpLegalUserGroup";
+			}
+			var mgpLegalUser = mgpLegalUserGroup.legalUser;						
+			var wallet = Mangopay.getOrCreateGroupWallet(mgpLegalUser.mangopayUserId,group);
+
+			if(wallet.Balance.Amount > 0){
+				throw "Wallet "+wallet.Id+" is not empty";
+			}
+
+			mgpLegalUserGroup.delete();
+
+			//payments in cash
+			group.setAllowedPaymentTypes([Cash.TYPE]);
+			group.update();
+
+			throw Ok("/p/hosted/group/"+group.id,"Mangopay retiré, groupe passé en paiement sur place");
+
+		}
+
+		if( app.params.get("duplicate")=="1" ){
+
+			//duplicate group with MGP
+
+			var g = GroupService.duplicateGroup(group);
+			g.name = group.name+" (marché)";
+			// g.setAllowedPaymentTypes([MangopayECPayment.TYPE]);
+			g.update();
+
+			var place = group.getMainPlace();
+
+			var p = new db.Place();
+			p.name = place.name;
+			p.group = g;
+			p.address1 = place.address1;
+			p.address2 = place.address2;
+			p.city = place.city;
+			p.zipCode = place.zipCode;
+			p.insert();
+
+			//add members in the new group
+			for(m in group.getMembers()){
+				var ug = db.UserGroup.getOrCreate(m,g);
+			}
+
+			//give main rights
+			for(ug in group.getGroupAdmins()){
+
+				var ug2 = db.UserGroup.getOrCreate(ug.user,g);
+
+				for( r in ug.getRights()){
+					switch (r.right){
+						case "GroupAdmin" 	: ug2.giveRight(GroupAdmin);
+						case "Messages" 	: ug2.giveRight(Messages);
+						case "Membership" 	: ug2.giveRight(Membership);
+						default: //
+					}
+				}
+			}
+
+			//copy catalogs
+			for ( c in group.getActiveContracts()){
+
+				var newcat = new db.Catalog();
+				newcat.name = c.name;
+				newcat.startDate = c.startDate;
+				newcat.endDate = c.endDate;
+				newcat.description = c.description;
+				newcat.contact = c.contact;
+				newcat.vendor = c.vendor;
+				newcat.flags.set(UsersCanOrder);
+				newcat.group = g;
+				newcat.insert();
+
+				//copy products
+				for( p in c.getProducts()){
+
+					var newproduct = ProductService.duplicate(p);
+					newproduct.catalog = newcat;
+					newproduct.update();
+				}
+
+			}
+
+
+
+
+			throw Ok("/p/hosted/group/"+g.id,"Groupe copié");
+
+		}
+
 
 		view.vendors = group.getActiveVendors();
 		var gs = GroupStats.getOrCreate(group.id,true);
@@ -213,10 +341,28 @@ class Main extends controller.Controller
 		view.ua = ua;
 		view.operations = db.Operation.getLastOperations(u, g);
 
+		view.getAllBaskets = function(user:db.User,md:db.MultiDistrib){
+			return db.Basket.manager.search($multiDistrib==md && $user==user,false).array();
+		};
+
 		var timeframe = new Timeframe( DateTools.delta(Date.now() ,-1000.0*60*60*24*30.5*3) , DateTools.delta(Date.now() , 1000.0*60*60*24*30.5*3) );
 		var mds = db.MultiDistrib.getFromTimeRange(g,timeframe.from,timeframe.to);
+		mds.reverse();
 		view.mds = mds;
 		view.timeframe = timeframe;
+
+	}
+
+	//check bug de brigitte
+	function doCheckBasket(b:db.Basket){
+
+		var orders = MangopayPlugin.checkTmpBasket(b);
+		if(orders!=null) {
+			throw Ok("/p/hosted/userGroup/"+b.user.id+"/"+b.multiDistrib.group.id,"basket #"+b.id+" confirmed !");
+		}else{
+			throw Ok("/p/hosted/userGroup/"+b.user.id+"/"+b.multiDistrib.group.id,"pas de bug de brigitte pour basket #"+b.id);
+		}
+
 	}
 
 	/**
@@ -247,10 +393,10 @@ class Main extends controller.Controller
 					if(rc!=null){
 						status = "cpro";
 						active = false;
-						var company = rc.getCatalog().company;
+						var company = rc.getPCatalog().company;
 						for( cata in company.getCatalogs()){
 							if(active) break;
-							for( rc in connector.db.RemoteCatalog.getFromCatalog(cata)){
+							for( rc in connector.db.RemoteCatalog.getFromPCatalog(cata)){
 								var c = rc.getContract();
 								active = db.Distribution.manager.count($catalogId==c.id && $date >= from && $date <= to) > 0;
 								//Sys.println("------ catalogue "+cata.name+": "+c.name+" de "+c.amap.name+" = "+active);
@@ -259,9 +405,6 @@ class Main extends controller.Controller
 						}
 						break;
 					} else if(vendor.email==c.contact.email){
-						status = "gratuit";
-						break;
-					} else if(c.group.groupType==db.Group.GroupType.FarmShop || c.group.groupType==db.Group.GroupType.ProducerDrive){
 						status = "gratuit";
 						break;
 					}

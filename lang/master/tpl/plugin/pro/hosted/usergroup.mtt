@@ -2,12 +2,12 @@
 
 	<div class="article">
 		
-		<h2>::member.getName():: - ::ua._group.name::</h2>
-		
-		<div>
-			<a href="/p/hosted/user/view/::member.id::" class="btn btn-default">Fiche utilisateur</a>
-			<a href="/p/hosted/group/::ua._group.id::" class="btn btn-default">Fiche groupe</a>
-		</div>
+		<h2>
+			<a href="/p/hosted/user/view/::member.id::" >::member.getName()::</a>
+		</h2> 
+		<h4>
+		dans le groupe <a href="/p/hosted/group/::ua._group.id::" >::ua._group.name::</a>
+		</h4>
 
 
 		$$timeframe(::timeframe::)
@@ -18,40 +18,19 @@
 			<table class="table table-bordered table-condensed">
 			::foreach md mds::
 			<tr>
-				<td>::hDate(md.getDate())::</td>
-				<td>
+				<td class="col-md-6">
+					<a href="/admin/stripe#/multidistribs/::md.id::">MultiDistrib #::md.id::</a> - ::hDate(md.getDate())::
+				</td>
+				<td class="col-md-6">
 					<!-- BASKETS -->
-					::set orders = md.getUserOrders(member,null)::
-					::if orders.length > 0::
-						
-						::set basket = orders[0]._basket::
-						<b>Panier #::basket.id::</b>
-						<ul>
-						::foreach o basket.getOrders(null)::
-							<li>::o.quantity:: x ::o._product.getName()::</li>
-						::end::						
-						<!--<pre>::foreach po prepare(basket.getOrders(null))::
-::po.productName:: : ::po.quantity:: x ::po.productPrice:: = ::po.total::€
-							::end::
-						</pre>-->
-						</ul>
-					::end::
-					
-					<!-- TMP BASKETS-->
-					::set basket = md.getUserTmpBasket(member)::
-					::if(basket!=null)::
-					<div style="color:green">
-						<b>Panier en cours #::basket.id::</b>
-						<ul>
-						::foreach o basket.getOrders()::
-							::if(o.product!=null)::
-							<li>::o.quantity:: x ::o.product.getName()::</li>
-							::else::
-							<li>null product ?</li>
-							::end::
-						::end::						
-						</ul>
-					</div>
+					::foreach basket getAllBaskets(member,md)::
+					<p>
+						<a href="/admin/stripe#/baskets/::basket.id::">Basket #::basket.id::</a> 
+						<span class="disabled">::basket.status::</span> 
+						::if basket.status=="OPEN"::
+						<a href="/p/hosted/checkBasket/::basket.id::" class="btn btn-default btn-xs">check bug de brigitte</a>
+						::end::
+					</p>
 					::end::
 				</td>
 			</tr>			
@@ -67,7 +46,7 @@
 					$$operation(::op::)
 					
 					<td>
-						<a onclick="_Cagette.overlay('/p/hosted/operation/::op.id::','',false)" class="btn btn-default btn-xs">Detail</a>
+						<a onclick="neo.createNeoModule('myModal', 'dialog-url', { url: '/p/hosted/operation/::op.id::', title:'Détail' })" class="btn btn-default btn-xs">Détail</a>
 					</td>
 				</tr>
 				::end::

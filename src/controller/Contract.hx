@@ -9,7 +9,6 @@ import form.CagetteForm;
 import plugin.Tutorial;
 import service.CatalogService;
 import service.OrderService;
-import service.SubscriptionService;
 import service.VendorService;
 import sugoi.Web;
 import sugoi.form.Form;
@@ -40,8 +39,6 @@ class Contract extends Controller
 	**/
 	@tpl("contract/view.mtt")
 	public function doView( catalog : db.Catalog ) {
-
-		if(!catalog.group.hasShopMode()) throw Redirect("/contract/order/"+catalog.id);
 
 		view.category = 'amap';
 		view.catalog = catalog;
@@ -93,7 +90,6 @@ class Contract extends Controller
 			view.name = f.getValueOf('name');
 		}
 		
-		view.shopMode = app.user.getGroup().hasShopMode();
 		view.form = f;
 	}
 
@@ -111,38 +107,6 @@ class Contract extends Controller
 		if(vendor!=null) view.vendor = vendor;
 	}
 
-	/**
-	  2- create vendor
-	**/
-	@logged @tpl("form.mtt")
-	public function doInsertVendor(?name:String) {
-		if (App.current.getSettings().noVendorSignup==true) {
-			throw Redirect("/");
-		}
-		if(app.user.getGroup().hasShopMode()) throw Error("/", t._("Access forbidden"));
-
-		var form = VendorService.getForm(new db.Vendor());
-				
-		if (form.isValid()) {
-			var vendor = null;
-			try{
-				vendor = VendorService.create(form.getDatasAsObject());
-			}catch(e:Error){
-				throw Error(Web.getURI(),e.message);
-			}
-			
-			throw Ok('/contract/insert/'+vendor.id, t._("This supplier has been saved"));
-		}else{
-			form.getElement("name").value = name;
-		}
-
-		view.title = t._("Key-in a new vendor");
-		view.form = form;
-	}
-
-	/**
-		Select CSA Variable / CSA Constant Contract
-	**/
 	@tpl("contract/insertChoose.mtt")
 	function doInsertChoose(vendor:db.Vendor) {
 
@@ -159,15 +123,8 @@ class Contract extends Controller
 
 		if (!app.user.canManageAllContracts()) throw Error('/', t._("Forbidden action"));
 		
-		view.title = if(app.getCurrentGroup().hasShopMode()){
-			t._("Create a catalog");
-		}else if (type==1){
-			"Créer un contrat AMAP variable";
-		}else{
-			"Créer un contrat AMAP classique";
-		}		
+		t._("Create a catalog");
 		var catalog = new db.Catalog();
-		catalog.type = type;
 		catalog.group = app.user.getGroup();
 		catalog.vendor = vendor;
 
@@ -207,9 +164,9 @@ class Contract extends Controller
 	*/
 	@logged @tpl("contract/editVarOrders.mtt")
 	function doEditVarOrders(distrib:db.MultiDistrib) {
-		
-		if ( app.user.getGroup().hasPayments() || !app.user.getGroup().hasShopMode() ) {
-			//when payments are active, the user cannot modify his/her order
+		var basket = distrib.getUserBasket(app.user);
+		if ( app.user.getGroup().isDispatch() || basket.hasOnlinePayment()) {
+			//when this basket has been payed online, the user cannot modify his/her order
 			throw Redirect("/");
 		}
 		
@@ -222,45 +179,10 @@ class Contract extends Controller
 			throw Error("/account", msg);
 		}
 		
-		// Il faut regarder le contrat de chaque produit et verifier si le contrat est toujours ouvert à la commande.		
-		/*var d1 = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0);
-		var d2 = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59);
-		var cids = Lambda.map(app.user.getGroup().getActiveContracts(true), function(c) return c.id);
-		var distribs = db.Distribution.manager.search(($catalogId in cids) && $date >= d1 && $date <=d2 , false);
-		var orders = db.UserOrder.manager.search($userId==app.user.id && $distributionId in Lambda.map(distribs,function(d)return d.id)  );*/
-		var orders = distrib.getUserBasket(app.user).getOrders(Catalog.TYPE_VARORDER);
+		var orders = basket.getOrders();
 		view.orders = service.OrderService.prepare(orders);
 		view.date = distrib.getDate();
-		
-		//form check
-		if (checkToken()) {
-			
-			var orders_out = [];
-
-			for (k in app.params.keys()) {
-				var param = app.params.get(k);
-				if (k.substr(0, "product".length) == "product") {
-					
-					//trouve le produit dans userOrders
-					var pid = Std.parseInt(k.substr("product".length));
-					var order = Lambda.find(orders, function(uo) return uo.product.id == pid);
-					if (order == null) throw t._("Error, could not find the order");
-					
-					var q = Std.parseInt(param);					
-					
-					var quantity = Math.abs( q==null?0:q );
-
-					if ( order.distribution.canOrderNow() ) {
-						//met a jour la commande
-						var o = OrderService.edit(order, quantity);
-						if(o!=null) orders_out.push( o );
-					}					
-				}
-			}
-			
-			app.event(MakeOrder(orders_out));
-				
-			throw Ok("/history", t._("Your order has been updated"));
-		}
+		view.md = distrib;
+		view.basket = basket;
 	}
 }

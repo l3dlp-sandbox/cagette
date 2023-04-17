@@ -1,5 +1,6 @@
 package service;
 
+import sugoi.db.Cache;
 import db.Vendor;
 import haxe.Json;
 import sugoi.apis.linux.Curl;
@@ -21,9 +22,20 @@ class BridgeService {
 	public static function getNeoModuleScripts() {
 		try{
 			var manifest = BridgeService.getNeoWebpackManifest();
-			return [manifest.get("runtime.js"), manifest.get("reactlibs.js"), manifest.get("vendors.js"), manifest.get("neo.js")];
+			var data = [manifest.get("runtime.js"), manifest.get("reactlibs.js"), manifest.get("neo.js")];
+			if(Std.random(10)==0 && Cache.get("manifest")==null){
+				Cache.set("manifest",data,60*60);
+			}
+			return data;
+			
 		}catch(e:Dynamic){
-			throw "Unable to load NeoModuleScripts from Nest backend.";
+
+			var cache = Cache.get("manifest");
+			if(cache!=null){
+				return cache;
+			}else{
+				throw "Unable to load NeoModuleScripts from Nest backend.";				
+			}
 		}
 	}
 
@@ -79,18 +91,15 @@ class BridgeService {
 	}
 
 	/**
-		Post an event to track with Matomo
+		Post an event to track with GA4
 	**/
-	public static function matomoEvent(userId:Int,category:String,action:String,?name:String,?value:Int){
+	public static function ga4Event(userId:Int,name:String){
 		var curl = new sugoi.apis.linux.Curl();
 		var post = {
 			userId:userId,
-			category:category,
-			action:action,
-			name:name,
-			value:value
+			name:name
 		}
-		return curl.call("POST", '${App.config.get("cagette_bridge_api")}/bridge/matomo', getHeaders(), Json.stringify(post));
+		return curl.call("POST", '${App.config.get("cagette_bridge_api")}/bridge/ga4', getHeaders(), Json.stringify(post));
 	}
 
 	static function getHeaders():Map<String,String>{

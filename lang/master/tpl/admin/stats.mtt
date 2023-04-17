@@ -1,27 +1,86 @@
 ::use 'admin/design.mtt'::
 
-		<h3>Stats mensuelles</h3>
-		<p>
+		<h3>Stats hebdomadaires</h3>
+		<!--<p>
 			<a href="/admin/stats/::month-1::/::year::" class="btn btn-default btn-sm">Précédent</a>
 			Du ::dDate(from):: au ::dDate(to)::
 			<a href="/admin/stats/::month+1::/::year::" class="btn btn-default btn-sm">Suivant</a><br/>
+		</p>-->
 
-
-		</p>
+		$$timeframe(::tf::)
 		
 		<p>
+			<h4>C.A</h4>
+			<table class="table table-bordered table-striped">				
+				<tr>
+					<td class="col-md-6">Mode Marché</td>
+					<td class="col-md-6">
+
+						<table class="table">
+							<tr>
+								<th>TOTAL</th>
+								<td>::formatNum(stats.totalTurnoverMarket)::</td>
+							</tr>
+							<tr>
+								<td>invités</td>
+								<td>::formatNum(stats.invitedTurnoverMarket)::</td>
+							</tr>
+							<tr>
+								<td>invités sur cpro</td>
+								<td>::formatNum(stats.cproInvitedTurnoverMarket)::</td>
+							</tr>
+							<tr>
+								<td>Découverte</td>
+								<td>::formatNum(stats.discoveryTurnoverMarket)::</td>
+							</tr>
+							<tr>
+								<td>Formule pro</td>
+								<td>::formatNum(stats.proTurnoverMarket)::</td>
+							</tr>
+							<tr>
+								<td>Formule Membre</td>
+								<td>::formatNum(stats.memberTurnoverMarket)::</td>
+							</tr>
+							<tr>
+								<td>Marketplace</td>
+								<td>::formatNum(stats.marketplaceTurnoverMarket)::</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+
+<!--
+			<h4>Paniers</h4>
+			<table class="table table-bordered table-striped">				
+				<tr>
+					<td class="col-md-6">Nbre de paniers (MARKET)</td>
+					<td class="col-md-6">::marketBasketsNum::</td>
+				</tr>
+				<tr>
+					<td class="col-md-6">Nbre de paniers (AMAP)</td>
+					<td class="col-md-6">::amapBasketsNum::</td>
+				</tr>		
+			</table>
+-->
+
 			<h4>Producteurs</h4>
 			<table class="table table-bordered table-striped">				
 				<tr>
-					<td>Nouveaux producteurs</td>
-					<td>::newVendors::</td>
+					<td class="col-md-6">Nouveaux producteurs</td>
+					<td class="col-md-6">::newVendors::</td>
 				</tr>	
 				<tr>
 					<td>Nouveaux producteurs par type</td>
 					<td>
-						::foreach s newVendorsByType::
-						::s.count:: $$vendorType(::s.type::)<br/>
-						::end::
+						<table class='table'>
+							::foreach s newVendorsByType::
+							<tr>
+								<td>$$vendorType(::s.type::)</td>
+								<td>::s.count::</td>
+							</tr>
+							::end::
+						</table>
 					</td>
 				</tr>	
 				<tr>
@@ -31,24 +90,39 @@
 				<tr>
 					<td>Producteurs actifs par type (maintenant)</td>
 					<td>
+						<table class='table'>
 						::foreach s activeVendorsByType::
-						::s.count:: $$vendorType(::s.type::)<br/>
+						<tr>							
+							<td>$$vendorType(::s.type::)</td>
+							<td>::s.count::</td>
+						</tr>
 						::end::
+						</table>
 					</td>
 				</tr>		
             </table>
             
-			<h4>Groupes</h4>
+			<h4>Consommateurs</h4>
 
 			<table class="table table-bordered table-striped">				
 				<tr>
-					<td>Nouveaux groupes</td>
-					<td>::newGroups::</td>
+					<td class="col-md-6">Nouveaux groupes</td>
+					<td class="col-md-6">::newGroups::</td>
 				</tr>	
 				<tr>
-					<td>Nouveaux foyers</td>
-					<td>::newUsers::</td>
+					<td>Nouveaux groupes par type d'administrateur</td>
+					<td>
+						<table class='table'>		
+						::foreach g newGroupsByAdmin::
+						<tr>							
+							<td>::g.contactType::</td>
+							<td>::g.count::</td>
+						</tr>
+						::end::
+						</table>
+					</td>
 				</tr>
+				
 				<tr>
 					<td>Groupes actifs (maintenant)</td>
 					<td>
@@ -56,9 +130,26 @@
 					</td>
 				</tr>	
 				<tr>
+					<td>Groupes actifs par type d'administrateur</td>
+					<td>
+						<table class='table'>		
+							::foreach g activeGroupsByAdmin::
+							<tr>							
+								<td>::g.contactType::</td>
+								<td>::g.count::</td>
+							</tr>
+							::end::
+						</table>
+					</td>
+				</tr>	
+				<tr>
 					<td>Foyers actifs (maintenant)</td>
 					<td>::activeUsers::</td>
 				</tr>	
+				<tr>
+					<td>Nouveaux foyers</td>
+					<td>::newUsers::</td>
+				</tr>
 			
             </table>
 			

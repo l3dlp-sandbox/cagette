@@ -1,4 +1,5 @@
 package pro.controller;
+import sugoi.Web;
 import mangopay.Mangopay;
 import pro.db.PVendorCompany;
 import service.BridgeService;
@@ -439,6 +440,67 @@ class Company extends controller.Controller
 
 	}
 	
-	
+	@tpl('plugin/pro/company/stripe.mtt')
+	function doStripe(){
+		var vendor = company.vendor;
+		view.vendor = vendor;
+		view.nav.push("stripe");
+	}
 
+	@tpl('plugin/pro/company/accounting.mtt')
+	function doAccounting(){
+		var vendor = company.vendor;
+		view.vendor = vendor;
+		view.nav.push("accounting");
+	}
+
+	@tpl('plugin/pro/company/cgvcgs.mtt')
+	function doCgvcgs(){
+		var vendor = company.vendor;
+		view.vendor = vendor;
+		view.nav.push("cgvcgs");
+	}
+
+
+	@tpl('plugin/pro/company/cgv.mtt')
+	function doCgv(){
+
+		view.vendor = vendor;
+		view.nav.push("cgvcgs");
+		var request = new Map();
+		try {
+			request = sugoi.tools.Utils.getMultipart( 1024 * 1024 * 10 ); //10Mb	
+		} catch ( e:Dynamic ) {
+			throw Error( Web.getURI(), 'Le document importé est trop volumineux. Il ne doit pas dépasser 10 Mo.');
+		}
+		
+		if ( request.exists( 'document' ) ) {
+			
+			var doc = request.get( 'document' );
+			if ( doc != null && doc.length > 0 ) {
+
+				var originalFilename = request.get( 'document_filename' );
+				if ( !StringTools.endsWith( originalFilename.toLowerCase(), '.pdf' ) ) {
+					throw Error( Web.getURI(), 'Le document n\'est pas au format pdf. Veuillez sélectionner un fichier au format pdf.');
+				}
+				
+				var filename = ( request.get( 'name' ) == null || request.get( 'name' ) == '' ) ? originalFilename : request.get( 'name' );
+				var file : sugoi.db.File = sugoi.db.File.create( request.get( 'document' ), filename );					
+				
+				vendor.lock();
+				vendor.customizedTermsOfSaleFile = file;
+				vendor.update();
+	
+				throw Ok( Web.getURI(), 'Le document ' + file.name + ' a bien été ajouté.' );
+			}
+		}
+	}
+
+	@tpl('plugin/pro/company/differenciated-pricing.mtt')
+	function doDifferenciatedPricing(){
+		if (App.current.getSettings().differenciatedPricing == false){
+			throw Redirect('/p/pro/');
+		}
+		view.nav.push("differenciatedPricing");
+	}
 }

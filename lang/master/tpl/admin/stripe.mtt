@@ -1,0 +1,11 @@
+::use 'admin/basedesign.mtt'::
+
+<div id="stripe-dashboard-div" style="padding: 8px"></div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function(event) {
+    neo.createNeoModule("stripe-dashboard-div", "stripe-dashboard");
+  });
+</script>
+
+::end::

@@ -1,4 +1,7 @@
 package controller;
+import sugoi.form.elements.Html;
+import sugoi.form.elements.Checkbox;
+import haxe.EnumFlags;
 import Common;
 import datetime.DateTime;
 import db.Group.GroupFlags;
@@ -22,14 +25,46 @@ class AmapAdmin extends Controller
 		
 		//lance un event pour demander aux plugins si ils veulent ajouter un item dans la nav
 		var nav = new Array<Link>();
-		
-		if (app.user.getGroup().hasPayments()) {
-			nav.push({id:"payments",link:"/amapadmin/payments",name: t._("Means of payment"),icon:"payment-type" });
-		}	
 
+		nav.push({id: "stripe",name: "Paiement en ligne Stripe", 	link:"/amapadmin/stripe",icon:"bank-card"});				
+				
 		var e = Nav(nav,"groupAdmin");
 		app.event(e);
 		view.nav = e.getParameters()[0];
+	}
+
+	@tpl("amapadmin/default.mtt")
+	function doDefault() {
+
+		var group = app.user.getGroup();
+		view.membersNum = UserGroup.manager.count($group == group);
+		view.contractsNum = group.getActiveContracts().length;
+		
+		//visible on map
+		#if plugins
+		var h = hosted.db.GroupStats.getOrCreate(group.id, true);
+		var o = h.updateStats();
+		
+		var str = "";
+		if(!o.cagetteNetwork){
+			str += "L'option 'Lister ce groupe sur la carte' n'est pas cochée.";
+		}
+		if (!o.geoloc){
+			str += "Votre lieu de distribution n'a pas pu être géolocaliser, merci de compléter ou corriger son adresse. ";
+		}
+		if( ! o.distributions ){
+			str += "Vous devez avoir des distributions planifiées. ";
+		}
+		if(!o.members){
+			str += "Vous devez avoir au moins 3 personnes dans votre groupe. ";
+		}
+
+		view.visibleOnMapText = str;
+		view.visibleOnMap = o.visible;
+
+		#else
+		view.visibleOnMap = true;
+		#end
 	}
 	
 	@tpl("amapadmin/form.mtt")
@@ -67,40 +102,6 @@ class AmapAdmin extends Controller
 		view.title = "Adhésions";
 	}
 
-	@tpl("amapadmin/default.mtt")
-	function doDefault() {
-
-		var group = app.user.getGroup();
-		view.membersNum = UserGroup.manager.count($group == group);
-		view.contractsNum = group.getActiveContracts().length;
-		
-		//visible on map
-		#if plugins
-		var h = hosted.db.GroupStats.getOrCreate(group.id, true);
-		var o = h.updateStats();
-		
-		var str = "";
-		if(!o.cagetteNetwork){
-			str += "L'option 'Lister ce groupe sur la carte' n'est pas cochée.";
-		}
-		if (!o.geoloc){
-			str += "Votre lieu de distribution n'a pas pu être géolocaliser, merci de compléter ou corriger son adresse. ";
-		}
-		if( ! o.distributions ){
-			str += "Vous devez avoir des distributions planifiées. ";
-		}
-		if(!o.members){
-			str += "Vous devez avoir au moins 3 personnes dans votre groupe. ";
-		}
-
-		view.visibleOnMapText = str;
-		view.visibleOnMap = o.visible;
-
-		#else
-		view.visibleOnMap = true;
-		#end
-	}
-	
 	@tpl("amapadmin/rights.mtt")
 	public function doRights() {
 		view.users = app.user.getGroup().getGroupAdmins();
@@ -302,14 +303,17 @@ class AmapAdmin extends Controller
 		
 		var group = app.user.getGroup();
 
-		if (group.checkOrder == ""){
-			group.lock();
-			group.checkOrder = app.user.getGroup().name;
-			group.update();
+		if(group.isDispatch()){
+			throw Error("/amapadmin","Ce groupe utilise le paiement en ligne avec Stripe, il n'est pas possible d'y ajouter d'autres moyens de paiement.");
 		}
-		f.addElement( new sugoi.form.elements.StringInput("checkOrder", t._("Make the check payable to"), app.user.getGroup().checkOrder, false)); 
+
+		// if (group.checkOrder == ""){
+		// 	group.lock();
+		// 	group.checkOrder = app.user.getGroup().name;
+		// 	group.update();
+		// }
+		// f.addElement( new sugoi.form.elements.StringInput("checkOrder", t._("Make the check payable to"), app.user.getGroup().checkOrder, false)); 
 		f.addElement( new sugoi.form.elements.StringInput("IBAN", t._("IBAN of your bank account for transfers"), app.user.getGroup().IBAN, false)); 
-		f.addElement( new sugoi.form.elements.Checkbox("allowMoneyPotWithNegativeBalance", t._("Allow money pots with negative balance"), app.user.getGroup().allowMoneyPotWithNegativeBalance));
 		//avoid modifiying another group
 		var groupId = new sugoi.form.elements.IntInput("groupId","groupId",group.id);
 		groupId.inputType = InputType.ITHidden;
@@ -321,14 +325,14 @@ class AmapAdmin extends Controller
 
 			group.lock();
 			var paymentTypes:Array<String> = f.getValueOf("paymentTypes");
-			if(paymentTypes.has(payment.MoneyPot.TYPE) && paymentTypes.length>1) {
-				throw Error(sugoi.Web.getURI(),"Le paiement Cagnotte ne peut pas être utilisé en même temps que d'autres moyens de paiements.");
+
+			if(paymentTypes.length==0){
+				throw Error(sugoi.Web.getURI(),"Vous devez choisir au moins un moyen de paiement");
 			}
-			
+
 			group.setAllowedPaymentTypes(paymentTypes);
-			group.checkOrder = f.getValueOf("checkOrder");
+			// group.checkOrder = f.getValueOf("checkOrder");
 			group.IBAN = f.getValueOf("IBAN");
-			group.allowMoneyPotWithNegativeBalance = f.getValueOf("allowMoneyPotWithNegativeBalance");
 			group.update();
 			
 			throw Ok("/amapadmin/payments", t._("Payment options updated"));
@@ -341,40 +345,15 @@ class AmapAdmin extends Controller
 
 
 
-	@tpl("amapadmin/form.mtt")
+	@tpl("amapadmin/stats.mtt")
 	function doStats(){
 		addBc("stats","Statistiques","amapadmin/stats");
 
-		var form = new sugoi.form.Form("stats");
-
-		var now = DateTime.now();	
-		// last month timeframe
-		var to = now.snap(Month(Down)).add(Day(-1));
-		var from = to.snap(Month(Down));
-		form.addElement( new form.CagetteDatePicker("startDate","Date de début", from.getDate() ) );
-		form.addElement( new form.CagetteDatePicker("endDate","Date de fin", to.getDate() ) );
-		
-		if(form.isValid()){
-			app.setTemplate('amapadmin/stats.mtt');
-			var startDate : Date = form.getValueOf("startDate");
-			var endDate : Date = form.getValueOf("endDate");
-			
-			var s = new service.GroupStatsService(app.getCurrentGroup(),startDate,endDate);
-			view.from = startDate;
-			view.to = endDate;
-			view.baskets = s.getBasketNumber();
-			view.sales = s.getSalesAmount();
-			view.memberships = s.getMembershipNumber();
-			view.membershipsAmount = s.getMembershipAmount();
-			view.productNumber = s.getProductNumber();
-			view.memberNumber = s.getMembersNumber();
-			view.activeMembershipWithOrderNumber = s.getActiveMembershipWithOrderNumber();
-			view.activeMembershipMembers = s.getActiveMembershipMembers().length;		
-			view.membersWithOrderNumber = s.getMembersWithOrderNumber();
-		}
-
-		view.form = form;
-		view.title = "Statistiques";
+		view.groupId = app.getCurrentGroup().id;
 	}
 
+	@tpl("amapadmin/stripe.mtt")
+	public function doStripe(){
+		view.group = app.getCurrentGroup();
+	}
 }

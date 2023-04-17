@@ -3,10 +3,11 @@ import Common;
 import sys.db.Types;
 
 enum CagetteProOffer {
-	Discovery;
-	Member;
-	Pro;
-	Training;
+	Discovery;	//0
+	Member;		//1
+	Pro;		//2
+	Training;	//3
+	Marketplace;//4
 }
 
 /**
@@ -125,6 +126,17 @@ class CagettePro extends sys.db.Object
 	public function getMainContact():db.User{
 		var ucs = getUserCompany();
 		var uc = ucs.filter(x -> x.legalRepresentative)[0];
+		if(uc==null){
+			return ucs[0].user;
+		}else{
+			return uc.user;
+		}
+	}
+
+	public function getSalesContact():db.User{
+		var ucs = getUserCompany();
+		if (ucs.length==0) return null;
+		var uc = ucs.filter(x -> x.salesRepresentative)[0];
 		if(uc==null){
 			return ucs[0].user;
 		}else{

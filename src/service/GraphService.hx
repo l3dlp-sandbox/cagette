@@ -1,4 +1,5 @@
 package service;
+import db.Basket.BasketStatus;
 import sugoi.apis.google.GeoCode.GeoCodingData;
 import db.Operation;
 import pro.payment.MangopayECPayment;
@@ -46,6 +47,7 @@ class GraphService{
                 case "basket"   : service.GraphService.baskets(_from,_to);
                 case "turnover" : service.GraphService.turnover(_from,_to);
                 case "mangopay" : service.GraphService.mangopay(_from,_to);
+                case "stripe" : service.GraphService.stripe(_from,_to);
                 
                 default : throw "unknown graph key";
             }           
@@ -55,18 +57,17 @@ class GraphService{
         return g;
     }
 
-
     /**
         compute basket numbers by period
     **/
-    public static function baskets(from:Date,to:Date):Int {
-        
-		return db.Basket.manager.count($cdate>=from && $cdate<=to);
-        
+    public static function baskets(from:Date,to:Date):Int {        
+		return db.Basket.manager.count($status!=Std.string(BasketStatus.OPEN) && $cdate>=from && $cdate<=to);        
+
+        //select * from MultiDistrib where id in ()
     }
 
     public static  function turnover(from:Date,to:Date):Int{
-        var baskets = db.Basket.manager.search($cdate>=from && $cdate<=to);
+        var baskets = db.Basket.manager.search( $cdate>=from && $cdate<=to && $status!=Std.string(BasketStatus.OPEN) );
 		var value = 0.0;
 		for( b in baskets){
             var t  =  b.getOrdersTotal();
@@ -75,14 +76,12 @@ class GraphService{
                 b.total = t;
 			    b.update();
             }
-
 			value += t;
 		}
 		return Math.round(value);
     }
 
-    public static  function mangopay(from:Date,to:Date):Int{
-        
+    public static  function mangopay(from:Date,to:Date):Int{        
         var ops = Operation.manager.search($type==OperationType.Payment && $date>=from && $date<to);
 		var value = 0.0;
 		for( op in ops){
@@ -91,7 +90,12 @@ class GraphService{
 		return Math.round(value);
     }
 
-
-
-
+    public static  function stripe(from:Date,to:Date):Int{        
+        var ops = Operation.manager.search($type==OperationType.Payment && $date>=from && $date<to);
+		var value = 0.0;
+		for( op in ops){
+			if(op.getPaymentType()==payment.Stripe.TYPE) value += op.amount;
+		}
+		return Math.round(value);
+    }
 }

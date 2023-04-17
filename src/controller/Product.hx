@@ -31,13 +31,6 @@ class Product extends Controller
 
 			f.toSpod(product);
 
-			//manage stocks by distributions for CSA contracts
-			if(!product.catalog.group.hasShopMode() && product.catalog.hasStockManagement()){
-				var distribNum = product.catalog.getDistribs(false).length;
-				distribNum = distribNum == 0 ? 1 : distribNum;
-				product.stock = (f.getValueOf("stock"):Float) * distribNum;
-			}
-
 			try{
 				ProductService.check(product);
 			}catch(e:tink.core.Error){
@@ -106,80 +99,6 @@ class Product extends Controller
 			throw Ok("/contractAdmin/products/"+cid, t._("Product deleted"));
 		}
 		throw Error("/contractAdmin", t._("Token error"));
-	}
-	
-	
-	@tpl('product/import.mtt')
-	function doImport(c:db.Catalog, ?args: { confirm:Bool } ) {
-		
-		if (!app.user.canManageContract(c)) throw t._("Forbidden access");
-			
-		var csv = new sugoi.tools.Csv();
-		csv.step = 1;
-		var request = sugoi.tools.Utils.getMultipart(1024 * 1024 * 4);
-		csv.setHeaders( ["productName","price","ref","desc","qt","unit","organic","floatQt","vat","stock"] );
-		view.contract = c;
-		
-		// get the uploaded file content
-		if (request.get("file") != null) {
-			var csvData = request.get("file");
-			csvData = Formatting.utf8(csvData);
-			var datas = csv.importDatasAsMap(csvData);
-			
-			app.session.data.csvImportedData = datas;
-			
-			csv.step = 2;
-			view.csv = csv;
-		}
-		
-		if (args != null && args.confirm) {
-			var i : Iterable<Map<String,String>> = cast app.session.data.csvImportedData;
-			var fv = new sugoi.form.filters.FloatFilter();
-			
-			for (p in i) {
-				
-				if (p["productName"] != null){
-
-					var product = new db.Product();
-					product.name = p["productName"];
-					product.price = fv.filterString(p["price"]);
-					product.ref = p["ref"];
-					product.desc = p["desc"];
-					product.vat = fv.filterString(p["vat"]);
-					product.qt = fv.filterString(p["qt"]);
-					if(p["unit"]!=null){
-						product.unitType = switch(p["unit"].toLowerCase()){
-							case "kg" : Kilogram;
-							case "g" : Gram;
-							case "l" : Litre;
-							case "cl" : Centilitre;
-							case "litre" : Litre;
-							case "ml" : Millilitre;
-							default : Piece;
-						}
-					}
-					if (p["stock"] != null) product.stock = fv.filterString(p["stock"]);
-					product.organic = p["organic"] != null;
-					// product.hasFloatQt = p["floatQt"] != null;
-					
-					product.catalog = c;
-					product.insert();
-				}
-				
-			}
-			
-			view.numImported = app.session.data.csvImportedData.length;
-			app.session.data.csvImportedData = null;
-			
-			csv.step = 3;
-		}
-		
-		if (csv.step == 1) {
-			//reset import when back to import page
-			app.session.data.csvImportedData =	null;
-		}
-		
-		view.step = csv.step;
 	}
 	
 	public function doExport(c:db.Catalog){

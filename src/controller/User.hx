@@ -1,4 +1,5 @@
 package controller;
+import sugoi.form.elements.Html;
 import haxe.crypto.Md5;
 import pro.db.CagettePro;
 import pro.db.VendorStats;
@@ -31,10 +32,18 @@ class User extends Controller
 			throw Redirect('/');
 		}
 
-		service.UserService.prepareLoginBoxOptions(view);
 
 		view.sid = App.current.session.sid;
-		
+
+		// If the session has been closed, Neko has been logged out while Nest might still be logged in
+		var cookies = Web.getCookies();
+		var authSidCookie = cookies["Auth_sid"];
+		if (authSidCookie != null && authSidCookie != view.sid){
+			throw Redirect('/user/logout');
+		}
+
+		service.UserService.prepareLoginBoxOptions(view);
+
 		//if its needed to redirect after login
 		if (app.params.exists("redirect")){
 			view.redirect = app.params.exists("redirect");
@@ -55,11 +64,6 @@ class User extends Controller
 		//home page
 		app.breadcrumb = [];
 		
-		//need to check new ToS
-		if(app.user.tosVersion != sugoi.db.Variable.getInt('tosVersion')){
-			throw Redirect("/user/tos");
-		} 
-		
 		var groups = app.user.getGroups();
 		
 		view.noGroup = true; //force template to not display current group
@@ -78,7 +82,7 @@ class User extends Controller
 		view.groups = groups;
 		view.wl = db.WaitingList.manager.search($user == app.user, false);
 		
-		#if plugins
+
 		//vendor accounts
 		var cagettePros = service.VendorService.getCagetteProFromUser(app.user);
 		view.cagettePros = cagettePros;
@@ -96,7 +100,20 @@ class User extends Controller
 				view.isFreeVendor = true;
 			}
 		}*/	
-		#end
+
+		if(app.user!=null){
+			//need to check new ToS
+			if(app.user.tosVersion != sugoi.db.Variable.getInt('tosVersion')){
+				throw Redirect("/user/tos");
+			} 
+
+			//need to check new CGS
+			for( cpro in service.VendorService.getCagetteProFromLegalRep(app.user) ){
+				if(cpro.vendor.tosVersion != sugoi.db.Variable.getInt('platformtermsofservice')){
+					throw Redirect("/user/tos");
+				} 
+			}
+		}		
 
 		view.isGroupAdmin = app.user.getUserGroups().find(ug -> return ug.isGroupManager()) != null;
 		//view.cagetteProTest = cagettePros.find(cp -> cp.vendor.isTest)!=null;
@@ -106,24 +123,36 @@ class User extends Controller
 	
 	function doLogout() {
 		service.BridgeService.logout(App.current.user);
-		Web.setHeader("Set-Cookie", "Refresh=; HttpOnly; Path=/; Max-Age=0");
+		var domain = App.config.HOST;
+		if (domain.lastIndexOf('app.',0) == 0) {
+			domain = domain.split('app.').join("");
+		}
+		Web.setHeader("Set-Cookie", 'Refresh=; HttpOnly; Path=/; Max-Age=0; Domain=$domain');
 
 		App.current.session.delete();
 
 		// Haxe allows neither to set multiple "set-cookie" headers (https://github.com/HaxeFoundation/haxe/issues/3550)
 		// nor to set multiple cookies in one set-cookie header (https://www.rfc-editor.org/rfc/rfc2109#section-4.2.2)
 		// Hence we can workaround this by redirecting 3 times : one redirect for each cookie we want to delete
-		throw Redirect('/user/logoutDeleteAuthenticationToken');
+		throw Redirect('/user/logoutDeleteAuthenticationCookie');
 	}
 
-	function doLogoutDeleteAuthenticationToken() {
-		Web.setHeader("Set-Cookie", "Refresh=; HttpOnly; Path=/; Max-Age=0");
-		throw Redirect('/user/logoutDeleteAuthSidToken');
+	function doLogoutDeleteAuthenticationCookie() {
+		var domain = App.config.HOST;
+		if (domain.lastIndexOf('app.',0) == 0) {
+			domain = domain.split('app.').join("");
+		}
+		Web.setHeader("Set-Cookie", 'Authentication=; HttpOnly; Path=/; Max-Age=0; Domain=$domain');
+		throw Redirect('/user/logoutDeleteAuthSidCookie');
 	}
 
-	function doLogoutDeleteAuthSidToken() {
-		Web.setHeader("Set-Cookie", "Auth_sid=; HttpOnly; Path=/; Max-Age=0");
-		throw Redirect('/');
+	function doLogoutDeleteAuthSidCookie() {
+		var domain = App.config.HOST;
+		if (domain.lastIndexOf('app.',0) == 0) {
+			domain = domain.split('app.').join("");
+		}
+		Web.setHeader("Set-Cookie", 'Auth_sid=; HttpOnly; Path=/; Max-Age=0; Domain=$domain');
+		throw Redirect('/user/login');
 	}
 	
 	/**
@@ -177,7 +206,7 @@ class User extends Controller
 			var m = new sugoi.mail.Mail();
 			m.setSender(App.current.getTheme().email.senderEmail, App.current.getTheme().name);					
 			m.setRecipient(email, user.getName());					
-			m.setSubject( "["+App.current.getTheme().name+"] : "+t._("Password change"));
+			m.setSubject( App.current.getTheme().name+" : "+t._("Password change"));
 			m.setHtmlBody( app.processTemplate('mail/forgottenPassword.mtt', { user:user, link:'http://' + App.config.HOST + '/user/forgottenPassword/'+token+"/"+user.id }) );
 			App.sendMail(m);	
 		}
@@ -322,18 +351,47 @@ class User extends Controller
 
 	@tpl('form.mtt')
 	function doTos(){
-		var tosVersion = sugoi.db.Variable.getInt("tosVersion");
+					
 		var form = new sugoi.form.Form("tos");
-		form.addElement(new sugoi.form.elements.Checkbox("tos","J'accepte les nouvelles <a href='/cgu' target='_blank'>conditions générales d'utilisation</a>"));
+		var legalRepCagettePros = service.VendorService.getCagetteProFromLegalRep(app.user);
 
-		if(form.isValid() && form.getValueOf("tos")==true){
-			app.user.lock();
-			app.user.tosVersion = tosVersion;
-			app.user.update();
+		if(app.user.tosVersion!=sugoi.db.Variable.getInt("tosVersion")){
+			form.addElement(new Html("","Afin de répondre à la réglementation des places de marché en ligne à laquelle nous sommes soumis, nous mettons à jour nos conditions générales d'utilisation et notre politique de confidentialité. Celles-ci s'appliquent à partir du 9 janvier 2023"));
+			var c = new sugoi.form.elements.Checkbox("tos","J'accepte les <br/><a href='/tos' target='_blank'>conditions générales d'utilisation</a><br/>et la <a href='/privacypolicy' target='_blank'>politique de confidentialité</a>");
+			form.addElement(c);
+		}
+
+		for( cpro in legalRepCagettePros ){
+			var vendor = cpro.vendor;
+			if(vendor.tosVersion != sugoi.db.Variable.getInt('platformtermsofservice')){
+				form.addElement(new Html("","Afin de répondre à la réglementation des places de marché en ligne à laquelle nous sommes soumis, nous mettons à jour nos conditions générales de services destinées aux producteurs. Celles-ci s'appliquent à partir du 9 février 2023"));
+				form.addElement(new sugoi.form.elements.Checkbox("cgs"+vendor.id,"J'accepte les <a href='/platformtermsofservice' target='_blank'>Conditions générales de service</a> qui encadrent les services fournis par Cagette.net aux Producteurs (compte \""+vendor.name+"\")"));
+			} 
+		}
+
+		if(form.isValid() ){
+
+			if(form.getElement("tos")!=null && form.getValueOf("tos")==true){
+				app.user.lock();
+				app.user.tosVersion = sugoi.db.Variable.getInt("tosVersion");
+				app.user.update();
+			}
+
+			var platformtermsofservice = sugoi.db.Variable.getInt('platformtermsofservice');
+
+			for( cpro in legalRepCagettePros ){
+				var vendor = cpro.vendor;
+				if(vendor.tosVersion != platformtermsofservice && form.getElement("cgs"+vendor.id)!=null && form.getValueOf("cgs"+vendor.id)==true){
+					vendor.lock();
+					vendor.tosVersion = platformtermsofservice;
+					vendor.update();
+				}
+			}
+
 			throw Redirect('/');
 		}
 		
-		view.title = "Mise à jour des conditions générales d'utilisation de "+ App.current.getTheme().name +' ( v. $tosVersion )';
+		view.title = "Mise à jour des conditions générales";
 		view.form = form;
 	}
 	

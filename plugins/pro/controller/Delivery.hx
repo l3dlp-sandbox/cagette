@@ -35,7 +35,7 @@ class Delivery extends controller.Controller
 		
 		view.getCatalog = function(d:db.Distribution){			
 			var rc = connector.db.RemoteCatalog.getFromContract(d.catalog);
-			return rc.getCatalog();			
+			return rc.getPCatalog();			
 		};
 
 		if(company.captiveGroups){
@@ -161,7 +161,7 @@ class Delivery extends controller.Controller
 		var catalogs = company.getCatalogs();			
 		var remoteContracts = [];
 		for ( c in catalogs){
-			for ( rc in connector.db.RemoteCatalog.getFromCatalog(c) ){
+			for ( rc in connector.db.RemoteCatalog.getFromPCatalog(c) ){
 				remoteContracts.push( rc.getContract() );
 			}	
 		}
@@ -202,7 +202,7 @@ class Delivery extends controller.Controller
 		var catalogs = company.getCatalogs();			
 		var remoteContracts = [];
 		for ( c in catalogs){
-			for ( rc in connector.db.RemoteCatalog.getFromCatalog(c) ){
+			for ( rc in connector.db.RemoteCatalog.getFromPCatalog(c) ){
 				remoteContracts.push( rc.getContract() );
 			}	
 		}
@@ -333,10 +333,8 @@ class Delivery extends controller.Controller
 		var x = new form.CagetteDatePicker("end", t._("End time"), d.end, NativeDatePickerType.time, true);
 		form.addElement(x, 3);
 		
-		if (d.catalog.type == db.Catalog.TYPE_VARORDER ) {
-			form.addElement(new form.CagetteDatePicker("orderStartDate", t._("Orders opening date"), d.orderStartDate));	
-			form.addElement(new form.CagetteDatePicker("orderEndDate", t._("Orders closing date"), d.orderEndDate));
-		}		
+		form.addElement(new form.CagetteDatePicker("orderStartDate", t._("Orders opening date"), d.orderStartDate));	
+		form.addElement(new form.CagetteDatePicker("orderEndDate", t._("Orders closing date"), d.orderEndDate));
 		
 		if (form.isValid()) {
 
@@ -345,10 +343,8 @@ class Delivery extends controller.Controller
 
 			try{
 
-				if (d.catalog.type == db.Catalog.TYPE_VARORDER ) {
-					orderStartDate = form.getValueOf("orderStartDate");
-					orderEndDate = form.getValueOf("orderEndDate");
-				}
+				orderStartDate = form.getValueOf("orderStartDate");
+				orderEndDate = form.getValueOf("orderEndDate");
 
 				d = service.DistributionService.edit(
 					d,
@@ -402,7 +398,7 @@ class Delivery extends controller.Controller
 		
 		var contracts = [];
 		for ( c in company.getCatalogs()){
-			for ( r in connector.db.RemoteCatalog.getFromCatalog(c)){
+			for ( r in connector.db.RemoteCatalog.getFromPCatalog(c)){
 				contracts.push({contract:r.getContract(),catalog:c});
 			}
 		}
@@ -495,7 +491,7 @@ class Delivery extends controller.Controller
 		
 		var contracts = [];
 		for ( c in company.getCatalogs()){
-			for ( r in connector.db.RemoteCatalog.getFromCatalog(c)){
+			for ( r in connector.db.RemoteCatalog.getFromPCatalog(c)){
 				contracts.push({contract:r.getContract(),catalog:c});
 			}
 		}
@@ -573,12 +569,31 @@ class Delivery extends controller.Controller
 	function doOrders(d:db.Distribution) {
 		
 		view.nav.push("detail");
-		view.distribution = d;
-		var contract = d.catalog;
-		view.c = contract;
-		view.orders = service.OrderService.getOrders(contract, d, app.params.exists("csv"));
-	}
-	
+		view.distribution = d;		
+		view.multiDistribId = d.multiDistrib.id;
+		view.catalog = view.c = d.catalog;
+		
+		if ( App.current.params.get("csv")=="1" ) {
+
+			var data = [];			
+			for( basket in d.multiDistrib.getBaskets()){
+				for(o in service.OrderService.prepare(basket.getDistributionOrders(d))){
+					data.push( { 
+						"name":o.userName,
+						"productName":o.productName,
+						"price":view.formatNum(o.productPrice),
+						"quantity":view.formatNum(o.quantity),
+						"fees":view.formatNum(o.fees),
+						"total":view.formatNum(o.total),
+						"paid":o.paid
+					});				
+				}
+			}
+			
+			var exportName = d.catalog.group.name + " - " + t._("Delivery ::contractName:: ", {contractName:d.catalog.name}) + d.date.toString().substr(0, 10);								
+			sugoi.tools.Csv.printCsvDataFromObjects(data, ["name",  "productName", "price", "quantity", "fees", "total", "paid"], exportName+" - " + t._("Per member"));			
+		}
+	}	
 
 	@tpl('distribution/list.mtt')
 	function doList(d:db.Distribution) {
@@ -599,6 +614,33 @@ class Delivery extends controller.Controller
 		view.group = d.catalog.group;
 		view.distribution = d;
 		view.orders = service.ReportService.getOrdersByProduct(d,false);
+	}
+
+	//similar to ContractAdmin.doOrders() + csv param
+	function doCsv( d:db.Distribution ) {
+
+		var catalog = d.catalog;
+
+		// if ( !app.user.canManageContract( catalog ) ) throw Error( "/", t._("You do not have the authorization to manage this contract") );
+		
+		var data = [];			
+		for( basket in d.multiDistrib.getBaskets()){
+			for(o in service.OrderService.prepare(basket.getDistributionOrders(d))){
+				data.push( { 
+					"name":o.userName,
+					"productName":o.productName,
+					"price":view.formatNum(o.productPrice),
+					"quantity":view.formatNum(o.quantity),
+					"fees":view.formatNum(o.fees),
+					"total":view.formatNum(o.total),
+					"paid":o.paid
+				});				
+			}
+		}
+		
+		var exportName = catalog.group.name + " - " + t._("Delivery ::contractName:: ", {contractName:catalog.name}) + d.date.toString().substr(0, 10);								
+		sugoi.tools.Csv.printCsvDataFromObjects(data, ["name",  "productName", "price", "quantity", "fees", "total", "paid"], exportName+" - " + t._("Per member"));			
+		
 	}
 	
 }

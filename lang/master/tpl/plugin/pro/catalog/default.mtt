@@ -3,14 +3,12 @@
 <div class="col-md-12">
 	<div class=" article">
 		<h2>Catalogues</h2>	
-		
+	
 		<p>
 			$$insert(Nouveau catalogue,/p/pro/catalog/insert/)
-
 			<a href="https://formation.alilo.fr/course/view.php?id=7&section=3" target="_blank" class="btn btn-warning btn-sm">
 				<i class="icon icon-youtube"></i> Tuto vidéo
 			</a>
-
 		</p>
 		
 		<table class="table">
@@ -48,6 +46,26 @@
 						
 						$$delete( Supprimer ,/p/pro/catalog/delete/::c.id::?token=::token::)
 					</div>
+
+					::if(c._vendor != null && c._vendor.id != company._vendor.id )::
+					<!--alert on invited catalogs-->					
+					<div class="alert alert-danger" style="margin-top: 12px;">
+						<p>
+							<i class="icon icon-alert"></i>
+							<b>Ce catalogue ne sera plus disponible sur votre compte producteur à partir du 1er mars 2023.</b>
+						</p>
+						<p>
+							Cagette.net invite chaque producteur à gérer ses propres catalogues en toute autonomie.
+						</p>						
+						<p>
+							Ce catalogue est associé à <b>::c._vendor.name::</b>.
+						</p>
+						<p>
+							Invitez <b>::c._vendor.name::</b> ( ::c._vendor.email:: ) à ouvrir son compte producteur sur <a href="https://www.cagette.net/producteurs" target="_blank">www.cagette.net</a>.<br/>
+							Il pourra alors récupérer ce catalogue et continuer à vendre sur Cagette.net. 
+						</p>
+					</div>
+					::end::
 					
 					::set linkages = getLinkages(c)::
 					::if linkages.length>0::

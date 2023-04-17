@@ -1,4 +1,7 @@
 package controller.admin;
+
+import pro.db.CagettePro;
+import db.Graph;
 import haxe.Json;
 import sugoi.form.elements.TextArea;
 import Common;
@@ -33,35 +36,38 @@ class Admin extends Controller {
 	function doDefault() {
 		view.now = Date.now();
 		view.ip = Web.getClientIP();
-		
-		if(app.params.get("reloadSettings")=="1"){
+
+		var groups = db.Group.manager.unsafeCount('SELECT COUNT(g.id) FROM `Group` g, GroupStats gs WHERE gs.groupId=g.id AND gs.active=1');
+		var dispatchGroups = db.Group.manager.unsafeCount('SELECT COUNT(g.id) FROM `Group` g, GroupStats gs WHERE betaFlags & 4 != 0 AND gs.groupId=g.id AND gs.active=1');
+		view.groups = groups;
+		view.dispatchGroups = dispatchGroups;
+
+		if (app.params.get("reloadSettings") == "1") {
 			app.setSettings();
 			app.setTheme();
 			view.theme = app.getTheme();
 			view.settings = app.getSettings();
-			throw Ok('/admin',"Settings and theme reloaded");
+			throw Ok('/admin', "Settings and theme reloaded");
 		}
 	}
 
 	@tpl("form.mtt")
-	function doTheme(){
-
+	function doTheme() {
 		var f = new sugoi.form.Form("theme");
 
-		f.addElement(new sugoi.form.elements.TextArea("theme","theme",Json.stringify(app.getTheme()),true,null,"style='height:800px;'"));
-		f.addElement(new sugoi.form.elements.Html("html","<a href='https://www.jsonlint.com/' target='_blank'>jsonlint.com</a>"));
+		f.addElement(new sugoi.form.elements.TextArea("theme", "theme", Json.stringify(app.getTheme()), true, null, "style='height:800px;'"));
+		f.addElement(new sugoi.form.elements.Html("html", "<a href='https://www.jsonlint.com/' target='_blank'>jsonlint.com</a>"));
 
-		if(f.isValid()){
-
+		if (f.isValid()) {
 			var json:Theme = null;
-			try{
+			try {
 				json = Json.parse(f.getValueOf("theme"));
-				Variable.set("whiteLabel",Json.stringify(json));
-			}catch(e:Dynamic){
-				throw Error('/admin/theme',"Erreur : "+Std.string(e));
+				Variable.set("whiteLabel", Json.stringify(json));
+			} catch (e:Dynamic) {
+				throw Error('/admin/theme', "Erreur : " + Std.string(e));
 			}
 
-			throw Ok("/admin/","Thème mis à jour");
+			throw Ok("/admin/", "Thème mis à jour");
 		}
 
 		view.form = f;
@@ -69,7 +75,7 @@ class Admin extends Controller {
 	}
 
 	@tpl('admin/basket.mtt')
-	function doBasket(basket:db.Basket){
+	function doBasket(basket:db.Basket) {
 		view.basket = basket;
 	}
 
@@ -97,9 +103,17 @@ class Admin extends Controller {
 		view.browser = new sugoi.tools.ResultsBrowser(count, 10, browse);
 		view.num = count;
 	}
-	
+
 	function doVendor(d:haxe.web.Dispatch) {
 		d.dispatch(new controller.admin.Vendor());
+	}
+
+	function doUser(d:haxe.web.Dispatch) {
+		d.dispatch(new controller.admin.User());
+	}
+
+	function doGroup(d:haxe.web.Dispatch) {
+		d.dispatch(new controller.admin.Group());
 	}
 
 	/**
@@ -233,20 +247,34 @@ class Admin extends Controller {
 	}
 
 	@tpl("admin/stats.mtt")
-	function doStats(?month:Int, ?year:Int) {
+	function doStats() {
 		var now = Date.now();
-		if (month == null) {
-			year = now.getFullYear();
-			month = now.getMonth();
-		}
-		var from = new Date(year, month, 1, 0, 0, 0);
-		var to = new Date(year, month + 1, 0, 23, 59, 59);
-		view.year = year;
-		view.month = month;
-		view.from = from;
-		view.to = to;
+
+		var from = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 0, 0, 0);
+		var to = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+
+		// find previous monday
+		while (from.getDay() != 1)
+			from = DateTools.delta(from, -1000 * 60 * 60 * 24);
+
+		// find next monday
+		while (to.getDay() != 1)
+			to = DateTools.delta(to, 1000 * 60 * 60 * 24);
+
+		var tf = new Timeframe(from, to);
+		view.tf = tf;
+
+		from = tf.from;
+		to = tf.to;
 
 		view.newVendors = db.Vendor.manager.count($cdate >= from && $cdate < to);
+		view.newVendorsByType = sys.db.Manager.cnx.request('SELECT count(v.id) as count, vs.type
+		FROM Vendor v, VendorStats vs 
+		WHERE vs.vendorId=v.id AND cdate >= "${from.toString()}" and cdate < "${to.toString()}"
+		group by vs.type
+		order by type')
+			.results();
+
 		view.activeVendors = sys.db.Manager.cnx.request("SELECT count(v.id) FROM Vendor v, VendorStats vs where vs.vendorId=v.id and vs.active=1")
 			.getIntResult(0);
 
@@ -257,19 +285,33 @@ class Admin extends Controller {
 		order by type')
 			.results();
 
-		view.newVendorsByType = sys.db.Manager.cnx.request('SELECT count(v.id) as count, vs.type
-		FROM Vendor v, VendorStats vs 
-		WHERE vs.vendorId=v.id AND cdate > "${from.toString()}" and cdate <= "${to.toString()}"
-		group by vs.type
-		order by type')
-			.results();
-
 		view.activeGroups = GroupStats.manager.count($active);
 		view.activeUsers = sys.db.Manager.cnx.request('SELECT sum(gs.membersNum) FROM `Group` g, GroupStats gs where gs.groupId=g.id and gs.active=1')
 			.getIntResult(0);
-		view.newUsers = sys.db.Manager.cnx.request('SELECT count(id) FROM `User` where cdate > "${from.toString()}" and cdate <= "${to.toString()}"')
+		view.newUsers = sys.db.Manager.cnx.request('SELECT count(id) FROM `User` where cdate >= "${from.toString()}" and cdate < "${to.toString()}"')
 			.getIntResult(0);
+
 		view.newGroups = db.Group.manager.count($cdate >= from && $cdate < to);
+
+		view.newGroupsByAdmin = sys.db.Manager.cnx.request('SELECT count(gs.contactType) as count,gs.contactType FROM `Group` g, GroupStats gs 
+		where gs.groupId=g.id 
+		and g.cdate >= "${from.toString()}" and g.cdate < "${to.toString()}"
+		group by contactType
+		order by count desc')
+			.results();
+
+		view.activeGroupsByAdmin = sys.db.Manager.cnx.request('SELECT count(gs.contactType) as count,gs.contactType FROM `Group` g, GroupStats gs 
+		where gs.groupId=g.id 
+		and gs.active=1
+		group by contactType
+		order by count desc')
+			.results();
+
+		// global stats
+		var stats = Graph.getData("global", from);
+		if (stats == null)
+			stats = {};
+		view.stats = stats;
 	}
 
 	public static function addUserToGroup(email:String, group:db.Group) {
@@ -280,95 +322,6 @@ class Admin extends Controller {
 			usergroup.group = group;
 			usergroup.insert();
 		}
-	}
-
-	/*function doVendorNum(){
-		//nbre de vendor actifs dans des groupes qui ont eu des payout mangopay en octobre
-		var vendorsNum = 0;
-		var payoutNum = 0;
-		var vendors = [];
-		var mds = db.MultiDistrib.manager.search($distribStartDate >= Date.fromString("2021-10-01 00:00:00") && $distribStartDate < Date.fromString("2021-11-01 00:00:00"));
-		Sys.print('<h3>${mds.length} distribs</h3>');
-		for( md in mds ){
-
-			var payout = MangopayGroupPayOut.get(md);
-			if(payout==null) continue;
-			payoutNum++;
-
-			Sys.print('distrib ${md.id} of ${md.group.name} : ${md.distribStartDate.toString()}<br/>');
-			var distribVendors = md.getVendors();
-			vendorsNum += distribVendors.length;
-			for( v in distribVendors) vendors.push(v);
-		}
-		Sys.print('estimation à ${vendorsNum} payouts pour chaque prod à chaque distrib<br/>');
-		Sys.print('${payoutNum} payouts mgp');
-		vendors = ObjectListTool.deduplicate(vendors);
-		Sys.print('${vendors.length} vendors actifs');
-
-	}*/
-
-
-	/**
-		Stats sur les groupes actifs
-	**/
-	function doGroupStats() {
-		/*Caractérisation des groupes ( condition : les groupes actifs) :, 
-			mode du groupe, 
-			nombre de membres, 
-			réglage des inscriptions, 
-			nombre de produits différents vendus sur un an, 
-			nombre de producteurs par type (formés, invités...), 
-			bouléen sur utilisation des stocks dans un des catalogues, 
-			CA réalisé, 
-			nombre de distributions au cours des 12 derniers mois, 
-			a activé la gestion des paiements ou pas, 
-			modalités de paiement le cas échéant
-		 */
-
-		var sql = "SELECT g.*,h.membersNum,h.cproContractNum,h.contractNum";
-		sql += " FROM `Group` g LEFT JOIN  GroupStats gs ON g.id=gs.groupId WHERE gs.active=1";
-		sql += " ORDER BY g.id ASC";
-
-		var groups = db.Group.manager.unsafeObjects(sql, false);
-		var headers = [
-			"id", "name", "mode", "membersNum", "inscriptions", "productNum", "vendorNum", "cproCatalogNum", "catalogNum", "useStocks", "turnover23months",
-			"distribNum12months", "payments"
-		];
-
-		var data = [];
-		var now = Date.now();
-		for (g in groups) {
-			var catalogs = g.getActiveContracts();
-			var cids = catalogs.map(c -> c.id);
-			var vendors = tools.ObjectListTool.deduplicate(catalogs.map(c -> c.vendor));
-			var from = DateTools.delta(now, -1000.0 * 60 * 60 * 24 * 365);
-			var to = now;
-			var distributions = MultiDistrib.getFromTimeRange(g, from, to);
-			// var turnOver = 0.0;
-			// for( d in distributions){
-			// 	turnOver += d.getTotalIncome();
-			// }
-
-			data.push({
-				id: g.id,
-				name: g.name,
-				mode: g.hasShopMode() ? "BOUTIQUE" : "AMAP",
-				membersNum: untyped g.membersNum,
-				inscriptions: Std.string(g.regOption),
-				productNum: db.Product.manager.count($catalogId in cids),
-				vendorNum: vendors.length,
-				cproCatalogNum: untyped g.cproContractNum,
-				catalogNum: untyped g.contractNum,
-				useStocks: db.Product.manager.count(($catalogId in cids) && $active == true && $stock > 0) > 0,
-				// turnover12months:Math.round(turnOver),
-				distribNum12months: distributions.length,
-				payments: g.allowedPaymentsType
-			});
-		}
-
-		sugoi.tools.Csv.printCsvDataFromObjects(data, headers, "stats_groupes");
-		// var t = new sugoi.helper.Table();
-		// Sys.print(t.toString(data));
 	}
 
 	/**
@@ -395,7 +348,6 @@ class Admin extends Controller {
 
 	@tpl("admin/group/default.mtt")
 	function doGroups() {
-
 		var groups = [];
 		var total = 0;
 		var totalActive = 0;
@@ -405,32 +357,29 @@ class Admin extends Controller {
 		var f = new sugoi.form.Form("groups");
 		f.method = GET;
 		f.addElement(new sugoi.form.elements.StringInput("groupName", "Nom du groupe"));
-		var data = [
-			{label: "Tous", value: "all"},
-			{label: "Mode marché", value: "shopMode"},
-			{label: "Mode AMAP", value: "CSAMode"},
-			
-		];
-		f.addElement(new sugoi.form.elements.StringSelect("type", "Type de groupe", data, defaultType, true, ""));
 		f.addElement(new sugoi.form.elements.StringInput("zipCodes", "Saisir des numéros de département séparés par des virgules ou laisser vide."));
 		f.addElement(new sugoi.form.elements.StringSelect("country", "Pays", db.Place.getCountries(), "FR", true, ""));
+		
+
+		var data = [{label: "Tous", value: "any"},{label: "Paiement en ligne Stripe", value: "stripe"}, {label: "Paiement sur place", value: "onthespot"},{label: "Paiement en ligne Mangopay", value: "mangopay"}];
+		f.addElement(new sugoi.form.elements.StringSelect("payment", "Moyen de paiement", data, "table", true, ""));
+
 		var data = [
 			{label: "Actifs", value: "active"},
 			{label: "Inactifs", value: "inactive"},
 			{label: "Tous", value: "all"}
 		];
 		f.addElement(new sugoi.form.elements.StringSelect("active", "Actifs ou pas", data, "active", true, ""));
-		var data = [
-			{label: "Tableau", value: "table"},
-			{label: "CSV", value: "csv"}
-		];
+		var data = [{label: "Tableau", value: "table"}, {label: "CSV", value: "csv"}];
 		f.addElement(new sugoi.form.elements.StringSelect("output", "Sortie", data, "table", true, ""));
 
 		var sql_select = "SELECT g.*,gs.active,gs.membersNum,gs.contractNum,p.name as pname, p.address1,p.address2,p.zipCode,p.country,p.city";
 		var sql_where_or = [];
 		var sql_where_and = [];
 		var sql_end = "ORDER BY g.id ASC";
-		var sql_from = ["`Group` g LEFT JOIN  GroupStats gs ON g.id=gs.groupId LEFT JOIN Place p ON g.placeId=p.id"];
+		var sql_from = [
+			"`Group` g LEFT JOIN  GroupStats gs ON g.id=gs.groupId LEFT JOIN Place p ON g.placeId=p.id"
+		];
 
 		if (f.isValid()) {
 			// filter by zip codes
@@ -452,23 +401,26 @@ class Admin extends Controller {
 				default:
 			}
 
-			// type
-			if (f.getValueOf("type") != "all") {				
-				var type = f.getValueOf("type");
-				switch(type){
-					case "marketMode","shopMode" : sql_where_and.push("g.flags&2 != 0");
-					case "CSAMode" : sql_where_and.push("g.flags&2 = 0");
-					default : throw "unknown type";
-				}
-			}
-
 			// country
 			sql_where_and.push('p.country="${f.getValueOf("country")}"');
 
-			//group name
-			if(f.getValueOf("groupName")!=null){
+			// group name
+			if (f.getValueOf("groupName") != null) {
 				sql_where_and.push('g.name like "%${f.getValueOf("groupName")}%"');
 			}
+
+			//payment
+			if (f.getValueOf("payment") != null && f.getValueOf("payment") != "any") {
+				switch (f.getValueOf("payment")){
+					case "stripe" : sql_where_and.push('g.allowedPaymentsType LIKE "%stripe%"');
+					case "onthespot" : sql_where_and.push('( g.allowedPaymentsType LIKE "%cash%" OR g.allowedPaymentsType LIKE "%check%" OR g.allowedPaymentsType LIKE "%card-terminal%" )');
+					case "mangopay" : sql_where_and.push('g.allowedPaymentsType LIKE "%mangopay-ec%"');
+				}
+				
+			}
+			
+
+
 
 		} else {
 			// default settings
@@ -490,7 +442,8 @@ class Admin extends Controller {
 		view.form = f;
 
 		for (g in groups) {
-			if (untyped g.active) totalActive++;
+			if (untyped g.active)
+				totalActive++;
 			total++;
 		}
 
@@ -505,8 +458,8 @@ class Admin extends Controller {
 
 			case "csv":
 				var headers = [
-					"id", "name","mode","placeName", "address1", "address2", "zipCode", "city", "active", "url",
-					"contactName","contactEmail","contactPhone","membersNum","contractNum"
+					"id", "name", "mode", "placeName", "address1", "address2", "zipCode", "city", "active", "url", "contactName", "contactEmail",
+					"contactPhone", "membersNum", "contractNum"
 				];
 				var data = [];
 				for (g in groups) {
@@ -515,95 +468,225 @@ class Admin extends Controller {
 					data.push({
 						id: g.id,
 						name: g.name,
-						mode : g.hasShopMode() ? "Marché" : "AMAP",
-						placeName : untyped g.pname,
-						address1 : untyped g.address1,
-						address2 : untyped g.address2,
-						zipCode : untyped g.zipCode,
-						city : untyped g.city,
+						mode: "Marché",
+						placeName: untyped g.pname,
+						address1: untyped g.address1,
+						address2: untyped g.address2,
+						zipCode: untyped g.zipCode,
+						city: untyped g.city,
 						active: switch (active) {
 							case true: "OUI";
 							case false: "NON";
 						},
-						url:"https://app.cagette.net/group/"+g.id,
-						contactName : contact!=null ? contact.getName() : "",
-						contactEmail: contact!=null ? contact.email : "",
-						contactPhone: contact!=null ? contact.phone : "",
-						membersNum : untyped g.membersNum,
-						contractNum : untyped g.contractNum			
+						url: "https://app.cagette.net/group/" + g.id,
+						contactName: contact != null ? contact.getName() : "",
+						contactEmail: contact != null ? contact.email : "",
+						contactPhone: contact != null ? contact.phone : "",
+						membersNum: untyped g.membersNum,
+						contractNum: untyped g.contractNum
 					});
 				}
 
 				sugoi.tools.Csv.printCsvDataFromObjects(data, headers, "groupes");
 		}
 	}
-	
+
 	@tpl('admin/news.mtt')
 	function doNews() {}
 
-	function doTestMails(?args:{tpl:String}){
-
-		//list existing mail templates
+	function doTestMails(?args:{tpl:String}) {
+		// list existing mail templates
 		var dirs = [
-			Web.getCwd()+"/../lang/master/tpl/mail/",
-			Web.getCwd()+"/../lang/master/tpl/plugin/pro/who/mail/",
-			Web.getCwd()+"/../lang/master/tpl/plugin/pro/mail/"
+			Web.getCwd() + "/../lang/master/tpl/mail/",
+			Web.getCwd() + "/../lang/master/tpl/plugin/pro/who/mail/",
+			Web.getCwd() + "/../lang/master/tpl/plugin/pro/mail/"
 		];
 		var tpls = [];
 
-		for( dir in dirs){
+		for (dir in dirs) {
 			var files = FileSystem.readDirectory(dir);
-			for(file in files) tpls.push(dir+file);	
+			for (file in files)
+				tpls.push(dir + file);
 		}
 
 		Sys.print("<ul>");
-		for(tpl in tpls){
+		for (tpl in tpls) {
 			var i = tpl.indexOf("/lang/master/tpl/") + "/lang/master/tpl/".length;
 			tpl = tpl.substr(i);
 			Sys.print('<li><a href="/admin/testMails?tpl=$tpl">$tpl</a></li>');
-		} 
+		}
 		Sys.print("</ul>");
-		
-		var group = db.Group.manager.select(true,false);
-		var user = db.User.manager.select(true,false);
-		var d = db.Distribution.manager.select(true,false);
+
+		var group = db.Group.manager.select(true, false);
+		var user = db.User.manager.select(true, false);
+		var d = db.Distribution.manager.select(true, false);
 		var contract = d.catalog;
 		var catalog = d.catalog;
 
-
-		if(args!=null && args.tpl!=null){
+		if (args != null && args.tpl != null) {
 			var res = App.current.processTemplate(args.tpl, {
 				group:group,
 				user:user,
 				d:d,
+				distribution:d,
 				catalog:catalog,
 				contract:contract,
-				text:"Lorem Ipsum"
+				text:"Lorem Ipsum",
+				orders:[]
 			} );
 			Sys.print(res);
 		}
-
-	}
-
-	public function doUpdate(){
-
-		for(g in db.Group.manager.search(true,false)){
-
-			var gs = hosted.db.GroupStats.getOrCreate(g.id,true);
-			gs.updateStats();
-			Sys.print(g.name+" #"+g.id+" <br/>");
-
-		}
-
 	}
 
 	@tpl('admin/settings.mtt')
-	function doSettings(){}
-
-
+	function doSettings() {}
 
 	@tpl('admin/superadmins.mtt')
-	function doSuperadmins(){
-		view.superadmins = db.User.manager.search($rights.has(Admin),false);
+	function doSuperadmins() {
+		view.superadmins = db.User.manager.search($rights.has(Admin), false);
+	}
+
+	@tpl('admin/stripe.mtt')
+	function doStripe(){
+	}
+
+	@tpl('admin/showcase.mtt')
+	function doShowcase(){
+	}
+
+	/**
+		export des distribs pour Charlotte
+	**/
+	@tpl('admin/exportDistribs.mtt')
+	function doExportDistribs(){
+
+		var now = Date.now();
+		var year = now.getFullYear();
+		var month = now.getMonth();
+
+		var from = new Date(year, month-1, 1, 0, 0, 0);
+		var to 	 = new Date(year, month  , 1, 0, 0, 0);
+		var tf = new tools.Timeframe(from,to);
+
+		view.tf = tf;
+
+		if(app.params.get("export")=="1"){
+			var data = [];
+			for(md in db.MultiDistrib.manager.search($distribStartDate > tf.from && $distribStartDate <= tf.to,false)){
+
+				var group = md.group;
+
+				var contactType = "";
+				if(group.contact!=null){
+					var cpros = service.VendorService.getCagetteProFromUser(group.contact);
+					if(cpros.length>0){
+						var vendor = cpros.find(cpro -> cpro.offer!=Training);				
+						contactType = vendor==null ? "USER" : Std.string(vendor.offer).toUpperCase();
+					} else {
+						contactType = "USER";
+					}
+				}else{
+					contactType = "NONE";
+				}
+
+				var baskets = md.getBaskets();
+				var turnover = 0.0;
+				
+				for( d in md.getDistributions()){
+
+					var v = d.catalog.vendor;
+					var cpro = v.getCpro();
+					var vendorStatus = cpro==null ? "Invited" : Std.string(cpro.offer);
+
+					data.push({
+						distributionId: md.id,
+						marketId : group.id,
+						url : "https://app.cagette.net/p/hosted/group/"+group.id,
+						vendorId : v.id,
+						vendorName : v.name,
+						vendorProfession : v.getProfession(),
+						vendorStatus : vendorStatus,
+						
+						contactType : contactType,
+						membersNum : group.getMembersNum(),
+						
+						day : md.distribStartDate.getDate(),
+						month : md.distribStartDate.getMonth()+1,
+						year : md.distribStartDate.getFullYear(),
+
+						zipCode : md.place.zipCode.substr(0,2),
+						address : md.place.address1,
+						city : md.place.city,
+						turnover : Math.round(d.getTurnOver()),
+						basketNums : baskets.length,
+						vendorsInGroup : group.getActiveVendors().length,						
+					});
+
+				}
+
+				baskets = [];
+				
+			}
+			var headers = ["distributionId","marketId","url","vendorId","vendorName","vendorStatus","vendorProfession","basketNums","contactType","membersNum","day","month","year","zipCode","address","city","turnover"];
+			sugoi.tools.Csv.printCsvDataFromObjects(data, headers, "Distributions");
+		}
+	}
+
+	/**
+		Stats sur les groupes actifs
+	**/
+	function doGroupStats() {
+		
+		var sql = "SELECT g.id as marketId,g.name as marketName,g.userId,u.firstName,u.lastName,u.email,
+		v.id as vendorId,v.name as vendorName,v.zipCode
+		FROM `Group` g
+		inner join GroupStats gs on g.id=gs.groupId
+		inner join User u on g.userId=u.id
+		left join Vendor v on v.email=u.email 
+		where gs.active = 1 and gs.mode = \"MARKET\"
+		order by g.id";
+
+		var groups = sys.db.Manager.cnx.request(sql).results();
+		var data = [];
+		var now = Date.now();
+		for (g in groups) {
+			// var catalogs = g.getActiveContracts();
+			// var cids = catalogs.map(c -> c.id);
+			// var vendors = tools.ObjectListTool.deduplicate(catalogs.map(c -> c.vendor));
+			// var from = DateTools.delta(now, -1000.0 * 60 * 60 * 24 * 365);
+			// var to = now;
+			// var distributions = MultiDistrib.getFromTimeRange(g, from, to);		
+			var vendor = db.Vendor.manager.get(g.vendorId);
+			var cpro = CagettePro.manager.select($vendor == vendor,false);
+
+			data.push({
+				marketId: g.marketId,
+				marketName: g.marketName,
+				userId: g.userId,
+				firstName : g.firstName,
+				lastName : g.lastName,
+				email : g.email,
+				vendorId : g.vendorId,
+				vendorName : g.vendorName,
+				zipCode : g.zipCode,
+				vendorStatus : cpro==null ? null : Std.string(cpro.offer),
+				vendorProfession : cpro==null ? null : vendor.getProfession(),
+
+
+
+				// membersNum: untyped g.membersNum,
+				// inscriptions: Std.string(g.regOption),
+				// productNum: db.Product.manager.count($catalogId in cids),
+				// vendorNum: vendors.length,
+				// cproCatalogNum: untyped g.cproContractNum,
+				// catalogNum: untyped g.contractNum,
+				// turnover12months:Math.round(turnOver),
+				// distribNum12months: distributions.length,
+				// payments: g.allowedPaymentsType
+			});
+		}
+		var headers = Reflect.fields(data[0]);
+		sugoi.tools.Csv.printCsvDataFromObjects(data, headers, "stats_groupes");
+
 	}
 }

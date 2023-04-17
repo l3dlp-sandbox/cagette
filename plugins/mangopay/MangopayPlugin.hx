@@ -9,6 +9,8 @@ import pro.payment.*;
 import sugoi.plugin.*;
 import sugoi.tools.TransactionWrappedTask;
 import tink.core.Error;
+import db.Basket;
+
 
 class MangopayPlugin extends PlugIn implements IPlugIn{
 	
@@ -44,7 +46,7 @@ class MangopayPlugin extends PlugIn implements IPlugIn{
 							nav.push({id: "mangopay-kyc", 	name: "Dossier Mangopay", link:"/p/pro/transaction/mangopay/group/module",icon:"book"});
 							nav.push({id: "mangopay-wallet",name: "Paiements Mangopay", 	link:"/p/pro/transaction/mangopay/group/wallet",icon:"bank-transfer"});				
 						}else{
-							nav.push({id: "mangopay-setup",name: "Paiement en ligne", 	link:"/p/pro/transaction/mangopay/group/module", icon:"bank-card"});				
+							// nav.push({id: "mangopay-setup",name: "Paiement en ligne", 	link:"/p/pro/transaction/mangopay/group/module", icon:"bank-card"});				
 						}
 				}
 
@@ -59,14 +61,14 @@ class MangopayPlugin extends PlugIn implements IPlugIn{
 					range.to = DateTools.delta( range.to, -1000.0*60*30 );
 						
 					task.log('TmpBaskets created from ${range.from} to ${range.to}');
-					var baskets = db.TmpBasket.manager.search($cdate >= range.from && $cdate < range.to, true);
+					var baskets = db.Basket.manager.search($cdate >= range.from && $cdate < range.to && $status==Std.string(BasketStatus.OPEN), true);
 					for( b in baskets ){
 						var orders = checkTmpBasket(b);
 						if(orders!=null) task.log("basket #"+orders[0].basket.id+" fixed !");
 					}
 	
 					//delete tmpBaskets older than 1 month
-					db.TmpBasket.manager.delete($cdate < DateTools.delta(Date.now(),-1000.0*60*60*24*30) );
+					// db.TmpBasket.manager.delete($cdate < DateTools.delta(Date.now(),-1000.0*60*60*24*30) );
 				});
 				task.execute(!App.config.DEBUG);
 				
@@ -347,9 +349,6 @@ class MangopayPlugin extends PlugIn implements IPlugIn{
 						out.onTheSpotTurnover.ttc += op.amount;
 						//throw new Error("A validated distribution should not contain undefined 'on the spot' payments.");
 
-					case payment.MoneyPot.TYPE : 
-					//do nothing
-
 					case MangopayECPayment.TYPE :
 												
 						var amountAndFees = getAmountAndFees(op.amount,conf);
@@ -382,7 +381,8 @@ class MangopayPlugin extends PlugIn implements IPlugIn{
 		( Quand un paiement mangopay est validé, mais que cagette n'a pas reçu le callback 
 		et n'a donc pas transformé le tmpBasket en vraie commande )
 	**/
-	public static function checkTmpBasket(tmpBasket:db.TmpBasket):Array<db.UserOrder>{
+	public static function checkTmpBasket(tmpBasket:db.Basket):Array<db.UserOrder>{
+		if(tmpBasket.status!=Std.string(BasketStatus.OPEN)) throw "basket should be OPEN";
 
 		var mpUser = mangopay.db.MangopayUser.get(tmpBasket.user);
 		var conf = getGroupConfig(tmpBasket.multiDistrib.getGroup());
@@ -414,7 +414,7 @@ class MangopayPlugin extends PlugIn implements IPlugIn{
 						//we have no operation in Cagette for this succeeded payin.
 						//check if amount is equal
 						var mpOpAmount = Std.string(Formatting.roundTo(mpOp.DebitedFunds.Amount/100,2));
-						var tmpBasketAmount = Std.string(Formatting.roundTo( tmpBasket.getTotal() , 2));
+						var tmpBasketAmount = Std.string(Formatting.roundTo( tmpBasket.getTmpTotal() , 2));
 						var amountEqual = mpOpAmount == tmpBasketAmount;
 
 						//check if credittedWalletId is the wallet id of this group
@@ -428,7 +428,7 @@ class MangopayPlugin extends PlugIn implements IPlugIn{
 							var mp_type = Lambda.find(paymentTypes, function(pt) return pt.type==pro.payment.MangopayECPayment.TYPE );
 							
 							if(mp_type==null){
-								throw 'unable to find MPpayement among '+paymentTypes.map(p -> return p.type)+' for tmpBasket '+tmpBasket.id;
+								throw 'unable to find "mangopay-ec" among '+paymentTypes.map(p -> return p.type)+' for tmpBasket '+tmpBasket.id;
 							}
 
 							//OK, process order !
@@ -450,12 +450,12 @@ class MangopayPlugin extends PlugIn implements IPlugIn{
 	/**
 	 * Confirm order
 	 */
-	public static function processOrder( tmpBasket:db.TmpBasket , payIn:CardWebPayIn , paymentType:String ):Array<db.UserOrder>{
+	public static function processOrder( tmpBasket:db.Basket , payIn:CardWebPayIn , paymentType:String ):Array<db.UserOrder>{
 		
 		if(paymentType!=pro.payment.MangopayECPayment.TYPE){
 			throw new Error("The payment type should be mangopay-ec");
 		}
-		
+
 		//create real orders
 		var transactionId = payIn.Id;
 		var total = payIn.DebitedFunds.Amount/100;

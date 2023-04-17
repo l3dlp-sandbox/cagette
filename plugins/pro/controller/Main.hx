@@ -1,8 +1,8 @@
 package pro.controller;
 import service.BridgeService;
-import tools.Matomo;
 import service.VendorService;
 import Common;
+import pro.db.CagettePro;
 using tools.ObjectListTool;
 
 class Main extends controller.Controller
@@ -18,7 +18,6 @@ class Main extends controller.Controller
 
 		//hack into breadcrumb
 		if(vendor!=null){
-			vendor.checkIsolate();
 			App.current.breadcrumb[0] = {id:"v"+vendor.id,name:"Compte producteur : "+vendor.name,link:"/p/pro"};
 		}
 	}
@@ -60,9 +59,12 @@ class Main extends controller.Controller
 			checkCompanySelected();
 		}
 
-		//check terms of sale
-		if(vendor.tosVersion != sugoi.db.Variable.getInt('termsOfSaleVersion')){
-			throw Redirect("/p/pro/tos");
+		//check CGS for non representative
+		if(this.vendor.tosVersion != sugoi.db.Variable.getInt('platformtermsofservice') && app.user.isAdmin()==false){
+			var isNonLegalRep = pro.db.PUserCompany.manager.select($user == app.user && $company == this.company && $legalRepresentative==false, false) != null;
+			if(isNonLegalRep){
+				throw Redirect("/p/pro/tosblocked");
+			}
 		} 
 		
 		view.nav = ["home"];
@@ -95,9 +97,11 @@ class Main extends controller.Controller
 
 		var adminClients = [];
 		var regularClients = [];
+		var groups = [];
 
 		for( client in clients ){
 			var group = client[0].getContract().group;
+			groups.push(group);
 			var ua = db.UserGroup.get(app.user,group);
 			
 			if(ua!=null && ( ua.isGroupManager() || ua.canManageAllContracts() )){
@@ -109,19 +113,18 @@ class Main extends controller.Controller
 
 		view.adminClients = adminClients;
 		view.regularClients = regularClients;
-		
+
 		//next deliveries
 		var now = Date.now();
 		var oneMonth = DateTools.delta(now, 1000.0 * 60 * 60 * 24 * 30);	
 		var today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
 		
-		var distribs = db.Distribution.manager.search( ($catalogId in remoteCatalogs.getIds() ) && $date <= oneMonth && $date >= today , {orderBy:date}, false);
-		//view.distribs = distribs;
+		var distribs = db.Distribution.manager.search( ($catalogId in remoteCatalogs.getIds()) && $date <= oneMonth && $date >= today , {orderBy:date}, false);
 		view.distribs = distribs.groupDistributionsByGroupAndDay();
 		
 		view.getCatalog = function(d:db.Distribution){			
 			var rc = connector.db.RemoteCatalog.getFromContract(d.catalog);
-			return rc.getCatalog();			
+			return rc.getPCatalog();			
 		};
 		
 		//find unlinked catalogs		
@@ -129,16 +132,6 @@ class Main extends controller.Controller
 		
 		view.vendorId = vendor.id;
 
-		/*
-		//track first sale in matomo
-		//count if sales in one week back, and count if sales older than one week
-		var oneWeekAgo = DateTools.delta(Date.now(),1000.0*60*60*24*-7);
-		var recentSale = sys.db.Manager.cnx.request('SELECT * FROM vendorDailySummary where vendorId=${vendor.id} and turnoverMarket>0 and date > "${oneWeekAgo.toString()}" LIMIT 1').results().array();
-		var olderSale = sys.db.Manager.cnx.request('SELECT * FROM vendorDailySummary where vendorId=${vendor.id} and turnoverMarket>0 and date < "${oneWeekAgo.toString()}" LIMIT 1').results().array();
-		if(olderSale.length==0 && recentSale.length>0){
-			Matomo.trackEvent("Producteurs","Première vente");
-		}*/		
-		
 	}
 
 	public function doCatalogLinker(d:haxe.web.Dispatch){
@@ -250,22 +243,11 @@ class Main extends controller.Controller
 		d.dispatch(new pro.controller.Signup());
 	}
 
-	@tpl('form.mtt')
-	function doTos(){
-		var tosVersion = sugoi.db.Variable.getInt("termsOfSaleVersion");
-		var form = new sugoi.form.Form("tos");
-		form.addElement(new sugoi.form.elements.Checkbox("tos","J'accepte les nouvelles <a href='/cgv' target='_blank'>conditions générales de vente</a>"));
+	@tpl('plugin/pro/tosblocked.mtt')
+	function doTosblocked(){
 
-		if(form.isValid() && form.getValueOf("tos")==true){
-			vendor.lock();
-			vendor.tosVersion = tosVersion;
-			vendor.update();
-			throw Redirect('/p/pro');
-		}
+		view.legalRep = pro.db.PUserCompany.manager.select($company == this.company && $legalRepresentative==true, false);
 		
-		view.title = "Mise à jour des conditions générales de vente "+' ( v. $tosVersion )';
-		view.text = "En tant que producteur qui vend des produits sur Cagette.net, vous devez accepter ces conditions qui définissent les modalités d'utilisation de Cagette.net par les producteurs.";
-		view.form = form;
 	}
 
 

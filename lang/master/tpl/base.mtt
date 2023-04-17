@@ -15,6 +15,8 @@
 
     $$favicons()
 
+    $$googleTagManager(::getVariable("googleTagManagerId")::)
+
     <!-- Cagette CSS -->
     ::if(DEBUG)::
         <link rel="stylesheet" type="text/css" href="/theme/::theme.id::/css/::getVariable('css')::/style.css" />
@@ -36,18 +38,11 @@
         integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
         crossorigin="" />
 
-    <!-- polyfill for IE11 : Object.assign() doesnt exists in IE11 , error in libs.prod.js -->
-    <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
-
-    <!-- Haxe JS + libs bundled with browserify -->
-    <script type="text/javascript" src="/js/::getVariable('js')::/fetch.umd.js"></script>
-
-    ::if(DEBUG)::
+	::if(DEBUG)::
     <script type="text/javascript" src="/js/::getVariable('js')::/libs.dev.js"></script>
     ::else::
     <script type="text/javascript" src="/js/::getVariable('js')::/libs.prod.js"></script>
     ::end::
-    <script type="text/javascript" src="/js/::getVariable('js')::/app.js"></script>
 </head>
 
 ::if container==null:: ::set container="container":: ::end::
@@ -55,47 +50,32 @@
 <body class="::container::">
 
     ::if DEBUG::
-    <div style="position: fixed;background: #666;padding: 8px;left: 0;bottom:0;color:#FF0;">DEBUG ::session.lang::</div>
+    <div style="position: fixed;background: #666;padding: 8px;left: 0;bottom:0;color:#FF0;">DEBUG</div>
     ::end::
 
-    ::if ( HOST.indexOf(".dev.",null)!=-1 || HOST.substr(0,3)=="pp." )::
+    ::if ( HOST.indexOf(".dev.",null)!=-1 )::
     <div style="position: fixed;background: #600;padding: 8px;left:0;bottom:0;color: #FA0;width: 100%;z-index: 99;text-align: center;">
-        <i class="icon icon-alert"></i> Ce site n'est pas le "vrai" site Cagette, c'est un site de test. <b>Ne l'utilisez surtout pas pour prendre de vraies commandes.</b>
+        <i class="icon icon-alert"></i> 
+        <b>Ce site est une instance de test.</b> Ne l'utilisez pas pour prendre de vraies commandes.
     </div>
     ::end::
 
     <!-- Modal window -->
-    <div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                            aria-hidden="true">&times;</span></button>
-                    <h2 class="modal-title" id="myModalLabel"></h2>
-                </div>
-                <div class="modal-body">
-                    ...
-                </div>
-                <div class="modal-footer" style="clear:both;">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">
-                        <i class="icon icon-delete"></i> ::_("Close")::
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div id="myModal" />
 
     ::raw __content__::
 
-    $$matomo()
+    $$googleTagManagerNoScript(::getVariable("googleTagManagerId")::)
 
     <script type="text/javascript">
 
-        _Cagette.theme = {
-            id: "::theme.id::",
-            name: "::theme.name::",
-            supportEmail: "::theme.supportEmail::"
-        }
+        window._Cagette = {
+			theme: {
+				id: "::theme.id::",
+				name: "::theme.name::",
+				supportEmail: "::theme.supportEmail::"
+			}
+		}
         
         document.addEventListener("DOMContentLoaded", function (event) {
             //init vars in js App
@@ -105,7 +85,14 @@
             _Cagette.userName = "::user.getName()::";
             _Cagette.userEmail = "::user.email::";
             :: end::
-            _Cagette.antiDoubleClick();
+			for( n of document.querySelectorAll(".btn:not(.btn-noAntiDoubleClick)") ){
+				n.addEventListener("click",function(e){
+					e.target.classList.add("disabled");
+					setTimeout(function(){
+						e.target.classList.remove("disabled");
+					}, 300);
+				});
+			}
         })
 
     </script>

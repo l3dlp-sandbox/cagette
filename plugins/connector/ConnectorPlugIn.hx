@@ -199,7 +199,7 @@ class ConnectorPlugIn extends PlugIn implements IPlugIn{
 				var remoteCata = getRemoteCatalog(c.id, true);				
 				if (remoteCata != null){
 					
-					var cata = remoteCata.getCatalog();
+					var cata = remoteCata.getPCatalog();
 					var offers = cata.getOffers();
 					
 					if (data.enable){

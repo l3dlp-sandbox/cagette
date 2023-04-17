@@ -1,4 +1,5 @@
 package pro.service;
+import pro.db.CagettePro;
 import Common;
 import connector.db.RemoteCatalog;
 import service.BridgeService;
@@ -24,13 +25,11 @@ class PCatalogService{
 			
 			var contract = rc.getContract();
 			if (contract == null) continue;
-			var catalog = rc.getCatalog();			
+			var catalog = rc.getPCatalog();			
 			if( catalog==null ) continue;
-			
-			
+						
 			var fullUpdate = !contract.hasOpenOrders() || catalogId!=null;
 			
-			//log.push( "<h4>" + /*contract.name+" - " +*/ contract.amap.name /*+(fullUpdate?"[Full]":"[Light]")*/ + "</h4>" );
 			log.push( "<h4>" +  contract.group.name + "</h4>" );
 
 			syncCatalog(contract,catalog);
@@ -39,24 +38,24 @@ class PCatalogService{
 			var groupProducts = contract.getProducts(false);
 			var disabledProducts = rc.getDisabledProducts();
 			
-			for ( cproProduct in catalog.getOffers() ){
+			for ( pcatalogOffer in catalog.getOffers() ){
 				
-				//find remote product by ref.
-				var groupProduct = Lambda.find(groupProducts, function(x) return x.ref == cproProduct.offer.ref);				
+				//find remote product
+				var groupProduct = groupProducts.find( gp -> gp.pOffer!=null && gp.pOffer.id == pcatalogOffer.offer.id);				
 				var disabledInGroup = false;
 				if(groupProduct!=null){
 					disabledInGroup = Lambda.has(disabledProducts, groupProduct.id);
 					//debug
 					/*if(disabledInGroup){
-						log.push( cproProduct.offer+" est désactivé dans le groupe" );
+						log.push( pcatalogOffer.offer+" est désactivé dans le groupe" );
 					}else{
-						log.push( cproProduct.offer+" est actif dans le groupe" );
+						log.push( pcatalogOffer.offer+" est actif dans le groupe" );
 					}*/
 				}else{
 					//debug
-					//log.push( cproProduct.offer+" n'existe pas, faut le créer" );
+					//log.push( pcatalogOffer.offer+" n'existe pas, faut le créer" );
 				} 
-				log = log.concat( syncProduct(cproProduct, groupProduct, contract, fullUpdate, disabledInGroup) );	
+				log = log.concat( syncProduct(pcatalogOffer, groupProduct, contract, fullUpdate, disabledInGroup) );	
 				groupProducts.remove(groupProduct);				
 			}
 			
@@ -67,19 +66,16 @@ class PCatalogService{
 				log.push("Produit désactivé : " + p.name);
 				p.lock();
 				p.active = false;
-				p.update();
-				
+				p.update();				
 			}
 
 			//once everything is updated, set needSync to false
 			if (fullUpdate){
 				rc.needSync = false;
 				rc.update();	
-			}
+			}			
 			
-			
-		}
-		//log = log.split("\n").join("<br/>\n");
+		}		
 		return log;
 	}
 
@@ -87,8 +83,6 @@ class PCatalogService{
 	/**
 	 * Synchro from catalog offer -> product.
 	 * Manages also new products
-	 * @param	off
-	 * @param	product
 	 */
 	public static function syncProduct(co:pro.db.PCatalogOffer, ?groupProduct:db.Product, contract:db.Catalog, fullUpdate:Bool, ?isLocallyDisabled=false){
 		
@@ -97,6 +91,7 @@ class PCatalogService{
 			log.push("Nouveau produit : " + co.offer.product.name);
 			groupProduct = new db.Product();
 			groupProduct.catalog = contract;
+
 		}else{
 			groupProduct.lock();
 		}
@@ -122,12 +117,7 @@ class PCatalogService{
 		groupProduct.retail = co.offer.product.retail;
 		groupProduct.bulk = co.offer.product.bulk;
 		groupProduct.smallQt = co.offer.smallQt;
-		
-		//set stock if it's a new product
-		if(groupProduct.id == null && co.offer.stock!=null){
-			groupProduct.stock = PStockService.getStocks(co.offer).availableStock;
-		}
-		
+		groupProduct.pOffer = co.offer;
 		groupProduct.active = co.offer.active && !isLocallyDisabled;		
 		
 		//name change
@@ -165,7 +155,7 @@ class PCatalogService{
 		var rc = RemoteCatalog.getFromContract(catalog);
 		if(rc != null){
 			//just move products and catalog
-			var pcatalog = rc.getCatalog();
+			var pcatalog = rc.getPCatalog();
 			pcatalog.lock();
 
 			for (p in pcatalog.getProducts()) {
@@ -239,7 +229,7 @@ class PCatalogService{
 	/**
 	 *  Create or sync a catalog ( from a vendor catalog (PCatalog) to a group catalog (Catalog) )
 	 */
-	public static function syncCatalog(groupCatalog:db.Catalog,proCatalog:pro.db.PCatalog, ?contact:db.User,?group:db.Group){
+	public static function syncCatalog(groupCatalog:db.Catalog, proCatalog:pro.db.PCatalog, ?contact:db.User, ?group:db.Group){
 
 		if(proCatalog==null) throw "catalog cannot be null";
 		if(groupCatalog==null){
@@ -251,7 +241,6 @@ class PCatalogService{
 			//create it
 			groupCatalog = new db.Catalog();
 			groupCatalog.vendor = proCatalog.company.vendor;
-			groupCatalog.type = db.Catalog.TYPE_VARORDER;
 			groupCatalog.group = group;
 			groupCatalog.flags.set(db.Catalog.CatalogFlags.UsersCanOrder);
 			groupCatalog.contact = contact;
@@ -306,12 +295,22 @@ class PCatalogService{
 	/**
 	 * Link a pcatalog to a group
 	 */
-	public static function linkCatalogToGroup(pcatalog:pro.db.PCatalog,clientGroup:db.Group,remoteUserId:Int,?contractType=1):connector.db.RemoteCatalog{
+	public static function linkCatalogToGroup(pcatalog:pro.db.PCatalog,clientGroup:db.Group,remoteUserId:Int):connector.db.RemoteCatalog{
 		
 		//checks
 		var contracts = connector.db.RemoteCatalog.getContracts(pcatalog, clientGroup);
 		if ( contracts.length>0 ){
 			throw new tink.core.Error("Ce catalogue existe déjà dans ce groupe. Il n'est pas nécéssaire d'importer plusieurs fois le même catalogue dans un groupe.");
+		}
+
+		if (pcatalog.company.vendor.disabled==db.Vendor.DisabledReason.MarketplaceNotActivated){
+			throw new tink.core.Error("Ce catalogue ne peut pas être relié à ce groupe car le producteur n'a pas activé le prélèvement des frais Cagette.net.");
+		}
+
+		if(clientGroup.isDispatch()){
+			if(!pcatalog.company.vendor.isDispatchReady()){
+				throw new tink.core.Error("Ce catalogue ne peut pas être relié à ce groupe car le producteur n'a pas de compte Stripe (Obligatoire afin de pouvoir accepter le paiement en ligne).");
+			}
 		}
 
 		//coordinator
@@ -320,12 +319,6 @@ class PCatalogService{
 		//create contract		
 		var contract = syncCatalog(null,pcatalog,contact,clientGroup);
 
-		//if CSA contract with constant orders
-		if(contractType==db.Catalog.TYPE_CONSTORDERS && !clientGroup.hasShopMode()){
-			contract.type = db.Catalog.TYPE_CONSTORDERS;
-			contract.update();
-		}
-		
 		//create remoteCatalog record
 		var rc = link(pcatalog,contract);
 		
@@ -334,12 +327,39 @@ class PCatalogService{
 			pro.service.PCatalogService.syncProduct(co, null, contract,true, false);
 		}
 
-		BridgeService.matomoEvent(pcatalog.company.getMainContact().id,"Producteurs","Catalogue relié",'Catalogue #${pcatalog.id}');
+		BridgeService.ga4Event(pcatalog.company.getMainContact().id,"FirstCatalogLinked");
 		
 		return rc;
 	}
-	
 
+	/**
+		break linkage and archive catalog
+	**/
+	public static function breakLinkage(catalog:db.Catalog){
+
+		var rc = RemoteCatalog.getFromContract(catalog);
+		if(rc == null) throw new tink.core.Error("Ce catalogue n'est pas relié à un catalogue de compte producteur");
+		
+		//do not participate in future distribs
+		var futureDistribs = db.Distribution.manager.search($end > Date.now() && $catalog == catalog,true);
+		for(fd in futureDistribs){
+			if(fd.getBaskets().length>0){
+				throw new tink.core.Error("Impossible d'annuler la distribution du "+fd.date.toString()+" car elle a des commandes. Supprimez d'abord les commandes.");
+			}else{
+				fd.delete();
+			}
+		}
+
+		//archive catalog
+		catalog.lock();
+		catalog.endDate = Date.now();
+		catalog.update();
+		
+		rc.lock();
+		rc.delete();
+
+	}
+	
 	public static function makeCatalogOffer(offer:pro.db.POffer,catalog:pro.db.PCatalog,price:Float){
 		var cp = new pro.db.PCatalogOffer();
 		cp.catalog = catalog;

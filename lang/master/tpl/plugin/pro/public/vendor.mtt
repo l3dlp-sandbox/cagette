@@ -3,10 +3,17 @@
 		::if catalog!=null::
 		::set cid = catalog.id::
 		::end::
+		
+		<div id="vendor-page-neo-container"></div>
+
 		<script>
-			_Cagette.getVendorPage("vendorPage",::vendor.id::,::cid::);
+			document.addEventListener("DOMContentLoaded", function(event) {
+				neo.createNeoModule("vendor-page-neo-container", "vendorPublicPage", {
+					vendorId: ::vendor.id::,
+                	pCatalogId: ::cid::
+				});
+			});
 		</script>
-		<div id="vendorPage"></div>
 
 		<noscript>
 			

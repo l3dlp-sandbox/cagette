@@ -24,7 +24,7 @@ class UserGroup extends Object
 	public var rights : SNull<SSmallText>; 			//rights in JSON
 	public var balance : SFloat; 						//account balance in group currency
 	public static var CACHE = new Map<String,db.UserGroup>();
-	
+	public var differenciatedPricingId : SNull<SInt>;
 	
 	public function new(){
 		super();

@@ -51,7 +51,9 @@ typedef NaturalUser = {
 	?ProofOfAddress: String,
     ?ProofOfIdentity: String,
 	?Capacity: String,
-	?errors: String
+	?errors: String,
+	UserCategory:String,
+	TermsAndConditionsAccepted:Bool
 };
 
 //@doc https://docs.mangopay.com/endpoints/v2.01/users#e259_create-a-legal-user
@@ -90,7 +92,9 @@ typedef LegalUser = {
 	?Statute: String,
 	?ShareholderDeclaration: String,
 	?ProofOfRegistration: String,
-	?CompanyNumber: String
+	?CompanyNumber: String,
+	UserCategory:String,
+	TermsAndConditionsAccepted:Bool
 };
 
 typedef Wallet = {
@@ -129,7 +133,8 @@ typedef CardWebPayIn = {
 	Culture: String,
 	?TemplateURL: String,
 	?StatementDescriptor: String,
-	?RedirectURL: String
+	?RedirectURL: String,
+	Requested3DSVersion:String
 };
 
 typedef Transaction = {

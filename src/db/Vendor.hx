@@ -6,10 +6,13 @@ import sys.db.Object;
 import sys.db.Types;
 
 enum DisabledReason{
-	IncompleteLegalInfos; 	//incomplete legal infos
-	NotCompliantWithPolicy; //not compliant with policy (charte des producteurs)
-	Banned; 				//banned by network administrateurs
-	TurnoverLimitReached; 	//turnover limit reached
+	IncompleteLegalInfos; 	//0 : incomplete legal infos
+	NotCompliantWithPolicy; //1 : not compliant with policy (charte des producteurs)
+	Banned; 				//2 : banned by network administrateurs
+	TurnoverLimitReached; 	//3 : turnover limit reached
+	MarketplaceNotActivated;//4 : a new marketplace vendor who has not yet activated his subscription
+	MarketplaceDisabled; 	//5 : a marketplace vendor who did not pay, who removed his payment method, etc
+	DisabledInvited;		//6 : invited,free,cproinvited are now disabled
 }
 
 /**
@@ -31,7 +34,8 @@ typedef SiretInfos = {
 }
 
 enum VendorBetaFlags{
-	Cagette2;		//BETA Cagette 2.0
+	__Cagette2;		//BETA Cagette 2.0 @deprecated
+	CanOpenStripeAccount; //Can Open Stripe Account
 }
 
 /**
@@ -82,6 +86,7 @@ class Vendor extends Object
 	@hideInForms public var offCagette 	: SNull<SText>;
 	
 	@hideInForms @:relation(imageId) 	public var image : SNull<sugoi.db.File>;
+	@hideInForms @:relation(customizedTermsOfSaleFileId) 	public var customizedTermsOfSaleFile : SNull<sugoi.db.File>;
 	
 	@hideInForms public var status : SNull<SString<32>>; //temporaire , pour le dédoublonnage
 	@hideInForms public var disabled : SNull<SEnum<DisabledReason>>; // vendor is disabled
@@ -92,6 +97,7 @@ class Vendor extends Object
 	@hideInForms public var betaFlags:SFlags<VendorBetaFlags>;
 
 	@hideInForms public var stripeCustomerId:SNull<SString<255>>;
+	@hideInForms public var stripeAccountId:SNull<SString<255>>;
 
 	public function new() 
 	{
@@ -101,25 +107,6 @@ class Vendor extends Object
 		freemiumResetDate = Date.now();
 	}
 
-	public function checkIsolate(){
-	
-		if(this.betaFlags.has(VendorBetaFlags.Cagette2)){
-
-			var cpro = pro.db.CagettePro.getCurrentCagettePro();
-
-			var noCagette2Groups = cpro.getGroups().filter(v->!v.hasCagette2());
-			if ( noCagette2Groups.length>0 ){
-				var name = noCagette2Groups.map(v -> v.name).join(", ");
-				throw sugoi.ControllerAction.ControllerAction.ErrorAction("/user/choose",'Le producteur "${this.name}" a l\'option Cagette2 activée et ne peut pas fonctionner avec des groupes qui n\'ont pas activé cette option ($name). Contactez nous sur <b>'+App.current.getTheme().supportEmail+'</b> pour régler le problème.');
-			}
-			
-		} 
-	}
-
-	public function hasCagette2(){
-		return betaFlags.has(VendorBetaFlags.Cagette2);
-	}
-	
 	override function toString() {
 		return name;
 	}
@@ -285,6 +272,9 @@ class Vendor extends Object
 			case DisabledReason.NotCompliantWithPolicy : "Producteur incompatible avec la charte producteur de Cagette.net";
 			case DisabledReason.Banned : "Producteur bloqué par les administrateurs";
 			case DisabledReason.TurnoverLimitReached : "Ce producteur a atteint sa limite de chiffre d'affaires annuel";
+			case DisabledReason.MarketplaceDisabled : "Ce producteur est en défaut de paiement";
+			case DisabledReason.MarketplaceNotActivated : "Ce producteur n'a pas encore activé son compte";
+			case DisabledReason.DisabledInvited : "Les producteurs invités ne sont plus autorisés et doivent <a href='https://www.cagette.net/producteurs' target='_blank'>ouvrir un compte Producteur</a>";
 		};
 	}
 
@@ -358,11 +348,47 @@ class Vendor extends Object
 		super.update();
 	}
 
-	function getStats():VendorStats{
+	public function getStats():VendorStats{
 		return VendorStats.getOrCreate(this);
 	}
 
 	public function getImageId(){
         return this.imageId;
     }
+
+	/**
+		has a valid Stripe account
+	**/
+	public function isDispatchReady():Bool{
+	
+		if(stripeAccountId==null) return false;
+		return sys.db.Manager.cnx.request('SELECT count(id) FROM stripeAccount where id="${this.stripeAccountId}" and details_submitted=1 and charges_enabled=1').getIntResult(0) > 0;
+
+	}
+
+	public function getStripeConnectStatus(){
+
+		var out = {account_open:false,details_submitted:false,charges_enabled:false};
+
+		if(stripeAccountId==null) {
+			return out;
+		}else{
+			out.account_open=true;
+		}
+
+		var res = sys.db.Manager.cnx.request('SELECT * FROM stripeAccount where id="${this.stripeAccountId}" and details_submitted=1 and charges_enabled=1').results().first();
+		if(res!=null){
+			out.details_submitted = res.details_submitted==1;
+			out.charges_enabled = res.charges_enabled==1;
+		}
+
+		return out;
+	}
+
+	public function canOpenStripeAccount():Bool{
+		// return betaFlags.has(CanOpenStripeAccount);
+		return true;
+	}
+
+	
 }

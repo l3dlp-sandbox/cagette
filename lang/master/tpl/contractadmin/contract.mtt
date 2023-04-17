@@ -38,11 +38,11 @@
 				::foreach d c.getDistribs()::
 				<tr>
 					<td>::d.date.toString()::</td>
-					<td>$$edit(modifier,/distribution/edit/::d.id::) </td>
+					<td>$$edit(modifier,/distributions/edit/::d.id::) </td>
 				</tr>
 				::end::
 			</table>				
-			$$insert(Nouvelle livraison,/distribution/insert)
+			$$insert(Nouvelle livraison,/distributions/insert)
 		</div>
 		</div>
 		<hr/>

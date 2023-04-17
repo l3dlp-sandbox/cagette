@@ -1,4 +1,5 @@
 package db;
+import pro.db.POffer;
 import sys.db.Object;
 import sys.db.Types;
 import Common;
@@ -15,12 +16,10 @@ class Product extends Object
 	
 	@hideInForms  @:relation(catalogId) public var catalog : db.Catalog;
 	
-	//prix TTC
-	public var price : SFloat;
+	public var price : SFloat;	
 	public var vat : SFloat;			//VAT rate in percent
 	
 	public var desc : SNull<SText>;
-	public var stock : SNull<SFloat>; //if qantity can be float, stock should be float
 	
 	public var unitType : SNull<SEnum<Unit>>; // Kg / L / g / units
 	public var qt : SNull<SFloat>;
@@ -35,10 +34,11 @@ class Product extends Object
 	public var bulk : Bool;		//(vrac) warn the customer this product is not packaged
 	public var smallQt : SNull<SFloat>; //if bulk is true, a smallQt should be defined
 
-	// public var hasFloatQt:SBool; //deprecated : this product can be ordered in "float" quantity
+	// public var stock:SFloat;
 	
 	@hideInForms @:relation(imageId) public var image : SNull<sugoi.db.File>;
 	@:relation(txpProductId) public var txpProduct : SNull<db.TxpProduct>; //taxonomy	
+	@hideInForms @:relation(pOfferId) public var pOffer : SNull<POffer>;	
 	
 	public var active : SBool; 	//if false, product disabled, not visible on front office
 	
@@ -90,7 +90,7 @@ class Product extends Object
 	 * get price including margins
 	 */
 	public function getPrice():Float{
-		return (price + catalog.computeFees(price)).clean();
+		return price.clean();
 	}
 	
 	/**
@@ -108,13 +108,10 @@ class Product extends Object
 			price : getPrice(),
 			vat : vat,
 			vatValue: (vat != 0 && vat != null) ? (  this.price - (this.price / (vat/100+1))  )  : null,
-			catalogTax : catalog.percentageValue,
-			catalogTaxName : catalog.percentageName,
 			desc : App.current.view.nl2br(desc),
 			categories : null,
 			subcategories:null,
 			orderable : this.catalog.isUserOrderAvailable(),
-			stock : catalog.hasStockManagement() ? this.stock : null,
 			qt:qt,
 			unitType:unitType,
 			organic:organic,
@@ -157,15 +154,6 @@ class Product extends Object
 	}
 	
 	/**
-	 * customs categs
-	 */
-	// public function getCategories() {		
-	// 	//"Types de produits" categGroup first
-	// 	//var pc = db.ProductCategory.manager.search($productId == id, {orderBy:categoryId}, false);		
-	// 	return Lambda.map(db.ProductCategory.manager.search($productId == id,{orderBy:categoryId},false), function(x) return x.category);
-	// }
-	
-	/**
 	 * general categs
 	 */
 	public function getFullCategorization(){
@@ -173,11 +161,6 @@ class Product extends Object
 		return txpProduct.getFullCategorization();
 	}
 	
-	public static function getByRef(c:db.Catalog, ref:String){
-		var pids = tools.ObjectListTool.getIds(c.getProducts(false));
-		return db.Product.manager.select($ref == ref && $id in pids, false);
-	}
-
 	function check(){		
 		//Fix values that will make mysql 5.7 scream
 		if(this.vat==null) this.vat=0;

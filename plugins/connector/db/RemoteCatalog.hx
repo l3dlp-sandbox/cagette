@@ -1,8 +1,6 @@
 package connector.db ;
 import sys.db.Types;
-/**
- * Permet coté Cagette.net d'avoir des infos sur un contrat cpro
- */
+
 @:index(remoteCatalogId,needSync)
 class RemoteCatalog extends sys.db.Object
 {
@@ -45,7 +43,7 @@ class RemoteCatalog extends sys.db.Object
 		return manager.get(c.id,lock);
 	}
 	
-	public function getCatalog(){
+	public function getPCatalog():pro.db.PCatalog{
 		return pro.db.PCatalog.manager.get(this.remoteCatalogId,false);
 	}
 	
@@ -59,7 +57,7 @@ class RemoteCatalog extends sys.db.Object
 		return db.Distribution.manager.count($end >= now && $orderEndDate <= now && $catalogId==this.id);
 	}
 	
-	public static function getFromCatalog(catalog:pro.db.PCatalog,?lock=false):List<RemoteCatalog>{
+	public static function getFromPCatalog(catalog:pro.db.PCatalog,?lock=false):List<RemoteCatalog>{
 		return connector.db.RemoteCatalog.manager.search($remoteCatalogId == catalog.id, lock);
 	}
 	
@@ -82,8 +80,8 @@ class RemoteCatalog extends sys.db.Object
 		var out = [];
 		for( c in group.getActiveContracts()){
 			var rc = getFromContract(c);
-			if(rc!=null && rc.getCatalog()!=null){
-				if(rc.getCatalog().company.id==company.id) out.push(rc);
+			if(rc!=null && rc.getPCatalog()!=null){
+				if(rc.getPCatalog().company.id==company.id) out.push(rc);
 			}
 		}
 		return out;

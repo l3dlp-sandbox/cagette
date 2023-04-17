@@ -1,5 +1,4 @@
 package pro.controller;
-import tools.Matomo;
 import haxe.macro.Tools.TMacroStringTools;
 import Common.Unit;
 import pro.service.PProductService;
@@ -66,7 +65,7 @@ class Product extends controller.Controller
 				var cats = company.getCatalogs();
 				var rcs = connector.db.RemoteCatalog.manager.search($remoteCatalogId in Lambda.map(cats, function(x) return x.id ));
 				for (rc in rcs){
-					var offs = rc.getCatalog().getOffers();
+					var offs = rc.getPCatalog().getOffers();
 					for ( o in offs){
 						if ( o.offer.product.id == d.id) throw Error(baseUrl, "Vous ne pouvez pas changer la référence de ce produit car il est déjà visible dans la boutique de vos clients.");
 					}
@@ -129,8 +128,8 @@ class Product extends controller.Controller
 			
 			p.insert();
 
-			if(company.offer==Discovery && pro.db.PProduct.manager.count($company==this.company)==1){
-				service.BridgeService.matomoEvent(app.user.id,"Producteurs","Premier produit créé");
+			if(company.offer==Marketplace && pro.db.PProduct.manager.count($company==this.company)==1){
+				service.BridgeService.ga4Event(app.user.id,"FirstProduct");
 			}
 
 			throw Ok(baseUrl,'Le produit a été enregistrée');

@@ -1,5 +1,13 @@
 package controller;
 
+import db.Operation;
+import db.Membership;
+import db.Catalog;
+import db.MultiDistrib;
+import service.PaymentService;
+import payment.Check;
+import payment.Cash;
+
 class Scripts extends Controller
 {
 	var now : Date;
@@ -42,6 +50,75 @@ class Scripts extends Controller
                 b.update();
             }
         }
-
 	}
+
+    /**
+        recompute payment ops
+    **/
+    public function doRecomputeOps(from:Date,to:Date){
+
+		printTitle("Recompute ops from "+from.toString()+" to "+to.toString());
+        for(g in db.Group.manager.search($id>0,false)){
+            var dids = db.MultiDistrib.getFromTimeRange( g , from , to  ).map(d -> d.id);
+            print("group "+g.id+" has "+dids.length+" mds");
+            //get not validated baskets
+            var baskets = db.Basket.manager.search( $multiDistribId in dids);
+            baskets = baskets.filter( b -> b.status == "CONFIRMED");
+            
+            for ( b in baskets){
+                print('basket #${b.id}');
+                
+                
+                var orderOp = b.getOrderOperation(false);
+                if(orderOp == null){
+                    PaymentService.makeOrderOperation(b);
+                }else{
+                    PaymentService.updateOrderOperation(orderOp,b.getOrders(),b);
+                }
+
+                if(b.getPaymentsOperations().length==0){
+			        service.PaymentService.makePaymentOperation(b.user,b.getGroup(), payment.OnTheSpotPayment.TYPE, b.total, "paiement", orderOp );	
+                }
+
+            }
+        }
+	}
+
+    /**
+        2023-01-10 ensure all cpro have legal rep
+    **/
+    public function doLegalRep(){
+
+        for(cpro in pro.db.CagettePro.manager.all(false)){
+
+            var ucs = cpro.getUserCompany();
+            var hasLegalRep = ucs.find(x -> x.legalRepresentative) != null;
+            if(!hasLegalRep && ucs.length>0){
+                var u = ucs[0];
+                u.lock();
+                u.legalRepresentative = true;
+                u.update();
+                print(cpro.vendor.id+" - "+cpro.vendor.name);
+            }
+            
+        }
+
+    }
+
+    /**
+        2023-04-04 delete AMAPs datas : 
+        supprime les UserOrder / basket / distributions multdistrib / operations / adhésions / catalog / products des AMAP.  On ne garde que Group/User/UserGroup
+    **/
+    function doDeleteAmapData(){
+
+        for( g in db.Group.manager.search( $flags.has(__ShopMode)==false ,false)){
+
+            print('delete data of #'+g.id+" "+g.name);
+
+            db.MultiDistrib.manager.delete($groupId == g.id);
+            db.Catalog.manager.delete($groupId == g.id);
+            db.Membership.manager.delete($groupId == g.id);
+            db.Operation.manager.delete($groupId == g.id);            
+        }
+    }
 }

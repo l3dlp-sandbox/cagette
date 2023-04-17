@@ -1,8 +1,10 @@
 package service;
 
+import db.Basket.BasketStatus;
 import db.Catalog;
 import haxe.Json;
 import db.Operation;
+import db.MultiDistrib.MultiDistribValidatedStatus;
 import Common;
 import tink.core.Error;
 
@@ -77,43 +79,20 @@ class PaymentService {
 	/**
 	 * Create a new order operation
 	 */
-	 public static function makeOrderOperation( orders : Array<db.UserOrder>, basket : db.Basket ) {
+	 public static function makeOrderOperation( basket : db.Basket ) {
 		
-		if (orders == null) throw "orders are null";
-		if (orders.length == 0) throw "no orders";
-		if (orders[0].user == null ) throw "no user in order";
-
-		//check that we dont have a mix of variable and CSA
-		var catalog = orders[0].product.catalog;
-		for (o in orders) {
-			if (o.product.catalog.type != catalog.type)
-				throw new Error("Cannot record an order operation with catalogs of different types");
-		}
+		if (basket == null ) throw "no basket";
 
 		var t = sugoi.i18n.Locale.texts;
 
-		var _amount = 0.0;
-		for (o in orders) {
-			var a = o.quantity * o.productPrice;
-			//plus fees
-			a = a + a * (o.feesRate / 100);
-			//neko float bug
-			a = Std.string(a).parseFloat();
-			//round
-			_amount += Math.round(a*100)/100;
-		}
+		var _amount = basket.getOrdersTotal();
 
 		var op = new db.Operation();
-		var user = orders[0].user;
-		var group = catalog.group;
+		var user = basket.user;
+		var group = basket.getGroup();
+		var orders = basket.getOrders();
 		
-		if (basket == null)
-			throw new Error("variable orders should have a basket");
-		if (basket.user.id != user.id)
-			throw new Error("user and basket mismatch");
-
-		// varying orders
-		var date = App.current.view.dDate(orders[0].distribution.date);
+		var date = App.current.view.dDate(basket.multiDistrib.distribStartDate);
 		op.name = t._("Order for ::date::", {date: date});
 		op.amount = 0 - _amount;
 		op.date = Date.now();
@@ -121,8 +100,7 @@ class PaymentService {
 		op.basket = basket;
 		op.user = user;
 		op.group = group;
-		op.pending = true;
-
+		op.pending = false;
 		op.insert();
 		updateUserBalance(op.user, op.group);
 		return op;
@@ -139,52 +117,43 @@ class PaymentService {
 		var _amount = 0.0;
 		for (o in orders) {
 			var a = o.quantity * o.productPrice;
-			//plus fees
-			a = a + a * (o.feesRate / 100);
 			//neko float bug
 			a = Std.string(a).parseFloat();
 			//round
 			_amount += Math.round(a*100)/100;
 		}
 
-		var contract = orders[0].product.catalog;
-		if (contract.type == db.Catalog.TYPE_CONSTORDERS) {
-			// Constant orders
-			var dNum = contract.getDistribs(false).length;
-			op.name = "" + contract.name + " (" + contract.vendor.name + ") " + dNum + " " + t._("deliveries");
-			op.amount = dNum * (0 - _amount);
-		} else {
+		if(orders.length > 0){
+			var contract = orders[0].product.catalog;
 			if (basket == null)
 				throw "varying contract orders should have a basket";
 			op.amount = 0 - _amount;
+	
+		}else{
+			op.amount = 0;
 		}
-
-		// op.date = Date.now();	//leave original date
+		
 		op.update();
 		service.PaymentService.updateUserBalance(op.user, op.group);
 		return op;
 	}
 	
 	
-	/**
-	 * when updating a (varying) order , we need to update the existing pending transaction
-	 */
-	public static function findVOrderOperation(distrib:db.MultiDistrib, user:db.User, ?onlyPending = true):db.Operation {
-		// throw 'find $dkey for user ${user.id} in group ${group.id} , onlyPending:$onlyPending';
-		if (distrib == null)
-			throw "Distrib is null";
-		if (user == null)
-			throw "User is null";
-		var basket = db.Basket.get(user, distrib);
-		if (basket == null)
-			return null; /*throw new Error('No basket found for user #'+user.id+', md #'+distrib.id );*/
+	// /**
+	//  * when updating a (varying) order , we need to update the existing pending transaction
+	//  */
+	// public static function findVOrderOperation(distrib:db.MultiDistrib, user:db.User, ?onlyPending = true):db.Operation {
+	// 	// throw 'find $dkey for user ${user.id} in group ${group.id} , onlyPending:$onlyPending';
+	// 	if (distrib == null)
+	// 		throw "Distrib is null";
+	// 	if (user == null)
+	// 		throw "User is null";
+	// 	var basket = db.Basket.get(user, distrib);
+	// 	if (basket == null)
+	// 		return null; /*throw new Error('No basket found for user #'+user.id+', md #'+distrib.id );*/
 
-		if (onlyPending) {
-			return db.Operation.manager.select($basket == basket && $type == VOrder && $pending == true, true);
-		} else {
-			return db.Operation.manager.select($basket == basket && $type == VOrder, true);
-		}
-	}
+		
+	// }
 
 	/**
 		Create/update the needed order operations and returns the related operations.
@@ -236,16 +205,16 @@ class PaymentService {
 			var distrib = basket.multiDistrib;
 
 			// get all orders for the same multidistrib, in order to update related operation.
-			var allOrders = distrib.getUserOrders(user, db.Catalog.TYPE_VARORDER);
+			var allOrders = distrib.getUserOrders(user);
 
 			// existing transaction
-			var existing = findVOrderOperation(distrib, user, false);
+			var existing = basket.getOrderOperation(false);
 
 			var op;
 			if (existing != null) {
 				op = updateOrderOperation(existing, allOrders, basket);
 			} else {
-				op = makeOrderOperation(allOrders, basket);
+				op = makeOrderOperation(basket);
 			}
 			out.push(op);
 
@@ -281,7 +250,6 @@ class PaymentService {
 					new payment.Cash(),
 					new payment.Check(),
 					new payment.Transfer(),	
-					new payment.MoneyPot(),
 					new payment.OnTheSpotPayment(),
 					new payment.OnTheSpotCardTerminal()						
 				];
@@ -324,10 +292,7 @@ class PaymentService {
 			
 			//when a coordinator does a manual refund or adds manually a payment
 			case PCManualEntry:
-				//Exclude the MoneyPot payment
 				var paymentTypesInAdmin = getPaymentTypes(PCGroupAdmin);
-				var moneyPot = Lambda.find(paymentTypesInAdmin, function(x) return x.type == payment.MoneyPot.TYPE);
-				paymentTypesInAdmin.remove(moneyPot);
 				#if plugins
 				//cannot make a mgp payment manually !!
 				var mgp = paymentTypesInAdmin.find( x -> x.type == pro.payment.MangopayECPayment.TYPE );
@@ -375,12 +340,12 @@ class PaymentService {
 			throw new tink.core.Error("Vous ne pouvez pas valider cette distribution car elle n'a pas encore commencé");
 		}
 
-		for (user in distrib.getUsers()) {
-			var basket = db.Basket.get(user, distrib);
+		for (basket in distrib.getBaskets()) {
 			validateBasket(basket);
 		}
 		// finally validate distrib
-		distrib.validated = true;
+		distrib.validatedStatus = Std.string(MultiDistribValidatedStatus.PAID);
+		distrib.validatedDate = Date.now();
 		distrib.update();
 
 		//update vendor stats if distrib is not today
@@ -389,16 +354,18 @@ class PaymentService {
 				BridgeService.call('/vendor-summaries/update/${vendor.id}/${distrib.distribStartDate.toString().substr(0,10)}');
 			}
 		}
+
+		// record marketplace turnover to Stripe
+		BridgeService.call('/subscriptions/record-marketplace-turnover/${distrib.id}');
 	}
 
 	public static function unvalidateDistribution(distrib:db.MultiDistrib) {
-		for (user in distrib.getUsers()) {
-			var basket = db.Basket.get(user, distrib);
+		for (basket in distrib.getBaskets()) {
 			unvalidateBasket(basket);
 		}
 		// finally validate distrib
 		distrib.lock();
-		distrib.validated = false;
+		distrib.validatedStatus = Std.string(MultiDistribValidatedStatus.NOT_VALIDATED);
 		distrib.update();
 	}
 
@@ -414,13 +381,9 @@ class PaymentService {
 		// This will throw an error if for example there are pending payments of type on the spot
 		basket.canBeValidated();
 
-		// mark orders as paid
-		var orders = basket.getOrders();
-		for (order in orders) {
-			order.lock();
-			order.paid = true;
-			order.update();
-		}
+		basket.lock();
+		basket.status = Std.string(BasketStatus.VALIDATED);
+		basket.update();
 
 		// validate order operation and payments
 		var operation = basket.getOrderOperation(false);
@@ -437,6 +400,7 @@ class PaymentService {
 				}
 			}
 
+			var orders = basket.getOrders();
 			var o = orders[0];
 			if (o.distribution == null)
 				throw o.id + " order has no distrib";
@@ -452,14 +416,11 @@ class PaymentService {
 		if (basket == null || !basket.isValidated())
 			return false;
 
-		// mark orders as paid
-		var orders = basket.getOrders();
-		for (order in orders) {
-			order.lock();
-			order.paid = false;
-			order.update();
-		}
 
+		basket.lock();
+		basket.status = Std.string(BasketStatus.CONFIRMED);
+		basket.update();
+		
 		// validate order operation and payments
 		var operation = basket.getOrderOperation(false);
 		if (operation != null) {
@@ -475,9 +436,12 @@ class PaymentService {
 				}
 			}
 
+			var orders = basket.getOrders();
 			var o = orders[0];
 			updateUserBalance(o.user, o.distribution.place.group);
 		}
+
+		
 
 		return true;
 	}
@@ -496,16 +460,16 @@ class PaymentService {
 
 	/**
 		Get multidistrib turnover by payment type
-	**/
+	
 	public static function getMultiDistribTurnoverByPaymentType(md:db.MultiDistrib):Map<String, {ht:Float, ttc:Float}> {
 		var out = new Map<String, {ht:Float, ttc:Float}>();
 
-		/*for( b in md.getBaskets()){
+		for( b in md.getBaskets()){
 			for( op in b.getPaymentsOperations()){
 
 			}
-		}*/
+		}
 
 		return out;
-	}
+	}**/
 }

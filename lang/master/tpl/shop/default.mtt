@@ -3,8 +3,7 @@
 
 <div id='shop'></div>
 
-  ::set group = getCurrentGroup()::
-  ::if group!=null::
+    ::set group = getCurrentGroup()::
     <script language="javascript">
         window.addEventListener("DOMContentLoaded", function() {
             ::if(user!=null)::
@@ -21,15 +20,10 @@
 
             neo.createNeoModule("shop", "shop", {
                 multiDistribId: ::md.id::,
-                tmpBasketId: ::tmpBasketId::
+                isAuth: ::user != null::
             });
 
         });
     </script>
-
-  ::else::
-    <p>Aucun groupe sélectionné.</p>
-    <p><a href="/">Retour sur la page d'accueil</a></p>
-  ::end::
 
 ::end::

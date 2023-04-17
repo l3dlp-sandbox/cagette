@@ -42,7 +42,6 @@ class Public extends controller.Controller
 		}
 		var id = app.user.getGroup()==null ? null : app.user.getGroup().id;
 		f.addElement( new sugoi.form.elements.IntSelect("group","Groupe " + App.current.getTheme().name + " qui accueillera le catalogue", datas, id , true) );
-		f.addElement( new sugoi.form.elements.Checkbox("csa","Ce catalogue sera un contrat AMAP classique",false));
 		if(!isVendor){
 			f.addElement( new sugoi.form.elements.TextArea("message","Message au producteur","Bonjour, \nJe souhaiterais proposer vos produits aux membres de mon groupe " + App.current.getTheme().name + "...",false,null,"rows='10'") );
 		}
@@ -67,47 +66,41 @@ class Public extends controller.Controller
 				throw Error("/contractAdmin/view/" + contracts.first().id, "Ce catalogue existe déjà dans ce groupe. Il n'est pas nécéssaire d'importer plusieurs fois le même catalogue dans un groupe.");
 			}
 
-			if(isVendor){
-				
-				//direct linkage
-				pro.service.PCatalogService.linkCatalogToGroup(catalog, group , app.user.id, f.getValueOf("csa")==true ? db.Catalog.TYPE_CONSTORDERS : db.Catalog.TYPE_VARORDER );
-				throw Ok("/contractAdmin", "Félicitations, le catalogue a bien été relié à "+group.name );
+			//send notif to ask for linkage
+			var params : pro.db.PNotif.CatalogImportContent = {
+				message		: isVendor ? "" : f.getValueOf("message"),
+				catalogId 	: catalog.id,
+				//placeId 	: f.getValueOf("placeId"),
+				userId 		: app.user.id,
+			}
 
-			}else{
-				
-				//send notif to ask for linkage
-				var params : pro.db.PNotif.CatalogImportContent = {
-					message		: f.getValueOf("message"),
-					catalogId 	: catalog.id,
-					//placeId 	: f.getValueOf("placeId"),
-					userId 		: app.user.id,
-					catalogType : f.getValueOf("csa")==true ? db.Catalog.TYPE_CONSTORDERS : db.Catalog.TYPE_VARORDER
-				}
-
-				//var place = db.Place.manager.get(f.getValueOf("placeId"));
-				
-				//store notif
-				var n = new pro.db.PNotif();
-				n.company = catalog.company;
-				n.type = pro.db.PNotif.NotifType.NTCatalogImportRequest;
-				n.title = "Demande de liaison du catalogue \"" + catalog.name+"\" pour \"" + group.name + "\"";
-				n.content = haxe.Json.stringify(params);
-				n.group = group;
-				n.insert();
-				
-				//store token
-				var token = "catalog-token" + haxe.crypto.Md5.encode(Std.string(Std.random(99999)));
-				sugoi.db.Cache.set(token, n.id , 60 * 60 * 24 * 14);
-				
-				//send email
-				var e = new sugoi.mail.Mail();		
-				e.setSubject(n.title);
-				e.setRecipient(catalog.company.vendor.email);			
-				e.setSender(App.current.getTheme().email.senderEmail,"Cagette.net");		
-				var html = app.processTemplate("plugin/pro/mail/catalogImport.mtt", {catalog:catalog,group:group,user:app.user,message:f.getValueOf("message")});		
-				e.setHtmlBody(html);
-				App.sendMail(e);	
-				
+			//var place = db.Place.manager.get(f.getValueOf("placeId"));
+			
+			//store notif
+			var n = new pro.db.PNotif();
+			n.company = catalog.company;
+			n.type = pro.db.PNotif.NotifType.NTCatalogImportRequest;
+			n.title = "Demande de liaison du catalogue \"" + catalog.name+"\" pour \"" + group.name + "\"";
+			n.content = haxe.Json.stringify(params);
+			n.group = group;
+			n.insert();
+			
+			//store token
+			var token = "catalog-token" + haxe.crypto.Md5.encode(Std.string(Std.random(99999)));
+			sugoi.db.Cache.set(token, n.id , 60 * 60 * 24 * 14);
+			
+			//send email
+			var e = new sugoi.mail.Mail();		
+			e.setSubject(n.title);
+			e.setRecipient(catalog.company.vendor.email);			
+			e.setSender(App.current.getTheme().email.senderEmail,"Cagette.net");		
+			var html = app.processTemplate("plugin/pro/mail/catalogImport.mtt", {catalog:catalog,group:group,user:app.user,message:isVendor ? "" : f.getValueOf("message")});		
+			e.setHtmlBody(html);
+			App.sendMail(e);	
+			
+			if (isVendor){
+				throw Ok("/contractAdmin", "La demande a été envoyée : <a href='/p/pro'>aller au Compte producteur pour la valider</a>");
+			}else {
 				throw Ok("/contractAdmin", "Votre demande a été envoyée au producteur. Vous serez prévenu par email de sa décision.");
 			}
 		}

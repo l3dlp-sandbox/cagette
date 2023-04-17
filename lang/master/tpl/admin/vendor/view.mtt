@@ -12,9 +12,15 @@
 			::end::
 			<!--Charte Producteurs : $$check(::vendor.vendorPolicy::)-->
 			Profession : ::if(profession!=null)::<b>::profession.name::</b>::else:: ??? ::end::<br/>
-
-			
 		</p>
+		::if(cpro!=null)::
+		::set salesRepresentative = cpro.getSalesContact()::
+		::if(salesRepresentative!=null)::
+		<p>
+			<a href="https://app.hubspot.com/contacts/7425761/objects/0-1/views/all/list?query=::salesRepresentative.email::" target='_blank'>Trouver sur Hubspot</a>
+		</p>
+		::end::
+		::end::
 	</div>
 	<div class="col-md-4">
 		<div ::cond(vendor.imageId!=null):: style="background-image:url('::file(vendor.imageId)::');width:200px;height:200px;" class="productImg" /> 
@@ -90,12 +96,16 @@
 			</b>	
 
 			::if(tmpVendor.id!=null)::
-				<a href='/p/pro/admin/certification#/::tmpVendor.id::' target="_blank">( questionnaire )</a><br/>
+				<a href='/p/pro/admin/certification#/certification/::tmpVendor.id::' target="_blank">( questionnaire )</a><br/>
 			::end::
 		</p>
 
 		<p>
-			Actif $$bool(::stats.active::)
+			Actif $$bool(::stats.active::)<br/>
+
+			
+			
+			
 		</p>
 		
 
@@ -106,7 +116,7 @@
 	<div class="col-md-6">
 		C.A Total : ::formatNum(stats.turnoverTotal):: &euro;<br/>
 		C.A 3 mois : ::formatNum(stats.turnover90days):: &euro;<br/>
-		C.A depuis date anniversaire : ::formatNum(stats.marketTurnoverSinceFreemiumResetDate):: &euro;<br/>
+		C.A depuis date anniversaire : ::formatNum(stats.marketTurnoverSinceFreemiumResetDate):: &euro; (date anniversaire : ::sDate(vendor.freemiumResetDate)::)<br/>
 		<span class="disabled">Dernière mise à jour des stats : ::hDate(stats.ldate)::  <a href='?refresh=1' class="btn btn-default btn-xs">Rafraichir</a></span><br/>
 	</div>
 
@@ -170,11 +180,9 @@
 </div>
 
 <div class="row" style="margin-bottom: 24px;">
-	<div class="col-md-12">
-		<h4>Gestion Abonnement Stripe</h4>
-	</div>
-
-	<div class="col-md-12">
+	<div class="col-md-6">
+		<h4>Frais paiement sur place</h4>
+		<p class="disabled">Les frais sur les ventes en paiement sur place sont payés via un abonnement Stripe Billing.</p>
 		<div id="stripe-admin-neo-container" style="margin-bottom: 8px"></div>
 		<script>
 			document.addEventListener("DOMContentLoaded", function(event) {
@@ -183,6 +191,24 @@
 				});
 			});
 		</script>
+	</div>
+
+	<div class="col-md-6">
+		<h4>Paiement en ligne</h4>
+		<p class="disabled">Le paiement CB en ligne (<i>avec Dispatch</i>) fonctionne avec Stripe connect. Les frais sont prélevés directement.</p>
+		<p>
+			<!--
+				Peut ouvrir un compte Stripe $$bool(::true::)
+				<a href="?canOpenStripeAccount=0" class="btn btn-default btn-xs">désactiver</a><br/>
+			-->
+			::set dispatch = vendor.isDispatchReady()::
+			Compte Stripe Connect valide : $$bool(::dispatch::) 
+
+			::if(vendor.stripeAccountId!=null)::
+			<a href="https://dashboard.stripe.com/connect/accounts/::vendor.stripeAccountId::/activity" class="btn btn-default btn-sm" target="_blank">consulter</a>
+			::end::
+
+		</p>
 	</div>
 </div>
 
@@ -245,11 +271,7 @@
 				::end::</td>
 				<td><a href="/p/hosted/group/::c._group.id::">::c._group.name::</a></td>
 				<td>
-					::if(c._group.hasShopMode())::
 					Boutique
-					::else::
-					AMAP
-					::end::
 				</td>
 				<td>::c.name::</td>
 				<td>du ::sDate(c.startDate):: au ::sDate(c.endDate)::</td>

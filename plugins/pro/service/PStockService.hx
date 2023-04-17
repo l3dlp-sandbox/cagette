@@ -29,7 +29,7 @@ class PStockService{
 	/**
 		update available stock in groups.		
 	**/
-	var remoteProductsList:Array<db.Product>;
+	/*var remoteProductsList:Array<db.Product>;
 
     public function updateStockInGroups(offer:pro.db.POffer){
 
@@ -54,7 +54,7 @@ class PStockService{
 			product.stock = getStocks(offer).availableStock;
 			product.update();
 		}
-	}
+	}*/
 
 	public static function getStocks(offer:pro.db.POffer):{centralStock:Float,undeliveredOrders:Float,availableStock:Float}{
 		var out = {centralStock:null,undeliveredOrders:null,availableStock:null};
@@ -70,35 +70,6 @@ class PStockService{
 			return out;
 		}
 	}
-
-	/**
-	 *  Decrease cpro stocks when orders close
-	 */
-	public static function decreaseStocksOnDistribEnd(d:db.Distribution,rc:connector.db.RemoteCatalog){
-
-		if(d.catalog.id != rc.getContract().id) throw "This distribution does not belong to this farmer";
-		if( d.end.getTime() > Date.now().getTime() ) throw "This distribution is not yet done";
-		var orders = pro.service.ProReportService.getOrdersByProduct({distribution:d});
-		var allOffers = rc.getCatalog().company.getOffers();
-		var stockService = new PStockService(rc.getCatalog().company);
-
-		for( o in orders.orders){
-			
-			var offer = Lambda.find(allOffers,function(x) return x.ref==o.ref);
-			if(offer==null || offer.stock==null){
-				continue;
-			} else {
-				//update stock in cpro
-				offer.lock();
-				offer.stock -= o.quantity;
-				offer.update();
-
-				//update stock in groups
-				stockService.updateStockInGroups(offer);
-			}
-		}
-	}
-
 
 	/**
 		update stocks in groups when the stock of a product is modified
@@ -117,7 +88,7 @@ class PStockService{
 		for( offer in product.getOffers()){
 			var catalogs = Lambda.map(offer.getCatalogOffers(), function(x) return x.catalog).deduplicate();
 			for ( c in catalogs){			
-				for ( rc in connector.db.RemoteCatalog.getFromCatalog(c) ){
+				for ( rc in connector.db.RemoteCatalog.getFromPCatalog(c) ){
 					
 					var contract = rc.getContract();
 					if (contract == null) continue;

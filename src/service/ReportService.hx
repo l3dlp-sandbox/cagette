@@ -17,9 +17,7 @@ class ReportService{
 		
 		var exportName = t._("Delivery ::contractName:: of the ", {contractName:distribution.catalog.name}) + distribution.date.toString().substr(0, 10);
 		var where = ' and p.catalogId = ${distribution.catalog.id}';
-		//if (distribution.catalog.type == db.Catalog.TYPE_VARORDER ) {
 		where += ' and up.distributionId = ${distribution.id}';
-		//}
 
 		//Product price will be an average if price changed
 		var sql = 'select 
@@ -132,7 +130,7 @@ class ReportService{
 		
 		var vendorDataByVendorId = new Map<Int,{contract:db.Catalog,distrib:db.Distribution,orders:Array<OrderByProduct>}>();//key : vendor id
 		
-		for (d in multiDistrib.getDistributions(db.Catalog.TYPE_VARORDER)) {
+		for (d in multiDistrib.getDistributions()) {
 
 			var vendorId = d.catalog.vendor.id;
 			var vendorData = vendorDataByVendorId.get(vendorId);
@@ -167,7 +165,7 @@ class ReportService{
 	**/
 	public static function getOrdersByVAT(distribution:db.MultiDistrib){
 		var ordersByVat = new Map<Int,{ht:Float,ttc:Float}>();
-		for( o in distribution.getOrders(db.Catalog.TYPE_VARORDER)){
+		for( o in distribution.getOrders()){
 			var key = Math.round(o.product.vat*100);
 			if(ordersByVat[key]==null) ordersByVat[key] = {ht:0.0,ttc:0.0};
 			var total = o.quantity * o.productPrice;

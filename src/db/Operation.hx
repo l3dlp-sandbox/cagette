@@ -4,7 +4,7 @@ import tink.core.Error;
 
 enum OperationType{
 	VOrder; 	// 0 order on a variable order (debt)
-	SubscriptionTotal; // 1 order on a CSA contract classic or variable (debt)
+	__SubscriptionTotal; // @deprecated 1 order on a CSA contract classic or variable (debt)
 	Payment;	// 2 payment of a debt	
 	Membership;	// 3 membership (debt)
 }
@@ -18,7 +18,6 @@ typedef PaymentInfos = {
 }; 
 
 typedef VOrderInfos = {basketId:Int};
-typedef COrderInfos = {subscriptionId:Int};
 typedef MembershipInfos = {year:Int};
 
 /**
@@ -43,7 +42,6 @@ class Operation extends sys.db.Object
 
 	//new fields
 	@hideInForms @:relation(basketId) public var basket : SNull<db.Basket>; 	//relation to basket for variable orders
-	@hideInForms @:relation(subscriptionId) public var subscription : SNull<Subscription>; 	//relation to contract for CSA orders
 	@hideInForms public var data : SNull<SString<256>>; 						//json data
 
 	public function setData(data:Dynamic){
@@ -60,7 +58,7 @@ class Operation extends sys.db.Object
 
 	public function getOrderData(){
 		return switch(type){
-			case SubscriptionTotal, VOrder : this.getData();				
+			case VOrder : this.getData();				
 			default : null;
 		}
 	}
@@ -120,8 +118,6 @@ class Operation extends sys.db.Object
 		return db.Operation.manager.search($relation == this && $type == Payment, false);
 	}
 	
-	
-
 	public static function countOperations(user:db.User, group:db.Group):Int{	
 		return manager.count($user == user && $group == group);		
 	}
@@ -163,12 +159,6 @@ class Operation extends sys.db.Object
 			throw new tink.core.Error("Variable Order operation should have a basket");
 		}
 		
-		if ( !this.group.hasShopMode() && this.subscription == null ) {
-			if(this.type==SubscriptionTotal /*|| this.type==Payment*/){ //there can be a payment for a membership
-				throw new tink.core.Error("Aucune souscription n\'est associée à cette opération.");
-			}
-		}
-
 		amount = Formatting.roundTo( amount, 2 );
 	}
 

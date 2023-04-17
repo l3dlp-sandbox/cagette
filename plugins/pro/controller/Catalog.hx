@@ -36,7 +36,7 @@ class Catalog extends controller.Controller
 
 		view.catalogs = company.getCatalogs();
 		view.getLinkages = function(catalog:pro.db.PCatalog){
-			return connector.db.RemoteCatalog.getFromCatalog(catalog);				
+			return connector.db.RemoteCatalog.getFromPCatalog(catalog);				
 		}
 		checkToken();
 	}
@@ -212,8 +212,8 @@ class Catalog extends controller.Controller
 			catalog.visible = f.getValueOf("visible") == "public";
 			catalog.insert();
 
-			if(company.offer==Discovery && PCatalog.manager.count($company==this.company)==1){
-				service.BridgeService.matomoEvent(app.user.id,"Producteurs","Premier catalogue créé");
+			if(company.offer==Marketplace && PCatalog.manager.count($company==this.company)==1){
+				service.BridgeService.ga4Event(app.user.id,"FirstCatalog");
 			}
 
 			throw Ok('/p/pro/catalog/products/'+catalog.id,'Le catalogue a été créé');
@@ -301,14 +301,12 @@ class Catalog extends controller.Controller
 		
 		var form = new sugoi.form.Form("publicGroup");
 		form.addElement(new sugoi.form.elements.IntSelect("group","Groupe",data,null,true));
-		form.addElement(new sugoi.form.elements.RadioGroup("type","Mode commande",[{label:"Commande variable",value:"1"},{label:"Contrat AMAP",value:"0"}],"1",true));
 
 		if(form.isValid()){
 			var gid : Int = form.getValueOf("group");
 			var group = db.Group.manager.get(gid,false);
-			var type = form.getValueOf("type")=="1" ? 1 : 0;
 			try{
-				pro.service.PCatalogService.linkCatalogToGroup(catalog,group,app.user.id, type);
+				pro.service.PCatalogService.linkCatalogToGroup(catalog,group,app.user.id);
 			}catch(e:tink.core.Error){
 				throw Error("/p/pro/catalog/publishGroup/"+catalog.id,e.message);
 			}
@@ -335,11 +333,10 @@ class Catalog extends controller.Controller
 		var content : CatalogImportContent = haxe.Json.parse(notif.content);		
 		var catalog = pro.db.PCatalog.manager.get( content.catalogId );		
 		try{
-			pro.service.PCatalogService.linkCatalogToGroup(catalog, notif.group , content.userId, content.catalogType );
+			pro.service.PCatalogService.linkCatalogToGroup(catalog, notif.group , content.userId );
 		}catch(e:tink.core.Error){
 			throw Error('/p/pro/',e.message);
-		}
-		
+		}		
 		
 		notif.delete();
 		
@@ -360,7 +357,7 @@ class Catalog extends controller.Controller
 		var content : pro.db.PNotif.DeliveryRequestContent = haxe.Json.parse(notif.content);
 		var catalog = pro.db.PCatalog.manager.get(content.pcatalogId,false);
 		var distrib = db.MultiDistrib.manager.get(content.distribId,false);
-		var rcs = connector.db.RemoteCatalog.getFromCatalog(catalog);
+		var rcs = connector.db.RemoteCatalog.getFromPCatalog(catalog);
 		var rc = Lambda.find(rcs,function(rc) return rc.getContract().group.id==notif.group.id );
 		if(rc==null){
 			throw Error("/p/pro","Vous n'êtes plus reliés à ce catalogue, vous pouvez supprimer cette demande.");
@@ -383,14 +380,12 @@ class Catalog extends controller.Controller
 		if( notif.sender!=null){
 			var title = "Votre invitation à la distribution du " + app.view.hDate(distrib.getDate()) + " a été acceptée par " + company.vendor.name;
 			App.quickMail(notif.sender.email, title, title, distrib.getGroup());
-		}
-		
+		}		
 		
 		//delete notif
 		notif.delete();
 		
-		throw Ok("/p/pro", "Vous avez accepté l'invitation à participer à la distribution du "+distrib.getDate());
-		
+		throw Ok("/p/pro", "Vous avez accepté l'invitation à participer à la distribution du "+distrib.getDate());		
 	}
 	
 	/**
@@ -434,13 +429,13 @@ class Catalog extends controller.Controller
 		if (checkToken()){
 			
 			var c = rc.getContract(true);
-			c.endDate = Date.now();
-			c.update();
+			try{
+				pro.service.PCatalogService.breakLinkage(c);
+			}catch(e:tink.core.Error){
+				throw Error("/p/pro/catalog/" , e.message);
+			}
 			
-			rc.lock();
-			rc.delete();
-			
-			throw Ok("/p/pro/catalog/","Le catalogue \""+c.name+"\" a été fermé. Il reste consultable dans les anciens contrats du groupe.");
+			throw Ok("/p/pro/catalog/","Le catalogue \""+c.name+"\" a été archivé. Il reste consultable dans les catalogues archivés du groupe.");
 			
 		}
 		

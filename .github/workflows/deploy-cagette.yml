@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout cagette
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       # see chart https://github.com/actions/checkout#checkout-multiple-repos-private
       #- name: Checkout cagette-pro
@@ -29,13 +29,13 @@ jobs:
       #    token: ${{ secrets.GH_PAT }}
 
       - name: Checkout record-macros
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: bablukid/record-macros
           path: devLibs/record-macros
 
       - name: Checkout sugoi
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: bablukid/sugoi
           path: devLibs/sugoi
@@ -68,18 +68,22 @@ jobs:
 
       # see https://github.com/actions/checkout#checkout-multiple-repos-private
       - name: Checkout chart
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: CagetteNet/kubernetes
           token: ${{ secrets.GH_PAT }}
           ref: main
 
-      - name: set azure credentials to access cluster
-        uses: azure/aks-set-context@v1
+      - name: login to azure
+        uses: azure/login@v1
         with:
-          creds: '${{ secrets.AZURE_CREDENTIALS }}'
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: set azure credentials to access cluster
+        uses: azure/aks-set-context@v3
+        with:
           resource-group: ${{ env.CLUSTER_RESOURCE_GROUP }}
-          cluster-name: 'alilo-dev'
+          cluster-name: "alilo-dev"
         id: login
 
       - name: setup nodemailer SMTP credentials

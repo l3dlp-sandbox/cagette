@@ -40,7 +40,6 @@ COPY --chown=www-data:www-data .git /srv/.git
 COPY --chown=www-data:www-data common/ /srv/common/
 COPY --chown=www-data:www-data data/ /srv/data/
 COPY --chown=www-data:www-data devLibs/ /srv/devLibs/
-COPY --chown=www-data:www-data js/ /srv/js/
 COPY --chown=www-data:www-data lang/ /srv/lang/
 COPY --chown=www-data:www-data src/ /srv/src/
 COPY --chown=www-data:www-data www/ /srv/www/
@@ -56,24 +55,12 @@ RUN lix install haxe 4.0.5
 RUN lix use haxe 4.0.5
 RUN lix download
 
-COPY --chown=www-data:www-data frontend/ /srv/frontend/
-
-WORKDIR /srv/frontend
-
-RUN lix scope create
-RUN lix use haxe 4.0.5
-RUN lix download
-RUN npm install
-
 WORKDIR /srv
 COPY config.xml.dist config.xml
 
 WORKDIR /srv/backend
 
 RUN haxe build.hxml -D i18n_generation;
-
-WORKDIR /srv/frontend
-RUN haxe build.hxml
 
 WORKDIR /srv/lang/fr/tpl/
 RUN neko ../../../backend/temploc2.n -macros macros.mtt -output ../tmp/ *.mtt */*.mtt */*/*.mtt */*/*/*.mtt */*/*/*/*.mtt

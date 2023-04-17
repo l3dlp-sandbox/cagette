@@ -6,16 +6,16 @@
     <div class="alert alert-danger">
         <p>
             <i class="icon icon-alert"></i>
-            L'email de votre compte utilisateur (<b>::user.getName()::</b>) n'est pas le même que le email indiqué pour le producteur <b>"::vendor.name::"</b>. 
+            L'email de votre compte utilisateur (<b>::user.getName()::</b>) 
+            n'est pas le même que le email indiqué pour le producteur <b>"::vendor.name::"</b>. 
         </p>
         <p>
-            Seul le producteur lui-même peut faire la demande d'ouverture d'un compte Producteur Découverte.<br/>
+            Seul le producteur lui-même peut faire la demande d'ouverture d'un compte Producteur.<br/>
             Attention, l'usurpation d'identité est un délit qui est sanctionné par la loi.<br/>
         </p>
       
         
     </div>
-
     
 
     <div class="row">

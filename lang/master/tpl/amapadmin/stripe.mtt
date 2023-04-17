@@ -1,0 +1,68 @@
+::use 'amapadmin/design.mtt'::
+
+	<h3>Paiement en ligne avec Stripe</h3>		
+	
+	<div class="row">
+
+
+        <div class="col-md-12">
+            <div>
+                Collaborez avec d'autres producteurs grâce au paiement en ligne Stripe !<br/>
+                La gestion des paiements devient très simple : vos clients payent avec leur carte bancaire comme sur n'importe quel site de e-commerce, 
+                et Cagette.net paye automatiquement chaque producteur en fonction de ce qu'ils ont vendu.           
+
+                <img src="/img/schema_dispatch.png" style="width: 100%;"/>
+            </div>
+           
+        </div>
+
+        <div class="col-md-12 text-center">
+            <div>
+                <br/><br/>
+                <a href="https://wiki.cagette.net/cpro:stripe" target="_blank" class="btn btn-default">
+                    <i class="icon icon-info"></i> Consultez la documentation</a>
+                <br/><br/>
+            </div>
+            
+        </div>
+
+        <div class="col-md-12 text-center ">
+            <div class="alert alert-warning">
+               <b>Le paiement en ligne avec Stripe est beta test actuellement,<br/>
+                contactez le support ( support@cagette.net ) si vous souhaitez l'utiliser.</b>
+            </div>
+        </div>
+
+        <hr/>
+		
+		<div class="col-md-12">
+            <div class="block">
+                Les producteurs de ce marché doivent ouvrir un compte Stripe afin de pouvoir encaisser des revenus issus du paiement en ligne. 
+                L'ouverture de compte Stripe se fait depuis le compte producteur, dans l'onglet "Producteur" , puis "Paiement en ligne".
+            </div>
+                
+			<table class="table table-condensed table-bordered">
+				<tr>
+					<th>id</th>
+					<th>Nom</th>
+					<th>Compte Stripe</th>
+				</tr>
+				::foreach v group.getActiveVendors()::
+				<tr>
+					<td>::v.id::</td>
+					<td>::v.name::</td>				
+					<td>
+						::set d = v.getStripeConnectStatus()::
+						compte ouvert $$bool(::d.account_open::), compte validé $$bool(::d.details_submitted && d.charges_enabled::)						
+					</td>
+				
+				</tr>
+			
+				::end::
+			</table>
+        </div>
+
+	</div>
+
+
+::end::

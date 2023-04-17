@@ -77,5 +77,10 @@
 				<th>::formatNum(total)::&nbsp;::currency()::</th>	
 			</tr>
 	</table>
+
+	<p style="font-size: 0.8em;">
+		En tant que vendeur professionnel, vous répondez à des obligations civiles et fiscales. 
+		<a href="https://www.cagette.net/wp-content/uploads/2023/01/Obligations-fiscales-et-sociales.pdf" target="_blank">Cliquez ici pour en savoir plus</a>. 
+	</p>
 			
 ::end::

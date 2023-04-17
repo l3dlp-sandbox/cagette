@@ -1,8 +1,8 @@
 package controller;
-import db.Catalog;
 import db.UserGroup;
 import haxe.Json;
 import neko.Web;
+import sugoi.db.Session;
 
 /**
  * REST JSON API
@@ -43,14 +43,6 @@ class Api extends Controller
 		d.dispatch(new controller.api.Places(place));
 	}
 
-	public function doCatalog(d:haxe.web.Dispatch) {
-		d.dispatch(new controller.api.Catalog());
-	}
-	
-	public function doSubscription(d:haxe.web.Dispatch) {
-		d.dispatch(new controller.api.Subscription());
-	}
-
 	/**
 	 * Get distribution planning for this group
 	 * 
@@ -83,6 +75,23 @@ class Api extends Controller
 	
 	public function doProduct(d:haxe.web.Dispatch){
 		d.dispatch(new controller.api.Product());
+	}
+
+	/**
+		create session with no user for dev purpose
+	**/
+	public function doCreateSid(){
+
+		if(!App.config.DEBUG) throw "only works if config.DEBUG=true";
+
+		var session = Session.init([]);
+
+		json({
+			sid : session.sid,
+		});
+
+
+
 	}
 	
 }

@@ -79,24 +79,6 @@ if (App.current.getSettings().noCourse==true) {
 		}
 
 		view.emails = Lambda.array(emails);
-
-
-
-		/*if (app.params.exists("fix")){
-			Sys.println("fix :");
-			for( c in course.getCompanies()){
-				for ( cata in c.company.getCatalogs()){
-					for ( rc in connector.db.RemoteCatalog.getFromCatalog(cata)){
-						var group = rc.getRelatedContract().amap;
-						group.lock();
-						group.flags.set(ShopMode);
-						group.flags.unset(CagetteNetwork);
-						group.update();
-						Sys.println("update flags for "+group.name);
-					}
-				}
-			}
-		}*/
 	}
 
 
@@ -161,33 +143,7 @@ if (App.current.getSettings().noCourse==true) {
 			c.date = form.getValueOf("date");
 			c.end = form.getValueOf("end");
 			c.insert();
-
-			/*var group = new db.Group();
-			group.name = "Les producteurs de la session "+c.ref+" - retrait au café";
-			group.groupType = db.Group.GroupType.ProducerDrive;
-			group.flags.unset(CagetteNetwork);
-			group.insert();
-
-			var place = new db.Place();
-			place.name = "Place du marché";
-			place.group = group;
-			place.zipCode = "000";
-			place.city = "St Martin de la Cagette";
-			place.insert();
-
-			var distrib = service.DistributionService.createMd(
-				place,
-				tools.DateTool.setHourMinute(c.end,16,0),//date de distrib le jour de la J2
-				tools.DateTool.setHourMinute(c.end,18,0),
-				tools.DateTool.setHourMinute(c.date,8,0),//ouverture de la J1 à J2-1
-				tools.DateTool.setHourMinute(DateTools.delta(c.end,-1000.0*60*60*24),21,0),
-				[],
-				null
-			);
-
-			c.group = group;
-			c.update();*/
-			
+				
 			throw Ok("/p/hosted/course/", c.name +" a bien été créé");
 		}
 
@@ -289,6 +245,8 @@ if (App.current.getSettings().noCourse==true) {
 				v.disabled = null;
 				v.update();
 
+				VendorStats.getOrCreate(v);
+
 				//create default catalog
 				var catalog = new pro.db.PCatalog();
 				catalog.company = c;
@@ -301,10 +259,9 @@ if (App.current.getSettings().noCourse==true) {
 					var rc = pro.service.PCatalogService.linkCatalogToGroup(catalog, group, u.id);
 					service.DistributionService.participate(distrib,rc.getContract());
 				}
-				
 
 				//add user + teacher
-				pro.db.PUserCompany.make(u,c);
+				pro.db.PUserCompany.make(u,c,true,true);
 				//if(form.getValueOf("teacher")==true) pro.db.PUserCompany.make(course.teacher,c);
 
 				//add it to the course
@@ -330,10 +287,10 @@ if (App.current.getSettings().noCourse==true) {
 	 *  EXport a CSV for Moodle
 	 */
 	function doMoodleCsv(course:hosted.db.Course){
-		var headers = ["username","password","firstname","lastname","email","course1"];
+		var headers = ["username","password","firstname","lastname","email","course1","group1"];
 		var data = [];
 		for( d in course.getCompanies()) {			
-			data.push([d.moodleUser, d.moodlePass, d.user.firstName, d.user.lastName, d.cagetteUser ]);
+			data.push([d.moodleUser, d.moodlePass, d.user.firstName, d.user.lastName, d.cagetteUser, "Développer ses ventes en ligne - 2022/2023",course.name ]);
 		}
 
 		sugoi.tools.Csv.printCsvDataFromStringArray( data , headers , "Feuille identifiants.csv" );
@@ -359,11 +316,20 @@ if (App.current.getSettings().noCourse==true) {
 
 	private function generatePassword():String{
 		var letters = "abcdefghijklmnopqrstuvwxyz";
+		var upperCaseLetters = letters.toUpperCase();
+		var specials = "_-.#";
 		var pass  = new StringBuf();
 		for(i in 0...8){
+
 			if(i<=3){
-				pass.add(letters.charAt(Std.random(letters.length)));
-			}else{
+				if(i%2==0){
+					pass.add(letters.charAt(Std.random(letters.length)));
+				}else{
+					pass.add(upperCaseLetters.charAt(Std.random(upperCaseLetters.length)));
+				}				
+			}else if(i == 4){
+				pass.add(specials.charAt(Std.random(specials.length)));
+			} else {
 				pass.add(Std.random(10));
 			}
 		}
@@ -371,18 +337,21 @@ if (App.current.getSettings().noCourse==true) {
 	}
 
 	private function generateUsername(first:String,last:String):String{
-
-		var last = StringTools.replace(last, " ", "");
-		var last = StringTools.replace(last, "'", "");
-		var last = StringTools.replace(last, "é", "e");
-		var last = StringTools.replace(last, "è", "e");
-		var last = StringTools.replace(last, "ê", "e");
-		var last = StringTools.replace(last, "ç", "c");
-		var last = StringTools.replace(last, "à", "a");
-		var last = StringTools.replace(last, "â", "a");
-		
-		var s = first.substr(0, 1) + last.substr(0,12);
+		var s = cleanString(first).substr(0, 64) +"."+ cleanString(last).substr(0,64);
 		return s.toLowerCase();
+	}
+
+	function cleanString(str:String):String{
+		str = StringTools.replace(str, " ", "");
+		str = StringTools.replace(str, "'", "");
+		str = StringTools.replace(str, "é", "e");
+		str = StringTools.replace(str, "è", "e");
+		str = StringTools.replace(str, "ê", "e");
+		str = StringTools.replace(str, "ç", "c");
+		str = StringTools.replace(str, "à", "a");
+		str = StringTools.replace(str, "â", "a");
+		return str;
+		
 	}
 
 	/**
@@ -409,7 +378,7 @@ if (App.current.getSettings().noCourse==true) {
 
 		//remove access to groups linked to this cpro + remove future distribs
 		for( cat in company.getCatalogs()){
-			for( rc in connector.db.RemoteCatalog.getFromCatalog(cat,true)){
+			for( rc in connector.db.RemoteCatalog.getFromPCatalog(cat,true)){
 
 				//remove membership
 				var contract = rc.getContract();
@@ -510,11 +479,21 @@ if (App.current.getSettings().noCourse==true) {
 			Sys.println(e);
 		}
 
+		//Do not disable
+		vendor.lock();		
+		switch(vendor.disabled){
+			case DisabledReason.TurnoverLimitReached : vendor.disabled = null;
+			case DisabledReason.DisabledInvited : vendor.disabled = null;
+			case DisabledReason.MarketplaceNotActivated : vendor.disabled = null;
+			case DisabledReason.MarketplaceDisabled : vendor.disabled = null;
+			default:
+		}
+		vendor.update();
+
 		//refresh stats
         VendorStats.updateStats(vendor);
 
 		throw Ok("/p/hosted/course/view/"+course.id,"Compte passé en formule Membre");
-
 	}
 
 	

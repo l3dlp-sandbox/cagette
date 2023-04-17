@@ -4,14 +4,6 @@
 		<h4>Groupe #::group.id::</h4>
 		<h2>::group.name::</h2>
 
-		<p>
-			<b>::if(group.hasShopMode())::
-			Mode Marché
-			::else::
-			Mode AMAP
-			::end::</b>
-		</p>
-
 		<p>Actif : $$bool(::groupStats.active::)</p>
 
 		<p>
@@ -42,7 +34,20 @@
 		::end::
 		</p>
 		<hr/>
-		
+		<h3>Fonctionnalités en beta</h3>
+				
+		Dispatch : $$bool(::group.isDispatch()::)<br/>
+
+		<p>
+		::if(!group.isDispatch())::
+			<a href="?dispatch=1" class="btn btn-default">Passer en Dispatch</a>
+		::end::
+		::if( group.disabled=="MOVED")::
+			<a href="?duplicate=1" class="btn btn-default">Dupliquer en mode Marché</a>
+		::end::
+	</p>
+
+		<hr/>
 		<h3>Lieux de livraison</h3>		
 		<p>
 			<ul>
@@ -74,7 +79,7 @@
 		<h3>Membres</h3>		
 		<div style="max-height:300px;overflow-y:scroll;">
 		
-					<table class="table table-condensed">
+				<table class="table table-condensed">
 				::foreach u group.getMembers()::
 				<tr>
 					<td>::u.id::</td>
@@ -89,7 +94,13 @@
 		
 		<h3>Producteurs</h3>
 		<div style="max-height:300px;overflow-y:scroll;">
-			<table class="table table-condensed">
+			<table class="table table-condensed table-bordered">
+				<tr>
+					<th>id</th>
+					<th>Nom</th>
+					<th>Statut</th>
+					<th>Compte Stripe Connect (dispatch)</th>
+				</tr>
 				::foreach v vendors::
 
 				::set stats = getVendorStats(v)::
@@ -97,6 +108,13 @@
 					<td>::v.id::</td>
 					<td><a href='/admin/vendor/view/::v.id::'>::v.name::</a></td>
 					<td>$$vendorType(::enumIndex(stats._type)::)</td>
+					<td>
+						::set d = v.getStripeConnectStatus()::
+
+						compte ouvert $$bool(::d.account_open::), compte validé $$bool(::d.details_submitted && d.charges_enabled::)
+						
+					</td>
+				
 				</tr>
 			
 				::end::
@@ -139,9 +157,9 @@
 			
 			<a href="/p/pro/transaction/mangopay/group/debug/::mangopay.groupId::">Debug bug de Brigitte</a><br/>
 			<a href="/p/pro/transaction/mangopay/group/debug2/::mangopay.groupId::">Debug compta au centime près</a><br/>
-
-			
 			<a href="/debug/neo?hash=::debugLegalUserModule::">Debug Dossier Mangopay (mangopay-legal-user-module)</a><br/>
+			
+			<a href="?removeMangopay=1">Couper la liaison</a>
 
 		</div>
 		::end::
@@ -157,7 +175,6 @@
 		<a href="/p/hosted/deleteDemoContracts/::group.id::" class="btn btn-default">Effacer contrats de démo</a>
 		<a href="/p/pro/admin/fixGroupOps/::group.id::" class="btn btn-default">Fix remoteIds + faux paiements mangopay</a>
 		<a href="/p/pro/admin/checkOperations/::group.id::/2021-01-01 00:00:00/2021-02-01 00:00:00" class="btn btn-default">Consistence commandes et operations</a>
-		<a href="/p/pro/admin/fixCsaOrders/::group.id::" class="btn btn-default">AMAP : détection incohérences</a>
 		<hr/>
 
 

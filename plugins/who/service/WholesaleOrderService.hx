@@ -43,17 +43,17 @@ class WholesaleOrderService {
 	}
 	
 	/**
-	 * get links on the fly
+	 * get links between retail product and wholesale product
 	 * 
 	 * @param excludeIdenticalProducts	Exclude links between 2 same products
 	 */
 	public function getLinks(?excludeIdenticalProducts = false ):Array<{p1:db.Product,p2:db.Product}>{
 
-		if(!conf.active) return [];
 		var out = [];
+		if(!conf.active) return out;
 		
 		var rc = connector.db.RemoteCatalog.getFromContract(contract);
-		if (rc == null) return [];
+		if (rc == null) return out;
 
 		//get from cache
 		var cache : Array<{p1:Int,p2:Int}> = sugoi.db.Cache.get("wholesale_links_contract"+contract.id);
@@ -69,7 +69,8 @@ class WholesaleOrderService {
 
 		//populate a map by productId containing related offers
 		var catOffers = new Map<Int,Array<pro.db.POffer>>(); 
-		for( o in rc.getCatalog().getOffers()){
+		var products = contract.getProducts(false);
+		for( o in rc.getPCatalog().getOffers()){
 			var arr = catOffers[o.offer.product.id];
 			if(arr==null) arr = [];
 			if(o.offer.quantity!=null){
@@ -87,7 +88,7 @@ class WholesaleOrderService {
 
 			//find the big offer
 			var bigOffer = offers[0];
-			var big = db.Product.getByRef(contract,bigOffer.ref);
+			var big = products.find(p -> p.pOffer!=null && p.pOffer.id == bigOffer.id);
 			if (big == null) continue;//throw new tink.core.Error("unable to find wholesale product with ref "+bigOffer.ref);
 			offers.remove(bigOffer);
 
@@ -97,13 +98,12 @@ class WholesaleOrderService {
 				bigOffer.product.bulk = true;
 				bigOffer.product.wholesale = true;
 				bigOffer.product.update();
-				var cat = rc.getCatalog();
+				var cat = rc.getPCatalog();
 				cat.toSync();
 			}
 			
-			for ( off in offers ){
-				
-				var little = db.Product.getByRef(contract,off.ref);
+			for ( off in offers ){				
+				var little = products.find(p -> p.pOffer!=null && p.pOffer.id == off.id);
 				if (little == null) continue;//throw new tink.core.Error("unable to find retail product with ref "+off.ref);
 				if(excludeIdenticalProducts && little.id==big.id) continue;
 				out.push({p1:little,p2:big});
@@ -118,7 +118,7 @@ class WholesaleOrderService {
 		//save cache
 		if(cache==null){
 			var cache = [];
-			for(o in out) cache.push({p1:o.p1.id,p2:o.p2.id});
+			for(o in out) cache.push({p1:o.p1.id, p2:o.p2.id});
 			sugoi.db.Cache.set("wholesale_links_contract"+contract.id,cache,60*10); //store for 10 mn
 		}
 
@@ -129,9 +129,7 @@ class WholesaleOrderService {
 		var map = linksAsMap(getLinks(true));
 		var whoProduct = map.get(retailProduct.id);
 
-		return Lambda.array(db.UserOrder.manager.search($distribution==d && $product==whoProduct,false));
-
-		
+		return Lambda.array(db.UserOrder.manager.search($distribution==d && $product==whoProduct,false));	
 	}
 
 	/**
@@ -217,7 +215,7 @@ class WholesaleOrderService {
 			var qt = o.quantity * (qt1 / qt2);
 			//o.productPrice = o.product.price;
 
-			var newOrder = OrderService.make(o.user, qt, retailToWholesale[o.product.id], d.id, null, o.subscription, o.user2, null);
+			var newOrder = OrderService.make(o.user, qt, retailToWholesale[o.product.id], d.id, o.user2, null);
 			if(newOrder!=null){
 				newOrders.push(newOrder);
 				o.delete();
@@ -254,5 +252,34 @@ class WholesaleOrderService {
 		service.OrderService.sendOrdersByProductReport(d);
 	}
 
+	/**
+		sometimes a product can be duplicated with the same reference.
+	**/
+	public function fixDuplicateRefs(){
+
+		var refMap = new Map<String,Array<db.Product>>();
+
+		for( p in contract.getProducts(false)){
+			if(refMap.get(p.ref)==null){
+				refMap.set(p.ref,[p]);
+			}else{
+				refMap.get(p.ref).push(p);
+			}
+		}
+
+		for( ref in refMap.keys()){
+			if(refMap.get(ref).length>1){
+				//trace("duplicate : "+refMap.get(ref));
+				var productToKeep = refMap.get(ref)[0];
+				var productToDelete = refMap.get(ref)[1];
+				for( o in db.UserOrder.manager.search($product==productToDelete,true) ){
+					o.product = productToKeep;
+					o.update();
+				}
+				productToDelete.delete();
+			}
+		}
+		sugoi.db.Cache.destroy("wholesale_links_contract"+contract.id);
+	}
 
 }

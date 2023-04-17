@@ -5,6 +5,7 @@ import Common;
 using tools.ObjectListTool;
 using Lambda;
 import haxe.Json;
+import db.Basket.BasketStatus;
 
 typedef Slot = {
 	id:Int,
@@ -15,19 +16,25 @@ typedef Slot = {
 	end:Date
 }
 
+enum MultiDistribValidatedStatus { 
+	NOT_VALIDATED;
+	VALIDATED;
+	PAID;
+}
+
 /**
  * MultiDistrib represents a global distributions with many vendors. 	
  * @author fbarbut
  */
-@:index(distribStartDate)
+@:index(distribStartDate,validatedStatus,orderStartDate)
 class MultiDistrib extends Object
 {
 	public var id : SId;
 	
 	public var distribStartDate : SDateTime; 
 	public var distribEndDate : SDateTime;	
-	public var orderStartDate : SNull<SDateTime>; 
-	public var orderEndDate : SNull<SDateTime>;
+	public var orderStartDate : SDateTime; 
+	public var orderEndDate : SDateTime;
 
 	//time slots management
 	@hideInForms public var timeSlots : SNull<SText>; // IN JSON
@@ -39,16 +46,19 @@ class MultiDistrib extends Object
 	@hideInForms public var counterBeforeDistrib:SFloat; //counter before distrib "fond de caisse"
 	@hideInForms public var volunteerRolesIds : SNull<String>;
 
-	@hideInForms public var validated:SNull<SBool>;
+	// @hideInForms public var validated:SNull<SBool>;
 
 	@:skip public var contracts : Array<db.Catalog>;
 	@:skip public var extraHtml : String;
+
+	@hideInForms public var validatedStatus:SString<32>;
+	@hideInForms public var validatedDate:SNull<SDateTime>;
 	
 	public function new(){
 		super();
 		contracts = [];
 		extraHtml = "";
-		validated = false;
+		validatedStatus = Std.string(MultiDistribValidatedStatus.NOT_VALIDATED);
 	}
 	
 	/**
@@ -83,124 +93,6 @@ class MultiDistrib extends Object
 		return multidistribs;
 	}
 
-	/**
-	 * TODO : refacto this to use getFromTimeRange();
-	 */
-	/*public static function getNextMultiDeliveries(group:db.Group){
-		
-		var out = new Map < String, {
-			place:db.Place, 		//common delivery place
-			startDate:Date, 		//global delivery start
-			endDate:Date,			//global delivery stop
-			orderStartDate:Date, 	//global orders opening date
-			orderEndDate:Date,		//global orders closing date
-			active:Bool,
-			products:Array<ProductInfo>, //available products ( if no order )
-			myOrders:Array<{distrib:db.Distribution,orders:Array<UserOrder>}>	//my orders			
-		}>();
-		
-		var n = Date.now();
-		var now = new Date(n.getFullYear(), n.getMonth(), n.getDate(), 0, 0, 0);
-	
-		var contracts = db.Catalog.getActiveContracts(group);
-		var cids = Lambda.map(contracts, function(p) return p.id);
-		
-		//var pids = Lambda.map(db.Product.manager.search($catalogId in cids,false), function(x) return x.id);
-		//var out =  UserOrder.manager.search(($userId == id || $userId2 == id) && $productId in pids, lock);	
-		
-		//available deliveries
-		var inSixMonth = DateTools.delta(now, 1000.0 * 60 * 60 * 24 * 30 * 6);
-		var distribs = db.Distribution.manager.search(($catalogId in cids) && $date >= now && $date <= inSixMonth , { orderBy:date }, false);
-		
-		for (d in distribs) {			
-			
-			//we had the distribution key ( place+date ) and the contract type in order to separate constant and varying contracts
-			var key = d.getKey() + "|" + d.contract.type;
-			var o = out.get(key);
-			if (o == null) o = {place:d.place, startDate:d.date, active:null, endDate:d.end, products:[], myOrders:[], orderStartDate:null,orderEndDate:null};
-			
-			//user orders
-			var orders = [];
-			if(App.current.user!=null) orders = d.contract.getUserOrders(App.current.user,d);
-			if (orders.length > 0){
-				o.myOrders.push({distrib:d,orders:service.OrderService.prepare(orders)});
-			}else{
-				//no "order block" if no shop mode	
-				if (!group.hasShopMode() ) {		
-					continue;		
-				}		
-
-				//if its a constant order contract, skip this delivery		
-				if (d.contract.type == db.Catalog.TYPE_CONSTORDERS){		
-					continue;		
-				}
-				
-				//products preview if no orders
-				for ( p in d.contract.getProductsPreview(9)){
-					o.products.push( p.infos(null,false) );	
-				}	
-			}
-			
-			if (d.contract.type == db.Catalog.TYPE_VARORDER){
-				
-				//old distribs may have an empty orderStartDate
-				if (d.orderStartDate == null) {
-					continue;
-				}
-				
-				//if order opening is more far than 1 month, skip it
-				// if (d.orderStartDate.getTime() > inOneMonth.getTime() ){
-				// 	continue;
-				// }
-				
-				//display closest opening date
-				if (o.orderStartDate == null){
-					o.orderStartDate = d.orderStartDate;
-				}else if (o.orderStartDate.getTime() > d.orderStartDate.getTime()){
-					o.orderStartDate = d.orderStartDate;
-				}
-				
-				//display most far closing date
-				if (o.orderEndDate == null){
-					o.orderEndDate = d.orderEndDate;
-				}else if (o.orderEndDate.getTime() < d.orderEndDate.getTime()){
-					o.orderEndDate = d.orderEndDate;
-				}
-				
-				out.set(key, o);	
-				
-			}else{
-				//in constant orders, add block only if there is an order
-				if(o.myOrders.length>0) out.set(key, o);
-				
-			}
-		}
-		
-		//shuffle and limit product lists		
-		for ( o in out){
-			o.products = thx.Arrays.shuffle(o.products);			
-			o.products = o.products.slice(0, 9);
-		}
-		
-		//decide if active or not
-		var now = Date.now();
-		for( o in out){
-			
-			if (o.orderStartDate == null) continue; //constant orders
-			
-			if (now.getTime() >= o.orderStartDate.getTime()  && now.getTime() <= o.orderEndDate.getTime() ){
-				//order currently open
-				o.active = true;
-				
-			}else {
-				o.active = false;
-				
-			}
-		}	
-		
-		return Lambda.array(out);
-	}*/
-
 	public function getPlace(){
 		return place;
 	}
@@ -225,7 +117,7 @@ class MultiDistrib extends Object
 			return cache;
 		}else{
 			cache = [];
-			for( d in getDistributions(db.Catalog.TYPE_VARORDER)){
+			for( d in getDistributions()){
 				for ( p in d.catalog.getProductsPreview(productNum)){
 					cache.push( {
 						rid : p.image!=null ? Std.random(500)+500 : Std.random(500),
@@ -253,7 +145,7 @@ class MultiDistrib extends Object
 
 	public function userHasOrders(user:db.User,type:Int):Bool{
 		if(user==null) return false;
-		for ( d in getDistributions(type)){
+		for ( d in getDistributions()){
 			if(d.hasUserOrders(user)) return true;						
 		}
 		return false;
@@ -280,7 +172,7 @@ class MultiDistrib extends Object
 			if(orderStartDate==null) return null;
 			//find earliest order start date 
 			var date = orderStartDate;
-			for(d in getDistributions(db.Catalog.TYPE_VARORDER)){
+			for(d in getDistributions()){
 				if(d.orderStartDate==null) continue;
 				if(d.orderStartDate.getTime() < date.getTime()) date = d.orderStartDate;
 			}
@@ -296,7 +188,7 @@ class MultiDistrib extends Object
 			if(orderEndDate==null) return null;
 			//find lates order end date 
 			var date = orderEndDate;
-			for(d in getDistributions(db.Catalog.TYPE_VARORDER)){
+			for(d in getDistributions()){
 				if(d.orderEndDate==null) continue;
 				if(d.orderEndDate.getTime() > date.getTime()) date = d.orderEndDate;
 			}
@@ -312,22 +204,13 @@ class MultiDistrib extends Object
 	**/
 	@:skip private var distributionsCache:Array<db.Distribution>;
 	@:skip public var useCache:Bool;
-	public function getDistributions(?type:Int){
+	public function getDistributions(){
 		
 		if(distributionsCache==null || !useCache){
 			distributionsCache = db.Distribution.manager.search($multiDistrib==this,false).array();
 		}
 
-		if(type==null){
-			return distributionsCache;
-		}else{
-			var out = [];
-			for ( d in distributionsCache){
-				if( d.catalog.type==type ) out.push(d);
-			}
-			return out;
-		} 
-		
+		return distributionsCache;
 	}
 
 	public function getDistributionForContract(contract:db.Catalog):db.Distribution{
@@ -340,9 +223,9 @@ class MultiDistrib extends Object
 	/**
 	 * Get all orders involved in this multidistrib
 	 */
-	public function getOrders(?type:Int){
+	public function getOrders(){
 		var out = [];
-		for ( d in getDistributions(type)){
+		for ( d in getDistributions()){
 			out = out.concat(d.getOrders().array());
 		}
 		return out;		
@@ -352,9 +235,9 @@ class MultiDistrib extends Object
 	 * Get orders for a user in this multidistrib
 	 * @param user 
 	 */
-	public function getUserOrders(user:db.User,?type:Int){
+	public function getUserOrders(user:db.User){
 		var out = [];
-		for ( d in getDistributions(type) ){
+		for ( d in getDistributions() ){
 			var pids = d.catalog.getProducts(false).map(x->x.id);		
 			var userOrders =  db.UserOrder.manager.search( $userId == user.id && $distributionId==d.id && $productId in pids , false);	
 			for( o in userOrders ){
@@ -370,9 +253,9 @@ class MultiDistrib extends Object
 		return vendors.array();
 	}
 	
-	public function getUsers(?type:Int){
+	public function getUsers(){
 		var users = [];
-		for ( o in getOrders(type)) users.push(o.user);
+		for ( o in getOrders()) users.push(o.user);
 		return users.deduplicate();		
 	}
 
@@ -396,7 +279,7 @@ class MultiDistrib extends Object
 
 		}else{
 			//after distrib
-			if(isConfirmed()){
+			if(isValidated()){
 				return "validated";
 			}else{
 				return "distributed";
@@ -408,34 +291,9 @@ class MultiDistrib extends Object
 		return getState();
 	}
 	
-	
-	public function isConfirmed():Bool{
-				
-		//return Lambda.count( distributions , function(d) return d.validated) == distributions.length;
-		return validated == true;
+	public function isValidated():Bool{
+		return validatedStatus==Std.string(VALIDATED) || validatedStatus==Std.string(PAID);
 	}
-
-	public function isValidated(){
-		return isConfirmed();
-	}
-	
-	/*public function checkConfirmed():Bool{
-		
-		for ( d in getDistributions(db.Catalog.TYPE_VARORDER)){
-			if(!d.validated){
-				var orders = d.getOrders();
-				var allOrdersPaid = Lambda.count( orders , function(d) return d.paid) == orders.length;		
-
-				if (allOrdersPaid){
-					d.lock();
-					d.validated = true;
-					d.update();
-				}
-			}
-		}
-		
-		return isConfirmed();
-	}*/
 
 	/**
 		retrocomp
@@ -475,15 +333,29 @@ class MultiDistrib extends Object
 	}
 
 	public function getGroup(){
-		return place.group;
+		return group;
 	}
 
+	/**
+		get non open baskets
+	**/
 	public function getBaskets():Array<db.Basket>{
-		return db.Basket.manager.search($multiDistrib==this,false).array();
+		var baskets = db.Basket.manager.search($multiDistrib==this && $status!=Std.string(BasketStatus.OPEN) && $status!=Std.string(BasketStatus.PAYMENT_PROCESSING),false).array();
+
+		//sort by user lastname
+		baskets.sort((a,b)-> {
+			if(a.user==null || b.user==null) return -1;
+			return a.user.lastName > b.user.lastName ? 1 : -1 ;
+		});
+
+		return baskets;
 	}
 
-	public function getTmpBaskets():Array<db.TmpBasket>{
-		return db.TmpBasket.manager.search($multiDistrib==this,false).array();
+	/**
+		get open baskets
+	**/
+	public function getTmpBaskets():Array<db.Basket>{
+		return db.Basket.manager.search($multiDistrib==this && $status==Std.string(BasketStatus.OPEN),false).array();
 	}
 
 	public function getUserBasket(user:db.User){
@@ -494,8 +366,11 @@ class MultiDistrib extends Object
 		return null;
 	}
 
-	public function getUserTmpBasket(user:db.User):db.TmpBasket{
-		return db.TmpBasket.manager.select($multiDistrib==this && $user==user,false);
+	/**
+		get user open basket
+	**/
+	public function getUserTmpBasket(user:db.User):db.Basket{
+		return db.Basket.manager.select($multiDistrib==this && $user==user && $status==Std.string(BasketStatus.OPEN),false);
 	}
 
 	/**
@@ -609,5 +484,9 @@ class MultiDistrib extends Object
 			}
 		}
 		return null;
+	}
+
+	public function getValidatedStatus():MultiDistribValidatedStatus{
+		return Type.createEnum(MultiDistribValidatedStatus,validatedStatus);		
 	}
 }

@@ -75,18 +75,24 @@
 
 		<ul>
 			<li>
+				<a href="/admin/stats">Stats hebdomadaires</a>
+			</li>
+			<li>
 				<a href="/admin/graph/basket">Nbre de Paniers</a>
 			</li>
 			<li>
 				<a href="/admin/graph/turnover">Chiffre d'affaires</a>
 			</li>
 			<li>
-				<a href="/admin/graph/mangopay">C.A Mangopay</a>
+				<a href="/admin/graph/mangopay">C.A CB Mangopay</a>
+			</li>
+			<li>
+				<a href="/admin/graph/stripe">C.A CB Stripe (dispatch)</a>
+			</li>
+			<li>
+				<a href="/admin/exportDistribs">Export Distributions</a>
 			</li>
 		</ul>
-
-		<a href="/admin/stats">Stats mensuelles</a>
-
 	::end::
 
 

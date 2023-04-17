@@ -12,7 +12,7 @@
 	<div class="article">
 		
 			::foreach n notifs::
-			<a href="#" class="clickable" onclick="_Cagette.overlay('/p/pro/notif/view/::n.id::','Notification')">
+			<a href="#" class="clickable" onclick="neo.createNeoModule('myModal', 'dialog-url', { url: '/p/pro/notif/view/::n.id::', title:'Notification' })">
 			<table class="notifs">
 				<tr>
 				<td class="col-md-1">
@@ -50,24 +50,21 @@
 
 
 	::if(vendor.isDisabled())::
-	::if(vendor.disabled!=3)::
-    <!--other reason than turnoverLimitReached-->
-	<div class="row">
-		<div class="col-md-12">			
-			<div class="alert alert-danger">
-				<i class="icon icon-alert"></i>
-				Ce compte producteur est bloqué et n'accepte plus de commandes.<br/>
-				Raison : <b>::vendor.getDisabledReason()::</b>
+		::if(vendor.disabled!=3 && vendor.disabled!=4)::
+		<!--other reason than TurnoverLimitReached or MarketplaceNotActivated-->
+		<div class="row">
+			<div class="col-md-12">			
+				<div class="alert alert-danger">
+					<i class="icon icon-alert"></i>
+					Ce compte producteur est bloqué et n'accepte plus de commandes.<br/>
+					Raison : <b>::vendor.getDisabledReason()::</b>
+				</div>
 			</div>
 		</div>
-	</div>
-	::end::
+		::end::
 	::end::
 
-	<div class="article">
-		<h2 style="margin-top:0; margin-bottom: 16px;">Chiffre d'affaires</h2>
-		<div id="stats-module-container" style="margin-bottom: 16px;"></div>
-	</div>
+	<div id="stats-module-container"></div>
 	<script>
 		document.addEventListener("DOMContentLoaded", function () {
 			neo.createNeoModule("stats-module-container", "vendorTurnover", {
@@ -126,58 +123,58 @@
 			::if(regularClients.length>0)::
 			<div class="col-md-12">
 				<p>
-					Les groupes que j'ai rejoint :
+					Les groupes que j'ai rejoins :
 				</p>
 			</div>
 			::end::
 	
-				::foreach client regularClients::
-				<div class="col-md-4" data-toggle="tooltip" data-placement="bottom"  title="Aller dans ce groupe">
-					
-					::set group = client[0].getContract(false)._group::
-					<a href="/group/::group.id::" target="_blank" class="clickable" style="height:60px;" >
-					
-					::set open = 0::
-					::set todeliver = 0::
-					
-					::foreach rc client::
-						::set open = open + rc.countRunningOrders()::
-						::set todeliver = todeliver + rc.countOrdersToDeliver()::
-					::end::
-					
-					::if (todeliver > 0)::
-					<i class="icon icon-circle" style="color:#0A0;" data-toggle="tooltip" title=" ::open:: commandes en cours dont ::todeliver:: prêtes à livrer" ></i>
-					::elseif ( open  > 0)::
-					<i class="icon icon-circle" style="color:#F80;" data-toggle="tooltip" title=" ::open:: commandes en cours dont ::todeliver:: prêtes à livrer"></i>
-					::else::
-					<i class="icon icon-circle-empty" style="color:#666;" data-toggle="tooltip" title=" Aucune commande en cours "></i>
-					::end::
-					
-					::group.name::
-					</a>
-					
-				</div>
-				::end::	
+			::foreach client regularClients::
+			<div class="col-md-4" data-toggle="tooltip" data-placement="bottom"  title="Aller dans ce groupe">
+				
+				::set group = client[0].getContract(false)._group::
+				<a href="/group/::group.id::" target="_blank" class="clickable" style="height:60px;" >
+				
+				::set open = 0::
+				::set todeliver = 0::
+				
+				::foreach rc client::
+					::set open = open + rc.countRunningOrders()::
+					::set todeliver = todeliver + rc.countOrdersToDeliver()::
+				::end::
+				
+				::if (todeliver > 0)::
+				<i class="icon icon-circle" style="color:#0A0;" data-toggle="tooltip" title=" ::open:: commandes en cours dont ::todeliver:: prêtes à livrer" ></i>
+				::elseif ( open  > 0)::
+				<i class="icon icon-circle" style="color:#F80;" data-toggle="tooltip" title=" ::open:: commandes en cours dont ::todeliver:: prêtes à livrer"></i>
+				::else::
+				<i class="icon icon-circle-empty" style="color:#666;" data-toggle="tooltip" title=" Aucune commande en cours "></i>
+				::end::
+				
+				::group.name::
+				</a>
+				
+			</div>
+			::end::	
 
 
 				
-				::if(unlinkedCatalogs.length>0 && company.getProducts().length>0)::
-				
-					<div class="col-md-12">			
-						<div class="alert alert-warning">
-							<i class="icon icon-info"></i>
-							Vous avez <b>::unlinkedCatalogs.length:: catalogue(s)</b> créés dans des groupes et qui ne sont pas reliés à votre compte producteur. <br/>
-							<ul>
-								::foreach c unlinkedCatalogs::
-								<li><b>::c.name::</b> dans le groupe <a href="/group/::c._group.id::" target="_blank">::c._group.name::</a></li>
-								::end::
-							</ul>
-								
-							<a href="/p/pro/catalogLinker" class="btn btn-default btn-sm">Cliquez-ici pour les relier</a>
-						</div>
+			::if(unlinkedCatalogs.length>0 && company.getProducts().length>0)::
+			
+				<div class="col-md-12">			
+					<div class="alert alert-warning">
+						<i class="icon icon-info"></i>
+						Vous avez <b>::unlinkedCatalogs.length:: catalogue(s)</b> créés dans des groupes et qui ne sont pas reliés à votre compte producteur. <br/>
+						<ul>
+							::foreach c unlinkedCatalogs::
+							<li><b>::c.name::</b> dans le groupe <a href="/group/::c._group.id::" target="_blank">::c._group.name::</a></li>
+							::end::
+						</ul>
+							
+						<a href="/p/pro/catalogLinker" class="btn btn-default btn-sm">Cliquez-ici pour les relier</a>
 					</div>
-				
-				::end::	
+				</div>
+			
+			::end::	
 
 			
 			<div class="col-md-12">

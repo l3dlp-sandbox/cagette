@@ -62,7 +62,7 @@ class Documents extends controller.Controller
 						  { value : "public", label : "Public" } ];
 
 		//In case of a group or shop mode
-		if ( catalog == null || catalog.group.hasShopMode() ) {
+		if ( catalog == null ) {
 
 			options = [	{ value : "members", label : "Membres du groupe" }, { value : "public", label : "Public" } ];
 		}
@@ -139,11 +139,8 @@ class Documents extends controller.Controller
 
 		var request = new Map();
 		try {
-
 			request = sugoi.tools.Utils.getMultipart( 1024 * 1024 * 10 ); //10Mb	
-		}
-		catch ( e:Dynamic ) {
-
+		} catch ( e:Dynamic ) {
 			throw Error( errorPath, 'Le document importé est trop volumineux. Il ne doit pas dépasser 10 Mo.');
 		}
 		
@@ -154,7 +151,6 @@ class Documents extends controller.Controller
 
 				var originalFilename = request.get( 'document_filename' );
 				if ( !StringTools.endsWith( originalFilename.toLowerCase(), '.pdf' ) ) {
-
 					throw Error( errorPath, 'Le document n\'est pas au format pdf. Veuillez sélectionner un fichier au format pdf.');
 				}
 				

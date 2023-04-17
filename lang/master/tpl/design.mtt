@@ -11,9 +11,9 @@
 
 		<div class="row header" style="margin-top:10px;">
 			<div class="col-md-8">
-				::set groupName = getCurrentGroup()::
-				::if groupName!=null && noGroup!=true::
-					<h1>::groupName::</h1>
+				::set group = getCurrentGroup()::
+				::if group!=null && noGroup!=true::
+					<h1>::group.name::</h1>
 				::else::
 					<div style="margin-bottom:22px;" >
 							<a href="::theme.url::" target="_blank">
@@ -28,7 +28,7 @@
 			</div>				
 		</div>
 
-			::if user != null && noGroup!=true && (getCurrentGroup()==null || (getCurrentGroup()!=null && getCurrentGroup().disabled==null))::
+			::if user!=null && noGroup!=true && group!=null && (group.disabled==null || isAdmin)::
 
 			<nav class="navbar navbar-default" ::cond user.getGroup()!=null::>
 					<div class="navbar-header">
@@ -51,12 +51,7 @@
 							</li>
 							<li ::attr class if(category=="history" ) 	'active' ::>
 								<a href="/history">
-									 
-									::if user.getGroup().hasShopMode():: 
 									<i class="icon icon-list"></i> Historique 
-									::else:: 
-									<i class="icon icon-book"></i> Mes Contrats
-									::end::
 								</a>
 							</li>
 							<li ::attr class if(category=="amap") 		'active' ::>
@@ -74,7 +69,7 @@
 								</a>
 							</li>
 							<li id="distributions" ::attr class if(category=="distribution") 	'active' ::>
-								<a href="/distribution" ::cond user.canManageAllContracts()::>
+								<a href="/distributions" ::cond user.canManageAllContracts()::>
 									<i class="icon icon-calendar"></i>  ::_("Distributions")::
 								</a>
 							</li>
@@ -129,7 +124,7 @@
 				::end::
 			</div>	
 		</div>
-		
+
 		<!-- extra notification block for plugins -->
 		::if extraNotifBlock!=null::
 			::raw extraNotifBlock::

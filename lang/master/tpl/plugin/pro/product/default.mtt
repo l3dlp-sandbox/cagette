@@ -101,12 +101,14 @@
 							$$edit(Modifier,/p/pro/product/edit/::p.id::)
 							
 
-							<a class="btn btn-default btn-sm" onclick="_Cagette.openImageUploader('pproduct', ::p.id::, 300, 300, null, ::company.id::)">
+							<a class="btn btn-default btn-sm" $$openImageUploader('pproduct', ::p.id::, 300, 300, null, ::company.id::)>
 								<i class="icon icon-image"></i> ::_("Picture")::
 							</a>
 
 
 							$$delete(Supprimer,/p/pro/product/delete/::p.id::?token=::token::)
+
+							<div id="image-uploader-container" />
 						</div>
 						<div id="imageUploader"></div>
 					</td>
@@ -161,13 +163,14 @@
 									<td>::formatNum(off.price)::&nbsp;::currency()::</td>
 									<td>
 										<div class="btn-group" role="group" aria-label="...">
-											<a onclick="_Cagette.overlay('/p/pro/offer/preview/::off.id::','::urlEncode(off.getName())::')" class="btn btn-default btn-sm">
+											<a onclick="neo.createNeoModule('myModal', 'dialog-url', { url: '/p/pro/offer/preview/::off.id::', title:'::escapeJS(off.getName())::' })"class="btn btn-default btn-sm">
 												<i class="icon icon-eye"></i> Voir</a>
 											$$edit(Mod.,/p/pro/offer/edit/::off.id::)
-											<a class="btn btn-default btn-sm" onclick="_Cagette.openImageUploader('poffer', ::off.id::, 300, 300, null, ::company.id::)">
+											<a class="btn btn-default btn-sm" $$openImageUploader('poffer', ::off.id::, 300, 300, null, ::company.id::)>
 												<i class="icon icon-image"></i> ::_("Picture")::
 											</a>
 											$$delete( ,/p/pro/offer/delete/::off.id::)
+											<div id="image-uploader-container" />
 										</div>
 									</td>
 								</tr>

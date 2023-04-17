@@ -79,14 +79,6 @@ class PProduct extends Object
 		return pro.db.POffer.manager.search($product == this,{orderBy:-quantity}, lock);
 	}
 	
-	/**
-	 * Search a product by reference
-	 * @param	ref
-	 */
-	public static function searchByRef(ref:String,company:pro.db.CagettePro,?lock=false){
-		return manager.search($ref == ref && $company==company, lock);
-	}
-	
 	public static function getByRef(ref:String,company:pro.db.CagettePro,?lock=false){
 		return manager.select($ref == ref && $company==company, lock);
 	}
@@ -119,7 +111,7 @@ class PProduct extends Object
 		for( offer in getOffers()){
 			for ( co in offer.getCatalogOffers()){
 			
-				var rcs = connector.db.RemoteCatalog.getFromCatalog(co.catalog);
+				var rcs = connector.db.RemoteCatalog.getFromPCatalog(co.catalog);
 				for (rc in rcs){
 					var contract = rc.getContract();				
 					var product = db.Product.manager.select($ref == offer.ref && $catalog == contract, false);

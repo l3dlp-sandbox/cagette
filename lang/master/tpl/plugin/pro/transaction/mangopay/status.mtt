@@ -13,7 +13,7 @@
 						<p>$$bool(false) ::errormessage::</p>					
 					</div>
 					
-					<a href="/transaction/pay/::tmpBasket.id::" class="btn btn-primary">Revenir à la page des paiements</a>
+					<a href="/shop/basket/::tmpBasket.id::#/select-payment" class="btn btn-primary">Revenir à la page des paiements</a>
 					
 					
 				::elseif(status=="success")::

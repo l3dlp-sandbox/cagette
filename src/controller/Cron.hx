@@ -1,4 +1,7 @@
 package controller;
+import pro.db.VendorStats;
+import pro.db.VendorStats.VendorType;
+import db.Graph;
 import haxe.crypto.Md5;
 import Common;
 import db.Catalog;
@@ -105,7 +108,8 @@ class Cron extends Controller
 				FROM MultiDistrib distrib INNER JOIN `Group` g
 				ON distrib.groupId = g.id
 				WHERE distrib.distribStartDate >= DATE_ADD(\'${fromNow}\', INTERVAL g.volunteersMailDaysBeforeDutyPeriod DAY)
-				AND distrib.distribStartDate < DATE_ADD(\'${toNow}\', INTERVAL g.volunteersMailDaysBeforeDutyPeriod DAY);', false).array();
+				AND distrib.distribStartDate < DATE_ADD(\'${toNow}\', INTERVAL g.volunteersMailDaysBeforeDutyPeriod DAY)
+				AND g.disabled IS NULL;', false).array();
 			
 			for (multidistrib  in multidistribs) {
 
@@ -151,7 +155,8 @@ class Cron extends Controller
 				FROM MultiDistrib distrib INNER JOIN `Group` g
 				ON distrib.groupId = g.id
 				WHERE distrib.distribStartDate >= DATE_ADD(\'${fromNow}\', INTERVAL g.vacantVolunteerRolesMailDaysBeforeDutyPeriod DAY)
-				AND distrib.distribStartDate < DATE_ADD(\'${toNow}\', INTERVAL g.vacantVolunteerRolesMailDaysBeforeDutyPeriod DAY);', false));
+				AND distrib.distribStartDate < DATE_ADD(\'${toNow}\', INTERVAL g.vacantVolunteerRolesMailDaysBeforeDutyPeriod DAY)
+				AND g.disabled IS NULL;', false));
 
 			var vacantVolunteerRolesMultidistribs = Lambda.filter( multidistribs, function(multidistrib) return multidistrib.hasVacantVolunteerRoles() );
 			
@@ -198,75 +203,12 @@ class Cron extends Controller
 		task.execute(!App.config.DEBUG);
 
 		//Distrib Validation notifications				
-		var task = new TransactionWrappedTask("Distrib Validation notifications");
-		task.setTask(distribValidationNotif.bind(task));
-		task.execute(!App.config.DEBUG);
-
-		var task = new TransactionWrappedTask( 'Default automated orders for CSA variable contracts' );
-		task.setTask( function() {
-
-			var range = tools.DateTool.getLastHourRange( now );
-
-			var distributionsToCheckForMissingOrders = db.Distribution.manager.unsafeObjects(
-			'SELECT Distribution.* 
-			FROM Distribution INNER JOIN Catalog
-			ON Distribution.catalogId = Catalog.id
-			WHERE Catalog.distribMinOrdersTotal > 0
-			AND Distribution.orderEndDate >= \'${range.from}\'
-			AND Distribution.orderEndDate < \'${range.to}\';', false );
-				
-			for ( distrib in distributionsToCheckForMissingOrders ) {
-				var distribSubscriptions = db.Subscription.manager.search( $catalog == distrib.catalog && $startDate <= distrib.date && $endDate >= distrib.date, false );
-
-				for ( subscription in distribSubscriptions ) {
-
-					if ( subscription.getAbsentDistribIds().find( id -> id == distrib.id ) == null ) {
-					
-						var distribSubscriptionOrders = db.UserOrder.manager.search( $subscription == subscription && $distribution == distrib );
-						if ( distribSubscriptionOrders.length == 0 ) {
-
-							// if ( service.SubscriptionService.areAutomatedOrdersValid( subscription, distrib ) ) {
-
-								var defaultOrders = subscription.getDefaultOrders();
-
-								var automatedOrders = [];
-								for ( order in defaultOrders ) {
-
-									var product = db.Product.manager.get( order.productId, false );
-									if ( product != null && order.quantity != null && order.quantity != 0 ) {
-										automatedOrders.push( service.OrderService.make( subscription.user, order.quantity, product, distrib.id, null, subscription ) );	
-									}
-								}
-
-								if( automatedOrders.length != 0 ) {
-
-									var message = 'Bonjour ${subscription.user.firstName},<br /><br />
-									A défaut de commande de votre part, votre commande par défaut a été appliquée automatiquement 
-									à la distribution du ${view.hDate( distrib.date )} du contrat "${subscription.catalog.name}".
-									<br /><br />
-									Votre commande par défaut : <br /><br />${subscription.getDefaultOrdersToString()}
-									<br /><br />
-									La commande à chaque distribution est obligatoire dans le contrat "${subscription.catalog.name}". 
-									Vous pouvez modifier votre commande par défaut en accédant à votre souscription à ce contrat depuis la page "commandes" sur Cagette.net';
-
-									//fail silently
-									try{} catch(e:Dynamic){
-										App.quickMail( subscription.user.email, distrib.catalog.name + ' : Commande par défaut', message, distrib.catalog.group );
-									}
-								}
-							
-								//Create order operation only
-								service.SubscriptionService.createOrUpdateTotalOperation( subscription );
-						}
-
-					}
-				}
-			}
-		});
-		task.execute(!App.config.DEBUG);
+		// var task = new TransactionWrappedTask("Distrib Validation notifications");
+		// task.setTask(distribValidationNotif.bind(task));
+		// task.execute(!App.config.DEBUG);
 
 		//clean files that are not linked to anything
-		var task = new TransactionWrappedTask( "Clean unused db.File entities");
+		var task = new TransactionWrappedTask("Clean unused db.File entities");
 		task.setTask(function() {
 			var maxId = sys.db.Manager.cnx.request("select max(id) from File").getIntResult(0);
 			var rd = Std.random(Math.round(maxId/1000));
@@ -300,12 +242,175 @@ class Cron extends Controller
 		});
 		task.execute(false);
 
+
+		//stats
+		var task = new TransactionWrappedTask("Global stats");
+		task.setTask(function() {
+			
+			// daily stats
+			var yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate()-1, 0, 0, 0);
+			for( k in GraphService.getAllGraphKeys()){
+				GraphService.getDay(k,yesterday);
+			}
+
+			// weekly stats			
+			var from = new Date(now.getFullYear(), now.getMonth(), now.getDate()-7, 0, 0, 0);
+			var to = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+
+			task.log("weekly stats from "+from+" to "+to);
+
+			var stats = {
+				totalTurnoverMarket:0,
+
+				invitedTurnoverMarket:0,
+
+				cproInvitedTurnoverMarket:0,
+
+				discoveryTurnoverMarket:0,
+
+				proTurnoverMarket:0,
+
+				memberTurnoverMarket:0,
+
+				marketplaceTurnoverMarket:0,
+			};
+
+			var summaries = sys.db.Manager.cnx.request('selectsum(turnoverMarket) as turnoverMarketSum , vendorId
+			from vendorDailySummary 
+			where date >= "${from.toString()}" and date < "${to.toString()}"
+			and turnoverMarket > 0
+			group by vendorId').results();
+
+			var vendorIds:Array<Int> = summaries.array().map(s -> Std.parseInt(s.vendorId));
+			var vendorStats = VendorStats.manager.search($vendorId in vendorIds,false);
+			var vendorStatsMap = new Map<Int,VendorStats>();
+			for( vs in vendorStats){
+				vendorStatsMap.set(untyped vs.vendorId, vs);
+			}
+
+			for(summary in summaries){
+				var vs = vendorStatsMap.get(summary.vendorId);
+				if(vs==null) continue;
+
+				switch (vs.type){
+					case VendorType.VTCpro : 
+						stats.memberTurnoverMarket += summary.turnoverMarketSum;
+					case VendorType.VTCproTest,VTStudent : null;
+					case VendorType.VTFree,VendorType.VTInvited : 
+						stats.invitedTurnoverMarket += summary.turnoverMarketSum;
+					case VendorType.VTCproSubscriberMontlhy, VendorType.VTCproSubscriberYearly : 
+						stats.proTurnoverMarket += summary.turnoverMarketSum;
+					case VendorType.VTDiscovery : 
+						stats.discoveryTurnoverMarket += summary.turnoverMarketSum;
+					case VendorType.VTInvitedPro : 
+						stats.cproInvitedTurnoverMarket += summary.turnoverMarketSum;
+					case VendorType.VTMarketplace : 
+						stats.marketplaceTurnoverMarket += summary.turnoverMarketSum;
+				}
+				
+				stats.totalTurnoverMarket += summary.turnoverMarketSum;
+
+			}
+
+			Graph.recordData("global",stats,from);
+		});
+		if( (this.now.getHours()==4 && this.now.getDay()==1) || App.config.DEBUG){ 
+			//if monday at 4 am, compute stats of past week
+			task.execute();
+		}else{
+			print("no weekly stats "+this.now.getHours()+" "+this.now.getDay());
+		}
+
 		/**
 			orders notif in cpro, should be sent AFTER default automated orders
 		**/
 		app.event(HourlyCron(this.now));
 		
 
+	}
+
+	@tpl("retro.mtt")
+	public function doRetro(){
+		
+		var compute = function(from:Date,to:Date) {
+			
+			// weekly stats			
+			
+
+			// Sys.println("weekly stats from "+from+" to "+to+"<br/>");
+
+			var stats = {
+				totalTurnoverMarket:0,
+
+				invitedTurnoverMarket:0,
+
+				cproInvitedTurnoverMarket:0,
+
+				discoveryTurnoverMarket:0,
+
+				proTurnoverMarket:0,
+
+				memberTurnoverMarket:0,
+
+				marketplaceTurnoverMarket:0,
+			};
+
+			var summaries = sys.db.Manager.cnx.request('select sum(turnoverMarket) as turnoverMarketSum , vendorId
+			from vendorDailySummary 
+			where date >= "${from.toString()}" and date < "${to.toString()}"
+			and turnoverMarket > 0
+			group by vendorId').results();
+
+			var vendorIds:Array<Int> = summaries.array().map(s -> Std.parseInt(s.vendorId));
+			var vendorStats = VendorStats.manager.search($vendorId in vendorIds,false);
+			var vendorStatsMap = new Map<Int,VendorStats>();
+			for( vs in vendorStats){
+				vendorStatsMap.set(untyped vs.vendorId, vs);
+			}
+
+			for(summary in summaries){
+				var vs = vendorStatsMap.get(summary.vendorId);
+				if(vs==null) continue;
+				switch (vs.type){
+					case VendorType.VTCpro : 
+						stats.memberTurnoverMarket += summary.turnoverMarketSum;
+					case VendorType.VTCproTest,VTStudent : null;
+					case VendorType.VTFree,VendorType.VTInvited : 
+						stats.invitedTurnoverMarket += summary.turnoverMarketSum;
+					case VendorType.VTCproSubscriberMontlhy, VendorType.VTCproSubscriberYearly : 
+						stats.proTurnoverMarket += summary.turnoverMarketSum;
+					case VendorType.VTDiscovery : 
+						stats.discoveryTurnoverMarket += summary.turnoverMarketSum;
+					case VendorType.VTInvitedPro : 
+						stats.cproInvitedTurnoverMarket += summary.turnoverMarketSum;
+					case VendorType.VTMarketplace : 
+						stats.marketplaceTurnoverMarket += summary.turnoverMarketSum;
+				}
+				
+				stats.totalTurnoverMarket += summary.turnoverMarketSum;
+			}
+
+			Graph.recordData("global",stats,from);
+			return stats;
+		};
+		
+		var from = new Date(2021,10,1,0,0,0); //  01/11/2021
+		var to = new Date(from.getFullYear(), from.getMonth(), from.getDate()+7, 0, 0, 0);
+
+		var limit = new Date(2022,9,1,0,0,0);
+		var stats = [];
+		while(to.getTime() < limit.getTime()){
+
+			var stat = compute(from,to);
+			untyped stat.date = from;
+			stats.push(stat);
+			
+			from = to;
+			to = new Date(to.getFullYear(), to.getMonth(), to.getDate()+7, 0, 0, 0);
+
+		}
+
+		view.stats = stats;
 	}
 	
 	/**
@@ -375,18 +480,7 @@ class Cron extends Controller
 		});
 		task.execute(!App.config.DEBUG);
 
-		//stats
-		var task = new TransactionWrappedTask( "Stats");
-		task.setTask(function() {
-			var yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate()-1, 0, 0, 0);
-			for( k in GraphService.getAllGraphKeys()){
-				GraphService.getDay(k,yesterday);
-			}
-		});
-		task.execute();
-
-
-		var task = new TransactionWrappedTask( "Refresh group Stats");
+		var task = new TransactionWrappedTask( "Refresh GroupStats");
 		task.setTask(function() {			
 			//split groups in 7 segments so the update is made every week
 			var maxId = sys.db.Manager.cnx.request("select max(id) from `Group`").getIntResult(0);
@@ -426,6 +520,8 @@ class Cron extends Controller
 		task.title('$flag : Look for distribs happening between $from to $to');
 		distribs = db.Distribution.manager.search( $date >= from && $date < to , false);
 		
+		//exclude disabled groups
+		distribs = distribs.filter(d -> d.multiDistrib.group.isDisabled()==false);
 		
 		//on s'arrete immédiatement si aucune distibution trouvée
  		if (distribs.length == 0) return;
@@ -572,9 +668,9 @@ class Cron extends Controller
 		task.title('Look for distribs with orderStartDate between $from to $to (${distribs.length})');
  		if (distribs.length == 0) return;		
 		
-		//exclude CSA catalogs
-		distribs = distribs.filter( (d) -> return d.catalog.type!=db.Catalog.TYPE_CONSTORDERS );
-		distribs.map(  (d) -> task.log("Distrib : "+d.date+" de "+d.catalog.name+", groupe : "+d.catalog.group.name) );
+		//exclude disabled groups
+		distribs = distribs.filter(d -> d.multiDistrib.group.isDisabled()==false);
+		distribs.map( d -> task.log("Distrib : "+d.date+" de "+d.catalog.name+", groupe : "+d.catalog.group.name) );
 				
 		/*
 		 * Group distribs by group.
@@ -649,106 +745,6 @@ class Cron extends Controller
 		}
 	}
 	
-	
-	/**
-	 * Check if there is a multi-distrib to validate.
-	 * 
-	 * Autovalidate it after 10 days
-	 */
-	function distribValidationNotif(task){
-		
-		var now = Date.now();
-
-		var from = now.setHourMinute( now.getHours(), 0 );
-		var to = now.setHourMinute( now.getHours()+1 , 0);
-		
-		var explain = t._("<p>This step is important in order to:</p>");
-		explain += t._("<ul><li>Update orders if delivered quantities are different from ordered quantities</li>");
-		explain += t._("<li>Confirm the reception of payments (checks, cash, transfers) in order to mark orders as 'paid'</li></ul>");
-		
-		/*
-		 * warn administrator if a distribution just ended
-		 */ 
-		var distribs = db.MultiDistrib.manager.search( !$validated && ($distribStartDate >= from) && ($distribStartDate < to) , false);
-		
-		for ( d in Lambda.array(distribs)){
-			if ( !d.getGroup().hasPayments() ){
-				distribs.remove(d);
-			}
-		}
-		var view = App.current.view;
-		for ( d in distribs ){
-			var subj = "Validation de la distribution du " + view.hDate(d.distribStartDate);
-			var url = "http://" + App.config.HOST + "/distribution/validate/"+d.id;
-			var html = t._("<p>Your distribution just finished, don't forget to <b>validate</b> it</p>");
-			html += explain;
-			html += "<p><a href='" + url + "'>Cliquez ici pour valider la distribution</a> (vous devez être connecté·e à votre groupe " + App.current.getTheme().name + ")</p>";
-			App.quickMail(d.getGroup().contact.email, subj, html, d.getGroup());
-		}
-		
-		/*
-		 * warn administrator if a distribution ended 3 days ago
-		 */		
-		
-		var from = now.setHourMinute( now.getHours() , 0 ).deltaDays(-3);
-		var to = now.setHourMinute( now.getHours()+1 , 0).deltaDays(-3);
-		
-		//warn administrator if a distribution just ended
-		var distribs = db.MultiDistrib.manager.search( !$validated && ($distribStartDate >= from) && ($distribStartDate < to) , false);
-		
-		for ( d in Lambda.array(distribs)){
-			if ( !d.getGroup().hasPayments() ){
-				distribs.remove(d);
-			}
-		}
-		
-		for ( d in distribs ){
-		
-			var subj = "Validation de la distribution du " + view.hDate(d.distribStartDate);
-			var url = "http://" + App.config.HOST + "/distribution/validate/"+d.id;		
-			var html = t._("<p>Reminder: you have a delivery to validate.</p>");
-			html += explain;
-			html += "<p><a href='" + url + "'>Cliquez ici pour valider la distribution</a> (vous devez être connecté·e à votre groupe " + App.current.getTheme().name + ")</p>";
-			
-			if(d.getGroup().contact!=null){
-				App.quickMail(d.getGroup().contact.email, subj, html, d.getGroup());
-			}
-			
-		}
-		
-		
-		/*
-		 * Autovalidate unvalidated distributions after 10 days
-		 */ 
-		/*var from = now.setHourMinute( now.getHours() , 0 ).deltaDays( 0 - db.Distribution.DISTRIBUTION_VALIDATION_LIMIT );
-		var to = now.setHourMinute( now.getHours() + 1 , 0).deltaDays( 0 - db.Distribution.DISTRIBUTION_VALIDATION_LIMIT );
-		task.log('<h3>Autovalidation of unvalidated distribs</h3>');
-		task.log('Find distributions from $from to $to');
-		var distribs = db.MultiDistrib.manager.search( !$validated && ($distribStartDate >= from) && ($distribStartDate < to) , false);
-		for ( d in Lambda.array(distribs)){
-			if ( !d.getGroup().hasPayments() ){
-				distribs.remove(d);
-			}
-		}
-
-		for (d in distribs){
-			task.log(d.toString());
-			try	{
-				service.PaymentService.validateDistribution(d);
-			}catch(e:tink.core.Error){
-				task.log(e.message);
-				continue;
-			}
-		}
-		//email
-		for ( d in distribs ){
-			if(d.getGroup().contact==null) continue;
-			var subj = t._("[::group::] Validation of the ::date:: distribution",{group : d.getGroup().name , date : view.hDate(d.distribStartDate)});
-			var html = t._("<p>As you did not validate it manually after 10 days, <br/>the delivery of the ::deliveryDate:: has been validated automatically</p>", {deliveryDate:App.current.view.hDate(d.distribStartDate)});
-			App.quickMail(d.getGroup().contact.email, subj, html);
-		}*/
-		
-	}
 	
 	/**
 	 *  Email product report when orders close				

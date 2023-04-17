@@ -33,8 +33,7 @@ class CatalogLinker extends controller.Controller
 	public function doSelectPcatalog(c:db.Catalog){
 				
 		view.pcatalogs = company.getCatalogs();
-		view.catalog = c;
-		
+		view.catalog = c;		
 	}
 
 	/**
@@ -54,8 +53,8 @@ class CatalogLinker extends controller.Controller
 		if(catalog!=null){
 			if(company.getProducts().length>0) throw Error("/p/pro","Action interdite, vous avez déjà des produits dans votre compte producteur");
 			pro.service.PCatalogService.linkFirstCatalog(catalog,company);
-			if(company.offer==Discovery){
-				service.BridgeService.matomoEvent(app.user.id,"Producteurs","Premier produit créé","Import de catalogue invité");
+			if(company.offer==Marketplace){
+				service.BridgeService.ga4Event(app.user.id,"FirstProduct");
 			}
 			
 			throw Ok('/p/pro/product',"Bravo, vous avez récupéré votre premier catalogue ! Vérifiez que les fiches produits sont correctes.");

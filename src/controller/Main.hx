@@ -1,5 +1,6 @@
 package controller;
 
+import db.Basket;
 import Common;
 import db.Distribution;
 import db.MultiDistrib;
@@ -45,30 +46,28 @@ class Main extends Controller {
 	function doHome() {
 		addBc("home", "Commandes", "/home");
 
+		// If the session has been closed, Neko has been logged out while Nest might still be logged in
+		if (app.user == null){
+			var cookies = Web.getCookies();
+			var authSidCookie = cookies["Auth_sid"];
+			if (authSidCookie != null && authSidCookie != view.sid){
+				throw Redirect('/user/logout');
+			}
+		}
+
 		var group = app.getCurrentGroup();
 		if (app.user != null && group == null) {
 			throw Redirect("/user/choose");
 		} else if (app.user == null && (group == null || group.regOption != db.Group.RegOption.Open)) {
 			throw Redirect("/user/login");
 		}else if(group.disabled!=null){
-			throw Redirect("/group/disabled");
+			if(app.user!=null && app.user.isAdmin()){
+				app.session.addMessage('Ce groupe est bloqué, mais en tant que superadmin vous pouvez y accéder (${group.disabled})');
+			}else{
+				throw Redirect("/group/disabled");
+			}
 		}
-
-		group.checkIsolate();
-
-		// if(app.user!=null && app.user.isGroupManager() && group.hasShopMode()  && !group.betaFlags.has(db.Group.BetaFlags.ShopV2) ){
-		// 	app.session.addMessage("Attention, l'ancienne boutique et les catégories personnalisées disparaîtront le lundi 3 Mai 2021, pensez à vous préparer avant le jour J.<br/><a href='https://wiki.cagette.net/admin:5april' target='_blank'>Cliquez-ici pour plus d'informations</a>",true);
-		// }
-
 		view.amap = group;
-
-		// has unconfirmed basket ?
-		service.OrderService.checkTmpBasket(app.user, app.getCurrentGroup());
-
-		// contract not ended with UserCanOrder flag
-		if (!group.hasShopMode()) {
-			view.openContracts = group.getActiveContracts().filter((c) -> c.hasOpenOrders());
-		}
 
 		// freshly created group
 		view.newGroup = app.session.data.newGroup == true;
@@ -110,6 +109,7 @@ class Main extends Controller {
 		if (app.user != null && group.flags.has(db.Group.GroupFlags.PhoneRequired) && app.user.phone == null) {
 			app.session.addMessage("Les membres de ce groupe doivent fournir un numéro de téléphone. <a href='/account'>Cliquez ici pour mettre à jour votre compte</a>.",true);
 		}
+
 		// message if address is required
 		if (app.user != null && group.flags.has(db.Group.GroupFlags.AddressRequired) && app.user.city == null) {
 			app.session.addMessage("Les membres de ce groupe doivent fournir leur adresse. <a href='/account'>Cliquez ici pour mettre à jour votre compte</a>.",true);
@@ -127,6 +127,8 @@ class Main extends Controller {
 		}
 
 		view.visibleDocuments = group.getVisibleDocuments(isMemberOfGroup);
+
+		view.user = app.user;
 	}
 
 	// login and stuff
@@ -257,31 +259,14 @@ class Main extends Controller {
 	}
 
 	@logged
-	function doDistribution(d:Dispatch) {
-		addBc("distribution", "Distributions", "/distribution");
-		d.dispatch(new controller.Distribution());
+	function doDistributions(d:Dispatch) {
+		addBc("distribution", "Distributions", "/distributions");
+		d.dispatch(new controller.Distributions());
 	}
 
 	function doShop(d:Dispatch) {
 		addBc("shop", "Boutique", "/shop");
 		d.dispatch(new controller.Shop());
-	}
-
-	@tpl('shop/default.mtt')
-	function doShop2(md:db.MultiDistrib, ?args:{continueShopping:Bool}) {
-		throw Redirect("/shop/" + md.id + "?continueShopping=" + (args != null ? args.continueShopping : false));
-
-		// if( app.getCurrentGroup()==null || app.getCurrentGroup().id!=md.getGroup().id){
-		// 	throw  Redirect("/group/"+md.getGroup().id);
-		// }
-		// if(args!=null){
-		// 	if(!args.continueShopping){
-		// 		service.OrderService.checkTmpBasket(app.user,app.getCurrentGroup());
-		// 	}
-		// }
-		// view.category = 'shop';
-		// view.md = md;
-		// view.tmpBasketId = app.session.data.tmpBasketId;
 	}
 
 	@logged
@@ -312,11 +297,6 @@ class Main extends Controller {
 	}
 
 	@logged
-	function doSubscriptions(dispatch:Dispatch) {
-		dispatch.dispatch(new Subscriptions());
-	}
-
-	@logged
 	function doMessages(d:Dispatch) {
 		addBc("messages", "Messagerie", "/messages");
 		d.dispatch(new Messages());
@@ -326,14 +306,6 @@ class Main extends Controller {
 	function doAmapadmin(d:Dispatch) {
 		addBc("amapadmin", "Paramètres", "/amapadmin");
 		d.dispatch(new AmapAdmin());
-	}
-
-	@logged
-	function doValidate(multiDistrib:db.MultiDistrib, user:db.User, d:haxe.web.Dispatch) {
-		var v = new controller.Validate();
-		v.multiDistrib = multiDistrib;
-		v.user = user;
-		d.dispatch(v);
 	}
 
 	@admin
@@ -347,24 +319,81 @@ class Main extends Controller {
 		sys.db.admin.Admin.handler();
 	}
 
-	@admin
+	// @admin
 	function doDebug(d:Dispatch) {
 		d.dispatch(new controller.Debug());
 	}
 
-	// CGU
-	public function doCgu() {
+	/**
+		Landing page when a user is invited in a group.
+	**/
+	@tpl('invite.mtt')
+	function doInvite(hash:String){
+
+		var cacheStringified = sugoi.db.Cache.manager.get(hash).value;
+		var cache:{firstName:String,lastName:String,email:String,groupId:Int,?id:Int,?differenciatedPricingId:Int} = haxe.Json.parse(cacheStringified);
+		if (cache == null){
+			throw Error("/","Lien invalide");
+		}
+
+		var group = db.Group.manager.get(cache.groupId);
+		app.session.data.amapId = cache.groupId;
+
+		if (cache.id!=null) {
+			var user = db.User.manager.get(cache.id);
+			var userGroup = db.UserGroup.getOrCreate(user,group);
+			if (cache.differenciatedPricingId!=null){
+				userGroup.differenciatedPricingId = cache.differenciatedPricingId;
+				userGroup.update();
+			}
+			throw Ok("/", t._("You're now a member of \"::group::\" ! You'll receive an email as soon as next order will open", {group:group.name}));
+		} else {
+			service.UserService.prepareLoginBoxOptions(view, group);
+			view.invitedUserEmail = cache.email;
+			view.invitedGroupId = group.id;
+		}
+	}
+
+	function doDiscovery(){
+		throw Redirect('/p/pro/signup/discovery');
+	}
+
+	// TOS (CGU)
+	public function doTos() {
 		throw Redirect(App.current.getTheme().terms.termsOfServiceLink);
 	}
 
-	// CGV
+	public function doCgu() {
+		throw Redirect('/tos');
+	}
+
+	// Privacy policy (politique de confidentialité)
+	public function doPrivacypolicy() {
+		throw Redirect(App.current.getTheme().terms.privacyPolicyLink);
+	}
+
+	// CCP (Conditions Commerciales par défaut de la Plateforme)
 	public function doCgv() {
+		throw Redirect('/termsofsale');
+	}
+	public function doCcp() {
+		throw Redirect('/termsofsale');
+	}
+	public function doTermsofsale() {		
 		throw Redirect(App.current.getTheme().terms.termsOfSaleLink);
 	}
 
-	// CGU MGP
+	//CGS
+	public function doPlatformtermsofservice() {		
+		throw Redirect(App.current.getTheme().terms.platformTermsOfServiceLink);
+	}
+	public function doCgs() {
+		throw Redirect('/platformtermsofservice');
+	}
+
+	// CGU Mangopay
 	public function doMgp() {
-		throw Redirect("https://www.mangopay.com/terms/MANGOPAY_Terms-FR.pdf");
+		throw Redirect("https://www.cagette.net/wp-content/uploads/2023/01/CGU-MangoPay.pdf");
 	}
 
 	// charte
@@ -384,30 +413,6 @@ class Main extends Controller {
 		}
 		Sys.print(haxe.Json.stringify(json));
 	}
-
-	@tpl('invite.mtt')
-	function doInvite(hash:String, userEmail:String, group:db.Group, ?user:db.User){
-
-		if (haxe.crypto.Sha1.encode(App.config.KEY+userEmail) != hash){
-			throw Error("/","Lien invalide");
-		}
-
-		app.session.data.amapId = group.id;
-
-		if (user!=null) {
-			db.UserGroup.getOrCreate(user,group);
-			throw Ok("/", t._("You're now a member of \"::group::\" ! You'll receive an email as soon as next order will open", {group:group.name}));
-		} else {
-			service.UserService.prepareLoginBoxOptions(view, group);
-			view.invitedUserEmail = userEmail;
-			view.invitedGroupId = group.id;
-		}
-	}
-
-	function doDiscovery(){
-		throw Redirect('/p/pro/signup/discovery');
-	}
-
 	/**
 		Maintenance and migration scripts
 	**/

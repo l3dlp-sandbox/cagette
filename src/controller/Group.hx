@@ -6,7 +6,6 @@ import payment.Cash;
 import service.BridgeService;
 import service.DistributionService;
 import service.OrderService;
-import service.SubscriptionService;
 import service.WaitingListService;
 import sugoi.form.elements.StringInput;
 
@@ -126,27 +125,11 @@ class Group extends controller.Controller
 
 		var p = new db.Place();
 		var f = form.CagetteForm.fromSpod(p);
+		f.addElement(new sugoi.form.elements.Html("sqdqsd","<p class='desc' style='margin: 0px;'>Configuration par défaut : Groupe ouvert, n'importe qui peut s'inscrire et commander <a data-toggle='tooltip' title='En savoir plus' href='https://wiki.cagette.net/admin:admin_boutique#mode_marche' target='_blank'><i class='icon icon-info'></i></a></p>"),0);
+		
 		f.addElement(new sugoi.form.elements.StringSelect('country',t._("Country"),db.Place.getCountries(),p.country,true));			
 		f.addElement(new StringInput("groupName", t._("Name of your group"), "", true),1);
 		
-		//group type
-		if (App.current.getSettings().noCsa != true) {
-			var data = [
-				{
-					label:"Mode marché",
-					value:"2",
-					desc : "Drive de producteurs sans engagement.<br/>Configuration par défaut : Groupe ouvert, n'importe qui peut s'inscrire et commander <a data-toggle='tooltip' title='En savoir plus' href='https://wiki.cagette.net/admin:admin_boutique#mode_marche' target='_blank'><i class='icon icon-info'></i></a>"
-				},
-				{ 
-					label:"Mode AMAP",
-					value:"0",
-					desc : "Gérer des contrats AMAP classiques ou variables.<br/>Configuration par défaut : Groupe fermé avec liste d'attente et gestion des adhésions. <a data-toggle='tooltip' title='En savoir plus' href='https://wiki.cagette.net/admin:admin_boutique#mode_amap' target='_blank'><i class='icon icon-info'></i></a>"
-				}
-			];	
-			var gt = new sugoi.form.elements.RadioGroup("type", t._("Group type"), data ,"2", Std.string( db.Catalog.TYPE_VARORDER ), true, true, true);
-			f.addElement(gt,2);
-		}
-
 		f.getElement("name").label = "Nom du lieu";
 		f.removeElementByName("lat");
 		f.removeElementByName("lng");
@@ -160,39 +143,7 @@ class Group extends controller.Controller
 			var g = new db.Group();
 			g.name = f.getValueOf("groupName");
 			g.contact = user;
-			
-			var type:GroupType;
-			if (App.current.getSettings().noCsa == true) {
-				type = GroupType.ProducerDrive;
-			}else {
-				type = Type.createEnumIndex(GroupType, Std.parseInt(f.getValueOf("type")) );
-			}
-			
-			switch(type){
-			case null : 
-				throw "unknown group type";
-
-			case Amap : 
-				g.flags.unset(ShopMode);
-				g.flags.set(HasPayments);
-				g.hasMembership=true;
-				g.regOption = WaitingList;
-
-				if(!user.isAdmin()) throw Redirect('/group/csa?name='+g.name);
-				
-			case GroupedOrders :
-				g.flags.set(ShopMode);
-				g.hasMembership=true;
-				g.regOption = WaitingList;
-				
-			case ProducerDrive,FarmShop : 
-				g.flags.set(ShopMode);								
-				g.flags.set(PhoneRequired);				
-				g.regOption = Open;
-			}
-			
-			g.groupType = type;
-			g.flags.set(HasPayments);
+			g.regOption = Open;
 			g.setAllowedPaymentTypes([payment.Cash.TYPE,payment.Check.TYPE]);
 			g.insert();
 			
@@ -218,8 +169,7 @@ class Group extends controller.Controller
 			#if plugins
 			try{
 				//sync if this user is not cpro && market mode group
-				if( service.VendorService.getCagetteProFromUser(app.user).length==0 && g.hasShopMode() ){
-					
+				if( service.VendorService.getCagetteProFromUser(app.user).length==0 ){					
 					BridgeService.syncUserToHubspot(app.user);
 					service.BridgeService.triggerWorkflow(29805116, app.user.email);
 				}
@@ -263,14 +213,6 @@ class Group extends controller.Controller
 		
 	// 	view.addr = view.escapeJS(addr);
 	// }
-
-	@tpl("group/csa.mtt")
-	public function doCsa(args:{name:String}){
-
-		view.groupName = args.name;
-
-	}
-
 
 	@tpl("group/map.mtt")
 	public function doMap(?args:{?lat:Float,?lng:Float,?address:String}){
