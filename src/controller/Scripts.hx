@@ -173,6 +173,18 @@ class Scripts extends Controller
 
             //note : linked distribution is not moved
 
+            //delete membership if already exist in target group
+            var already = db.Membership.get(m.user,targetGroup,m.year,true);
+            if(already!=null) {
+                if(already.operation!=null){
+                    for(op in already.operation.getRelatedPayments()){
+                        op.delete();
+                    }
+                    already.operation.delete();
+                }
+                already.delete();
+            }
+
             sys.db.Manager.cnx.request('update Membership set groupId=${targetGroup.id} where groupId=${m.group.id} and userId=${m.user.id} and year=${m.year}');
 
             // var n = db.Membership.get(m.user,m.group,m.year,true);
