@@ -137,7 +137,7 @@ class Scripts extends Controller
 
         //give targetPrice to targetGroup
         print("==== GIVE users from "+targetGroup.name+" price #"+targetPrice.id+"-"+targetPrice.name);
-        
+
         for( userGroup in db.UserGroup.manager.search($groupId == targetGroup.id,true)){
 
             userGroup.differenciatedPricingId = targetPrice.id;
@@ -148,7 +148,7 @@ class Scripts extends Controller
 
         print("==== MOVE users from "+sourceGroup.name+" to "+targetGroup.name);
 
-        for( userGroup in db.UserGroup.manager.search($groupId == sourceGroup.id,true)){
+        for( userGroup in db.UserGroup.manager.search($group == sourceGroup,true)){
 
             //if user is group admin, keep it
             // if(userGroup.hasRight(GroupAdmin)) continue;
@@ -181,8 +181,7 @@ class Scripts extends Controller
                 m.update();
             }   
 
-            print(userGroup.user.getName()+" moved");
-            print("give "+userGroup.user.getName()+" price #"+sourcePrice.id+"-"+sourcePrice.name);
+            print(userGroup.user.getName()+" moved and give price #"+sourcePrice.id+"-"+sourcePrice.name);            
         }
 
         //close source group
@@ -190,5 +189,7 @@ class Scripts extends Controller
         sourceGroup.regOption = RegOption.Closed;
         // sourceGroup.disabled = 
         sourceGroup.update();
+
+        print("END");
     }
 }
