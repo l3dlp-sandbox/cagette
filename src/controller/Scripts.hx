@@ -136,6 +136,8 @@ class Scripts extends Controller
     function doMigratePricing(sourceGroup:db.Group,sourcePrice:db.DifferenciatedPricing,targetGroup:db.Group,targetPrice:db.DifferenciatedPricing){
 
         //give targetPrice to targetGroup
+        print("==== GIVE users from "+targetGroup.name+" price #"+targetPrice.id+"-"+targetPrice.name);
+        
         for( userGroup in db.UserGroup.manager.search($groupId == targetGroup.id,true)){
 
             userGroup.differenciatedPricingId = targetPrice.id;
@@ -150,6 +152,10 @@ class Scripts extends Controller
 
             //if user is group admin, keep it
             // if(userGroup.hasRight(GroupAdmin)) continue;
+
+            //if already in target group, delete
+            var already = db.UserGroup.get(userGroup.user,targetGroup,true);
+            if(already!=null) already.delete();
 
             //move to target group
             userGroup.group = targetGroup;
