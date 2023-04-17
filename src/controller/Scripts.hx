@@ -172,22 +172,27 @@ class Scripts extends Controller
         for( m in db.Membership.manager.search($group == sourceGroup,false)){
 
             //note : linked distribution is not moved
-            var n = db.Membership.get(m.user,m.group,m.year,true);
-            n.group = targetGroup;
-            n.update();
 
-            if(n.operation!=null){
+            sys.db.Manager.cnx.request('update Membership set groupId=${targetGroup.id} where groupId=${m.group.id} and userId=${m.user.id} and year=${m.year}');
+
+            // var n = db.Membership.get(m.user,m.group,m.year,true);
+            // n.group = targetGroup;
+            // n.update();
+
+            if(m.operation!=null){
 
                 //move membership debt op
-                var op = db.Operation.manager.get(n.operation.id,true);               
-                op.group = targetGroup;
-                n.update();
+                // var op = db.Operation.manager.get(n.operation.id,true);               
+                // op.group = targetGroup;
+                // n.update();
+                sys.db.Manager.cnx.request('update Operation set groupId=${targetGroup.id} where id=${m.operation.id}');
 
                 //move payment op
-                var paymentOp = db.Operation.manager.select($relation == n.operation,true);
+                var paymentOp = db.Operation.manager.select($relation == m.operation,true);
                 if(paymentOp!=null){
-                    paymentOp.group = targetGroup;
-                    paymentOp.update();
+                    // paymentOp.group = targetGroup;
+                    // paymentOp.update();
+                    sys.db.Manager.cnx.request('update Operation set groupId=${targetGroup.id} where id=${paymentOp.id}');
                 }
             }
             
