@@ -42,6 +42,7 @@
 		<script language="javascript">
 
 			window.addEventListener("DOMContentLoaded", function() {
+				::set group = getCurrentGroup()::
 				::if(user!=null)::
 					neo.createNeoModule("header-neo-container", "pageHeader", {
 						groupName: ::if(group!=null):: "::group.name::" ::else:: null ::end::,
