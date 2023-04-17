@@ -149,16 +149,34 @@ class Scripts extends Controller
         for( userGroup in db.UserGroup.manager.search($groupId == sourceGroup.id,true)){
 
             //if user is group admin, keep it
-            if(userGroup.hasRight(GroupAdmin)) continue;
+            // if(userGroup.hasRight(GroupAdmin)) continue;
 
             //move to target group
             userGroup.group = targetGroup;
             userGroup.differenciatedPricingId = sourcePrice.id;
             userGroup.update();
 
+            //move memberships
+            for( m in db.Membership.manager.search($user == userGroup.user && $group == userGroup.group,true)){
+                //linked distribution is not moved
+                m.group = targetGroup;
+                if(m.operation!=null){
+                    //move membership debt op
+                    m.operation.lock();
+                    m.operation.group = targetGroup;
+                    m.update();
+                    //move payment op
+                    var paymentOp = db.Operation.manager.select($relation == m.operation,true);
+                    if(paymentOp!=null){
+                        paymentOp.group = targetGroup;
+                        paymentOp.update();
+                    }
+                }
+                m.update();
+            }   
+
             print(userGroup.user.getName()+" moved");
             print("give "+userGroup.user.getName()+" price #"+sourcePrice.id+"-"+sourcePrice.name);
-
         }
 
         //close source group
@@ -166,9 +184,5 @@ class Scripts extends Controller
         sourceGroup.regOption = RegOption.Closed;
         // sourceGroup.disabled = 
         sourceGroup.update();
-
-       
-
-
     }
 }
