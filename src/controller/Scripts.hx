@@ -138,7 +138,7 @@ class Scripts extends Controller
         //give targetPrice to targetGroup
         print("==== GIVE users from "+targetGroup.name+" price #"+targetPrice.id+"-"+targetPrice.name);
 
-        for( userGroup in db.UserGroup.manager.search($groupId == targetGroup.id,true)){
+        for( userGroup in db.UserGroup.manager.search($groupId == targetGroup.id && $differenciatedPricingId==null,true)){
 
             userGroup.differenciatedPricingId = targetPrice.id;
             userGroup.update();
