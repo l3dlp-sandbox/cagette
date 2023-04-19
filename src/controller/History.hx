@@ -5,9 +5,7 @@ import db.Operation;
 import service.OrderService;
 import sugoi.form.Form;
 import sugoi.form.elements.StringSelect;
-
 using Std;
-// import plugin.Tutorial;
 
 class History extends Controller
 {
@@ -30,7 +28,7 @@ class History extends Controller
 		var varOrders = new Map<String,Array<db.UserOrder>>();
 		
 		var group = App.current.user.getGroup();		
-		var from  = DateTools.delta(Date.now(), -1000.0 * 60 * 60 * 24 * 30);
+		var from  = DateTools.delta(Date.now(), -1000.0 * 60 * 60 * 24 * 30 * 6);
 		var to 	  = DateTools.delta(Date.now(), 1000.0 * 60 * 60 * 24 * 30 * 6);
 		
 		//variable orders, grouped by date
@@ -40,8 +38,6 @@ class History extends Controller
 			return Math.round(b.distribStartDate.getTime()/1000) - Math.round(a.distribStartDate.getTime()/1000);
 		});
 		view.distribs = distribs;
-		view.prepare = OrderService.prepare;
-		
 		checkToken();
 		view.userGroup = ua;
 	}

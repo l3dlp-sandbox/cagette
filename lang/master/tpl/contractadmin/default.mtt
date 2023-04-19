@@ -71,7 +71,6 @@
 			<span class="caret"></span>
 		  </button>
 		  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-			<li><a href="/contractAdmin/ordersByDate">::_("Same day")::</a></li>
 			<li><a href="/contractAdmin/ordersByTimeFrame">::_("Timeframe")::</a></li>			
 		  </ul>
 		</div>

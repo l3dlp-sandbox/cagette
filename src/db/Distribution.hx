@@ -75,10 +75,12 @@ class Distribution extends Object
 	}
 	
 	/**
-		@deprecated
+		Get orders of this distrib from CONFIRMED/VALIDATED baskets
 	**/
 	public function getOrders() {
-		return db.UserOrder.manager.search($distribution == this, false); 
+		var baskets = this.multiDistrib.getBaskets();
+		var basketIds:Array<Int> = baskets.map(b -> b.id);
+		return db.UserOrder.manager.search($distribution == this && $basketId in basketIds, false); 
 	}
 
 	/**
@@ -90,26 +92,28 @@ class Distribution extends Object
 
 	/**
 		Get user orders
-		This includes secondary user.
 	**/
 	public function getUserOrders(user:db.User):Array<db.UserOrder>{
 		if( user == null || user.id == null ) throw new tink.core.Error( "user is null" );
-		return db.UserOrder.manager.search($distribution == this  && $user==user, false).array(); 
+		var baskets = this.multiDistrib.getBaskets();
+		var basketIds:Array<Int> = baskets.map(b -> b.id);
+		return db.UserOrder.manager.search($distribution == this && $user==user && $basketId in basketIds, false).array(); 
 	}
 	
 	public function getUsers():Iterable<db.User>{		
-		return tools.ObjectListTool.deduplicate( Lambda.map(getOrders(), function(x) return x.user ) );		
+		return tools.ObjectListTool.deduplicate( getOrders().map( x -> x.user ) );		
 	}
 
 	/**
-		get baskets implied in this distribution
+		Get baskets implied in this distribution
 	**/
 	public function getBaskets(){
 		var baskets = new Map<Int,db.Basket>();
 		for( o in getOrders()){
-			if(o.basket!=null) baskets.set(o.basket.id,o.basket);
+			baskets.set(o.basket.id,o.basket);
 		}
-		return baskets.array().filter(b -> b.status!=Std.string(BasketStatus.OPEN) && b.status!=Std.string(BasketStatus.PAYMENT_PROCESSING));
+		//deduplicate baskets
+		return baskets.array();
 	}
 
 	

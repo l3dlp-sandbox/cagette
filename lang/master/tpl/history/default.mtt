@@ -4,11 +4,10 @@
 	<h2>
 		Historique de commande
 	</h2>
-	
-		<!-- VARYING ORDERS FOR SHOP MODE -->
-		::if distribs.length > 0::
+
+	::if distribs.length > 0::
 		<div class="article">
-			<h4><i class="icon icon-basket"></i>  Commandes variables</h4>
+
 	
 			::foreach d distribs::
 
@@ -20,7 +19,7 @@
 				::end::
 				::if(orders!=null && orders.length>0)::
 
-					<h5>::_("Order delivered on"):: ::hDate(d.getDate())::</h5>
+					<h5>Commande distribuée le ::hDate(d.getDate())::</h5>
 					<table class="table table-bordered table-condensed" >
 						<tr class="greyhead">
 							<th class="col-md-1">::_("Qty||short version for quantity")::</th>
@@ -67,7 +66,7 @@
 				::end::
 			::end::
 		</div>
-		::end::
+	::end::
 		
 </div>
 

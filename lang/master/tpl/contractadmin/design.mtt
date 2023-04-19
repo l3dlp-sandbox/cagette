@@ -28,11 +28,6 @@
 				</a>
 			</li>
 			
-			<li id="orders" ::attr class if(nav[1]=="orders") 'active'::>
-				<a href="/contractAdmin/selectDistrib/::c.id::">
-					<i class="icon icon-basket"></i> ::_("Orders")::
-				</a>
-			</li>
 			<li id="documents" ::attr class if(nav[1]=="documents") 'active'::>
 				<a href="/contractAdmin/documents/::c.id::">
 					<i class="icon icon-file-pdf"></i> Documents

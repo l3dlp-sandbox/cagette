@@ -560,12 +560,11 @@ class OrderService
 	/**
 	 * get users orders for a distribution
 	 */
-	public static function getOrders( contract : db.Catalog, ?distribution : db.Distribution, ?csv = false) : Array<UserOrder> {
+	public static function getOrders( distribution : db.Distribution, ?csv = false) : Array<UserOrder> {
 
 		var view = App.current.view;
-		var orders = new Array<db.UserOrder>();
-		orders = contract.getOrders(distribution);	
-				
+		var contract = distribution.catalog;
+		var orders = contract.getOrders(distribution);					
 		var orders = prepare(orders);
 		
 		//CSV export

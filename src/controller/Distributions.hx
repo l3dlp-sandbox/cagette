@@ -554,4 +554,19 @@ class Distributions extends Controller {
 		}
 	}
 
+	/**
+		Cancel a vendor participation to a multidistrib (delete a db.Distribution)
+	**/
+	function doDelete(d:db.Distribution) {
+		if (!app.user.isContractManager(d.catalog))
+			throw Error('/', t._("Forbidden action"));
+		var contractId = d.catalog.id;
+		try {
+			service.DistributionService.cancelParticipation(d, false);
+		} catch (e:tink.core.Error) {
+			throw Error("/contractAdmin/distributions/" + contractId, e.message);
+		}
+		throw Ok('/contractAdmin/distributions/${contractId}?_from=${app.params.get("_from")}&_to=${app.params.get("_to")}', "Ce producteur ne participe plus à la distribution");
+	}
+
 }

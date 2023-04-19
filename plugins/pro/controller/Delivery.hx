@@ -599,7 +599,7 @@ class Delivery extends controller.Controller
 		view.distrib = d;
 		var contract = d.catalog;
 		view.contract = d.catalog;
-		view.orders = service.OrderService.getOrders(contract, d);
+		view.orders = service.OrderService.getOrders(d);
 		view.volunteers = Lambda.filter(d.multiDistrib.getVolunteers(),function(v) return v.volunteerRole.catalog!=null && v.volunteerRole.catalog.id==d.catalog.id);		
 	}
 	

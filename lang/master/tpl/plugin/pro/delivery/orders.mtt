@@ -19,10 +19,10 @@
 	
 	$$export(/p/pro/delivery/csv/::distribution.id::)
 	
-	<a href="/contractAdmin/ordersByProduct/::catalog.id::?d=::distribution.id::" class="btn btn-default btn-sm">
+	<!--<a href="/contractAdmin/ordersByProduct/::catalog.id::?d=::distribution.id::" class="btn btn-default btn-sm">
 		<i class="icon icon-products"></i>
 		::_("Summary by products")::
-	</a>
+	</a>-->
 
 	<div class="dropdown" style="display:inline-block;">
 		<button class="btn btn-default btn-sm dropdown-toggle btn-noAntiDoubleClick" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

@@ -164,21 +164,17 @@ class Catalog extends Object
 	}
 	
 	/**
-	 * Get all orders of this contract
-	 * @param	d	A delivery is needed for varying orders contract
-	 * @return
+	 * Get orders of this distribution	 
 	 */
-	public function getOrders( distribution : db.Distribution ) : Array<db.UserOrder> {
+	public function getOrders( distribution:db.Distribution ):Array<db.UserOrder> {
 
-		if ( distribution == null ) throw "This type of contract must have a delivery";
+		if ( distribution == null ) throw "distribution is null";
+		// var productIds = getProducts(false).map( p -> p.id );
+
+		var basketIds = distribution.multiDistrib.getBaskets().map( b -> b.id );
 		
-		//get product ids, some of the products may have been disabled but we keep the order
-		var productIds = getProducts(false).map( function( product ) return product.id );
+		return db.UserOrder.manager.search( $distribution == distribution && $basketId in basketIds, {orderBy:userId}, false ).array();	
 
-		var orders = new List<db.UserOrder>();
-		orders = db.UserOrder.manager.search( ( $productId in productIds ) && $distribution == distribution, {orderBy:userId}, false );	
-	
-		return Lambda.array(orders);
 	}
 
 	/**
