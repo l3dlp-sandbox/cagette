@@ -63,12 +63,14 @@
 						<a href="/member/view/::basket.userId::" target="_blank">::basket._user.getName()::</a> 						
 					</td>
 					<td>
+						::if(basket.status=="CONFIRMED")::
 						<div id="orders-dialog-container" />
 						<a class="btn btn-default btn-xs"
 							onclick="neo.createNeoModule('orders-dialog-container', 'ordersDialog', { userId: ::basket.userId::, multiDistribId: ::multiDistribId::, catalogId: ::distribution._catalog.id::, groupId: ::user.getGroup().id::, date: '::escapeJS(hDate(distribution.date))::', place: '::escapeJS(distribution._place.toString())::', userName: '::escapeJS(basket._user.getName())::', callbackUrl: '/contractAdmin/orders/::c.id::?d=::distribution.id::', basketId: ::basket.id::, differenciatedPricingSetting: ::settings.differenciatedPricing:: });">
 							<i class="icon icon-edit"></i>
 							::_("Edit")::
 						</a>
+						::end::
 					</td>
 				</tr>
 				<tr>

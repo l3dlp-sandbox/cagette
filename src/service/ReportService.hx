@@ -22,7 +22,7 @@ class ReportService{
 		var exportName = t._("Delivery ::contractName:: of the ", {contractName:distribution.catalog.name}) + distribution.date.toString().substr(0, 10);
 		var where = ' and p.catalogId = ${distribution.catalog.id}';
 		where += ' and up.distributionId = ${distribution.id}';
-		where += ' and up.basketId IN (${basketIds.join(',')})';
+		if(basketIds.length>0) where += ' and up.basketId IN (${basketIds.join(',')})';
 
 		//Product price will be an average if price changed
 		var sql = 'select 

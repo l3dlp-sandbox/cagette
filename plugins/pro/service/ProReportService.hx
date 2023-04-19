@@ -145,7 +145,7 @@ class ProReportService{
 			var basketIds:Array<Int> = baskets.map(b -> b.id);
 
 			where += ' and uo.distributionId IN ('+distribs.getIds().join(',')+')';
-			where += ' and uo.basketId IN (${basketIds.join(',')})';
+			if(basketIds.length>0) where += ' and uo.basketId IN (${basketIds.join(',')})';
 		}
 	
 
