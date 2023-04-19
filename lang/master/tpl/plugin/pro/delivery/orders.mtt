@@ -8,33 +8,29 @@
 
 <div style="margin:8px 0;">
 	
-	::if(catalog._group.hasShopMode() && !catalog._group.isDispatch() )::
+	::if( !catalog._group.isDispatch() )::
+	<div id="orders-dialog-container" />
 	<a class="btn btn-default btn-sm"
-		onclick="_Cagette.initOrderBox(null,::multiDistribId::,::distribution._catalog.id::,::catalog.type::,'::escapeJS(hDate(distribution.date))::','::escapeJS(distribution._place.toString())::',null,'::catalog._group.currency::', ::catalog._group.hasPayments()::, '/p/pro/delivery/orders/::distribution.id::', true, ::catalog._group.id::)">
-		<i class="icon icon-plus"></i>
+		onclick="neo.createNeoModule('orders-dialog-container', 'ordersDialog', { userId: null, multiDistribId: ::multiDistribId::, catalogId: ::distribution._catalog.id::, groupId: ::catalog._group.id::, date: '::escapeJS(hDate(distribution.date))::', place: '::escapeJS(distribution._place.toString())::', userName: null, callbackUrl: '/p/pro/delivery/orders/::distribution.id::', basketId: null, differenciatedPricingSetting: ::settings.differenciatedPricing:: });">
+	<i class="icon icon-plus"></i>
 		::_("New order")::
 	</a>							
 	::end::
 	
 	$$export(/p/pro/delivery/csv/::distribution.id::)
 	
-	<a href="/contractAdmin/ordersByProduct/::catalog.id::?d=::distribution.id::" class="btn btn-default btn-sm">
+	<!--<a href="/contractAdmin/ordersByProduct/::catalog.id::?d=::distribution.id::" class="btn btn-default btn-sm">
 		<i class="icon icon-products"></i>
 		::_("Summary by products")::
-	</a>
+	</a>-->
 
 	<div class="dropdown" style="display:inline-block;">
 		<button class="btn btn-default btn-sm dropdown-toggle btn-noAntiDoubleClick" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 			<i class="icon icon-print"></i> ::_("Attendance sheet")::
 		</button>
 		<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">					
-			::if(!catalog._group.hasShopMode())::
-			<li><a href="/distribution/csaList/::distribution.id::"> Liste d'émargement AMAP</a></li>
-			<li><a href="/distribution/listByProductUser/::distribution.id::"> ::_("By Product-User")::</a></li>			
-			::else::
-			<li><a href="/distribution/list/::distribution.id::"> ::_("Standard")::</a></li>
-			<li><a href="/distribution/listByProductUser/::distribution.id::"> ::_("By Product-User")::</a></li>			
-			::end::
+			<li><a href="/distributions/list/::distribution.id::"> ::_("Standard")::</a></li>
+			<li><a href="/distributions/listByProductUser/::distribution.id::"> ::_("By Product-User")::</a></li>			
 		</ul>
 	</div>
 </div>
@@ -60,7 +56,7 @@ td.userRow a{ color:white; }
 			<table class="table table-bordered table-hover table-condensed"  style="width:100%;">
 				
 				<tr class="darkhead">
-					<td colspan="7">
+					<td colspan="4">
 						<div class="basketNumber" ::cond basket!=null:: >
 							<i class="fa fa-shopping-basket" aria-hidden="true"></i> N°::basket.num::
 						</div>
@@ -68,9 +64,10 @@ td.userRow a{ color:white; }
 						<a href="/member/view/::basket.userId::" target="_blank">::basket._user.getName()::</a> 						
 					</td>
 					<td>
-						::if(!catalog.isConstantOrdersCatalog())::
+						::if(basket.status=="CONFIRMED")::
+						<div id="orders-dialog-container" />
 						<a class="btn btn-default btn-xs"
-							onclick="_Cagette.initOrderBox(::basket.userId::,::multiDistribId::,::distribution._catalog.id::,::distribution._catalog.type::,'::escapeJS(hDate(distribution.date))::','::escapeJS(distribution._place.toString())::','::escapeJS(basket._user.getName())::','::catalog._group.currency::', ::catalog._group.hasPayments()::, '/p/pro/delivery/orders/::distribution.id::', true, ::catalog._group.id::, ::basket.id::)">
+							onclick="neo.createNeoModule('orders-dialog-container', 'ordersDialog', { userId: ::basket.userId::, multiDistribId: ::multiDistribId::, catalogId: ::distribution._catalog.id::, groupId: ::catalog._group.id::, date: '::escapeJS(hDate(distribution.date))::', place: '::escapeJS(distribution._place.toString())::', userName: '::escapeJS(basket._user.getName())::', callbackUrl: '/p/pro/delivery/orders/::distribution.id::', basketId: ::basket.id::, differenciatedPricingSetting: ::settings.differenciatedPricing:: });">
 							<i class="icon icon-edit"></i>
 							::_("Edit")::
 						</a>
@@ -82,10 +79,7 @@ td.userRow a{ color:white; }
 					<th class="col-md-1">::_("Qty")::</th>						
 					<th class="col-md-4">::_("Product")::</th>
 					<th class="col-md-1"><a href="#" data-toggle="tooltip" data-placement="top" title="::_("Unit price including taxes")::">::_("U.P||price per unit")::</a></th>
-					<th class="col-md-1">Ss-total</th>
-					<th class="col-md-1">::_("Fees")::</th>
 					<th class="col-md-1">::_("Total")::</th>						
-					<th class="col-md-2"></th>
 				</tr>
 				
 				
@@ -115,32 +109,19 @@ td.userRow a{ color:white; }
 						<td>
 							::formatNum(o.productPrice)::&nbsp;::currency()::
 						</td>
-						<td>
-							::formatNum(o.subTotal)::&nbsp;::currency()::
-						</td>
-						<td>
-							<!-- frais -->
-							::if o.percentageValue!=null::
-							<a href="#" data-toggle="tooltip" data-placement="top" title="::o.percentageName:: : ::o.percentageValue:: %">
-								::formatNum(o.fees)::&nbsp;::currency()::
-							</a>
-							::end::
-						</td>
+					
 						<td>
 							<!-- total -->
 							::formatNum(o.total)::&nbsp;::currency()::
 							::set total = total + o.total::
 						</td>
-						<td>
-							
-						</td>
+					
 					</tr>
 				::end::
 				
 				<tr style="background:#DDD;">
-					<th colspan="6">::_("Total")::</th>
-					<th>::formatNum(total)::&nbsp;::currency()::</th>
-					<th></th>
+					<th colspan="4">::_("Total")::</th>
+					<th>::formatNum(total)::&nbsp;::currency()::</th>					
 				</tr>
 			</table>
 		::end::

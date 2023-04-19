@@ -1,5 +1,9 @@
 package controller;
 
+import db.Operation;
+import db.Membership;
+import db.Catalog;
+import db.MultiDistrib;
 import service.PaymentService;
 import payment.Check;
 import payment.Cash;
@@ -55,8 +59,6 @@ class Scripts extends Controller
 
 		printTitle("Recompute ops from "+from.toString()+" to "+to.toString());
         for(g in db.Group.manager.search($id>0,false)){
-            if(!g.hasShopMode()) continue; //no AMAPs
-            if(!g.hasPayments()) continue;
             var dids = db.MultiDistrib.getFromTimeRange( g , from , to  ).map(d -> d.id);
             print("group "+g.id+" has "+dids.length+" mds");
             //get not validated baskets
@@ -83,16 +85,6 @@ class Scripts extends Controller
 	}
 
     /**
-        2023-01-10 enable payments for all shopMode groups
-    **/
-    public function doEnablepayments(){
-        for(g in db.Group.manager.search( $flags.has(ShopMode) && !$flags.has(HasPayments) ,true) ){
-            print(g.id+" - "+g.name);
-            g.enablePayments();
-        }
-    }
-
-    /**
         2023-01-10 ensure all cpro have legal rep
     **/
     public function doLegalRep(){
@@ -114,98 +106,19 @@ class Scripts extends Controller
     }
 
     /**
-        2023-02-01 enable massively cagette2 option + remove percentage on catalogs
+        2023-04-04 delete AMAPs datas : 
+        supprime les UserOrder / basket / distributions multdistrib / operations / adhésions / catalog / products des AMAP.  On ne garde que Group/User/UserGroup
     **/
-    /*function doCagette2(){
+    function doDeleteAmapData(){
 
-		var groups = 0;
-		var groupsWithPercentage = 0;
+        for( g in db.Group.manager.search( $flags.has(__ShopMode)==false ,false)){
 
-		//shopmode groups with no cagette2 flag, limit 500
-		for( g in db.Group.manager.search($betaFlags.has(Cagette2)==false && $flags.has(ShopMode)==true,{limit:500})){
+            print('delete data of #'+g.id+" "+g.name);
 
-			groups++;
-
-			//no percentage on catalogs			
-			// if( g.getActiveContracts().count(c -> c.percentageValue>0) > 0){
-			// 	groupsWithPercentage++;
-			// 	continue;
-			// }
-
-            for( c in g.getActiveContracts().filter(c -> c.percentageValue>0)){
-                c.lock();
-                c.flags.unset(PercentageOnOrders);
-                c.percentageName = null;
-                c.percentageValue = null;
-                c.update();
-            }
-
-			g.lock();
-			g.betaFlags.set(Cagette2);
-			g.update();
-
-			print(g.id+" - "+g.name+" migrated to cagette2");
-
-		}
-
-		print("groups : "+groups+"");
-		print("groupsWithPercentage : "+groupsWithPercentage+"");
-
-        for( g in db.Group.manager.search( $flags.has(ShopMode)==false )){
-
-            if(g.betaFlags.has(Cagette2)){
-                print("AMAP group should not have cagette2 : "+g.id+" - "+g.name);
-                g.lock();
-                g.betaFlags.unset(Cagette2);
-                g.update();
-            }
+            db.MultiDistrib.manager.delete($groupId == g.id);
+            db.Catalog.manager.delete($groupId == g.id);
+            db.Membership.manager.delete($groupId == g.id);
+            db.Operation.manager.delete($groupId == g.id);            
         }
-	}*/
-
-     /**
-        2023-02-01 no more MoneyPot payment
-    **/
-    function doMoneypot(){
-
-        for( g in db.Group.manager.search( $flags.has(ShopMode) )){
-            var paymentTypes = g.getAllowedPaymentTypes();
-            if( paymentTypes.has("moneypot") ){
-                paymentTypes.remove("moneypot");
-                if(paymentTypes.length==0){                    
-                    g.lock();
-                    paymentTypes = [Cash.TYPE,Check.TYPE];
-                    g.setAllowedPaymentTypes(paymentTypes);
-                    g.update();                    
-                }
-                print("remove Moneypot : "+g.id+" - "+g.name);
-
-            }
-        }
-
-    }
-
-    /**
-        2023-02-15 redirect AMAPs to camap.alilo.fr
-    **/
-    function doRedirectamaps(){
-
-        for( g in db.Group.manager.search( $flags.has(ShopMode)==false ,true)){
-
-            g.disabled = "MOVED";
-            g.extUrl = "https://camap.alilo.fr/group/"+g.id;
-            g.update();
-
-            print('Redirects #'+g.id+" "+g.name);
-
-            //break linkage
-            for( cat in g.getContracts() ){
-                var rc = connector.db.RemoteCatalog.getFromContract(cat,true);
-		        if(rc != null ){                    
-                    rc.delete();
-                }
-            }
-
-        }
-
     }
 }

@@ -43,7 +43,7 @@
 	
 	
 </div>
-<div class="col-md-8">
+<div class="col-md-8" style="margin-bottom: 16px;">
 	
 	::switch notif._type::
 		<!-- default -->
@@ -77,19 +77,6 @@
 						::group.getMainPlace().getFullAddress()::
 					::else::
 						Inconnu
-					::end::
-				</td>
-			</tr>
-			<tr>
-				<td>Type de catalogue :</td>				
-				<td>::if(group.hasShopMode())::
-						Catalogue standard ( commande variable )
-					::else::
-						::if(notifContent.catalogType==0)::
-							Contrat AMAP classique
-						::else::
-							Contrat AMAP variable
-						::end::
 					::end::
 				</td>
 			</tr>

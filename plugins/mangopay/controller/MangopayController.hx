@@ -90,7 +90,7 @@ class MangopayController extends controller.Controller
 			try{
 				naturalUserId = Mangopay.createNaturalUser(user).Id;	
 			}catch(e:tink.core.Error){
-				throw Error("/transaction/pay/", "Erreur de création de compte Mangopay. "+e.message);
+				throw Error("/shop/basket/"+tmpBasket.id, "Erreur de création de compte Mangopay. "+e.message);
 			}		
 		} else {
 			naturalUserId = mangopayUser.mangopayUserId;
@@ -182,86 +182,9 @@ class MangopayController extends controller.Controller
 		}
 	}
 
-	/**
-	Form to add an IBAN Bank account in cpro
-	**/
-	@tpl('plugin/pro/company/mangopaybankaccount.mtt')
-	public function doVendorBankAccount(){
-		
-		view.navbar = nav("company");
-		view.nav = ["company","mangopay-vendor-account"];
-
-		var company = pro.db.CagettePro.getCurrentCagettePro();
-		var form = new sugoi.form.Form("mangopaybankaccount");
-		form.addElement(new StringInput("ownerName", "Nom du propriétaire", company.vendor.name, true));
-		form.addElement(new StringInput("address1", "Adresse 1", company.vendor.address1, true));
-		form.addElement(new StringInput("address2", "Adresse 2", company.vendor.address2, true));
-		form.addElement(new StringInput("city", "Ville", company.vendor.city, true));
-		form.addElement(new StringInput("postalcode", "Code postal", company.vendor.zipCode, true));
-		form.addElement(new StringSelect("country", "Pays", db.Place.getCountries(), "FR", true));
-		form.addElement(new StringInput("iban", "IBAN", "", true));
-		form.addElement(new StringInput("bic", "BIC", "", false));
-
-		if (form.isValid()) {
-
-			var bankAccount : IBANBankAccount = {
-				OwnerAddress: {
-					AddressLine1: form.getValueOf("address1"),
-					AddressLine2: form.getValueOf("address2"),
-					City: form.getValueOf("city"),
-					PostalCode: form.getValueOf("postalcode"),
-					Country: form.getValueOf("country")
-				},
-				OwnerName: form.getValueOf("ownerName"),
-				IBAN: form.getValueOf("iban"),
-				BIC: form.getValueOf("bic")
-			};
-
-			/*var mangopayCompany = MangopayCompany.get(pro.db.CagettePro.getCurrentCagettePro());
-			try
-			{
-				var ibanBankAccount : IBANBankAccount = Mangopay.createIBANBankAccount(mangopayCompany.mangopayUserId, bankAccount);
-				if (ibanBankAccount.Active == true)
-				{
-					throw Ok("/p/pro/transaction/mangopay/vendorKyc", "Votre compte bancaire a bien été ajouté.");
-				}
-			}
-			catch(e : tink.core.Error)
-			{
-				var IBAN : String = e.data.errors.IBAN;
-				var BIC : String = e.data.errors.BIC;
-				
-				if (IBAN != null && IBAN.indexOf("regular expression") != -1)
-				{
-					if (BIC != null && BIC.indexOf("regular expression") != -1)
-					{
-						throw Error("/p/pro/transaction/mangopay/vendorBankAccount", "Votre IBAN et BIC sont incorrects.");
-					}
-					else 
-					{
-						throw Error("/p/pro/transaction/mangopay/vendorBankAccount", "Votre IBAN est incorrect.");
-					}
-				}
-				else if (BIC != null && BIC.indexOf("regular expression") != -1)
-				{
-					throw Error("/p/pro/transaction/mangopay/vendorBankAccount", "Votre BIC est incorrect.");
-				}
-
-				throw e;
-			}*/		 
-		}
-
-		view.form = form;
-		
-	}
-
 	function doGroup(d:haxe.web.Dispatch){
 		d.dispatch(new mangopay.controller.MangopayGroupController());
 	}
-
-	
-
-	
 
 	function print(txt:String){
 		Sys.println(txt+"<br/>");

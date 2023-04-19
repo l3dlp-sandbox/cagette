@@ -416,4 +416,11 @@ class Company extends controller.Controller
 		}
 	}
 
+	@tpl('plugin/pro/company/differenciated-pricing.mtt')
+	function doDifferenciatedPricing(){
+		if (App.current.getSettings().differenciatedPricing == false){
+			throw Redirect('/p/pro/');
+		}
+		view.nav.push("differenciatedPricing");
+	}
 }

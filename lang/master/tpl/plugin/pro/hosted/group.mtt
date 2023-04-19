@@ -4,14 +4,6 @@
 		<h4>Groupe #::group.id::</h4>
 		<h2>::group.name::</h2>
 
-		<p>
-			<b>::if(group.hasShopMode())::
-			Mode Marché
-			::else::
-			Mode AMAP
-			::end::</b>
-		</p>
-
 		<p>Actif : $$bool(::groupStats.active::)</p>
 
 		<p>
@@ -50,9 +42,8 @@
 		::if(!group.isDispatch())::
 			<a href="?dispatch=1" class="btn btn-default">Passer en Dispatch</a>
 		::end::
-		
-		::if( !group.hasShopMode() )::
-		<a href="?duplicate=1" class="btn btn-default">Dupliquer en mode Marché</a>
+		::if( group.disabled=="MOVED")::
+			<a href="?duplicate=1" class="btn btn-default">Dupliquer en mode Marché</a>
 		::end::
 	</p>
 
@@ -184,7 +175,6 @@
 		<a href="/p/hosted/deleteDemoContracts/::group.id::" class="btn btn-default">Effacer contrats de démo</a>
 		<a href="/p/pro/admin/fixGroupOps/::group.id::" class="btn btn-default">Fix remoteIds + faux paiements mangopay</a>
 		<a href="/p/pro/admin/checkOperations/::group.id::/2021-01-01 00:00:00/2021-02-01 00:00:00" class="btn btn-default">Consistence commandes et operations</a>
-		<a href="/p/pro/admin/fixCsaOrders/::group.id::" class="btn btn-default">AMAP : détection incohérences</a>
 		<hr/>
 
 

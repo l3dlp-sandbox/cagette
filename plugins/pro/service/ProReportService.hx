@@ -134,7 +134,18 @@ class ProReportService{
 			var distribs = db.Distribution.manager.search($date >= options.startDate && $date <= options.endDate && ($catalogId in remoteContracts.getIds()), false);
 			if (distribs.length == 0) throw new Error("Aucune distribution sur cette periode");
 			for( d in distribs) scopedDistributions.push(d);
+
+			//get baskets that are CONFIRMED or VALIDATED
+			var baskets = [];
+			for( d in distribs ){
+				for( b in d.multiDistrib.getBaskets()){
+					baskets.push(b);
+				}
+			}
+			var basketIds:Array<Int> = baskets.map(b -> b.id);
+
 			where += ' and uo.distributionId IN ('+distribs.getIds().join(',')+')';
+			if(basketIds.length>0) where += ' and uo.basketId IN (${basketIds.join(',')})';
 		}
 	
 
@@ -242,13 +253,6 @@ class ProReportService{
 		if (options.distribution != null){
 			
 			//by distrib
-			//var d = options.distribution;
-			//scopedDistributions = Lambda.list([d]);
-			//exportName = d.contract.amap.name+" - Distribution "+d.contract.name+" du " + d.date.toString().substr(0, 10);
-			//where += ' and p.contractId = ${d.contract.id}';
-			//if (d.contract.type == db.Catalog.TYPE_VARORDER ) {
-				//where += ' and up.distributionId = ${d.id}';
-			//}
 			throw "not implemented";
 			
 		}else if(options.startDate!=null && options.endDate!=null && options.allCatalogs!=null){
@@ -273,8 +277,8 @@ class ProReportService{
 		var orders = [];
 		var csvData = [];
 		
-		for ( d in scopedDistributions){
-			var or = Lambda.array(service.OrderService.getOrders(d.catalog, d));
+		for ( d in scopedDistributions ){
+			var or = service.OrderService.getOrders(d).array();
 			
 			if(csv){
 				for ( o in or ){

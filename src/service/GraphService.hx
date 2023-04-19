@@ -4,6 +4,7 @@ import sugoi.apis.google.GeoCode.GeoCodingData;
 import db.Operation;
 import pro.payment.MangopayECPayment;
 import db.Graph;
+import pro.db.VendorStats;
 
 using tools.DateTool;
 
@@ -90,7 +91,7 @@ class GraphService{
 		return Math.round(value);
     }
 
-    public static  function stripe(from:Date,to:Date):Int{        
+    public static function stripe(from:Date,to:Date):Int{        
         var ops = Operation.manager.search($type==OperationType.Payment && $date>=from && $date<to);
 		var value = 0.0;
 		for( op in ops){
@@ -98,4 +99,58 @@ class GraphService{
 		}
 		return Math.round(value);
     }
+
+    /**
+        compute global stats
+    **/
+    public static function global(from:Date,to:Date){
+
+        var stats = {
+            totalTurnoverMarket:0,
+            invitedTurnoverMarket:0,
+            cproInvitedTurnoverMarket:0,
+            discoveryTurnoverMarket:0,
+            proTurnoverMarket:0,
+            memberTurnoverMarket:0,
+            marketplaceTurnoverMarket:0,
+        };
+
+        var summaries = sys.db.Manager.cnx.request('select sum(turnoverMarket) as turnoverMarketSum , vendorId
+        from vendorDailySummary 
+        where date >= "${from.toString()}" and date < "${to.toString()}"
+        and turnoverMarket > 0
+        group by vendorId').results();
+
+        var vendorIds:Array<Int> = summaries.array().map(s -> Std.parseInt(s.vendorId));
+        var vendorStats = pro.db.VendorStats.manager.search($vendorId in vendorIds,false);
+        var vendorStatsMap = new Map<Int,pro.db.VendorStats>();
+        for( vs in vendorStats){
+            vendorStatsMap.set(untyped vs.vendorId, vs);
+        }
+
+        for(summary in summaries){
+            var vs = vendorStatsMap.get(summary.vendorId);
+            if(vs==null) continue;
+
+            switch (vs.type){
+                case VendorType.VTCpro : 
+                    stats.memberTurnoverMarket += summary.turnoverMarketSum;
+                case VendorType.VTCproTest,VTStudent : null;
+                case VendorType.VTFree,VendorType.VTInvited : 
+                    stats.invitedTurnoverMarket += summary.turnoverMarketSum;
+                case VendorType.VTCproSubscriberMontlhy, VendorType.VTCproSubscriberYearly : 
+                    stats.proTurnoverMarket += summary.turnoverMarketSum;
+                case VendorType.VTDiscovery : 
+                    stats.discoveryTurnoverMarket += summary.turnoverMarketSum;
+                case VendorType.VTInvitedPro : 
+                    stats.cproInvitedTurnoverMarket += summary.turnoverMarketSum;
+                case VendorType.VTMarketplace : 
+                    stats.marketplaceTurnoverMarket += summary.turnoverMarketSum;
+            }
+            
+            stats.totalTurnoverMarket += summary.turnoverMarketSum;
+        }
+        return stats;
+    }
+
 }

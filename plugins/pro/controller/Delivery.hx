@@ -307,7 +307,6 @@ class Delivery extends controller.Controller
 		
 		checkToken();
 		
-		//var orders = pro.service.ProReportService.getOrdersByProduct({distribution:d}, app.params.exists("csv"));
 		var orders = service.ReportService.getOrdersByProduct(d, app.params.exists("csv"));
 		
 		if (!app.params.exists("csv")){
@@ -333,10 +332,8 @@ class Delivery extends controller.Controller
 		var x = new form.CagetteDatePicker("end", t._("End time"), d.end, NativeDatePickerType.time, true);
 		form.addElement(x, 3);
 		
-		if (d.catalog.type == db.Catalog.TYPE_VARORDER ) {
-			form.addElement(new form.CagetteDatePicker("orderStartDate", t._("Orders opening date"), d.orderStartDate));	
-			form.addElement(new form.CagetteDatePicker("orderEndDate", t._("Orders closing date"), d.orderEndDate));
-		}		
+		form.addElement(new form.CagetteDatePicker("orderStartDate", t._("Orders opening date"), d.orderStartDate));	
+		form.addElement(new form.CagetteDatePicker("orderEndDate", t._("Orders closing date"), d.orderEndDate));
 		
 		if (form.isValid()) {
 
@@ -345,10 +342,8 @@ class Delivery extends controller.Controller
 
 			try{
 
-				if (d.catalog.type == db.Catalog.TYPE_VARORDER ) {
-					orderStartDate = form.getValueOf("orderStartDate");
-					orderEndDate = form.getValueOf("orderEndDate");
-				}
+				orderStartDate = form.getValueOf("orderStartDate");
+				orderEndDate = form.getValueOf("orderEndDate");
 
 				d = service.DistributionService.edit(
 					d,
@@ -604,7 +599,7 @@ class Delivery extends controller.Controller
 		view.distrib = d;
 		var contract = d.catalog;
 		view.contract = d.catalog;
-		view.orders = service.OrderService.getOrders(contract, d);
+		view.orders = service.OrderService.getOrders(d);
 		view.volunteers = Lambda.filter(d.multiDistrib.getVolunteers(),function(v) return v.volunteerRole.catalog!=null && v.volunteerRole.catalog.id==d.catalog.id);		
 	}
 	

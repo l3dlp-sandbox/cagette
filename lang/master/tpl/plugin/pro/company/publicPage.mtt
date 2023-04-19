@@ -29,9 +29,10 @@
 			<div class="col-md-6">
 				<p>	
 					<h4>Bannière</h4>
-					<a class="btn btn-default btn-sm" onclick="_Cagette.openImageUploader('company', ::company.id::, 1500, 500, 'banner')">
+					<a class="btn btn-default btn-sm" $$openImageUploader('company', ::company.id::, 1500, 500, 'banner')>
 						<i class="icon icon-image"></i> Envoyer une image
-					</a>	
+					</a>
+					<div id="image-uploader-container" />
 				</p>
 			</div>			
 			<div class="col-md-6">				
@@ -51,9 +52,10 @@
 			<div class="row">
 				<div class="col-md-2">Image 1</div>
 				<div class="col-md-4">
-					<a class="btn btn-default btn-sm" onclick="_Cagette.openImageUploader('company', ::company.id::, 300, 300, 'farm1')">
+					<a class="btn btn-default btn-sm" $$openImageUploader('company', ::company.id::, 300, 300, 'farm1')>
 						<i class="icon icon-image"></i> ::if images.farm1==null::Envoyer une image ::else:: Modifier l'image ::end::
 					</a>
+					<div id="image-uploader-container" />
 				</div>			
 				<div class="col-md-6">				
 					::if images.farm1!=null::<img src="::file(images.farm1)::" style="max-width: 256px;max-height: 128px;" class="thumbnail" />::end::
@@ -64,9 +66,10 @@
 			<div class="row">
 					<div class="col-md-2">Image 2</div>
 					<div class="col-md-4">
-					<a class="btn btn-default btn-sm" onclick="_Cagette.openImageUploader('company', ::company.id::, 300, 300, 'farm2')">
+					<a class="btn btn-default btn-sm" $$openImageUploader('company', ::company.id::, 300, 300, 'farm2')>
 						<i class="icon icon-image"></i> ::if images.farm2==null::Envoyer une image ::else:: Modifier l'image ::end::
 					</a>
+					<div id="image-uploader-container" />
 				</div>			
 				<div class="col-md-6">				
 					::if images.farm2!=null::<img src="::file(images.farm2)::" style="max-width: 256px;max-height: 128px;" class="thumbnail" />::end::
@@ -77,9 +80,10 @@
 			<div class="row">
 					<div class="col-md-2">Image 3</div>
 					<div class="col-md-4">
-					<a class="btn btn-default btn-sm" onclick="_Cagette.openImageUploader('company', ::company.id::, 300, 300, 'farm3')">
+					<a class="btn btn-default btn-sm" $$openImageUploader('company', ::company.id::, 300, 300, 'farm3')>
 						<i class="icon icon-image"></i> ::if images.farm3==null::Envoyer une image ::else:: Modifier l'image ::end::
 					</a>
+					<div id="image-uploader-container" />
 				</div>			
 				<div class="col-md-6">				
 					::if images.farm3!=null::<img src="::file(images.farm3)::" style="max-width: 256px;max-height: 128px;" class="thumbnail" />::end::
@@ -90,9 +94,10 @@
 			<div class="row">
 					<div class="col-md-2">Image 4</div>
 					<div class="col-md-4">
-					<a class="btn btn-default btn-sm" onclick="_Cagette.openImageUploader('company', ::company.id::, 300, 300, 'farm4')">
+					<a class="btn btn-default btn-sm" $$openImageUploader('company', ::company.id::, 300, 300, 'farm4')>
 						<i class="icon icon-image"></i> ::if images.farm4==null::Envoyer une image ::else:: Modifier l'image ::end::
 					</a>
+					<div id="image-uploader-container" />
 				</div>			
 				<div class="col-md-6">				
 					::if images.farm4!=null::<img src="::file(images.farm4)::" style="max-width: 256px;max-height: 128px;" class="thumbnail" />::end::

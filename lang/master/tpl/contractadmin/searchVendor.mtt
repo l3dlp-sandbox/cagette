@@ -41,6 +41,41 @@
 						</div>
 						
 						
+						::set cpro = v.getCpro()::
+						<p style="line-height: 38px;">
+							::if(cpro!=null)::
+								<!-- compte producteur -->
+
+								::set catalogs = cpro.getActiveVisibleCatalogs()::
+								Catalogue(s) :
+								
+								::foreach catalog catalogs::									
+									<a href="/p/pro/public/::catalog.id::" class="btn btn-default btn-sm" target="_blank">
+										<i class="icon icon-book"></i> ::catalog.name::
+									</a>&nbsp;
+								::end::
+								
+							::else::
+								<!-- NOT compte producteur -->
+								::if settings.noVendorSignup!=true::
+									<!--<a href="/contract/insert/::v.id::" class="btn btn-default btn-sm">
+										<i class="icon icon-plus"></i> Nouveau catalogue
+									</a>-->
+									<div class="alert alert-warning">
+										<p>
+											Ce producteur est référencé mais n'a pas encore de compte producteur.
+										</p>
+										<p class="text-center">
+											<a href="/contract/inviteVendor/::v.id::" class="btn btn-default">L'inviter à ouvrir un compte producteur</a>
+										</p>
+									</div>
+								::else::
+									<a href="/contract/insertChoose/::v.id::" class="btn btn-default btn-sm">
+										<i class="icon icon-plus"></i> Nouveau catalogue
+									</a>
+								::end::
+							::end::
+						</p>
 					</div>
 				</div>
 				::end::
@@ -50,8 +85,7 @@
 				<div class="col-md-12">
 					$$empty(::_("We could not find any vendor matching your search")::)
 				</div>
-
-				::if user.getGroup().hasShopMode() && settings.noVendorSignup!=true:: 
+				::if settings.noVendorSignup!=true:: 
 					<div class="col-md-12" style="margin-bottom:16px; text-align: center;">
 						<a href="/contract/inviteVendor" class="btn btn-primary btn-lg">
 							<i class="icon icon-mail"></i> Inviter un nouveau producteur
@@ -69,19 +103,7 @@
 </div>
 
 	::if settings.noVendorSignup!=true::
-		::if !user.getGroup().hasShopMode():: 
-			<div class="col-md-12">
-				<div class="article text-center">
-					<p>
-						::_("if you have not found your vendor, enter a new record")::
-					</p>
-					<a href="/contract/insertVendor/::name::" class="btn btn-default btn-lg">
-					<i class="icon icon-plus"></i> ::_("Key-in a new vendor")::</a>
-				</div>
-			</div>
-		::end::
-
-		::if user.getGroup().hasShopMode() && vendors.length>0::
+		::if vendors.length>0::
 			<div class="col-md-12">
 				<div class="article text-center">
 					<p>

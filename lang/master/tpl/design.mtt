@@ -51,12 +51,7 @@
 							</li>
 							<li ::attr class if(category=="history" ) 	'active' ::>
 								<a href="/history">
-									 
-									::if user.getGroup().hasShopMode():: 
 									<i class="icon icon-list"></i> Historique 
-									::else:: 
-									<i class="icon icon-book"></i> Mes Contrats
-									::end::
 								</a>
 							</li>
 							<li ::attr class if(category=="amap") 		'active' ::>
@@ -74,7 +69,7 @@
 								</a>
 							</li>
 							<li id="distributions" ::attr class if(category=="distribution") 	'active' ::>
-								<a href="/distribution" ::cond user.canManageAllContracts()::>
+								<a href="/distributions" ::cond user.canManageAllContracts()::>
 									<i class="icon icon-calendar"></i>  ::_("Distributions")::
 								</a>
 							</li>

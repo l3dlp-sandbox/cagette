@@ -109,18 +109,14 @@ class Sales extends controller.Controller
 	@tpl('plugin/pro/sales/dates.mtt')
 	function doEdit(d:db.Distribution) {
 		
-		var contract = d.catalog;
-		
-		if(d.catalog.isConstantOrdersCatalog()) throw Error('/', "Impossible de changer les dates d'ouverture de commande pour un contrat AMAP classique" );	
-		
 		var form = CagetteForm.fromSpod(d);
 		form.removeElementByName("placeId");
 		form.removeElementByName("date");
 		form.removeElementByName("end");
 		form.removeElement(form.getElement("contractId"));		
 		form.removeElement(form.getElement("distributionCycleId"));
-		form.addElement(new form.CagetteDateTimePicker("orderStartDate", t._("Orders opening date"), d.orderStartDate));	
-		form.addElement(new form.CagetteDateTimePicker("orderEndDate", t._("Orders closing date"), d.orderEndDate));
+		form.addElement(new form.CagetteDateTimePicker("orderStartDate", "Date d'ouverture des commandes", d.orderStartDate));	
+		form.addElement(new form.CagetteDateTimePicker("orderEndDate", "Date de clôture des commandes", d.orderEndDate));
 		
 		if (form.isValid()) {
 
@@ -148,7 +144,7 @@ class Sales extends controller.Controller
         view.distribution = d;
         var ua = db.UserGroup.get(app.user,d.catalog.group);
         view.groupAdmin = ua!=null && (ua.isGroupManager() || ua.canManageAllContracts());
-		view.title = t._("Attendance of ::farmer:: to the ::date:: distribution",{farmer:d.catalog.vendor.name,date:view.dDate(d.date)});
+		view.title = 'Participation de ${d.catalog.vendor.name} à la distribution du ${view.dDate(d.date)}';
 	}
 	
 }

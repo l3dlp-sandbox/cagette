@@ -14,12 +14,15 @@ class ReportService{
 		var view = App.current.view;
 		var t = sugoi.i18n.Locale.texts;
 		if(distribution==null) throw "distribution should not be null";
+
+		//get baskets that are CONFIRMED or VALIDATED
+		var baskets = distribution.multiDistrib.getBaskets();
+		var basketIds:Array<Int> = baskets.map(b -> b.id);
 		
 		var exportName = t._("Delivery ::contractName:: of the ", {contractName:distribution.catalog.name}) + distribution.date.toString().substr(0, 10);
 		var where = ' and p.catalogId = ${distribution.catalog.id}';
-		//if (distribution.catalog.type == db.Catalog.TYPE_VARORDER ) {
 		where += ' and up.distributionId = ${distribution.id}';
-		//}
+		if(basketIds.length>0) where += ' and up.basketId IN (${basketIds.join(',')})';
 
 		//Product price will be an average if price changed
 		var sql = 'select 
@@ -41,7 +44,6 @@ class ReportService{
 
 		//populate with full product names
 		for ( r in res){
-
 			var o : OrderByProduct = {
 				quantity:1.0 * r.quantity,
 				smartQt:"",
@@ -132,7 +134,7 @@ class ReportService{
 		
 		var vendorDataByVendorId = new Map<Int,{contract:db.Catalog,distrib:db.Distribution,orders:Array<OrderByProduct>}>();//key : vendor id
 		
-		for (d in multiDistrib.getDistributions(db.Catalog.TYPE_VARORDER)) {
+		for (d in multiDistrib.getDistributions()) {
 
 			var vendorId = d.catalog.vendor.id;
 			var vendorData = vendorDataByVendorId.get(vendorId);
@@ -167,7 +169,7 @@ class ReportService{
 	**/
 	public static function getOrdersByVAT(distribution:db.MultiDistrib){
 		var ordersByVat = new Map<Int,{ht:Float,ttc:Float}>();
-		for( o in distribution.getOrders(db.Catalog.TYPE_VARORDER)){
+		for( o in distribution.getOrders()){
 			var key = Math.round(o.product.vat*100);
 			if(ordersByVat[key]==null) ordersByVat[key] = {ht:0.0,ttc:0.0};
 			var total = o.quantity * o.productPrice;

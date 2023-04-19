@@ -1,4 +1,6 @@
 package hosted.controller;
+import payment.Check;
+import mangopay.MangopayPlugin;
 import mangopay.Mangopay;
 import mangopay.db.MangopayLegalUserGroup;
 import payment.Cash;
@@ -62,7 +64,6 @@ class Main extends controller.Controller
 			group.lock();
 			group.betaFlags.set(Dispatch);
 			group.setAllowedPaymentTypes(["stripe"]);
-			group.flags.set(HasPayments);
 			
 			//get active and non disabled vendors
 			var vendors = group.getActiveContracts(false).map(c -> c.vendor).filter(v -> !v.isDisabled()).array();
@@ -108,13 +109,11 @@ class Main extends controller.Controller
 
 		if( app.params.get("duplicate")=="1" ){
 
-			//duplicate group with MGP
+			//duplicate group
 
 			var g = GroupService.duplicateGroup(group);
 			g.name = group.name+" (marché)";
-			g.flags.set(HasPayments);
-			g.flags.set(ShopMode);
-			// g.setAllowedPaymentTypes([MangopayECPayment.TYPE]);
+			g.setAllowedPaymentTypes([Cash.TYPE,Check.TYPE]);
 			g.update();
 
 			var place = group.getMainPlace();
@@ -155,7 +154,6 @@ class Main extends controller.Controller
 				newcat.name = c.name;
 				newcat.startDate = c.startDate;
 				newcat.endDate = c.endDate;
-				newcat.type = c.type;
 				newcat.description = c.description;
 				newcat.contact = c.contact;
 				newcat.vendor = c.vendor;
@@ -344,10 +342,28 @@ class Main extends controller.Controller
 		view.ua = ua;
 		view.operations = db.Operation.getLastOperations(u, g);
 
+		view.getAllBaskets = function(user:db.User,md:db.MultiDistrib){
+			return db.Basket.manager.search($multiDistrib==md && $user==user,false).array();
+		};
+
 		var timeframe = new Timeframe( DateTools.delta(Date.now() ,-1000.0*60*60*24*30.5*3) , DateTools.delta(Date.now() , 1000.0*60*60*24*30.5*3) );
 		var mds = db.MultiDistrib.getFromTimeRange(g,timeframe.from,timeframe.to);
+		mds.reverse();
 		view.mds = mds;
 		view.timeframe = timeframe;
+
+	}
+
+	//check bug de brigitte
+	function doCheckBasket(b:db.Basket){
+
+		var orders = MangopayPlugin.checkTmpBasket(b);
+		if(orders!=null) {
+			throw Ok("/p/hosted/userGroup/"+b.user.id+"/"+b.multiDistrib.group.id,"basket #"+b.id+" confirmed !");
+		}else{
+			throw Ok("/p/hosted/userGroup/"+b.user.id+"/"+b.multiDistrib.group.id,"pas de bug de brigitte pour basket #"+b.id);
+		}
+
 	}
 
 	/**
@@ -390,9 +406,6 @@ class Main extends controller.Controller
 						}
 						break;
 					} else if(vendor.email==c.contact.email){
-						status = "gratuit";
-						break;
-					} else if(c.group.groupType==db.Group.GroupType.FarmShop || c.group.groupType==db.Group.GroupType.ProducerDrive){
 						status = "gratuit";
 						break;
 					}

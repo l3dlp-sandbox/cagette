@@ -79,24 +79,6 @@ if (App.current.getSettings().noCourse==true) {
 		}
 
 		view.emails = Lambda.array(emails);
-
-
-
-		/*if (app.params.exists("fix")){
-			Sys.println("fix :");
-			for( c in course.getCompanies()){
-				for ( cata in c.company.getCatalogs()){
-					for ( rc in connector.db.RemoteCatalog.getFromPCatalog(cata)){
-						var group = rc.getRelatedContract().amap;
-						group.lock();
-						group.flags.set(ShopMode);
-						group.flags.unset(CagetteNetwork);
-						group.update();
-						Sys.println("update flags for "+group.name);
-					}
-				}
-			}
-		}*/
 	}
 
 
@@ -161,33 +143,7 @@ if (App.current.getSettings().noCourse==true) {
 			c.date = form.getValueOf("date");
 			c.end = form.getValueOf("end");
 			c.insert();
-
-			/*var group = new db.Group();
-			group.name = "Les producteurs de la session "+c.ref+" - retrait au café";
-			group.groupType = db.Group.GroupType.ProducerDrive;
-			group.flags.unset(CagetteNetwork);
-			group.insert();
-
-			var place = new db.Place();
-			place.name = "Place du marché";
-			place.group = group;
-			place.zipCode = "000";
-			place.city = "St Martin de la Cagette";
-			place.insert();
-
-			var distrib = service.DistributionService.createMd(
-				place,
-				tools.DateTool.setHourMinute(c.end,16,0),//date de distrib le jour de la J2
-				tools.DateTool.setHourMinute(c.end,18,0),
-				tools.DateTool.setHourMinute(c.date,8,0),//ouverture de la J1 à J2-1
-				tools.DateTool.setHourMinute(DateTools.delta(c.end,-1000.0*60*60*24),21,0),
-				[],
-				null
-			);
-
-			c.group = group;
-			c.update();*/
-			
+				
 			throw Ok("/p/hosted/course/", c.name +" a bien été créé");
 		}
 

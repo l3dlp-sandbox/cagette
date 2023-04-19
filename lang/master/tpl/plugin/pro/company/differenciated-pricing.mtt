@@ -1,0 +1,15 @@
+::use 'plugin/pro/company/design.mtt'::
+	
+	<div class=" article">
+		<h3>Tarifications différenciées</h3>	
+		<div id="differenciated-pricing"></div>
+	</div>
+	<script>
+		document.addEventListener("DOMContentLoaded", function(event) {
+			neo.createNeoModule("differenciated-pricing", "differenciated-pricing", {
+				cagetteProId: ::company.id::,
+			});
+		});
+	</script>
+
+::end::

@@ -70,7 +70,6 @@ typedef ProductInfo = {
 	categories : Null<Array<Int>>,	//used in old shop
 	subcategories : Null<Array<Int>>,  //used in new shop
 	orderable : Bool,			//can be currently ordered
-	stock: Null<Float>,			//available stock
 	// hasFloatQt : Bool,
 	qt:Null<Float>,
 	unitType:Null<Unit>,
@@ -82,8 +81,6 @@ typedef ProductInfo = {
 	bulk:Bool,
 
 	catalogId : Int,
-	catalogTax : Null<Float>, 		//pourcentage de commission défini dans le contrat
-	catalogTaxName : Null<String>,	//label pour la commission : ex: "frais divers"
 	?vendorId : Int,
 	?distributionId:Null<Int>, //in the context of a distrib
 
@@ -166,8 +163,6 @@ typedef UserOrder = {
 	subTotal:Float,
 	
 	?fees:Null<Float>,
-	?percentageName:Null<String>,
-	?percentageValue:Null<Float>,
 	total:Float,
 	
 	//flags
@@ -334,7 +329,8 @@ typedef Theme = {
 
 typedef Settings = {
 	var ?noVendorSignup: Bool;
-	var ?noCsa: Bool;
 	var ?onlyVendorsCanCreateGroup: Bool;
 	var ?noCourse: Bool;
+	var ?differenciatedPricing: Bool;
+	var ?unsubscribeVolunteerRoleReasonOnlyForAdmin: Bool;
 }

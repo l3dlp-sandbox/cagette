@@ -207,69 +207,6 @@ class Cron extends Controller
 		// task.setTask(distribValidationNotif.bind(task));
 		// task.execute(!App.config.DEBUG);
 
-		var task = new TransactionWrappedTask( 'Default automated orders for CSA variable contracts' );
-		task.setTask( function() {
-
-			var range = tools.DateTool.getLastHourRange( now );
-
-			var distributionsToCheckForMissingOrders = db.Distribution.manager.unsafeObjects(
-			'SELECT Distribution.* 
-			FROM Distribution INNER JOIN Catalog
-			ON Distribution.catalogId = Catalog.id
-			WHERE Catalog.distribMinOrdersTotal > 0
-			AND Distribution.orderEndDate >= \'${range.from}\'
-			AND Distribution.orderEndDate < \'${range.to}\';', false );
-				
-			for ( distrib in distributionsToCheckForMissingOrders ) {
-				var distribSubscriptions = db.Subscription.manager.search( $catalog == distrib.catalog && $startDate <= distrib.date && $endDate >= distrib.date, false );
-
-				for ( subscription in distribSubscriptions ) {
-
-					if ( subscription.getAbsentDistribIds().find( id -> id == distrib.id ) == null ) {
-					
-						var distribSubscriptionOrders = db.UserOrder.manager.search( $subscription == subscription && $distribution == distrib );
-						if ( distribSubscriptionOrders.length == 0 ) {
-
-							// if ( service.SubscriptionService.areAutomatedOrdersValid( subscription, distrib ) ) {
-
-								var defaultOrders = subscription.getDefaultOrders();
-
-								var automatedOrders = [];
-								for ( order in defaultOrders ) {
-
-									var product = db.Product.manager.get( order.productId, false );
-									if ( product != null && order.quantity != null && order.quantity != 0 ) {
-										automatedOrders.push( service.OrderService.make( subscription.user, order.quantity, product, distrib.id, null, subscription ) );	
-									}
-								}
-
-								if( automatedOrders.length != 0 ) {
-
-									var message = 'Bonjour ${subscription.user.firstName},<br /><br />
-									A défaut de commande de votre part, votre commande par défaut a été appliquée automatiquement 
-									à la distribution du ${view.hDate( distrib.date )} du contrat "${subscription.catalog.name}".
-									<br /><br />
-									Votre commande par défaut : <br /><br />${subscription.getDefaultOrdersToString()}
-									<br /><br />
-									La commande à chaque distribution est obligatoire dans le contrat "${subscription.catalog.name}". 
-									Vous pouvez modifier votre commande par défaut en accédant à votre souscription à ce contrat depuis la page "commandes" sur Cagette.net';
-
-									//fail silently
-									try{} catch(e:Dynamic){
-										App.quickMail( subscription.user.email, distrib.catalog.name + ' : Commande par défaut', message, distrib.catalog.group );
-									}
-								}
-							
-								//Create order operation only
-								service.SubscriptionService.createOrUpdateTotalOperation( subscription );
-						}
-
-					}
-				}
-			}
-		});
-		task.execute(!App.config.DEBUG);
-
 		//clean files that are not linked to anything
 		var task = new TransactionWrappedTask("Clean unused db.File entities");
 		task.setTask(function() {
@@ -322,73 +259,7 @@ class Cron extends Controller
 
 			task.log("weekly stats from "+from+" to "+to);
 
-			var stats = {
-				totalTurnoverMarket:0,
-				totalTurnoverAmap:0,
-
-				invitedTurnoverMarket:0,
-				invitedTurnoverAmap:0,
-
-				cproInvitedTurnoverMarket:0,
-				cproInvitedTurnoverAmap:0,
-
-				discoveryTurnoverMarket:0,
-				discoveryTurnoverAmap:0,
-
-				proTurnoverMarket:0,
-				proTurnoverAmap:0,
-
-				memberTurnoverMarket:0,
-				memberTurnoverAmap:0,
-
-				marketplaceTurnoverMarket:0,
-				marketplaceTurnoverAmap:0,
-			};
-
-			var summaries = sys.db.Manager.cnx.request('select sum(turnoverCSA) as turnoverAMAPSum, sum(turnoverMarket) as turnoverMarketSum , vendorId
-			from vendorDailySummary 
-			where date >= "${from.toString()}" and date < "${to.toString()}"
-			and turnoverCSA+turnoverMarket > 0
-			group by vendorId').results();
-
-			var vendorIds:Array<Int> = summaries.array().map(s -> Std.parseInt(s.vendorId));
-			var vendorStats = VendorStats.manager.search($vendorId in vendorIds,false);
-			var vendorStatsMap = new Map<Int,VendorStats>();
-			for( vs in vendorStats){
-				vendorStatsMap.set(untyped vs.vendorId, vs);
-			}
-
-			for(summary in summaries){
-				var vs = vendorStatsMap.get(summary.vendorId);
-				if(vs==null) continue;
-
-				switch (vs.type){
-					case VendorType.VTCpro : 
-						stats.memberTurnoverMarket += summary.turnoverMarketSum;
-						stats.memberTurnoverAmap += summary.turnoverAMAPSum;
-					case VendorType.VTCproTest,VTStudent : null;
-					case VendorType.VTFree,VendorType.VTInvited : 
-						stats.invitedTurnoverMarket += summary.turnoverMarketSum;
-						stats.invitedTurnoverAmap += summary.turnoverAMAPSum;
-					case VendorType.VTCproSubscriberMontlhy, VendorType.VTCproSubscriberYearly : 
-						stats.proTurnoverMarket += summary.turnoverMarketSum;
-						stats.proTurnoverAmap += summary.turnoverAMAPSum;
-					case VendorType.VTDiscovery : 
-						stats.discoveryTurnoverMarket += summary.turnoverMarketSum;
-						stats.discoveryTurnoverAmap += summary.turnoverAMAPSum;
-					case VendorType.VTInvitedPro : 
-						stats.cproInvitedTurnoverMarket += summary.turnoverMarketSum;
-						stats.cproInvitedTurnoverAmap += summary.turnoverAMAPSum;
-					case VendorType.VTMarketplace : 
-						stats.marketplaceTurnoverMarket += summary.turnoverMarketSum;
-						stats.marketplaceTurnoverAmap += summary.turnoverAMAPSum;
-				}
-				
-				stats.totalTurnoverMarket += summary.turnoverMarketSum;
-				stats.totalTurnoverAmap += summary.turnoverAMAPSum;
-
-			}
-
+			var stats = GraphService.global(from,to);
 			Graph.recordData("global",stats,from);
 		});
 		if( (this.now.getHours()==4 && this.now.getDay()==1) || App.config.DEBUG){ 
@@ -406,103 +277,7 @@ class Cron extends Controller
 
 	}
 
-	@tpl("retro.mtt")
-	public function doRetro(){
-		
-		var compute = function(from:Date,to:Date) {
-			
-			// weekly stats			
-			
-
-			// Sys.println("weekly stats from "+from+" to "+to+"<br/>");
-
-			var stats = {
-				totalTurnoverMarket:0,
-				totalTurnoverAmap:0,
-
-				invitedTurnoverMarket:0,
-				invitedTurnoverAmap:0,
-
-				cproInvitedTurnoverMarket:0,
-				cproInvitedTurnoverAmap:0,
-
-				discoveryTurnoverMarket:0,
-				discoveryTurnoverAmap:0,
-
-				proTurnoverMarket:0,
-				proTurnoverAmap:0,
-
-				memberTurnoverMarket:0,
-				memberTurnoverAmap:0,
-
-				marketplaceTurnoverMarket:0,
-				marketplaceTurnoverAmap:0,
-			};
-
-			var summaries = sys.db.Manager.cnx.request('select sum(turnoverCSA) as turnoverAMAPSum, sum(turnoverMarket) as turnoverMarketSum , vendorId
-			from vendorDailySummary 
-			where date >= "${from.toString()}" and date < "${to.toString()}"
-			and turnoverCSA+turnoverMarket > 0
-			group by vendorId').results();
-
-			var vendorIds:Array<Int> = summaries.array().map(s -> Std.parseInt(s.vendorId));
-			var vendorStats = VendorStats.manager.search($vendorId in vendorIds,false);
-			var vendorStatsMap = new Map<Int,VendorStats>();
-			for( vs in vendorStats){
-				vendorStatsMap.set(untyped vs.vendorId, vs);
-			}
-
-			for(summary in summaries){
-				var vs = vendorStatsMap.get(summary.vendorId);
-				if(vs==null) continue;
-				switch (vs.type){
-					case VendorType.VTCpro : 
-						stats.memberTurnoverMarket += summary.turnoverMarketSum;
-						stats.memberTurnoverAmap += summary.turnoverAMAPSum;
-					case VendorType.VTCproTest,VTStudent : null;
-					case VendorType.VTFree,VendorType.VTInvited : 
-						stats.invitedTurnoverMarket += summary.turnoverMarketSum;
-						stats.invitedTurnoverAmap += summary.turnoverAMAPSum;
-					case VendorType.VTCproSubscriberMontlhy, VendorType.VTCproSubscriberYearly : 
-						stats.proTurnoverMarket += summary.turnoverMarketSum;
-						stats.proTurnoverAmap += summary.turnoverAMAPSum;
-					case VendorType.VTDiscovery : 
-						stats.discoveryTurnoverMarket += summary.turnoverMarketSum;
-						stats.discoveryTurnoverAmap += summary.turnoverAMAPSum;
-					case VendorType.VTInvitedPro : 
-						stats.cproInvitedTurnoverMarket += summary.turnoverMarketSum;
-						stats.cproInvitedTurnoverAmap += summary.turnoverAMAPSum;
-					case VendorType.VTMarketplace : 
-						stats.marketplaceTurnoverMarket += summary.turnoverMarketSum;
-						stats.marketplaceTurnoverAmap += summary.turnoverAMAPSum;
-				}
-				
-				stats.totalTurnoverMarket += summary.turnoverMarketSum;
-				stats.totalTurnoverAmap += summary.turnoverAMAPSum;
-			}
-
-			Graph.recordData("global",stats,from);
-			return stats;
-		};
-		
-		var from = new Date(2021,10,1,0,0,0); //  01/11/2021
-		var to = new Date(from.getFullYear(), from.getMonth(), from.getDate()+7, 0, 0, 0);
-
-		var limit = new Date(2022,9,1,0,0,0);
-		var stats = [];
-		while(to.getTime() < limit.getTime()){
-
-			var stat = compute(from,to);
-			untyped stat.date = from;
-			stats.push(stat);
-			
-			from = to;
-			to = new Date(to.getFullYear(), to.getMonth(), to.getDate()+7, 0, 0, 0);
-
-		}
-
-		view.stats = stats;
-	}
+	
 	
 	/**
 		Daily cron job
@@ -759,8 +534,6 @@ class Cron extends Controller
 		task.title('Look for distribs with orderStartDate between $from to $to (${distribs.length})');
  		if (distribs.length == 0) return;		
 		
-		//exclude CSA catalogs
-		distribs = distribs.filter( (d) -> return d.catalog.type!=db.Catalog.TYPE_CONSTORDERS );
 		//exclude disabled groups
 		distribs = distribs.filter(d -> d.multiDistrib.group.isDisabled()==false);
 		distribs.map( d -> task.log("Distrib : "+d.date+" de "+d.catalog.name+", groupe : "+d.catalog.group.name) );

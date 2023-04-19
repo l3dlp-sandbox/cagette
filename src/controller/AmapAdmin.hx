@@ -314,7 +314,6 @@ class AmapAdmin extends Controller
 		// }
 		// f.addElement( new sugoi.form.elements.StringInput("checkOrder", t._("Make the check payable to"), app.user.getGroup().checkOrder, false)); 
 		f.addElement( new sugoi.form.elements.StringInput("IBAN", t._("IBAN of your bank account for transfers"), app.user.getGroup().IBAN, false)); 
-		// f.addElement( new sugoi.form.elements.Checkbox("allowMoneyPotWithNegativeBalance", t._("Allow money pots with negative balance"), app.user.getGroup().allowMoneyPotWithNegativeBalance));
 		//avoid modifiying another group
 		var groupId = new sugoi.form.elements.IntInput("groupId","groupId",group.id);
 		groupId.inputType = InputType.ITHidden;
@@ -331,14 +330,9 @@ class AmapAdmin extends Controller
 				throw Error(sugoi.Web.getURI(),"Vous devez choisir au moins un moyen de paiement");
 			}
 
-			// if(paymentTypes.has(payment.MoneyPot.TYPE) && paymentTypes.length>1) {
-			// 	throw Error(sugoi.Web.getURI(),"Le paiement Cagnotte ne peut pas être utilisé en même temps que d'autres moyens de paiements.");
-			// }
-			
 			group.setAllowedPaymentTypes(paymentTypes);
 			// group.checkOrder = f.getValueOf("checkOrder");
 			group.IBAN = f.getValueOf("IBAN");
-			// group.allowMoneyPotWithNegativeBalance = f.getValueOf("allowMoneyPotWithNegativeBalance");
 			group.update();
 			
 			throw Ok("/amapadmin/payments", t._("Payment options updated"));
@@ -351,90 +345,15 @@ class AmapAdmin extends Controller
 
 
 
-	@tpl("amapadmin/form.mtt")
+	@tpl("amapadmin/stats.mtt")
 	function doStats(){
 		addBc("stats","Statistiques","amapadmin/stats");
 
-		var form = new sugoi.form.Form("stats");
-
-		var now = DateTime.now();	
-		// last month timeframe
-		var to = now.snap(Month(Down)).add(Day(-1));
-		var from = to.snap(Month(Down));
-		form.addElement( new form.CagetteDatePicker("startDate","Date de début", from.getDate() ) );
-		form.addElement( new form.CagetteDatePicker("endDate","Date de fin", to.getDate() ) );
-		
-		if(form.isValid()){
-			app.setTemplate('amapadmin/stats.mtt');
-			var startDate : Date = form.getValueOf("startDate");
-			var endDate : Date = form.getValueOf("endDate");
-			
-			var s = new service.GroupStatsService(app.getCurrentGroup(),startDate,endDate);
-			view.from = startDate;
-			view.to = endDate;
-			view.baskets = s.getBasketNumber();
-			view.sales = s.getSalesAmount();
-			view.memberships = s.getMembershipNumber();
-			view.membershipsAmount = s.getMembershipAmount();
-			view.productNumber = s.getProductNumber();
-			view.memberNumber = s.getMembersNumber();
-			view.activeMembershipWithOrderNumber = s.getActiveMembershipWithOrderNumber();
-			view.activeMembershipMembers = s.getActiveMembershipMembers().length;		
-			view.membersWithOrderNumber = s.getMembersWithOrderNumber();
-		}
-
-		view.form = form;
-		view.title = "Statistiques";
-	}
-
-	@tpl("amapadmin/form.mtt")
-	function doEnablePayments(){
-
-		var f = new sugoi.form.Form("enablePayments");
-
-		var group = app.getCurrentGroup();
-
-		f.addElement(new sugoi.form.elements.Checkbox("enable","Activer la gestion des paiements (obligatoire)"));
-		f.addElement(new sugoi.form.elements.Html('html','<div class="alert alert-warning"><p>La gestion des paiements vous permettra de savoir comment vos clients ont payé et de garder un historique complet de vos encaissements.<br/>Cette fonctionnalité, nécéssaire au bon fonctionnement de Cagette.net, sera automatiquement activée à partir du 9 Janvier 2023</p><a href="https://wiki.cagette.net/admin:admin_paiements" target="_blank">En savoir plus</a></div>'));
-
-
-		var types = service.PaymentService.getPaymentTypes(PCGroupAdmin);
-		types = types.filter(x -> x.type!="moneypot");//remove moneypot
-		var formdata = [for (t in types){label:t.name, value:t.type, desc:t.adminDesc, docLink:t.docLink}];		
-		var selected = ["check","cash"];
-		f.addElement(new sugoi.form.elements.CheckboxGroup("paymentTypes", "Sélectionnez les moyens de paiement disponibles dans ce groupe",formdata, selected) );
-
-		f.addElement( new sugoi.form.elements.StringInput("IBAN", t._("IBAN of your bank account for transfers"), group.IBAN, false)); 
-
-		if(f.isValid()){
-
-			var enable:Bool = f.getValueOf("enable");
-			var paymentTypes:Array<String> = f.getValueOf("paymentTypes");
-
-			if(!enable){
-				throw Error(sugoi.Web.getURI(),"Vous devez activer la gestion des paiements");
-			}
-
-			if(paymentTypes.length==0){
-				throw Error(sugoi.Web.getURI(),"Vous devez choisir au moins un moyen de paiement");
-			}
-
-			group.lock();
-			group.enablePayments();
-			group.setAllowedPaymentTypes(paymentTypes);
-			group.IBAN = f.getValueOf("IBAN");
-			group.update();
-			throw Ok("/home","Gestion des paiements activée.");
-		}
-
-		view.form = f;
-		view.title = "Mettre à jour les moyens de paiement";
+		view.groupId = app.getCurrentGroup().id;
 	}
 
 	@tpl("amapadmin/stripe.mtt")
 	public function doStripe(){
 		view.group = app.getCurrentGroup();
-
 	}
-
 }

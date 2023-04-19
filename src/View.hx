@@ -11,8 +11,6 @@ using Std;
 class View extends sugoi.BaseView {
 	var t:sugoi.i18n.GetText;
 	var VERSION:String;
-	var TYPE_CONSTORDERS:Int;
-	var TYPE_VARORDER:Int;
 
 	var tuto:{name:String, step:Int};
 
@@ -23,8 +21,6 @@ class View extends sugoi.BaseView {
 		super();
 		this.VERSION = App.VERSION.toString();
 		this.t = sugoi.i18n.Locale.texts;
-		this.TYPE_CONSTORDERS = db.Catalog.TYPE_CONSTORDERS; // CSA catalog
-		this.TYPE_VARORDER = db.Catalog.TYPE_VARORDER; // variable orders catalog
 	}
 
 	public function count(i) {
@@ -174,21 +170,7 @@ class View extends sugoi.BaseView {
 	}
 
 	public function currency() {
-		if (App.current.user == null || App.current.user.getGroup() == null) {
-			return "€";
-		} else {
-			return App.current.user.getGroup().getCurrency();
-		}
-	}
-
-	public function initDate() {
-		/*t = sugoi.i18n.Locale.texts;
-			DAYS = [t._("Sunday"), t._("Monday"), t._("Tuesday"), t._("Wednesday"), t._("Thursday"), t._("Friday"), t._("Saturday")];
-			MONTHS = [t._("January"), t._("February"), t._("March"), t._("April"), t._("May"), t._("June"), t._("July"), t._("August"), t._("September"), t._("October"), t._("November"), t._("December")];
-			this.days = DAYS;
-			this.months = MONTHS;
-			this.hours = HOURS;
-			this.minutes = MINUTES; */
+		return "€";
 	}
 
 	/**
@@ -249,27 +231,6 @@ class View extends sugoi.BaseView {
 		return service.OrderService.prepare(orders);
 	}
 
-	/*public function displayTuto(tuto:String, step:Int) {
-		if (tuto == null)
-			return;
-		var t = plugin.Tutorial.all().get(tuto);
-
-		// check if we are on the correct page (last step page)
-		// otherwise the popovers could be displayed on wrong elements
-		var previous = t.steps[step - 1];
-		if (previous != null) {
-			switch (previous.action) {
-				case TAPage(uri):
-					var here = sugoi.Web.getURI();
-					if (!plugin.Tutorial.match(uri, here)) {
-						return;
-					}
-				default:
-			}
-		}
-		this.tuto = {name: tuto, step: step};
-	}*/
-
 	/**
 	 * renvoie 0 si c'est user.firstName qui est connecté,
 	 * renvoie 1 si c'est user.firstName2 qui est connecté
@@ -281,20 +242,12 @@ class View extends sugoi.BaseView {
 		return App.current.session.data.whichUser == null ? 0 : App.current.session.data.whichUser;
 	}
 
-	public function isAmap() {
-		return App.current.user.getGroup().groupType == db.Group.GroupType.Amap;
-	}
-
 	public function getBasket(id) {
 		return db.Basket.manager.get(id, false);
 	}
 
 	public function getBasket2(user, md) {
 		return db.Basket.get(user, md);
-	}
-
-	public function getPlatform() {
-		return #if neko "Neko" #else "PHP" #end;
 	}
 
 	public function getURI() {

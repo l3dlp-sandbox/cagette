@@ -3,6 +3,7 @@ import Common;
 import sugoi.form.ListData;
 import sys.db.Object;
 import sys.db.Types;
+import db.Basket;
 
 /**
  * Distrib
@@ -22,7 +23,7 @@ class Distribution extends Object
 	
 	//when orders are open
 	@hideInForms public var orderStartDate : SDateTime; 
-	@hideInForms public var orderEndDate : SDateTime; //cannot be null since CSA contracts also have orderEndDate
+	@hideInForms public var orderEndDate : SDateTime;
 	
 	public static var DISTRIBUTION_VALIDATION_LIMIT = 10;
 	
@@ -65,26 +66,7 @@ class Distribution extends Object
 		return out;
 	}
 	
-	/*public function hasEnoughDistributors() {
-		var n = contract.distributorNum;
-		
-		var d = 0;
-		if (distributor1 != null) d++;
-		if (distributor2 != null) d++;
-		if (distributor3 != null) d++;
-		if (distributor4 != null) d++;
-		
-		return (d >= n) ;
-	}
-	
-	public function isDistributor(u:User) {
-		if (u == null) return false;
-		return (distributor1!=null && u.id == distributor1.id) || 
-			(distributor2!=null && u.id == distributor2.id) || 
-			(distributor3!=null && u.id == distributor3.id) || 
-			(distributor4!=null && u.id == distributor4.id);
-	}*/
-	
+
 	/**
 	 * String to identify this distribution (debug use only)
 	 */
@@ -92,15 +74,13 @@ class Distribution extends Object
 		return "#" + id + " Distribution du "+date.toString().substr(0,10)+" - " + catalog.name;		
 	}
 	
+	/**
+		Get orders of this distrib from CONFIRMED/VALIDATED baskets
+	**/
 	public function getOrders() {
-			
-		// if ( this.catalog.type == db.Catalog.TYPE_CONSTORDERS){
-		// 	var pids = db.Product.manager.search($catalog == this.catalog, false);
-		// 	var pids = Lambda.map(pids, function(x) return x.id);		
-		// 	return db.UserOrder.manager.search( ($productId in pids), false); 
-		// }else{
-		return db.UserOrder.manager.search($distribution == this, false); 
-		// }
+		var baskets = this.multiDistrib.getBaskets();
+		var basketIds:Array<Int> = baskets.map(b -> b.id);
+		return db.UserOrder.manager.search($distribution == this && $basketId in basketIds, false); 
 	}
 
 	/**
@@ -112,29 +92,27 @@ class Distribution extends Object
 
 	/**
 		Get user orders
-		This includes secondary user.
 	**/
 	public function getUserOrders(user:db.User):Array<db.UserOrder>{
 		if( user == null || user.id == null ) throw new tink.core.Error( "user is null" );
-		if ( this.catalog.type == db.Catalog.TYPE_CONSTORDERS){
-		 	return db.UserOrder.manager.search($distribution == this  && ($user==user || $user2==user) , false).array(); 
-		}else{
-			return db.UserOrder.manager.search($distribution == this  && $user==user, false).array(); 
-		}
+		var baskets = this.multiDistrib.getBaskets();
+		var basketIds:Array<Int> = baskets.map(b -> b.id);
+		return db.UserOrder.manager.search($distribution == this && $user==user && $basketId in basketIds, false).array(); 
 	}
 	
 	public function getUsers():Iterable<db.User>{		
-		return tools.ObjectListTool.deduplicate( Lambda.map(getOrders(), function(x) return x.user ) );		
+		return tools.ObjectListTool.deduplicate( getOrders().map( x -> x.user ) );		
 	}
 
 	/**
-		get baskets implied in this distribution
+		Get baskets implied in this distribution
 	**/
 	public function getBaskets(){
 		var baskets = new Map<Int,db.Basket>();
 		for( o in getOrders()){
-			if(o.basket!=null) baskets.set(o.basket.id,o.basket);
+			baskets.set(o.basket.id,o.basket);
 		}
+		//deduplicate baskets
 		return baskets.array();
 	}
 
@@ -146,9 +124,7 @@ class Distribution extends Object
 		var products = catalog.getProducts(false);
 		if(products.length==0) return 0.0;
 		var sql = "select SUM(quantity * productPrice) from UserOrder  where productId IN (" + tools.ObjectListTool.getIds(products).join(",") +") ";
-		// if (catalog.type == db.Catalog.TYPE_VARORDER) {
-			sql += " and distributionId=" + this.id;	
-		// }
+		sql += " and distributionId=" + this.id;	
 	
 		return sys.db.Manager.cnx.request(sql).getFloatResult(0);
 	}
@@ -163,10 +139,7 @@ class Distribution extends Object
 		var sql = "select SUM(uc.quantity *  (p.price/(1+p.vat/100)) ) from UserOrder uc, Product p ";
 		sql += "where uc.productId IN (" + pids.join(",") +") ";
 		sql += "and p.id=uc.productId ";
-		
-		if (catalog.type == db.Catalog.TYPE_VARORDER) {
-			sql += " and uc.distributionId=" + this.id;	
-		}
+		sql += " and uc.distributionId=" + this.id;	
 	
 		return sys.db.Manager.cnx.request(sql).getFloatResult(0);
 	}
@@ -252,17 +225,6 @@ class Distribution extends Object
 		};
 	}
 
-	/**
-		Trick for retrocompat with code made before Multidistrib entity (2019-04)
-	**/
-	public function populate(){
-		date =  date==null ? multiDistrib.distribStartDate : date;
-		end  =  end==null ? multiDistrib.distribEndDate : end;
-		orderStartDate = orderStartDate==null ? multiDistrib.orderStartDate : orderStartDate;
-		orderEndDate = orderEndDate==null ? multiDistrib.orderEndDate : orderEndDate;
-		place = null;
-
-	}
 	
 	/**
 	 * Return a string like $placeId-$date.

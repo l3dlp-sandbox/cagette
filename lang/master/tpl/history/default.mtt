@@ -1,35 +1,25 @@
 ::use 'design.mtt'::
 <div class="col-md-8">
 
-	::set hasPayments = user.getGroup().hasPayments()::
-	::set hasShopMode = user.getGroup().hasShopMode()::
-
 	<h2>
-		::if hasShopMode::
-			Historique de commande
-		::else::
-			Mes contrats
-		::end::
+		Historique de commande
 	</h2>
-	
-	
 
-		<!-- VARYING ORDERS FOR SHOP MODE -->
-		::if hasShopMode && distribs.length > 0::
+	::if distribs.length > 0::
 		<div class="article">
-			<h4><i class="icon icon-basket"></i>  Commandes variables</h4>
+
 	
 			::foreach d distribs::
 
 				::set basket = d.getUserBasket(user)::
 				::if(basket!=null)::
-					::set orders = basket.getOrders(1)::
+					::set orders = basket.getOrders()::
 				::else:: 
 					::set orders = null::
 				::end::
 				::if(orders!=null && orders.length>0)::
 
-					<h5>::_("Order delivered on"):: ::hDate(d.getDate())::</h5>
+					<h5>Commande distribuée le ::hDate(d.getDate())::</h5>
 					<table class="table table-bordered table-condensed" >
 						<tr class="greyhead">
 							<th class="col-md-1">::_("Qty||short version for quantity")::</th>
@@ -38,7 +28,6 @@
 							<th class="col-md-2">::_("Sub-total")::</th>
 							<th class="col-md-1">::_("Fees")::</th>
 							<th class="col-md-1">::_("Total")::</th>
-							<th class="col-md-1" ::cond !hasPayments::>::_("Paid")::</th>			
 						</tr>
 						::set total = 0::
 						::foreach o prepare(orders)::
@@ -47,7 +36,7 @@
 									::raw o.smartQt::
 								</td>
 								<td>
-									<a href="#" onclick="_Cagette.overlay('/shop/productInfo/::o.productId::','::o.productName::')">
+									<a href="#" onclick="neo.createNeoModule('myModal', 'dialog-url', { url: '/shop/productInfo/::o.productId::', title:'::escapeJS(o.productName)::' })">
 										<img src="::o.productImage::" style="width:32px;height:32px;" />
 										::o.productName::
 									</a>
@@ -65,17 +54,10 @@
 									::formatNum(o.total)::&nbsp;::currency()::
 									::set total = total + o.total::
 								</td>
-								<td ::cond !hasPayments:: class="text-center">
-									$$check(::o.paid::)
-								</td>
-							
 							</tr>
 						::end::	
 						<tr>
 							<td colspan="4">
-								::if hasShopMode && !hasPayments:: 
-									$$edit(Modifier cette commande,/contract/editVarOrders/::d.id::)
-								::end::
 							</td>
 							<td>TOTAL</td>
 							<td><b>::formatNum(total)::&nbsp;::currency()::</b></td>
@@ -84,81 +66,24 @@
 				::end::
 			::end::
 		</div>
-		::end::
-
-		<!-- SUBSCRIPTIONS FOR CSA MODE -->
-		::if !hasShopMode && count(subscriptionsByCatalog) > 0 ::
-			
-			::foreach i loopList(0, 2)::
-
-				::set subscriptionsFound = false::
-				<!--
-				<h4>
-					::if i == 0::
-						<br/>
-						<i class="icon icon-basket"></i> Contrats AMAP variables
-					::else::
-						<hr/>
-						<br/>
-						<i class="icon icon-refresh"></i> Contrats AMAP classiques
-					::end::
-				</h4>
-				-->
-
-				::foreach catalog subscriptionsByCatalog.keys()::
-
-					::if ( i == 0 && catalog.isVariableOrdersCatalog() ) || ( i == 1 && catalog.isConstantOrdersCatalog() )::
-
-						::set subscriptionsFound = true::
-
-						::set subscriptions = subscriptionsByCatalog.get(catalog)::
-						::foreach subscription subscriptions::
-
-							$$subscription(::subscription::,::user::)
-							
-						::end::
-					::end::
-				::end::
-
-				::if !subscriptionsFound::
-					<div class="text-center" style="margin-top:40px;margin-bottom:40px;">Il n'y a pas de souscription.</div>
-				::end::
-
-			::end::
-		::end::
+	::end::
 		
 </div>
 
 <div class="col-md-4">
 	
-	::if hasPayments && hasShopMode::
 	<h3>::_("Payments")::</h3>
 	<div  class="article">
 		<span style="font-size:1.3em;">
-			
-			::if hasShopMode::
-				::_("Balance"):: :
-				::if userGroup.balance < 0:: 
-					::set color = "C00"::
-				::else::
-					::set color = "0C0"::
-				::end::
-				<span style="color:#::color::;">
-					::userGroup.balance:: ::currency()::
-				</span>
+			::_("Balance"):: :
+			::if userGroup.balance < 0:: 
+				::set color = "C00"::
 			::else::
-				Solde global :
-				::set background = ""::
-				::if userGroup.balance < 0::
-					::set background = "redBg"::
-				::else::
-					::set background = "greenBg"::
-				::end::
-				<span style="color: white;font-weight:bold;" class="::background::">
-					::formatNum(userGroup.balance)::&nbsp;::currency()::
-				</span>
+				::set color = "0C0"::
 			::end::
-			
+			<span style="color:#::color::;">
+				::userGroup.balance:: ::currency()::
+			</span>
 		</span>
 		
 		<span style="margin-left:30px;">
@@ -168,7 +93,6 @@
 			</a>
 		</span>
 	</div>
-	::end::
 
 	<!--Membership-->
 	::if user.getGroup().hasMembership::
@@ -190,6 +114,21 @@
 		::_("for the period||full sentence : Membership up to date for the period 2017-2018"):: <b>::user.getGroup().getPeriodName(null)::</b>
 		<br/>
 	</div>
+	::end::
+
+	::if settings.differenciatedPricing==true::
+	<h3>Tarification différenciée</h3>
+	<div  class="article">
+		<div id="neo-container"></div>
+	</div>
+	<script>
+		document.addEventListener("DOMContentLoaded", function(event) {
+			neo.createNeoModule("neo-container", "current-differenciated-pricing", {
+					userId: ::user.id::,
+					groupId: ::user.getGroup().id::
+				});
+		});
+	</script>
 	::end::
 
 	

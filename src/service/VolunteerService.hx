@@ -122,27 +122,37 @@ class VolunteerService
 				//Send notification email to either the coordinators or all the members depending on the current date
 				var mail = new Mail();
 				mail.setSender(App.current.getTheme().email.senderEmail, App.current.getTheme().name);
+				var date = App.current.view.hDate(multidistrib.distribStartDate);
+				var subject = t._( "A role has been left for ::date:: distribution",{date:date});
+				mail.setSubject( subject );
+
+				//Recipients are the coordinators
+				var rights = if(foundVolunteer.volunteerRole.catalog==null){
+					[ Right.GroupAdmin ];
+				}else{
+					[ Right.ContractAdmin(foundVolunteer.volunteerRole.catalog.id) ];
+				}
+				var adminUsers = service.GroupService.getGroupMembersWithRights( multidistrib.group, rights );
+				for ( admin in adminUsers ) {
+					mail.addRecipient( admin.email, admin.getName() );
+					if ( admin.email2 != null ) {
+						mail.addRecipient( admin.email2 );
+					}
+				}
+				var html = App.current.processTemplate("mail/volunteerUnsuscribed.mtt", { fullname : user.getName(), role : role.name, reason : reason, group: multidistrib.group  } );
+				mail.setHtmlBody( html );
+				App.sendMail(mail, multidistrib.group);
+				
+				// Send also to others members depending on date
+				var mail = new Mail();
+				mail.setSender(App.current.getTheme().email.senderEmail, App.current.getTheme().name);
+				mail.setSubject( subject );
 				var now = Date.now();
 				var alertDate = DateTools.delta( multidistrib.distribStartDate, - 1000.0 * 60 * 60 * 24 * multidistrib.group.vacantVolunteerRolesMailDaysBeforeDutyPeriod );
-
-				if ( now.getTime() <=  alertDate.getTime() ) {
-
-					//Recipients are the coordinators
-					var rights = if(foundVolunteer.volunteerRole.catalog==null){
-						[ Right.GroupAdmin ];
-					}else{
-						[ Right.ContractAdmin(foundVolunteer.volunteerRole.catalog.id) ];
-					}
-					var adminUsers = service.GroupService.getGroupMembersWithRights( multidistrib.group, rights );
-					for ( admin in adminUsers ) {
-						mail.addRecipient( admin.email, admin.getName() );
-						if ( admin.email2 != null ) {
-							mail.addRecipient( admin.email2 );
-						}
-					}
-				}else{
-
+				 if (now.getTime() > alertDate.getTime()){
 					var members = Lambda.array( multidistrib.group.getMembers() );
+					// filter out admins because they already got the email
+					members = members.filter(u -> return adminUsers.find(a -> return a.id == u.id) == null);
 					//Recipients are all members
 					for ( member in members ) {
 						mail.addRecipient( member.email, member.getName() );
@@ -150,14 +160,16 @@ class VolunteerService
 							mail.addRecipient( member.email2 );
 						}
 					}
-				}
-				var date = App.current.view.hDate(multidistrib.distribStartDate);
-				var subject = t._( "A role has been left for ::date:: distribution",{date:date});
-				mail.setSubject( subject );
-				var html = App.current.processTemplate("mail/volunteerUnsuscribed.mtt", { fullname : user.getName(), role : role.name, reason : reason, group: multidistrib.group  } );
-				mail.setHtmlBody( html );
-				App.sendMail(mail, multidistrib.group);
 
+					if (App.current.getSettings().unsubscribeVolunteerRoleReasonOnlyForAdmin==true) {
+						// Don't send reason to non admin members
+						reason = null;
+					}
+					var html = App.current.processTemplate("mail/volunteerUnsuscribed.mtt", { fullname : user.getName(), role : role.name, reason : reason, group: multidistrib.group  } );
+					mail.setHtmlBody( html );
+					App.sendMail(mail, multidistrib.group);
+				}
+				
 				//delete assignment
 				foundVolunteer.lock();
 				foundVolunteer.delete();

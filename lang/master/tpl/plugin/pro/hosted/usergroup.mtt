@@ -23,21 +23,14 @@
 				</td>
 				<td class="col-md-6">
 					<!-- BASKETS -->
-					::set orders = md.getUserOrders(member,null)::
-					::if orders.length > 0::
-						
-						::set basket = orders[0]._basket::
-						<a href="/admin/stripe#/baskets/::basket.id::">Panier #::basket.id::</a>
-						
-					::end::
-					
-					<!-- TMP BASKETS-->
-					::set basket = md.getUserTmpBasket(member)::
-					::if(basket!=null)::
-					<div style="color:green">
-						<a href="/admin/stripe#/baskets/::basket.id::">Panier en cours #::basket.id::</a>
-						
-					</div>
+					::foreach basket getAllBaskets(member,md)::
+					<p>
+						<a href="/admin/stripe#/baskets/::basket.id::">Basket #::basket.id::</a> 
+						<span class="disabled">::basket.status::</span> 
+						::if basket.status=="OPEN"::
+						<a href="/p/hosted/checkBasket/::basket.id::" class="btn btn-default btn-xs">check bug de brigitte</a>
+						::end::
+					</p>
 					::end::
 				</td>
 			</tr>			
@@ -53,7 +46,7 @@
 					$$operation(::op::)
 					
 					<td>
-						<a onclick="_Cagette.overlay('/p/hosted/operation/::op.id::','',false)" class="btn btn-default btn-xs">Detail</a>
+						<a onclick="neo.createNeoModule('myModal', 'dialog-url', { url: '/p/hosted/operation/::op.id::', title:'Détail' })" class="btn btn-default btn-xs">Détail</a>
 					</td>
 				</tr>
 				::end::

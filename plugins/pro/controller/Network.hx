@@ -66,23 +66,9 @@ class Network extends controller.Controller
 
 	@tpl('plugin/pro/network/stats.mtt')
 	function doStats(args:{from:Date,to:Date}){
-
-		var startDate = args.from;
-		var endDate   = args.to;
-		
-		var s = new pro.service.NetworkStatsService(pro.db.CagettePro.getCurrentCagettePro(),startDate,endDate);
-		view.from = startDate;
-		view.to = endDate;
-		view.baskets = s.getBasketNumber();
-		view.sales = s.getSalesAmount();
-		view.memberships = s.getMembershipNumber();
-		view.membershipsAmount = s.getMembershipAmount();
-		view.productNumber = s.getProductNumber();
-		view.memberNumber = s.getMembersNumber();
-		view.activeMembershipWithOrderNumber = s.getActiveMembershipWithOrderNumber();
-		view.activeMembershipMembers = s.getActiveMembershipMembers().length;		
-		view.membersWithOrderNumber = s.getMembersWithOrderNumber();
-		view.groups = s.getGroups();
+		view.fromDate = args.from;
+		view.toDate = args.to;
+		view.cagetteProId = pro.db.CagettePro.getCurrentCagettePro().id;
 	}
 
 	

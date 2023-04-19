@@ -203,44 +203,5 @@
 			</table>
 		</div>
 	</div>
-	<script>
-			//<![CDATA[
-			/*document.addEventListener("DOMContentLoaded", function(event) {
-				window.setTimeout(function(){
-					var txt = "Nous avons réorganisé certains menus et certaines pages pour une meilleure compréhension de Cagette.net.<br/>";
-					txt += "La gestion des distributions a aussi été revue.";
-					txt += "<br/><br/><a href='https://wiki.cagette.net/admin:distributions' target='_blank'>Voir la vidéo pour se mettre à la page</a>";
-					_Cagette.newFeature(".row h2","Mise à jour de la rentrée",txt,"bottom");
-				},2000);
-			});*/
-
-			/*
-			::if(isBlocked)::
-			_Cagette.overlay("/data/disabled.html","");
-			::end::
-			*/
-
-			var displayPopup = function(id,displaysByDay){
-				document.addEventListener("DOMContentLoaded", function(event) {
-					var now = new Date();
-					var storageId = id + "-" + now.toJSON().substr(0,10);
-					if(localStorage[storageId]==null ){
-						localStorage[storageId]=0;
-					}
-					if(localStorage[storageId] < displaysByDay ){
-						_Cagette.overlay("/data/"+id+".html","",true);
-						localStorage[storageId]++;
-					}					
-				});
-			};
-			
-			/*::if(discovery)::
-				displayPopup("offre-formation-2022-01-A",1);							
-			::elseif(isGroupAdmin)::		
-				displayPopup("offre-formation-2022-01-B",1);
-			::end::*/
-			
-			//]]>
-	</script>
 	
 ::end::
