@@ -23,13 +23,6 @@ class RemoteCatalog extends sys.db.Object
 		return this.disabledProducts.split(",").map(Std.parseInt);
 	}
 	
-	/*public static function make(catalog:pro.db.PCatalog,clientGroup:db.Group,remoteUserId:Int){
-		var contract = createContractFromRemoteCatalog(catalog,clientGroup,remoteUserId);
-		return getFromContract(contract);
-	}*/
-
-	
-	
 	/**
 	 *  get contract linked to this remoteCatalog record
 	 *  @param lock=false - 

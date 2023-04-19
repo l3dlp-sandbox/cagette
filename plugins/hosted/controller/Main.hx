@@ -1,4 +1,5 @@
 package hosted.controller;
+import payment.Check;
 import mangopay.MangopayPlugin;
 import mangopay.Mangopay;
 import mangopay.db.MangopayLegalUserGroup;
@@ -108,11 +109,11 @@ class Main extends controller.Controller
 
 		if( app.params.get("duplicate")=="1" ){
 
-			//duplicate group with MGP
+			//duplicate group
 
 			var g = GroupService.duplicateGroup(group);
 			g.name = group.name+" (marché)";
-			// g.setAllowedPaymentTypes([MangopayECPayment.TYPE]);
+			g.setAllowedPaymentTypes([Cash.TYPE,Check.TYPE]);
 			g.update();
 
 			var place = group.getMainPlace();
