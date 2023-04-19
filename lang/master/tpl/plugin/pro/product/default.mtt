@@ -163,7 +163,7 @@
 									<td>::formatNum(off.price)::&nbsp;::currency()::</td>
 									<td>
 										<div class="btn-group" role="group" aria-label="...">
-											<a onclick="neo.createNeoModule('myModal', 'dialog-url', { url: '/p/pro/offer/preview/::off.id::', title:'::off.getName()::' })"class="btn btn-default btn-sm">
+											<a onclick="neo.createNeoModule('myModal', 'dialog-url', { url: '/p/pro/offer/preview/::off.id::', title:'::escapeJS(off.getName())::' })"class="btn btn-default btn-sm">
 												<i class="icon icon-eye"></i> Voir</a>
 											$$edit(Mod.,/p/pro/offer/edit/::off.id::)
 											<a class="btn btn-default btn-sm" $$openImageUploader('poffer', ::off.id::, 300, 300, null, ::company.id::)>
