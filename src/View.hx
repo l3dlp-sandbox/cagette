@@ -246,8 +246,8 @@ class View extends sugoi.BaseView {
 		return db.Basket.manager.get(id, false);
 	}
 
-	public function getBasket2(user, md) {
-		return db.Basket.get(user, md);
+	public function getUserBasket(user, md) {
+		return db.Basket.get(user, md,false);
 	}
 
 	public function getURI() {
