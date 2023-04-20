@@ -467,7 +467,7 @@
 		::if(theme!=null && theme.footer!=null)::
 		<div class="row">
 			<div class="col-md-12">
-				<div id="footer" >
+				<div id="cavea-footer" >
 						<div class="col-md-3" >
 							::if(theme.footer.bloc1!=null):: ::raw theme.footer.bloc1:: ::end::
 						</div>
