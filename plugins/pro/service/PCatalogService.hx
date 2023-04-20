@@ -242,7 +242,6 @@ class PCatalogService{
 			groupCatalog = new db.Catalog();
 			groupCatalog.vendor = proCatalog.company.vendor;
 			groupCatalog.group = group;
-			groupCatalog.flags.set(db.Catalog.CatalogFlags.UsersCanOrder);
 			groupCatalog.contact = contact;
 		
 		}else{
@@ -252,7 +251,6 @@ class PCatalogService{
 		
 		groupCatalog.startDate = proCatalog.startDate;
 		groupCatalog.endDate = proCatalog.endDate;
-		groupCatalog.flags.set(db.Catalog.CatalogFlags.StockManagement);
 		if(proCatalog.contractName!=null) {
 			groupCatalog.name = proCatalog.contractName;
 		}else{

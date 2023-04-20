@@ -558,7 +558,6 @@ class ContractAdmin extends Controller
 			nc.contact = catalog.contact;
 			nc.description = catalog.description;
 			nc.distributorNum = catalog.distributorNum;
-			nc.flags = catalog.flags;
 			nc.vendor = catalog.vendor;
 			nc.insert();
 			

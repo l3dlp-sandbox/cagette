@@ -4,11 +4,6 @@ import sugoi.form.ListData.FormData;
 import sys.db.Object;
 import sys.db.Types;
 
-enum CatalogFlags {
-	UsersCanOrder;  		//adhérents peuvent saisir eux meme la commande en ligne
-	StockManagement; 		//gestion des commandes
-}
-
 @:index(startDate,endDate)
 class Catalog extends Object
 {
@@ -25,14 +20,11 @@ class Catalog extends Object
 	
 	@hideInForms @:relation(groupId) public var group:db.Group;
 	public var distributorNum:STinyInt;
-	public var flags : SFlags<CatalogFlags>;
 	
 	public function new() 
 	{
 		super();
-		flags = cast 0;
 		distributorNum = 0;	
-		flags.set(UsersCanOrder);		
 	}	
 	
 	/**
@@ -59,9 +51,9 @@ class Catalog extends Object
 	 */
 	public function isVisibleInShop():Bool {
 		
-		//yes if the contract is active and the 'UsersCanOrder' flag is checked
+		//yes if the contract is active
 		var n = Date.now().getTime();
-		return flags.has(UsersCanOrder) && n < this.endDate.getTime() && n > this.startDate.getTime();
+		return n < this.endDate.getTime() && n > this.startDate.getTime();
 	}
 
 	public function isActive():Bool{
@@ -74,16 +66,11 @@ class Catalog extends Object
 	 */
 	public function hasOpenOrders(){
 		var now = Date.now();
-		var contractOpen = flags.has(UsersCanOrder) && now.getTime() < this.endDate.getTime() && now.getTime() > this.startDate.getTime();
+		var contractOpen = now.getTime() < this.endDate.getTime() && now.getTime() > this.startDate.getTime();
 		var d = db.Distribution.manager.count( $orderStartDate <= now && $orderEndDate > now && $catalogId==this.id);
 		return contractOpen && d > 0;
 	}
 		
-	public function hasStockManagement():Bool {
-		// return flags.has(StockManagement);
-		return true;
-	}
-
 	public function check(){
 
 		if( this.description!=null && !UnicodeString.validate( haxe.io.Bytes.ofString(this.description), Encoding.UTF8 )){
@@ -260,7 +247,6 @@ class Catalog extends Object
 			"endDate" 			=> t._("End date"),
 			"description" 		=> t._("Description"),
 			"distributorNum" 	=> t._("Number of required volunteers during a distribution"),
-			"flags" 			=> t._("Options"),
 			"contact" 			=> t._("Contact"),
 			"vendor" 			=> t._("Farmer"),
 			"hasPayements" 					=> "Gestion des paiements",
