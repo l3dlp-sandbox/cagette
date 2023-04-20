@@ -50,7 +50,7 @@
 <body class="::container::">
 
     ::if DEBUG::
-    <div style="position: fixed;background: #666;padding: 8px;left: 0;bottom:0;color:#FF0;">DEBUG</div>
+    <div style="position: fixed;background: #666;padding: 8px;left: 0;bottom:0;color:#FF0; z-index: 1;">DEBUG</div>
     ::end::
 
     ::if ( HOST.indexOf(".dev.",null)!=-1 )::
