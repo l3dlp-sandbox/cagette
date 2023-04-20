@@ -67,10 +67,7 @@
 											<a href="/contract/inviteVendor/::v.id::" class="btn btn-default">L'inviter à ouvrir un compte producteur</a>
 										</p>
 									</div>
-								::else::
-									<a href="/contract/insertChoose/::v.id::" class="btn btn-default btn-sm">
-										<i class="icon icon-plus"></i> Nouveau catalogue
-									</a>
+								
 								::end::
 							::end::
 						</p>
@@ -83,6 +80,7 @@
 				<div class="col-md-12">
 					$$empty(::_("We could not find any vendor matching your search")::)
 				</div>
+				
 				::if settings.noVendorSignup!=true:: 
 					<div class="col-md-12" style="margin-bottom:16px; text-align: center;">
 						<a href="/contract/inviteVendor" class="btn btn-primary btn-lg">
