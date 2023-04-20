@@ -85,9 +85,7 @@ class Contract extends Controller
 		});
 
 		view.vendors = vendors;
-		view.name = f.getValueOf('name');
-	
-		view.shopMode = app.user.getGroup().hasShopMode();
+		view.name = f.getValueOf('name');	
 		view.form = f;
 	}
 

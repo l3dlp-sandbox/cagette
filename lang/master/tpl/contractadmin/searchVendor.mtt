@@ -26,7 +26,7 @@
 				::foreach v vendors::
 				<div class="col-md-4 col-sm-6">
 					
-					<div class="boxed" style="height:150px">	
+					<div class="boxed" style="height:180px">	
 						<div class="row">
 							<div class="col-md-4">													
 								<div class="productImg xl" style="background-image:url('::v.getImage()::');"></div>								
@@ -45,10 +45,8 @@
 						<p style="line-height: 38px;">
 							::if(cpro!=null)::
 								<!-- compte producteur -->
-
 								::set catalogs = cpro.getActiveVisibleCatalogs()::
-								Catalogue(s) :
-								
+								Catalogue(s) :								
 								::foreach catalog catalogs::									
 									<a href="/p/pro/public/::catalog.id::" class="btn btn-default btn-sm" target="_blank">
 										<i class="icon icon-book"></i> ::catalog.name::

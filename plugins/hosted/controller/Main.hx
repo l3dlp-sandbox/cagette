@@ -100,10 +100,10 @@ class Main extends controller.Controller
 			mgpLegalUserGroup.delete();
 
 			//payments in cash
-			group.setAllowedPaymentTypes([Cash.TYPE]);
+			group.setAllowedPaymentTypes([Cash.TYPE,Check.TYPE]);
 			group.update();
 
-			throw Ok("/p/hosted/group/"+group.id,"Mangopay retiré, groupe passé en paiement sur place");
+			throw Ok("/p/hosted/group/"+group.id,"Mangopay retiré, ATTENTION : groupe passé en paiement sur place");
 
 		}
 

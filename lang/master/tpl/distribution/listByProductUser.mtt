@@ -56,11 +56,9 @@
 		::foreach user users::
 			<tr>
 				<th>
-					::set basket = getBasket2(user.id,distrib._multiDistrib)::							
+					::set basket = getUserBasket(user.id,distrib._multiDistrib)::							
 					<span ::cond basket!=null::>N°::basket.num:: - </span>	
-
-					::user.getCoupleName()::
-					
+					::user.getCoupleName()::				
 				</th>
 				::foreach p products::
 					<td>
