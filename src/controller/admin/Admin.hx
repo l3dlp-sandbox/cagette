@@ -309,8 +309,16 @@ class Admin extends Controller {
 
 		// global stats
 		var stats = Graph.getData("global", from);
-		if (stats == null)
-			stats = {};
+		if (stats == null){
+			if(to.getTime() > Date.now().getTime()){
+				stats = {};
+			}else{
+				stats = GraphService.global(from,to);
+				Graph.recordData("global",stats,from);
+			}
+			
+		}
+			
 		view.stats = stats;
 	}
 

@@ -345,7 +345,7 @@ class MultiDistrib extends Object
 		//sort by user lastname
 		baskets.sort((a,b)-> {
 			if(a.user==null || b.user==null) return -1;
-			return a.user.lastName > b.user.lastName ? 1 : -1 ;
+			return a.user.lastName.toUpperCase() > b.user.lastName.toUpperCase() ? 1 : -1 ;
 		});
 
 		return baskets;
@@ -358,31 +358,32 @@ class MultiDistrib extends Object
 		return db.Basket.manager.search($multiDistrib==this && $status==Std.string(BasketStatus.OPEN),false).array();
 	}
 
-	public function getUserBasket(user:db.User){
-		var orders = getUserOrders(user);
-		for( o in orders ){
-			if(o.basket!=null) return o.basket;
-		}
-		return null;
+	public function getUserBaskets(user:db.User):Array<db.Basket>{
+		return db.Basket.manager.search($multiDistrib==this && $user==user && ($status==Std.string(BasketStatus.CONFIRMED)||$status==Std.string(BasketStatus.VALIDATED)),false).array();
 	}
 
 	/**
-		get user open basket
+		@deprecated : should always return many baskets
+	**/
+	public function getUserBasket(user:db.User):db.Basket{
+		return db.Basket.manager.select($multiDistrib==this && $user==user && ($status==Std.string(BasketStatus.CONFIRMED)||$status==Std.string(BasketStatus.VALIDATED)),false);
+	}
+
+	/**
+	@deprecated : should always return many baskets
 	**/
 	public function getUserTmpBasket(user:db.User):db.Basket{
-		return db.Basket.manager.select($multiDistrib==this && $user==user && $status==Std.string(BasketStatus.OPEN),false);
+		return db.Basket.manager.select($multiDistrib==this && $user==user && ($status==Std.string(BasketStatus.OPEN)||$status==Std.string(BasketStatus.PAYMENT_PROCESSING)),false);
 	}
 
 	/**
 		Get total income of the md, variable and constant
 	**/
 	public function getTotalIncome():Float{
-		var income = 0.0;
-		
+		var income = 0.0;		
 		for( d in getDistributions()){
 			income += d.getTurnOver();
 		}
-
 		return income;
 	}
 

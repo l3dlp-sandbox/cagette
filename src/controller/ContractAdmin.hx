@@ -171,45 +171,7 @@ class ContractAdmin extends Controller
 	}
 	
 	
-	/**
-	 *  - hidden page -
-	 * copy products from a contract to an other
-	 */
-	@admin @tpl("form.mtt")
-	function doCopyProducts(contract:db.Catalog) {
-		view.title = t._("Copy products in: ")+contract.name;
-		var form = new Form("copy");
-		var contracts = app.user.getGroup().getActiveContracts();
-		var contracts  = Lambda.map(contracts, function(c) return {key:Std.string(c.id),value:Std.string(c.name) } );
-		form.addElement(new sugoi.form.elements.Selectbox("source", t._("Copy products from: "),Lambda.array(contracts)));
-		form.addElement(new sugoi.form.elements.Checkbox("delete", t._("Delete existing products (all orders will be deleted!)")));
-		if (form.checkToken()) {
-			
-			if (form.getValueOf("delete") == "1") {
-				for ( p in contract.getProducts()) {
-					p.lock();
-					p.delete();
-				}
-			}
-			
-			var source = db.Catalog.manager.get(Std.parseInt(form.getValueOf("source")), false);
-			var prods = source.getProducts();
-			for ( source_p in prods) {
-				var p = new db.Product();
-				p.name = source_p.name;
-				p.price = source_p.price;
-				p.catalog = contract;
-				p.insert();
-			}
-			
-			throw Ok("/contractAdmin/products/" + contract.id, t._("Products copied from ") + source.name);
-			
-			
-		}
-		
-		
-		view.form = form;
-	}
+
 	
 	/**
 	 * global view on orders within a timeframe
@@ -260,12 +222,15 @@ class ContractAdmin extends Controller
 			var cids = contracts.getIds();
 			
 			//distribs
-			var distribs = db.Distribution.manager.search(($catalogId in cids)   && $date >= d1 && $date <= d2 /*&& place.id==$placeId*/, false);					
-			
+			var distribs = db.Distribution.manager.search(($catalogId in cids)   && $date >= d1 && $date <= d2 /*&& place.id==$placeId*/, false);								
 			if (distribs.length == 0) throw Error("/contractAdmin/ordersByDate", t._("There is no delivery at this date"));
 			
-
-			var orders = db.UserOrder.manager.search($distributionId in distribs.getIds()  , { orderBy:userId } );
+			var orders = [];
+			for ( d in distribs ){
+				for( o in d.getOrders()){
+					orders.push(o);
+				}
+			}
 			var orders = service.OrderService.prepare(orders);
 			
 			view.orders = orders;
@@ -274,89 +239,7 @@ class ContractAdmin extends Controller
 			view.ctotal = app.params.exists("ctotal");
 			
 		}
-		
-		
-		
 	}
-	
-	/**
-	 * Global view on orders in one day
-	 * 
-	 * @param	date
-	 */
-	@tpl('contractadmin/ordersByDate.mtt')
-	function doOrdersByDate(?date:Date,?place:db.Place){
-
-		if(!app.user.canManageAllContracts())  throw Error('/',"Accès interdit");
-
-		if (date == null) {
-		
-			var f = new sugoi.form.Form("listBydate", null, sugoi.form.Form.FormMethod.GET);
-			var el = new form.CagetteDatePicker("date", t._("Delivery date"),  NativeDatePickerType.date, true);
-			el.format = 'LL';
-			f.addElement(el);
-			
-			var places = Lambda.map(app.user.getGroup().getPlaces(), function(p) return {label:p.name,value:p.id} );
-			f.addElement(new sugoi.form.elements.IntSelect("placeId", "Lieu", Lambda.array(places),app.user.getGroup().getMainPlace().id,true));
-			
-			view.form = f;
-			view.title = t._("Global view of orders");
-			view.text = t._("This page allows you to have a global view on orders of all catalogs");
-			view.text += t._("<br/>Select a delivery date:");
-			app.setTemplate("form.mtt");
-			
-			if (f.checkToken()) {
-				
-				var url = '/contractAdmin/ordersByDate/' + f.getValueOf("date").toString().substr(0, 10);
-				var p = f.getValueOf("placeId");
-				if (p != null) url += "/"+p;
-				throw Redirect( url );
-			}
-			
-			return;
-			
-		}else {
-			
-			var d1 = date.setHourMinute(0, 0);
-			var d2 = date.setHourMinute(23,59);
-			var contracts = app.user.getGroup().getActiveContracts(true);
-			var cids = contracts.map(x->return x.id);
-			
-			//distribs
-			var distribs = db.Distribution.manager.search(($catalogId in cids) && $date >= d1 && $date <= d2 && place.id==$placeId, false);		
-			
-			if (distribs.length == 0) throw Error("/contractAdmin/ordersByDate", t._("There is no delivery at this date"));
-			
-			//orders
-			var orders = db.UserOrder.manager.search($distributionId in distribs.getIds()  , { orderBy:userId } );			
-			var orders = service.OrderService.prepare(orders);
-			
-			view.orders = orders;
-			view.date = date;
-			view.place = place;
-			view.ctotal = app.params.exists("ctotal");
-
-			view.distrib = db.MultiDistrib.get(date,place);
-		}
-	}
-	
-	
-	/**
-	 * Global view on orders, producer view
-	 */
-	/*@tpl('contractadmin/vendorsByDate.mtt')
-	function doVendorsByDate(date:Date,place:db.Place) {
-
-	    var vendorDataByVendorId = new Map<Int,Dynamic>();//key : vendor id
-		try {
-			vendorDataByVendorId = service.ReportService.getMultiDistribVendorOrdersByProduct(date, place);
-		} catch(e:tink.core.Error) {
-			throw Error("/contractAdmin/ordersByDate", e.message);
-		}
-		
-		view.orders = Lambda.array(vendorDataByVendorId);
-		view.date = date;
-	}*/
 	
 	/**
 	 * Global view on orders, producer view
@@ -533,79 +416,6 @@ class ContractAdmin extends Controller
 	}
 	
 	/**
-	 *  Duplicate a catalog
-	 */
-	@tpl("form.mtt")
-	function doDuplicate(catalog:db.Catalog) {
-
-		sendNav(catalog);
-		if (!app.user.canManageContract(catalog)) throw Error("/", t._("You do not have the authorization to manage this catalog"));
-		
-		view.title = "Dupliquer le contrat '"+catalog.name+"'";
-		var form = new Form("duplicate");
-		
-		form.addElement(new StringInput("name", t._("Name of the new catalog"), catalog.name.substr(0,50)  + " - copie"));	
-		form.addElement(new Checkbox("copyProducts", t._("Copy products"),true));
-		form.addElement(new Checkbox("copyDeliveries", t._("Copy deliveries"),true));
-		
-		if (form.checkToken()) {
-
-			var nc = new db.Catalog();
-			nc.name = form.getValueOf("name");
-			nc.startDate = catalog.startDate;
-			nc.endDate = catalog.endDate;
-			nc.group = catalog.group;
-			nc.contact = catalog.contact;
-			nc.description = catalog.description;
-			nc.distributorNum = catalog.distributorNum;
-			nc.vendor = catalog.vendor;
-			nc.insert();
-			
-			//give rights to this contract
-			if(catalog.contact!=null){
-				var ua = db.UserGroup.get(catalog.contact, catalog.group);				
-				ua.giveRight(ContractAdmin(nc.id));
-			}
-
-			if(catalog.contact==null || app.user.id!=catalog.contact.id){
-				var ua = db.UserGroup.get(app.user, catalog.group);
-				ua.giveRight(ContractAdmin(nc.id));
-			}
-			
-			if (form.getValueOf("copyProducts") == true) {
-				var prods = catalog.getProducts();
-				for ( source_p in prods) {
-					var p = ProductService.duplicate(source_p);
-					p.catalog = nc;
-					p.update();
-				}
-			}
-			
-			if (form.getValueOf("copyDeliveries") == true) {
-				for ( ds in catalog.getDistribs()) {
-					var d = new db.Distribution();
-					d.catalog = nc;
-					d.date = ds.date;
-					d.multiDistrib = ds.multiDistrib;
-					d.orderStartDate = ds.orderStartDate;
-					d.orderEndDate = ds.orderEndDate;
-					d.end = ds.end;
-					d.place = ds.place;
-					d.insert();
-				}
-			}
-			
-			app.event(DuplicateContract(catalog));
-			
-			throw Ok("/contractAdmin/view/" + nc.id, t._("The catalog has been duplicated"));
-		}
-		
-		view.form = form;
-	}
-	
-	
-	
-	/**
 	 * Orders grouped by product
 	 */
 	@tpl("contractadmin/ordersByProduct.mtt")
@@ -759,20 +569,6 @@ class ContractAdmin extends Controller
 		
 	}
 	
-	@tpl("contractadmin/selectDistrib.mtt")
-	function doSelectDistrib(c:db.Catalog, ?args:{old:Bool}) {
-		view.nav.push("orders");
-		sendNav(c);
-		
-		view.c = c;
-		if (args != null && args.old){
-			view.distributions = c.getDistribs(false);	
-		}else{
-			view.distributions = c.getDistribs(true);
-		}
-		
-	}
-
 	@tpl("contractadmin/tmpBaskets.mtt")
 	function doTmpBaskets(md:db.MultiDistrib){
 		view.md = md;
