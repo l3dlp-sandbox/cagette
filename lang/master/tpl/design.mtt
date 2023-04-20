@@ -23,14 +23,17 @@
 				}
 			}
 			@media (max-width: 600px){
-				.nav-placeholder {
+				.nav-md {
 					display: none;
+				}
+				#cavea-footer {
+					margin-bottom: 40px;
 				}
 			}
 		</style>
 
 		<div class="nav-placeholder">
-			<div class="nav-placeholder" style="background-color: white; position: absolute; top: 0; bottom: 0; left: 0; border-right: 1px solid rgba(0, 0, 0, 0.12);"/>
+			<div class="nav-placeholder nav-md" style="background-color: white; position: absolute; top: 0; bottom: 0; left: 0; border-right: 1px solid rgba(0, 0, 0, 0.12);"/>
 			<div id='navigation-neo-container' />
 		</div>
 
