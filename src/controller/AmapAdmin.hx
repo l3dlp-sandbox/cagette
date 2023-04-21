@@ -354,6 +354,30 @@ class AmapAdmin extends Controller
 
 	@tpl("amapadmin/stripe.mtt")
 	public function doStripe(){
-		view.group = app.getCurrentGroup();
+		var group = app.getCurrentGroup();
+		if(app.params.get("enableStripe")=="1"){
+
+			//ENABLE DISPATCH
+			group.lock();
+			group.betaFlags.set(Dispatch);
+			group.setAllowedPaymentTypes(["stripe"]);
+			
+			//get active and non disabled vendors
+			var vendors = group.getActiveContracts(false).map(c -> c.vendor).filter(v -> !v.isDisabled()).array();
+			vendors = tools.ObjectListTool.deduplicate(vendors);
+
+			if( vendors.length > vendors.filter(v -> v.isDispatchReady()).length){
+				var badVendors = vendors.filter(v -> !v.isDispatchReady());
+				throw Error("/amapadmin/stripe","Les producteurs suivants n'ont pas de compte Stripe configuré : <b>"+badVendors.map(v-> "#"+v.id+"-"+v.name).join(", ")+"</b>");
+			}
+
+			group.update();
+
+			throw Ok("/amapadmin/stripe","Votre marché est maintenant configuré avec le paiement en ligne Stripe.");
+
+		}
+
+
+		view.group = group;
 	}
 }
