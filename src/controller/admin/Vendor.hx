@@ -227,6 +227,19 @@ class Vendor extends controller.Controller
 		req.setPostData("body",Json.stringify(v.getInfos()));
 		req.call("POST","https://hooks.zapier.com/hooks/catch/6566570/b868f9v/");
 		*/
+		if (app.params["giveAdminRights"] != null) {
+			var cproUsers = cpro.getUsers();
+			for( group in cpro.getGroups()){
+				for( user in cproUsers ){
+					var ua = db.UserGroup.getOrCreate(user, group);
+					ua.giveRight(db.UserGroup.Right.GroupAdmin);
+					ua.giveRight(db.UserGroup.Right.Membership);
+					ua.giveRight(db.UserGroup.Right.Messages);
+					ua.giveRight(db.UserGroup.Right.ContractAdmin());					
+				}
+			}	
+			throw Ok("/admin/vendor/view/"+v.id,"Droits donnés");
+		}		
 
 		view.stats = pro.db.VendorStats.getOrCreate(v);
 		view.courses = hosted.db.CompanyCourse.manager.search($company == cpro, false);
