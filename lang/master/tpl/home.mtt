@@ -74,7 +74,7 @@ $$browserDetection()
 		</div>
 
 		::if md.getDistributions().length>0::
-			::if md.userHasOrders(user,1)::
+			::if md.userHasOrders(user)::
 			<!-- Variable order block with orders -->
 			<div class="content orders">
 				<div class="text-center">
@@ -134,7 +134,7 @@ $$browserDetection()
 		<!--=== end VAR order block ===-->
 
 		<!-- TIME SLOTS BLOCK-->
-		::if(md.timeSlots!=null && md.userHasOrders(user,null))::
+		::if(md.timeSlots!=null && md.userHasOrders(user))::
 			::set tsService = timeSlotService(md)::
 			::set status = tsService.userStatus(user.id)::
 			::set slots = tsService.getSlots()::
