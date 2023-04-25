@@ -79,7 +79,10 @@
 			<th>::_("Product ID||id or reference of a product")::</th>
 			<th>::_("Name")::</th>			
 			<th>::_("Price")::</th>			
-			<th>::_("Stock")::</th>
+			<th>
+				Stock dispo.<br/>
+				à la vente
+			</th>
 			<th></th>
 		</tr>
 		::foreach p c.getProducts(false)::
@@ -116,13 +119,14 @@
 			</td>			
 			<td>::formatNum(p.price)::&nbsp;::currency()::</td>
 			<td>
-			::if p.stock!=null::
-				::if p.stock <= 10::
-					<span style="color:red;font-weight:bold;">							
-						::p.stock::
+			::set stock = p.getStock()::	
+			::if stock!=null::
+				::if stock <= 10 && p.active::
+					<span class="redColor" style="font-weight:bold;">							
+						::stock::
 					</span>
 				::else::
-					::p.stock::
+					::stock::
 				::end::
 			::end::
 			</td>

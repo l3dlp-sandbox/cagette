@@ -34,8 +34,6 @@ class Product extends Object
 	public var bulk : Bool;		//(vrac) warn the customer this product is not packaged
 	public var smallQt : SNull<SFloat>; //if bulk is true, a smallQt should be defined
 
-	// public var stock:SFloat;
-	
 	@hideInForms @:relation(imageId) public var image : SNull<sugoi.db.File>;
 	@:relation(txpProductId) public var txpProduct : SNull<db.TxpProduct>; //taxonomy	
 	@hideInForms @:relation(pOfferId) public var pOffer : SNull<POffer>;	
@@ -91,6 +89,21 @@ class Product extends Object
 	 */
 	public function getPrice():Float{
 		return price.clean();
+	}
+
+	public function getStock():Float{
+		var off = this.pOffer;
+		if(off!=null){
+			if(off.stock==null){
+				return null;
+			}else{
+				var orderedStock = off.orderedStock==null ? 0 : off.orderedStock;
+				return off.stock - orderedStock;
+			}
+		}else{
+			return null;
+		}
+
 	}
 	
 	/**
