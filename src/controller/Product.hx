@@ -20,66 +20,6 @@ class Product extends Controller
 		view.nav = ["contractadmin","products"];
 	}
 	
-	@tpl('form.mtt')
-	function doEdit(product:db.Product) {
-		
-		if (!app.user.canManageContract(product.catalog)) throw t._("Forbidden access");
-		
-		var f = ProductService.getForm(product);		
-		
-		if (f.isValid()) {
-
-			f.toSpod(product);
-
-			try{
-				ProductService.check(product);
-			}catch(e:tink.core.Error){
-				throw Error(sugoi.Web.getURI(),e.message);
-			}
-
-			app.event(EditProduct(product));
-			product.update();
-			throw Ok('/contractAdmin/products/'+product.catalog.id, t._("The product has been updated"));
-		} else {
-			app.event(PreEditProduct(product));
-		}
-		
-		view.form = f;
-		view.title = t._("Modify a product");
-	}
-	
-	@tpl("form.mtt")
-	public function doInsert(contract:db.Catalog ) {
-		
-		if (!app.user.isContractManager(contract)) throw Error("/", t._("Forbidden action")); 
-		
-		var product = new db.Product();
-		var f = ProductService.getForm(null,contract);
-	
-		if (f.isValid()) {
-
-			f.toSpod(product);
-			product.catalog = contract;
-
-			try{
-				ProductService.check(product);
-			}catch(e:tink.core.Error){
-				throw Error(sugoi.Web.getURI(),e.message);
-			}
-			
-			app.event(NewProduct(product));
-			product.insert();
-			throw Ok('/contractAdmin/products/'+product.catalog.id, t._("The product has been saved"));
-		}
-		else {
-
-			app.event(PreNewProduct(contract));
-		}
-		
-		view.form = f;
-		view.title = t._("Key-in a new product");
-	}
-	
 	public function doDelete(p:db.Product) {
 		
 		if (!app.user.canManageContract(p.catalog)) throw t._("Forbidden access");
@@ -122,10 +62,6 @@ class Product extends Controller
 
 		sugoi.tools.Csv.printCsvDataFromObjects(data, [
 			"id", "name", "ref", "price", "vat", "catalogId", "vendorId", "unit", "quantity", "active", "image"], "Export-produits-" + c.name + "-Cagette");
-		return;
-		
+		return;		
 	}
-	
-	
-	
 }
