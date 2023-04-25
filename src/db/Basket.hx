@@ -41,8 +41,8 @@ class Basket extends Object
 		CACHE = new Map<String,db.Basket>();
 	}
 	
-	public static function get(user:db.User,distrib:db.MultiDistrib, ?lock = false):db.Basket{
-		return manager.select($user==user && $multiDistrib==distrib && ($status==Std.string(BasketStatus.CONFIRMED)||$status==Std.string(BasketStatus.VALIDATED)),lock);
+	public static function get(user:db.User,md:db.MultiDistrib, ?lock = false):db.Basket{
+		return manager.select($user==user && $multiDistrib==md && ($status==Std.string(BasketStatus.CONFIRMED)||$status==Std.string(BasketStatus.VALIDATED)),lock);
 	}	
 	
 	/**
