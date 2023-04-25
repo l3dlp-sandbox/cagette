@@ -153,9 +153,8 @@ class Distribution extends Object
 			return this.catalog.isUserOrderAvailable();
 		}else {
 			var n = Date.now().getTime();
-			var f = this.catalog.flags.has(UsersCanOrder);
 			
-			return f && n < orderEndDate.getTime() && n > orderStartDate.getTime();
+			return n < orderEndDate.getTime() && n > orderStartDate.getTime();
 			
 		}
 	}
