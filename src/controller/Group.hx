@@ -188,6 +188,28 @@ class Group extends controller.Controller
 		
 	}
 
+	/**
+	 * create a new market
+	 */
+	@tpl("group/newMarket.mtt")
+	function doNewMarket() {
+		App.current.session.data.amapId = null;
+
+		var cagettePros = service.VendorService.getCagetteProFromUser(App.current.user);
+		if (!(App.current.getSettings().onlyVendorsCanCreateGroup==null
+			 || App.current.getSettings().onlyVendorsCanCreateGroup==false 
+			 || (App.current.getSettings().onlyVendorsCanCreateGroup==true && cagettePros!=null && cagettePros.length>0))
+			 ) {
+			throw Redirect("/");
+		}
+		
+		if(app.user==null) {
+			view.userName = "";
+			view.sid = App.current.session.sid;
+			return;
+		}
+	}
+
 	@admin
 	function doTest(){
 		#if plugins
