@@ -82,7 +82,6 @@ class TestOrders extends utest.Test
 		
 		var stock = p.stock;
 		
-		Assert.isTrue(c.flags.has(db.Catalog.CatalogFlags.StockManagement));
 		Assert.isTrue(stock == 8);
 		
 		//bob orders 3 strawberries, stock fall to 2

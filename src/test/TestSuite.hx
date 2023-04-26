@@ -248,7 +248,6 @@ class TestSuite
 		c.vendor = v;
 		c.startDate = new Date(2017, 1, 1, 0, 0, 0);
 		c.endDate = new Date(2030, 12, 31, 23, 59, 0);
-		c.flags.set(db.Catalog.CatalogFlags.StockManagement);
 		c.group = a;
 		c.insert();
 		

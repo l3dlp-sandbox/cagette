@@ -89,14 +89,9 @@
 	</div>
 
 	<div class="col-md-12" ::cond cagettePros!=null && cagettePros.length>0::>
-		<p>Connectez-vous à votre <b>compte producteur</b> :</p>
+		<p>Connectez-vous à votre <b>espace producteur</b> :</p>
 	</div>
 
-
-
-
-
-	
 	<div class="col-md-12" ::cond cagettePros!=null || tmpVendors.length>0:: >
 		<div class="row">
 		<!-- cpro -->
@@ -126,7 +121,7 @@
 				<h4>::tmp.farmName::</h4>
 				<p class="disabled">
 					<i class="icon icon-clock"></i>
-					Demande d'ouverture de compte producteur en attente de validation par l'équipe ::theme.name::
+					Demande d'ouverture d'espace producteur en attente de validation par l'équipe ::theme.name::
 				</p>
 			</a>
 		</div>

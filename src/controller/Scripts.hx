@@ -1,5 +1,7 @@
 package controller;
 
+import db.Group.RegOption;
+import db.UserGroup;
 import db.Operation;
 import db.Membership;
 import db.Catalog;
@@ -121,4 +123,102 @@ class Scripts extends Controller
             db.Operation.manager.delete($groupId == g.id);            
         }
     }
+
+
+    /**
+        2023-04-17 migrate VRAC groups to differentiated pricing
+
+        targetGroup : the group we keep
+        targetPricing : the pricing given to the members of targetGroup
+        sourceGroup : the group we empty        
+        sourcePricing : the pricing given to the members of sourceGroup        
+    **/
+    function doMigratePricing(sourceGroup:db.Group,sourcePrice:db.DifferenciatedPricing,targetGroup:db.Group,targetPrice:db.DifferenciatedPricing){
+
+        //give targetPrice to targetGroup
+        print("==== GIVE users from "+targetGroup.name+" price #"+targetPrice.id+"-"+targetPrice.name);
+
+        for( userGroup in db.UserGroup.manager.search($groupId == targetGroup.id && $differenciatedPricingId==null,true)){
+
+            userGroup.differenciatedPricingId = targetPrice.id;
+            userGroup.update();
+
+            print("give "+userGroup.user.getName()+" price #"+targetPrice.id+"-"+targetPrice.name);
+        }
+
+        print("==== MOVE users from "+sourceGroup.name+" to "+targetGroup.name);
+
+        for( userGroup in db.UserGroup.manager.search($group == sourceGroup,true)){
+
+            //if user is group admin, keep it
+            // if(userGroup.hasRight(GroupAdmin)) continue;
+
+            //if already in target group, delete
+            var already = db.UserGroup.get(userGroup.user,targetGroup,true);
+            if(already!=null) already.delete();
+
+            //move to target group
+            // userGroup.group = targetGroup;
+            // userGroup.differenciatedPricingId = sourcePrice.id;
+            // userGroup.update();
+            sys.db.Manager.cnx.request('update UserGroup set groupId=${targetGroup.id},differenciatedPricingId=${sourcePrice.id} where groupId=${sourceGroup.id} and userId=${userGroup.user.id}');
+
+            print(userGroup.user.getName()+" moved and give price #"+sourcePrice.id+"-"+sourcePrice.name);            
+        }
+
+        //move memberships
+        print("==== MOVE memberships from "+sourceGroup.name+" to "+targetGroup.name);
+
+        for( m in db.Membership.manager.search($group == sourceGroup,false)){
+
+            //note : linked distribution is not moved
+
+            //delete membership if already exist in target group
+            var already = db.Membership.get(m.user,targetGroup,m.year,true);
+            if(already!=null) {
+                if(already.operation!=null){
+                    for(op in already.operation.getRelatedPayments()){
+                        op.delete();
+                    }
+                    already.operation.delete();
+                }
+                already.delete();
+            }
+
+            sys.db.Manager.cnx.request('update Membership set groupId=${targetGroup.id} where groupId=${m.group.id} and userId=${m.user.id} and year=${m.year}');
+
+            // var n = db.Membership.get(m.user,m.group,m.year,true);
+            // n.group = targetGroup;
+            // n.update();
+
+            if(m.operation!=null){
+
+                //move membership debt op
+                // var op = db.Operation.manager.get(n.operation.id,true);               
+                // op.group = targetGroup;
+                // n.update();
+                sys.db.Manager.cnx.request('update Operation set groupId=${targetGroup.id} where id=${m.operation.id}');
+
+                //move payment op
+                var paymentOp = db.Operation.manager.select($relation == m.operation,true);
+                if(paymentOp!=null){
+                    // paymentOp.group = targetGroup;
+                    // paymentOp.update();
+                    sys.db.Manager.cnx.request('update Operation set groupId=${targetGroup.id} where id=${paymentOp.id}');
+                }
+            }
+            
+        }   
+
+        //close source group
+        sourceGroup.lock();
+        sourceGroup.regOption = RegOption.Closed;
+        // sourceGroup.disabled = 
+        sourceGroup.update();
+
+        print("END");
+    }
+
+
+    
 }

@@ -16,7 +16,7 @@
             
         <table class="table table-bordered" id="linkageTable">
             <tr style="text-decoration: underline;">
-                <td class="text-center">Catalogue de votre compte producteur :</td>
+                <td class="text-center">Catalogue de votre espace producteur :</td>
                 <td class="text-center">Catalogue à relier : </td>
             </tr>
             <tr>

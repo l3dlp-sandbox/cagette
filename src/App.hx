@@ -289,8 +289,6 @@ class App extends sugoi.BaseApp {
 		
 		out.set("membershipRenewalDate", "Adhésions : Date de renouvellement");
 		out.set("membershipPrice", "Adhésions : Coût de l'adhésion");
-		out.set("UsersCanOrder", "Les membres peuvent saisir leur commande en ligne");
-		out.set("StockManagement", "Gestion des stocks");
 		out.set("contact", "Responsable");
 		out.set("fees", "frais");
 		out.set("AmapAdmin", "Administrateur du groupe");

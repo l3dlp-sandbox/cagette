@@ -110,7 +110,7 @@
 		
 
 		Sur Cagette depuis le ::sDate(vendor.cdate)::<br/>
-		::if(cpro!=null)::Compte producteur depuis le ::sDate(cpro.cdate)::::end::<br/>
+		::if(cpro!=null)::Espace producteur depuis le ::sDate(cpro.cdate)::::end::<br/>
 	</div>
 
 	<div class="col-md-6">
@@ -126,32 +126,8 @@
 			<a href="/admin/vendor/edit/::vendor.id::" class="btn btn-default btn-sm">Compléter fiche</a>
 			
 			::if(cpro!=null)::
-			<a href="/p/pro?vendor=::vendor.id::" class="btn btn-default btn-sm">se connecter sur son compte producteur</a>
+			<a href="/p/pro?vendor=::vendor.id::" class="btn btn-default btn-sm">se connecter sur son espace producteur</a>
 			::end::
-		
-			<div class="btn-group">
-		
-				<div class="dropdown">
-					<button class="btn btn-default  btn-sm dropdown-toggle btn-noAntiDoubleClick" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-						Divers
-						<span class="caret"></span>
-					</button>
-					<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-						::if(cpro!=null)::
-						<li><a href="/p/pro/admin/delete/::vendor.id::/disable">Désactiver compte producteur ( redevient invité, possibilité de ré-ouvrir plus tard )</a></li>
-						<li><a href="/p/pro/admin/delete/::vendor.id::/deleteCpro">Supprimer compte producteur ( redevient invité )</a></li>
-						::else::
-						<li><a href="/p/pro/admin/createCpro/::vendor.id::">passer en compte producteur</a></li>
-						::end::
-						<li><a href="/p/pro/admin/delete/::vendor.id::/delete" >Supprimer complètement le producteur</a></li>												
-						<li><a href="/p/pro/admin/dedupInfo/::vendor.email::" >Déduplication par email</a></li>
-						<li><a href="/p/pro/admin/findduplicatesbyname/::vendor.name::" >Recherche par nom</a></li>
-						<li><a href="/p/pro/admin/findduplicatesbyzip/::vendor.zipCode::" >Recherche par code postal</a></li>
-						<li><a href="/db/Vendor/edit/::vendor.id::" >Modifier en BDD</a></li>
-					</ul>
-				</div>
-							
-			</div>
 		</p>
 
 	</div>
@@ -216,7 +192,7 @@
 
 ::if(cpro!=null)::
 <p>
-	<h4>Utilisateurs ayant accès au compte producteur</h4>
+	<h4>Utilisateurs ayant accès à l'espace producteur</h4>
 	<table class="table table-bordered">
 		::foreach uc cpro.getUserCompany()::
 		<tr>
@@ -245,8 +221,9 @@
 </p>
 ::end::
 
+<h4>Catalogues</h4>
 <p>
-	<h4>Catalogues</h4>
+	
 	<table class="table table-bordered">
 		<tr>
 			<th>Type</th>
@@ -282,8 +259,9 @@
 </p>
 
 ::if settings.noCourse!=true::
+	<h4>Formations suivies</h4>
 	<p>
-		<h4>Formations suivies</h4>
+		
 		<table class="table table-bordered">
 			::foreach c courses::		
 			<tr>
@@ -299,5 +277,34 @@
 		</table>
 	</p>
 ::end::
+
+<h4>Maintenance</h4>
+<p>
+	
+
+	<div class="btn-group">
+		<div class="dropdown">
+			<button class="btn btn-default  btn-sm dropdown-toggle btn-noAntiDoubleClick" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+				Divers
+				<span class="caret"></span>
+			</button>
+			<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+				::if(cpro!=null)::
+				<li><a href="/p/pro/admin/delete/::vendor.id::/disable">Désactiver espace producteur ( redevient invité, possibilité de ré-ouvrir plus tard )</a></li>
+				<li><a href="/p/pro/admin/delete/::vendor.id::/deleteCpro">Supprimer espace producteur ( redevient invité )</a></li>
+				::else::
+				<li><a href="/p/pro/admin/createCpro/::vendor.id::">ouvrir espace producteur</a></li>
+				::end::
+				<li><a href="/p/pro/admin/delete/::vendor.id::/delete" >Supprimer complètement le producteur</a></li>												
+				<li><a href="/p/pro/admin/dedupInfo/::vendor.email::" >Déduplication par email</a></li>
+				<li><a href="/p/pro/admin/findduplicatesbyname/::vendor.name::" >Recherche par nom</a></li>
+				<li><a href="/p/pro/admin/findduplicatesbyzip/::vendor.zipCode::" >Recherche par code postal</a></li>
+				<li><a href="/db/Vendor/edit/::vendor.id::" >Modifier en BDD</a></li>
+			</ul>
+		</div>
+	</div>
+
+	<a href="?giveAdminRights=1" class="btn btn-default">Donner droits admin à tous ses marchés</a>
+</p>
 
 ::end::

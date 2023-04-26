@@ -257,7 +257,7 @@ class Admin extends controller.Controller {
 	 */
 	function doCreateCpro(vendor:db.Vendor) {
 		if (pro.db.CagettePro.getFromVendor(vendor) != null)
-			throw Error("/admin/vendor/view/" + vendor.id, vendor.name + " a deja un compte producteur");
+			throw Error("/admin/vendor/view/" + vendor.id, vendor.name + " a deja un espace producteur");
 
 		vendor.lock();
 
@@ -406,7 +406,7 @@ class Admin extends controller.Controller {
 				for (cat in cpro.getCatalogs()) {
 					for (rc in connector.db.RemoteCatalog.getFromPCatalog(cat)) {
 						if (rc.getContract() != null) {
-							throw Error("/admin/vendor/view/" + vendor.id, "Ce compte producteur a encore des catalogues reliés à des groupes");
+							throw Error("/admin/vendor/view/" + vendor.id, "Ce producteur a encore des catalogues reliés à des marchés");
 						}
 					}
 				}
@@ -433,7 +433,7 @@ class Admin extends controller.Controller {
 				for (cat in cpro.getCatalogs()) {
 					for (rc in connector.db.RemoteCatalog.getFromPCatalog(cat)) {
 						if (rc.getContract() != null) {
-							throw Error("/admin/vendor/view/" + vendor.id, "Ce compte producteur a encore des catalogues reliés à des groupes");
+							throw Error("/admin/vendor/view/" + vendor.id, "Ce producteur a encore des catalogues reliés à des marchés");
 						}
 					}
 				}
@@ -443,11 +443,11 @@ class Admin extends controller.Controller {
 
 				VendorStats.updateStats(vendor);
 
-				throw Ok("/admin/vendor/view/" + vendor.id, "compte producteur désactivé");
+				throw Ok("/admin/vendor/view/" + vendor.id, "Espace producteur effacé");
 
 			case "delete":
 				if (vendor.getContracts().length > 0) {
-					throw Error("/admin/vendor/view/" + vendor.id, "Ce producteur a encore des catalogues dans des groupes");
+					throw Error("/admin/vendor/view/" + vendor.id, "Ce producteur a encore des catalogues dans des marchés");
 				} else {
 					vendor.lock();
 					vendor.delete();
@@ -463,12 +463,12 @@ class Admin extends controller.Controller {
 	@admin @tpl('form.mtt')
 	public function doContractToCatalog(?catalog:db.Catalog, ?cagettePro:pro.db.CagettePro) {
 		var f = new sugoi.form.Form("contract");
-		view.title = "Importer un catalogue groupe dans un compte producteur";
+		view.title = "Importer un catalogue invité dans un espace producteur";
 		if (catalog != null && cagettePro != null) {
 			/*f.addElement(new sugoi.form.elements.IntInput("cid",catalog.name+" dans le groupe "+catalog.group.name,catalog.id,true));
 				f.addElement(new sugoi.form.elements.IntInput("companyId",cagettePro.vendor.name,cagettePro.id,true)); */
 
-			view.text = 'Voulez vous importer ce catalogue <b>${catalog.name}</b><br/> dans le compte producteur <b>${cagettePro.vendor.name}</b> ?';
+			view.text = 'Voulez vous importer ce catalogue <b>${catalog.name}</b><br/> dans l\'espace producteur <b>${cagettePro.vendor.name}</b> ?';
 
 			if (f.isValid()) {
 				for (p in catalog.getProducts(false)) {
@@ -506,7 +506,7 @@ class Admin extends controller.Controller {
 			}
 		} else {
 			f.addElement(new sugoi.form.elements.IntInput("cid", "ID du catalogue", null, true));
-			f.addElement(new sugoi.form.elements.IntInput("companyId", "ID du Compte producteur", null, true));
+			f.addElement(new sugoi.form.elements.IntInput("companyId", "ID de l'espace producteur (CagettePro)", null, true));
 
 			if (f.isValid()) {
 				var cid = f.getElement("cid").getValue();
@@ -515,7 +515,7 @@ class Admin extends controller.Controller {
 				var contract = db.Catalog.manager.get(cid, false);
 
 				if (company == null)
-					throw "Ce compte producteur n'existe pas";
+					throw "Cet espace producteur n'existe pas";
 				if (contract == null)
 					throw "Ce contrat n'existe pas";
 
@@ -533,7 +533,7 @@ class Admin extends controller.Controller {
 	function doMoveCatalog() {
 		var f = new sugoi.form.Form("movecata");
 		f.addElement(new sugoi.form.elements.IntInput("catalogId", "ID du catalogue cpro à déplacer", null, true));
-		f.addElement(new sugoi.form.elements.IntInput("vid", "ID du producteur (qui doit avoir compte producteur) qui va recevoir le catalogue", null, true));
+		f.addElement(new sugoi.form.elements.IntInput("vid", "ID du producteur (qui doit avoir espace producteur) qui va recevoir le catalogue", null, true));
 
 		if (f.isValid()) {
 			var catalog = pro.db.PCatalog.manager.get(f.getValueOf("catalogId"));

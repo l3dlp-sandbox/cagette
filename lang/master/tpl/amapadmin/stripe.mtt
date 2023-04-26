@@ -16,52 +16,56 @@
         </div>
 
         <div class="col-md-12 text-center">
-            <div>
-                <br/><br/>
+            <p>
+                <br/>
+               ::if(group.isDispatch())::
+               <a href="" class="btn btn-default disabled">
+                <i class="icon icon-check"></i> Le paiement avec Stripe est activé sur ce marché</a>                    
+               ::else::
+               <a href="?enableStripe=1" class="btn btn-primary">
+                <i class="icon icon-chevron-right"></i> Passer au paiement Stripe sur ce marché</a>                    
+               ::end::
+                
+<br/><br/>
                 <a href="https://wiki.cagette.net/cpro:stripe" target="_blank" class="btn btn-default">
                     <i class="icon icon-info"></i> Consultez la documentation</a>
-                <br/><br/>
-            </div>
-            
-        </div>
 
-        <div class="col-md-12 text-center ">
-            <div class="alert alert-warning">
-               <b>Le paiement en ligne avec Stripe est beta test actuellement,<br/>
-                contactez le support ( support@cagette.net ) si vous souhaitez l'utiliser.</b>
-            </div>
+                    <a href="https://meetings.hubspot.com/charlotte-chamboissier/demande-dinformations-rdv-tel-avec-un-conseiller-cagette" target="_blank" class="btn btn-default">
+                        <i class="icon icon-phone"></i> Prenez rendez-vous avec un conseiller</a>
+                    
+                <br/><br/>
+            </p>
+            
         </div>
 
         <hr/>
 		
 		<div class="col-md-12">
-            <div class="block">
-                Les producteurs de ce marché doivent ouvrir un compte Stripe afin de pouvoir encaisser des revenus issus du paiement en ligne. 
-                L'ouverture de compte Stripe se fait depuis le compte producteur, dans l'onglet "Producteur" , puis "Paiement en ligne".
+            <div class="alert alert-warning">
+                <i class="icon icon-info"></i> <b>Les producteurs de ce marché doivent tous ouvrir un compte Stripe</b> afin de pouvoir encaisser des revenus issus du paiement en ligne. 
+                L'ouverture de compte Stripe se fait depuis votre espace producteur, dans l'onglet "Producteur" , puis "Paiement en ligne".
             </div>
                 
 			<table class="table table-condensed table-bordered">
 				<tr>
-					<th>id</th>
-					<th>Nom</th>
+					<th>Producteur</th>
 					<th>Compte Stripe</th>
 				</tr>
 				::foreach v group.getActiveVendors()::
 				<tr>
-					<td>::v.id::</td>
 					<td>::v.name::</td>				
 					<td>
 						::set d = v.getStripeConnectStatus()::
-						compte ouvert $$bool(::d.account_open::), compte validé $$bool(::d.details_submitted && d.charges_enabled::)						
+
+                        ::if(d.account_open && d.details_submitted && d.charges_enabled)::
+                            $$bool(::true::) Compte Stripe OK
+                        ::else::
+                            $$bool(::false::) <span class="disabled">Compte Stripe non configuré</span>
+                        ::end::
 					</td>
-				
 				</tr>
-			
 				::end::
 			</table>
         </div>
-
 	</div>
-
-
 ::end::
