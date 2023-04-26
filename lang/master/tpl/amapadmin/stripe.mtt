@@ -17,14 +17,7 @@
 
         <div class="col-md-12 text-center">
             <p>
-                <br/>
-               ::if(group.isDispatch())::
-               <a href="" class="btn btn-default disabled">
-                <i class="icon icon-check"></i> Le paiement avec Stripe est activé sur ce marché</a>                    
-               ::else::
-               <a href="?enableStripe=1" class="btn btn-primary">
-                <i class="icon icon-chevron-right"></i> Passer au paiement Stripe sur ce marché</a>                    
-               ::end::
+              
                 
 <br/><br/>
                 <a href="https://wiki.cagette.net/cpro:stripe" target="_blank" class="btn btn-default">
@@ -33,7 +26,7 @@
                     <a href="https://meetings.hubspot.com/charlotte-chamboissier/demande-dinformations-rdv-tel-avec-un-conseiller-cagette" target="_blank" class="btn btn-default">
                         <i class="icon icon-phone"></i> Prenez rendez-vous avec un conseiller</a>
                     
-                <br/><br/>
+                <br/>
             </p>
             
         </div>
@@ -41,6 +34,9 @@
         <hr/>
 		
 		<div class="col-md-12">
+            
+            <h4>Etape 1</h4>
+
             <div class="alert alert-warning">
                 <i class="icon icon-info"></i> <b>Les producteurs de ce marché doivent tous ouvrir un compte Stripe</b> afin de pouvoir encaisser des revenus issus du paiement en ligne. 
                 L'ouverture de compte Stripe se fait depuis votre espace producteur, dans l'onglet "Producteur" , puis "Paiement en ligne".
@@ -66,6 +62,29 @@
 				</tr>
 				::end::
 			</table>
+            
+            <br/>
+
+            <h4 class="">Etape 2</h4>
+
+            <p>
+                <div class="alert alert-warning">
+                    <i class="icon icon-info"></i>
+                    Lorsque tous les producteurs auront ouvert leur compte Stripe ( pastilles vertes pour tout le monde dans le tableau ci-dessus ), vous pourrez basculer ce marché en paiement en ligne Stripe.
+                </div></p>
+
+            ::if(group.isDispatch())::
+               <a href="" class="btn btn-default disabled">
+                <i class="icon icon-check"></i> Le paiement avec Stripe est activé sur ce marché</a>                    
+               ::else::
+               <a href="?enableStripe=1" class="btn btn-primary">
+                <i class="icon icon-chevron-right"></i> Passer ce marché au paiement en ligne Stripe</a>                    
+            ::end::
+
         </div>
+
+
+
+
 	</div>
 ::end::

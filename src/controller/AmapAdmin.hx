@@ -371,6 +371,13 @@ class AmapAdmin extends Controller
 				throw Error("/amapadmin/stripe","Les producteurs suivants n'ont pas de compte Stripe configuré : <b>"+badVendors.map(v-> "#"+v.id+"-"+v.name).join(", ")+"</b>");
 			}
 
+			//block if MGP !
+			if(mangopay.db.MangopayLegalUserGroup.get(group)!=null){
+				throw Error("/amapadmin/stripe","Ce marché fonctionne avec le paiement en ligne Mangopay, vous devez d'abord fermer votre compte Mangopay avant de passer à Stripe. Contactez le support pour le faire en écrivant à support@cagette.net");
+
+			}
+
+
 			group.update();
 
 			throw Ok("/amapadmin/stripe","Votre marché est maintenant configuré avec le paiement en ligne Stripe.");
