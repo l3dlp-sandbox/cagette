@@ -177,10 +177,14 @@ class Main extends controller.Controller
 
 		}
 
-
+	
 		view.vendors = group.getActiveVendors();
 		var gs = GroupStats.getOrCreate(group.id,true);
-		gs.updateStats();
+
+		if( app.params.get("refresh")=="1" ){
+			gs.updateStats();
+		}
+		
 		view.groupStats = gs; 
 		view.getVendorStats = function(v:db.Vendor){
 			return VendorStats.getOrCreate(v);

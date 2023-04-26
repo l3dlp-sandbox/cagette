@@ -479,4 +479,8 @@ class Group extends Object
 		return disabled!=null;
 	}
 
+	public function getGroupStats(){
+		return hosted.db.GroupStats.getOrCreate(this.id);
+	}
+
 }
