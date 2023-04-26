@@ -26,7 +26,7 @@
 				::foreach v vendors::
 				<div class="col-md-4 col-sm-6">
 					
-					<div class="boxed" style="height:180px">	
+					<div class="boxed" style="height:220px">	
 						<div class="row">
 							<div class="col-md-4">													
 								<div class="productImg xl" style="background-image:url('::v.getImage()::');"></div>								
