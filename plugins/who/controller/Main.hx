@@ -67,80 +67,6 @@ class Main extends controller.Controller
 		view.links = links;
 	}
 	
-	/*
-	@logged @tpl("plugin/pro/who/config.mtt")
-	public function doConfig(c:db.Catalog){
-		
-		init(c);
-		
-		var conf = who.db.WConfig.getOrCreate(c);
-		
-		var f = CagetteForm.fromSpod(conf);
-		f.removeElementByName("contract1Id");
-		var e = f.getElement("contract2Id");
-		e.label = "Contrat en gros correspondant";
-		
-		if (f.isValid()){
-			f.toSpod(conf);
-			
-			conf.update();
-			
-			if (conf.active && conf.contract2 == null){
-				throw Error("/p/who/config/"+c.id , "Il faut choisir un contrat de gros correspondant à votre contrat au détail");
-			}
-			
-			if(conf.active){
-				//if no links are found, error
-				var links = who.db.WProductLink.getLinks(conf.contract1, conf.contract2, true);
-				if(links==null) throw Error("/p/who/"+c.id , "Configuration invalide.");
-				if (links.length == 0) throw Error("/p/who/"+c.id , "Le contrat choisi est incompatible avec <b>"+c.name+"</b>");
-			}
-			
-			//same group ?
-			if ( conf.contract1.amap.id != conf.contract2.amap.id){
-				throw Error("/p/who/"+c.id , "Les deux contrats ne font pas partie du même groupe.");
-			}
-			
-			throw Ok("/p/who/"+c.id,"Configuration mise à jour");
-		}
-		
-		view.form = f;
-	}*/
-	
-	/**
-	 * @deprecated
-	 */
-	@logged @tpl("plugin/pro/who/link.mtt")
-	public function doLink(c:db.Catalog,?c2:db.Catalog){
-		/*
-		init(c);
-		if (c2 == null){
-			
-			var f = new sugoi.form.Form("contracts");
-			
-			var data = [for ( x in db.Catalog.getActiveContracts(app.user.getGroup())){label:x.name, value:x.id} ];
-			for ( d in data.copy()) if (d.value == c.id ) data.remove(d);
-			
-			f.addElement(new sugoi.form.elements.IntSelect("contract", "Contrat", data));
-			view.form = f;
-			if (f.isValid()) throw Redirect("/p/who/link/" + c.id + "/" + f.getValueOf("contract"));
-			
-		}else{
-			
-			view.c2 = c2;
-			var products = who.db.WProductLink.get(c);
-			view.products = products;
-			
-			if (app.params.exists("autolink") && products.length==0){
-				
-				who.db.WProductLink.autolink(c, c2);
-				throw Ok("/p/who/link/" + c.id + "/" + c2.id, "Association automatique faite");
-			}
-		}
-		*/
-	}
-	
-	
 	@logged @tpl("plugin/pro/who/balance.mtt")
 	public function doBalance(d:db.Distribution){
 		
@@ -162,10 +88,7 @@ class Main extends controller.Controller
 		view.balancing = balancing;
 		view.d = d;		
 		checkToken();
-		
 	}
-	
-
 	
 	@logged @tpl("plugin/pro/who/balance.mtt")
 	public function doConfirm(d:db.Distribution){

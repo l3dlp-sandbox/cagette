@@ -300,7 +300,7 @@ class Catalog extends controller.Controller
 		});
 		
 		var form = new sugoi.form.Form("publicGroup");
-		form.addElement(new sugoi.form.elements.IntSelect("group","Groupe",data,null,true));
+		form.addElement(new sugoi.form.elements.IntSelect("group","Marché",data,null,true));
 
 		if(form.isValid()){
 			var gid : Int = form.getValueOf("group");
@@ -311,7 +311,7 @@ class Catalog extends controller.Controller
 				throw Error("/p/pro/catalog/publishGroup/"+catalog.id,e.message);
 			}
 			
-			throw Ok("/p/pro/","Votre catalogue a bien été importé dans le groupe <b>"+group.name+"<b/>");
+			throw Ok("/p/pro/","Votre catalogue a bien été importé dans le marché <b>"+group.name+"<b/>");
 
 		}
 
@@ -367,7 +367,7 @@ class Catalog extends controller.Controller
 
 		if(distrib==null){
 			notif.delete();
-			throw Ok("/p/pro", "La distribution a été supprimée par l'administrateur du groupe, il n'est donc plus possible d'y participer");
+			throw Ok("/p/pro", "La distribution a été supprimée par l'administrateur du marché, il n'est donc plus possible d'y participer");
 		}
 
 		try{
@@ -435,7 +435,7 @@ class Catalog extends controller.Controller
 				throw Error("/p/pro/catalog/" , e.message);
 			}
 			
-			throw Ok("/p/pro/catalog/","Le catalogue \""+c.name+"\" a été archivé. Il reste consultable dans les catalogues archivés du groupe.");
+			throw Ok("/p/pro/catalog/","Le catalogue \""+c.name+"\" a été archivé. Il reste consultable dans les catalogues archivés du marché.");
 			
 		}
 		

@@ -14,7 +14,7 @@
 			Formateur : <b>::course._teacher.getName()::</b><br/>
 			::end::
 			
-			::if (course._group!=null)::  Groupe : <a href="/group/::course._group.id::" target="_blank">::course._group.name::</a><br/> ::end::
+			::if (course._group!=null)::  Marché : <a href="/group/::course._group.id::" target="_blank">::course._group.name::</a><br/> ::end::
 
 						
 			$$edit(Modifier,/p/hosted/course/edit/::course.id::)

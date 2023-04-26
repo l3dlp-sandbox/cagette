@@ -57,7 +57,7 @@ class Group extends Object
 	public var txtHome:SNull<SText>; 	//texte accueil adhérents
 	public var txtDistrib:SNull<SText>; //sur liste d'emargement
 	
-	public var extUrl : SNull<SString<64>>;   //lien sur logo du groupe
+	public var extUrl : SNull<SString<64>>;   //lien sur logo du marché
 
 	@hideInForms public var membershipRenewalDate : SNull<SDate>;
 	@hideInForms public var membershipFee : SNull<STinyInt>;
@@ -357,7 +357,7 @@ class Group extends Object
 		
 		if (txtHome == null){
 			var t = sugoi.i18n.Locale.texts;
-			txtHome = "Bienvenue sur le groupe " + this.name + " !\n Vous pouvez consulter votre planning de distribution ou faire une nouvelle commande.";
+			txtHome = "Bienvenue sur le marché " + this.name + " !\n Vous pouvez consulter votre planning de distribution ou faire une nouvelle commande.";
 		}
 		
 		App.current.event(NewGroup(this,App.current.user));

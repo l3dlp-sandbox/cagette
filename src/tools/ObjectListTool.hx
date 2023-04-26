@@ -97,7 +97,7 @@ class ObjectListTool
 	}
 	
 	/**
-	 * Groupe orders by multidistrib key (date+placeId)
+	 * Group orders by multidistrib key (date+placeId)
 	 */
 	public static function groupOrdersByKey(ucs:Iterable<db.UserOrder>){
 		

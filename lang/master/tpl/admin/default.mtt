@@ -21,7 +21,7 @@
 		<th>::ip::</th>
 	</tr>	
 	<tr>
-		<td>Groupes en Dispatch</td>
+		<td>Marchés en Dispatch</td>
 		<th>::dispatchGroups::/::groups::  (::formatNum(dispatchGroups/groups)::%)</th>
 	</tr>
 </table>

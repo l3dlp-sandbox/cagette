@@ -227,8 +227,8 @@
 	<table class="table table-bordered">
 		<tr>
 			<th>Type</th>
-			<th>Groupe</th>
-			<th>Mode du groupe</th>
+			<th>Marché</th>
+			<th>Mode du marché</th>
 			<th>Catalogue</th>
 			<th>Dates</th>
 			<th>Actions</th>

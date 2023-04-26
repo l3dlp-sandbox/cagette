@@ -21,7 +21,7 @@ class Main extends Controller {
 		// init group breadcrumb
 		var group = App.current.getCurrentGroup();
 		if (group != null)
-			addBc("g" + group.id, "Groupe Cagette : " + group.name, "/home");
+			addBc("g" + group.id, "Marché Cagette : " + group.name, "/home");
 	}
 
 	function doDefault(?permalink:String) {
@@ -62,7 +62,7 @@ class Main extends Controller {
 			throw Redirect("/user/login");
 		}else if(group.disabled!=null){
 			if(app.user!=null && app.user.isAdmin()){
-				app.session.addMessage('Ce groupe est bloqué, mais en tant que superadmin vous pouvez y accéder (${group.disabled})');
+				app.session.addMessage('Ce marché est bloqué, mais en tant que superadmin vous pouvez y accéder (${group.disabled})');
 			}else{
 				throw Redirect("/group/disabled");
 			}
@@ -107,12 +107,12 @@ class Main extends Controller {
 
 		// message if phone is required
 		if (app.user != null && group.flags.has(db.Group.GroupFlags.PhoneRequired) && app.user.phone == null) {
-			app.session.addMessage("Les membres de ce groupe doivent fournir un numéro de téléphone. <a href='/account'>Cliquez ici pour mettre à jour votre compte</a>.",true);
+			app.session.addMessage("Les membres de ce marché doivent fournir un numéro de téléphone. <a href='/account'>Cliquez ici pour mettre à jour votre compte</a>.",true);
 		}
 
 		// message if address is required
 		if (app.user != null && group.flags.has(db.Group.GroupFlags.AddressRequired) && app.user.city == null) {
-			app.session.addMessage("Les membres de ce groupe doivent fournir leur adresse. <a href='/account'>Cliquez ici pour mettre à jour votre compte</a>.",true);
+			app.session.addMessage("Les membres de ce marché doivent fournir leur adresse. <a href='/account'>Cliquez ici pour mettre à jour votre compte</a>.",true);
 		}
 
 		// Delete demo contracts

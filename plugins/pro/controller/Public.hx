@@ -41,9 +41,9 @@ class Public extends controller.Controller
 			}
 		}
 		var id = app.user.getGroup()==null ? null : app.user.getGroup().id;
-		f.addElement( new sugoi.form.elements.IntSelect("group","Groupe " + App.current.getTheme().name + " qui accueillera le catalogue", datas, id , true) );
+		f.addElement( new sugoi.form.elements.IntSelect("group","Marché " + App.current.getTheme().name + " qui accueillera le catalogue", datas, id , true) );
 		if(!isVendor){
-			f.addElement( new sugoi.form.elements.TextArea("message","Message au producteur","Bonjour, \nJe souhaiterais proposer vos produits aux membres de mon groupe " + App.current.getTheme().name + "...",false,null,"rows='10'") );
+			f.addElement( new sugoi.form.elements.TextArea("message","Message au producteur","Bonjour, \nJe souhaiterais proposer vos produits aux membres de mon marché " + App.current.getTheme().name + "...",false,null,"rows='10'") );
 		}
 		
 		view.form = f;
@@ -56,14 +56,14 @@ class Public extends controller.Controller
 			var group = db.Group.manager.get(f.getValueOf("group"),false);
 
 			/*if (group.getPlaces().length == 0) {
-				throw Error("/p/pro/public/" + catalog.id, "Votre groupe n'a aucun lieu de livraison ! Vous devez en créer au moins un avant d'importer un catalogue.");
+				throw Error("/p/pro/public/" + catalog.id, "Votre marché n'a aucun lieu de livraison ! Vous devez en créer au moins un avant d'importer un catalogue.");
 			}
 			if (!app.user.isContractManager() && !app.user.isAmapManager()){
 				throw Error("/p/pro/public/askImport/" + catalog.id, "Vous devez être coordinateur pour pouvoir importer un catalogue.");
 			}*/
 			var contracts = connector.db.RemoteCatalog.getContracts( catalog, group );
 			if ( contracts.length>0 ){
-				throw Error("/contractAdmin/view/" + contracts.first().id, "Ce catalogue existe déjà dans ce groupe. Il n'est pas nécéssaire d'importer plusieurs fois le même catalogue dans un groupe.");
+				throw Error("/contractAdmin/view/" + contracts.first().id, "Ce catalogue existe déjà dans ce marché. Il n'est pas nécéssaire d'importer plusieurs fois le même catalogue dans un marché.");
 			}
 
 			//send notif to ask for linkage

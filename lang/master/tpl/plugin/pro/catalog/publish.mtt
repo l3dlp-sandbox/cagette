@@ -33,12 +33,12 @@ style="width: 100%;"  width="100%" height="800"&gt;
 
 	<hr/>
 
-	<h4>Relier ce catalogue à un groupe que je pilote</h4>
+	<h4>Relier ce catalogue à un marché que je pilote</h4>
 
 	<p>
-		Si vous êtes administrateur d'un groupe Cagette, vous pouvez facilement intégrer ce catalogue au groupe.<br/>
+		Si vous êtes administrateur d'un marché, vous pouvez facilement intégrer ce catalogue au marché.<br/>
 		<a class="btn btn-default" href="/p/pro/catalog/publishGroup/::catalog.id::">
-			<i class="icon icon-chevron-right"></i> Relier ce catalogue à un groupe
+			<i class="icon icon-chevron-right"></i> Relier ce catalogue à un marché
 		</a>		
 	</p>
 	

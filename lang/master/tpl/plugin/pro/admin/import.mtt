@@ -2,7 +2,7 @@
 
 <div class="col-md-12">
 <div class="article">
-	<h2>Importer massif de groupes</h2>
+	<h2>Importer massif de marchés</h2>
 	
 	
 	::if csv.step==1::

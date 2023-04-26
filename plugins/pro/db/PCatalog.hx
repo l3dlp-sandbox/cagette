@@ -94,11 +94,11 @@ class PCatalog extends Object
 	public static function getLabels(){
 		var t = sugoi.i18n.Locale.texts;
 		return [
-			"name" 		=> /*t._("Catalog name")*/"Nom du catalogue",
+			"name" 		=> "Nom du catalogue",
 			"startDate"	=> t._("Start date"),
 			"endDate"	=> t._("End date"),
 			"vendor" 	=> t._("Farmer"),						
-			"contractName"	=> "Nom à afficher dans les groupes",
+			"contractName"	=> "Nom à afficher dans les marchés",
 		];
 	}
 	

@@ -67,7 +67,7 @@
 				<td>$$contact(::user::)</td>
 			</tr>
 			<tr>
-				<td>Groupe :</td>
+				<td>Marché :</td>
 				<td>::group.name::</td>
 			</tr>
 			<tr>
@@ -94,7 +94,7 @@
 							<i class="icon icon-alert"></i>
 						</div>
 						<div>
-							<p>Pour pouvoir relier votre premier catalogue à un groupe, vous devez activer le prélèvement des frais de plateforme Cagette.net</p>
+							<p>Pour pouvoir relier votre premier catalogue à un marché, vous devez activer le prélèvement des frais de plateforme Cagette.net</p>
 							<a href="/p/pro/upgrade" class="btn btn-primary pull-right">Activer le prélèvement</a>
 						</div>
 					</div>
