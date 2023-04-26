@@ -42,7 +42,6 @@ class PStockService{
 				
 				var contract = rc.getContract();
 				if (contract == null) continue;
-				enableStockMgmt(contract);
 				contract.getProducts(false).map( p -> remoteProductsList.push(p) );
 			}		
 		}
@@ -92,7 +91,6 @@ class PStockService{
 					
 					var contract = rc.getContract();
 					if (contract == null) continue;
-					enableStockMgmt(contract);
 					
 					//manage stocks for ALL products, including disabled ones
 					for ( p in contract.getProducts(false)){
@@ -115,14 +113,4 @@ class PStockService{
 		
 	}**/
 
-	/**
-		Enable stock management on a catalog
-	**/
-	static function enableStockMgmt(catalog:db.Catalog){
-		if ( !catalog.flags.has(db.Catalog.CatalogFlags.StockManagement) ){
-			catalog.lock();
-			catalog.flags.set(db.Catalog.CatalogFlags.StockManagement);
-			catalog.update();
-		}
-	}
 }

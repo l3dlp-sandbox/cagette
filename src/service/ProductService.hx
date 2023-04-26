@@ -6,7 +6,6 @@ import tink.core.Error;
 
 class ProductService{
 
-
 	/**
 	 * Batch disable products
 	 */
@@ -90,18 +89,10 @@ class ProductService{
 		p.multiWeight = source_p.multiWeight;
 		p.variablePrice = source_p.variablePrice;
 		p.insert();
-		
-		//custom categs
-		// for (source_cat in source_p.getCategories()){
-		// 	var cat = new db.ProductCategory();
-		// 	cat.product = p;
-		// 	cat.category = source_cat;
-		// 	cat.insert();
-		// }
 		return p;
 	}
 
-	public static function getForm(?product:db.Product,?catalog:db.Catalog):sugoi.form.Form{
+	/*public static function getForm(?product:db.Product,?catalog:db.Catalog):sugoi.form.Form{
 
 		if(product==null){
 			product = new db.Product();
@@ -128,7 +119,7 @@ class ProductService{
 		f.addElement(new sugoi.form.elements.Html("html",html, 'Nom'),1);
 
 		return f;
-	}
+	}*/
 
 
 	/**
@@ -149,7 +140,4 @@ class ProductService{
 		}
 
 	}
-
-
-
 }

@@ -143,12 +143,9 @@ class MultiDistrib extends Object
 		sugoi.db.Cache.destroy(PRODUCT_EXCERPT_KEY+this.id);
 	}
 
-	public function userHasOrders(user:db.User,type:Int):Bool{
+	public function userHasOrders(user:db.User):Bool{
 		if(user==null) return false;
-		for ( d in getDistributions()){
-			if(d.hasUserOrders(user)) return true;						
-		}
-		return false;
+		return db.Basket.get(user,this,false)!=null;		
 	}
 	
 	/**

@@ -34,14 +34,16 @@ class PCatalogService{
 
 			syncCatalog(contract,catalog);
 			
-			//sync cpro products to group products
+			//sync cpro products to group product
 			var groupProducts = contract.getProducts(false);
 			var disabledProducts = rc.getDisabledProducts();
 			
 			for ( pcatalogOffer in catalog.getOffers() ){
 				
 				//find remote product
-				var groupProduct = groupProducts.find( gp -> gp.pOffer!=null && gp.pOffer.id == pcatalogOffer.offer.id);				
+				var groupProduct = groupProducts.find( gp -> gp.pOffer!=null && gp.pOffer.id == pcatalogOffer.offer.id);	
+				//var groupProduct = Lambda.find(groupProducts, function(x) return x.ref == cproProduct.offer.ref);
+							
 				var disabledInGroup = false;
 				if(groupProduct!=null){
 					disabledInGroup = Lambda.has(disabledProducts, groupProduct.id);
@@ -242,7 +244,6 @@ class PCatalogService{
 			groupCatalog = new db.Catalog();
 			groupCatalog.vendor = proCatalog.company.vendor;
 			groupCatalog.group = group;
-			groupCatalog.flags.set(db.Catalog.CatalogFlags.UsersCanOrder);
 			groupCatalog.contact = contact;
 		
 		}else{
@@ -252,7 +253,6 @@ class PCatalogService{
 		
 		groupCatalog.startDate = proCatalog.startDate;
 		groupCatalog.endDate = proCatalog.endDate;
-		groupCatalog.flags.set(db.Catalog.CatalogFlags.StockManagement);
 		if(proCatalog.contractName!=null) {
 			groupCatalog.name = proCatalog.contractName;
 		}else{

@@ -157,7 +157,6 @@ class Main extends controller.Controller
 				newcat.description = c.description;
 				newcat.contact = c.contact;
 				newcat.vendor = c.vendor;
-				newcat.flags.set(UsersCanOrder);
 				newcat.group = g;
 				newcat.insert();
 
