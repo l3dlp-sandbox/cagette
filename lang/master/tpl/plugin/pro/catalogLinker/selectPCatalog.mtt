@@ -5,7 +5,7 @@
 		<h2 style="margin-top:0">Relier des catalogues</h2>
 
             <p class="text-center" style="margin:32px;font-size:1.2em;">
-                A quel <b>catalogue de votre compte producteur</b>
+                A quel <b>catalogue de votre espace producteur</b>
                 <br/>
                 souhaitez vous relier "<b>::catalog.name::</b>" ?
             </p>

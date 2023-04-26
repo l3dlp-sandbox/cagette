@@ -99,7 +99,7 @@ class Public extends controller.Controller
 			App.sendMail(e);	
 			
 			if (isVendor){
-				throw Ok("/contractAdmin", "La demande a été envoyée : <a href='/p/pro'>aller au Compte producteur pour la valider</a>");
+				throw Ok("/contractAdmin", "La demande a été envoyée : <a href='/p/pro'>aller dans votre espace producteur pour la valider</a>");
 			}else {
 				throw Ok("/contractAdmin", "Votre demande a été envoyée au producteur. Vous serez prévenu par email de sa décision.");
 			}

@@ -179,18 +179,18 @@ class ConnectorPlugIn extends PlugIn implements IPlugIn{
 			case DeleteDistrib(d):
 				var remoteCata = getRemoteCatalog(d.catalog.id);
 				if (remoteCata != null){
-					throw ErrorAction("/contractAdmin/distributions/" + d.catalog.id, "Impossible d'effacer cette distribution car ce catalogue est géré par le producteur depuis son compte producteur.");
+					throw ErrorAction("/contractAdmin/distributions/" + d.catalog.id, "Impossible d'effacer cette distribution car ce catalogue est géré par le producteur depuis son espace producteur.");
 				}
 				
 			case PreEditProduct(p), EditProduct(p), DeleteProduct(p), NewProduct(p):
 				var remoteCata = getRemoteCatalog(p.catalog.id);
 				if (remoteCata != null){
-					throw ErrorAction("/contractAdmin/products/" + p.catalog.id, "Vous ne pouvez pas modifier ce produit car ce catalogue est géré par le producteur depuis son compte producteur.");
+					throw ErrorAction("/contractAdmin/products/" + p.catalog.id, "Vous ne pouvez pas modifier ce produit car ce catalogue est géré par le producteur depuis son espace producteur.");
 				}
 			case PreNewProduct(c):
 				var remoteCata = getRemoteCatalog(c.id);
 				if (remoteCata != null){
-					throw ErrorAction("/contractAdmin/products/" + c.id, "Vous ne pouvez pas créer de produit car ce catalogue est géré par le producteur depuis son compte producteur.");
+					throw ErrorAction("/contractAdmin/products/" + c.id, "Vous ne pouvez pas créer de produit car ce catalogue est géré par le producteur depuis son espace producteur.");
 				}
 				
 			case BatchEnableProducts(data) :
@@ -248,7 +248,7 @@ class ConnectorPlugIn extends PlugIn implements IPlugIn{
 
 			case DuplicateContract(contract) :
 				if ( getRemoteCatalog(contract.id,true) != null){
-					throw sugoi.ControllerAction.ErrorAction("/contractAdmin","C'est un catalogue relié à un compte producteur, il n'est pas possible de le dupliquer");
+					throw sugoi.ControllerAction.ErrorAction("/contractAdmin","C'est un catalogue relié à un espace producteur, il n'est pas possible de le dupliquer");
 				}
 
 			case EditContract(contract,form)	 :
@@ -262,7 +262,7 @@ class ConnectorPlugIn extends PlugIn implements IPlugIn{
 					form.removeElementByName("vendorId");					
 					// form.removeElementByName("description"); //desc can be edited in group.
 
-					var text = "Ce catalogue est géré par un producteur depuis son compte producteur, vous n'avez donc accès qu'à un nombre restreint de paramètres.";
+					var text = "Ce catalogue est géré par un producteur depuis son espace producteur, vous n'avez donc accès qu'à un nombre restreint de paramètres.";
 					form.addElement(new sugoi.form.elements.Html("info","<div class='alert alert-info'>"+text+"</div>"),0);
 				}
 					

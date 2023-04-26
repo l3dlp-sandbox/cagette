@@ -524,7 +524,7 @@
 		::elseif(s==2)::
 			Invité
 		::elseif(s==3)::
-			Invité sur un compte producteur
+			Invité sur un espace producteur
 		::elseif(s==5)::
 			Compte pédagogique
 		::elseif(s==6)::

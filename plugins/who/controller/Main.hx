@@ -37,7 +37,7 @@ class Main extends controller.Controller
 		
 		if(checkToken() && app.params.exists("toggle")){
 			if( connector.db.RemoteCatalog.getFromContract(c) ==null){
-				throw Error("/p/who/"+c.id,"Les commandes en gros ne sont possibles qu'avec les contrats reliés à un compte producteur pour l'instant");
+				throw Error("/p/who/"+c.id,"Les commandes en gros ne sont possibles qu'avec les contrats reliés à un espace producteur");
 			} 
 			s.conf.lock();
 			s.conf.active = !s.conf.active;

@@ -338,7 +338,7 @@ class PCatalogService{
 	public static function breakLinkage(catalog:db.Catalog){
 
 		var rc = RemoteCatalog.getFromContract(catalog);
-		if(rc == null) throw new tink.core.Error("Ce catalogue n'est pas relié à un catalogue de compte producteur");
+		if(rc == null) throw new tink.core.Error("Ce catalogue n'est pas relié à un espace producteur");
 		
 		//do not participate in future distribs
 		var futureDistribs = db.Distribution.manager.search($end > Date.now() && $catalog == catalog,true);

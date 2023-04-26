@@ -18,7 +18,7 @@ class Main extends controller.Controller
 
 		//hack into breadcrumb
 		if(vendor!=null){
-			App.current.breadcrumb[0] = {id:"v"+vendor.id,name:"Compte producteur : "+vendor.name,link:"/p/pro"};
+			App.current.breadcrumb[0] = {id:"v"+vendor.id,name:"Espace producteur : "+vendor.name,link:"/p/pro"};
 		}
 	}
 	
@@ -33,7 +33,6 @@ class Main extends controller.Controller
 			throw Redirect('/p/pro/company');
 		}
 	}
-	
 	
 	/**
 		CPro homepage + login
@@ -245,11 +244,8 @@ class Main extends controller.Controller
 
 	@tpl('plugin/pro/tosblocked.mtt')
 	function doTosblocked(){
-
 		view.legalRep = pro.db.PUserCompany.manager.select($company == this.company && $legalRepresentative==true, false);
-		
 	}
-
 
 	@logged @tpl("plugin/pro/upgrade.mtt")
 	public function doUpgrade(){
