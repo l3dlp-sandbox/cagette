@@ -88,49 +88,6 @@
 		</h2>				
 	</div>
 
-	<div class="col-md-12" ::cond cagettePros!=null && cagettePros.length>0::>
-		<p>Connectez-vous à votre <b>espace producteur</b> :</p>
-	</div>
-
-	<div class="col-md-12" ::cond cagettePros!=null || tmpVendors.length>0:: >
-		<div class="row">
-		<!-- cpro -->
-		::foreach cp cagettePros::
-			::set v = cp._vendor::
-			<div class="col-md-4">
-				<!--
-				<div class="blockIconBadge">
-					$$publicVendorIcon(::v::)
-				</div>
-				-->
-				
-				<a class="clickable proBlock" href="/p/pro/?vendor=::v.id::">					
-					::if v.imageId!=null::
-					<img src="::file(v.imageId)::" class="img-responsive" style="width:92px;float:left;margin-right:12px;" />
-					::end::						
-					<h4>::v.name::</h4>
-					
-				</a>
-			</div>
-		::end::
-
-		<!-- Tmp vendors -->
-		::foreach tmp tmpVendors::
-		<div class="col-md-4">			
-			<a class="clickable proBlock">												
-				<h4>::tmp.farmName::</h4>
-				<p class="disabled">
-					<i class="icon icon-clock"></i>
-					Demande d'ouverture d'espace producteur en attente de validation par l'équipe ::theme.name::
-				</p>
-			</a>
-		</div>
-		::end::
-
-
-		</div>
-	</div>
-	
 	<div class="col-md-12" >
 		<p>Vous êtes membre des <b>groupes ::theme.name::</b> suivants :</p>
 	</div>

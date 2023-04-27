@@ -82,25 +82,6 @@ class User extends Controller
 		view.groups = groups;
 		view.wl = db.WaitingList.manager.search($user == app.user, false);
 		
-
-		//vendor accounts
-		var cagettePros = service.VendorService.getCagetteProFromUser(app.user);
-		view.cagettePros = cagettePros;
-		view.discovery = cagettePros.find(cp -> cp.offer==Discovery)!=null;
-
-		//list tmpVendor that are not certified yet
-		view.tmpVendors = sys.db.Manager.cnx.request('select * from TmpVendor where userId = ${app.user.id} and certificationStatus < 2').results();
-		// view.isBlocked = pro.db.PUserCompany.getUserCompanies(app.user).find(uc -> return uc.disabled) != null;
-
-		//find free or invited vendor
-		/*var vendor = db.Vendor.manager.select($email==app.user.email,false);
-		if(vendor!=null){
-			var vs = VendorStats.getOrCreate(vendor);
-			if( vs.type == VTFree || vs.type == VTInvited || vs.type == VTInvitedPro ){
-				view.isFreeVendor = true;
-			}
-		}*/	
-
 		if(app.user!=null){
 			//need to check new ToS
 			if(app.user.tosVersion != sugoi.db.Variable.getInt('tosVersion')){
@@ -116,7 +97,6 @@ class User extends Controller
 		}		
 
 		view.isGroupAdmin = app.user.getUserGroups().find(ug -> return ug.isGroupManager()) != null;
-		//view.cagetteProTest = cagettePros.find(cp -> cp.vendor.isTest)!=null;
 		view.memberVendor = cagettePros.find(cp -> cp.offer==Member)!=null;
 
 	}
