@@ -69,68 +69,7 @@
 		<div style="position: absolute;background: #F60;padding: 8px;left:0;bottom:0;color: #FF0;">PREPROD</div>
 		::end::
 		
-		<div style="display: flex;">
-			<style>
-				.nav-placeholder {
-					min-width: 240px;
-				}
-				@media (max-width: 900px){
-					.nav-placeholder {
-						min-width: 65px;
-					}
-				}
-				@media (max-width: 600px){
-					.nav-md {
-						display: none;
-					}
-					#cavea-footer {
-						margin-bottom: 40px;
-					}
-				}
-			</style>
-
-			<div class="nav-placeholder">
-				<div class="nav-placeholder nav-md" style="background-color: white; position: absolute; top: 0; bottom: 0; left: 0; border-right: 1px solid rgba(0, 0, 0, 0.12);"/>
-				<div id='navigation-neo-container' />
-			</div>
-
-			<div style="flex-grow: 1;">
-				<div style="min-height: 64px;">
-					<div class="header-placeholder" style="position: absolute; top: 0; right: 0; left: 0;"/>
-					<div id='header-neo-container'/>
-				</div>
-				::raw __content__::
-			</div>
-			
-			<script language="javascript">
-				window.addEventListener("DOMContentLoaded", function() {
-					::set group = getCurrentGroup()::
-					::if(user!=null)::
-						neo.createNeoModule("header-neo-container", "pageHeader", {
-							groupName: ::if(group!=null):: "::group.name::" ::else:: null ::end::,
-							userName: "::user.getName()::",
-							isSuperAdmin: ::isAdmin::
-						});
-					::else::
-						neo.createNeoModule("header-neo-container", "pageHeader", {
-							groupName: ::if(group!=null):: "::group.name::" ::else:: null ::end::,
-						});
-					::end::
-
-					neo.createNeoModule("navigation-neo-container", "navigation", {
-						groupName: ::if(group!=null):: "::group.name::" ::else:: null ::end::,
-						vendors: [
-							::foreach cpro cagettePros::
-							{
-								id: ::cpro._vendor.id::,
-								name: "::cpro._vendor.name::"
-							},
-							::end::
-							]
-					});
-				});
-			</script>
-		</div>
+		$$nav()
 
 		$$googleTagManagerNoScript(::getVariable("googleTagManagerId")::)
 
