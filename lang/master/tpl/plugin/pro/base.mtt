@@ -40,7 +40,7 @@
 		<!-- Modal window -->
 		<div id="myModal" />
 		
-		$$nav(vendorSpace, ::vendor.id::)
+		$$nav(::vendor.name::, vendorSpace, ::vendor.id::)
 		
 		$$googleTagManagerNoScript(::getVariable("googleTagManagerId")::)
 		  

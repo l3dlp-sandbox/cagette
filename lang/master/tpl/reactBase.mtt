@@ -69,7 +69,10 @@
 		<div style="position: absolute;background: #F60;padding: 8px;left:0;bottom:0;color: #FF0;">PREPROD</div>
 		::end::
 		
-		$$nav()
+		::set group = getCurrentGroup()::
+		::set title = ""::
+		::if(group!=null):: ::set title=group.name:: ::end::
+		$$nav(::title::, shopping)
 
 		$$googleTagManagerNoScript(::getVariable("googleTagManagerId")::)
 
