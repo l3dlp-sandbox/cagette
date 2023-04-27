@@ -118,7 +118,7 @@
 			
 	</macro>
 
-	<macro name='nav()'>
+	<macro name='nav(currentPage, ?vendorId)'>
 		<div style="display: flex;">
 			<style>
 				.nav-placeholder {
@@ -169,6 +169,7 @@
 
 					neo.createNeoModule("navigation-neo-container", "navigation", {
 						groupName: ::if(group!=null):: "::group.name::" ::else:: null ::end::,
+						currentPage: ::if (vendorId):: "::currentPage::::vendorId::" ::else:: "::currentPage::" ::end::,
 						vendors: [
 							::foreach cpro cagettePros::
 							{
