@@ -10,6 +10,7 @@
 	::end::
 
 	<main >
+		::set group = getCurrentGroup()::
 		::if user!=null && noGroup!=true && group!=null && (group.disabled==null || isAdmin)::
 			<nav class="navbar navbar-default" ::cond user.getGroup()!=null::>
 					<div class="navbar-header">
