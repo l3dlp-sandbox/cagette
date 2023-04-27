@@ -89,16 +89,34 @@ class User extends Controller
 			} 
 
 			//need to check new CGS
-			for( cpro in service.VendorService.getCagetteProFromLegalRep(app.user) ){
-				if(cpro.vendor.tosVersion != sugoi.db.Variable.getInt('platformtermsofservice')){
-					throw Redirect("/user/tos");
-				} 
-			}
+			// for( cpro in service.VendorService.getCagetteProFromLegalRep(app.user) ){
+			// 	if(cpro.vendor.tosVersion != sugoi.db.Variable.getInt('platformtermsofservice')){
+			// 		throw Redirect("/user/tos");
+			// 	} 
+			// }
 		}		
+	}
 
-		view.isGroupAdmin = app.user.getUserGroups().find(ug -> return ug.isGroupManager()) != null;
-		view.memberVendor = cagettePros.find(cp -> cp.offer==Member)!=null;
+	@logged
+	@tpl("user/myMarkets.mtt")
+	function doMyMarkets(?args: { group:db.Group } ) {
 
+		//home page
+		app.breadcrumb = [];
+		
+		if (args!=null && args.group!=null) {
+			//select a group
+			var which = app.session.data==null ? 0 : app.session.data.whichUser ;
+			if(app.session.data==null) app.session.data = {};
+			app.session.data.order = null;
+			app.session.data.newGroup = null;
+			app.session.data.amapId = args.group.id;
+			app.session.data.whichUser = which;
+			throw Redirect('/home');
+		}
+		
+		var userGroups = app.user.getUserGroups().filter(ug -> return ug.isGroupManager());
+		view.groups = userGroups.map(ug -> ug.group);
 	}
 	
 	function doLogout() {

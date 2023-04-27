@@ -1,0 +1,49 @@
+::use 'design.mtt'::
+
+	$$news()
+
+	<div class="col-md-12" >
+		<h4>Mes marchés</h4>
+	</div>
+
+	<!-- groups -->
+	<div class="col-md-12">
+		<div class="row">
+			::foreach group groups::				
+				<div class="col-md-4">
+					<a class="clickable groupBlock"  href="/user/choose?group=::group.id::">					
+						::if group.imageId!=null::
+						<img src="::file(group.imageId)::" class="img-responsive" style="width:92px;float:left;margin-right:12px;" />
+						::end::						
+						<h4>::group.name::</h4>
+					</a>
+				</div>
+			::end::
+			
+			::if groups.length==0::
+			<div class="col-md-12">
+				<div class="article text-center">
+					<p>
+						$$empty(Vous n’êtes administrateur d’aucun marché...)
+					</p>	
+				</div>
+			</div>
+			::end::
+		</div>
+		
+	</div>
+
+	<!-- actions -->
+	<div class="col-md-12 text-center" style="margin-bottom:12px;" >
+		::if session.lang!="de"::
+			<a class="btn btn-default btn-lg" href="/group/map">
+				<i class="icon icon-search"></i> ::_("Find other groups near me")::
+			</a>
+		::end::
+		::if settings.onlyVendorsCanCreateGroup==null || settings.onlyVendorsCanCreateGroup==false || (settings.onlyVendorsCanCreateGroup==true && cagettePros!=null && cagettePros.length>0)::
+			<a class="btn btn-default btn-lg" href="/group/create/">
+				<i class="icon icon-plus"></i> Créer un groupe
+			</a>
+		::end::
+	</div>
+::end::
