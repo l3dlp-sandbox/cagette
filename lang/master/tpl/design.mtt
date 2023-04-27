@@ -178,7 +178,7 @@
 				neo.createNeoModule("header-neo-container", "pageHeader", {
 					groupName: ::if(group!=null):: "::group.name::" ::else:: null ::end::,
 					userName: "::user.getName()::",
-					userId: "::user.id::"
+					isSuperAdmin: ::isAdmin::
 				});
 			::else::
 				neo.createNeoModule("header-neo-container", "pageHeader", {
@@ -187,7 +187,15 @@
 			::end::
 
 			neo.createNeoModule("navigation-neo-container", "navigation", {
-					groupName: ::if(group!=null):: "::group.name::" ::else:: null ::end::,
+				groupName: ::if(group!=null):: "::group.name::" ::else:: null ::end::,
+				 vendors: [
+					::foreach cpro cagettePros::
+					{
+						id: ::cpro._vendor.id::,
+						name: "::cpro._vendor.name::"
+					},
+					::end::
+					]
 			});
 
 		});
