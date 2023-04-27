@@ -379,7 +379,7 @@ class AmapAdmin extends Controller
 
 			try{
 				//sync if this user is not cpro && market mode group
-				BridgeService.syncUserToHubspot(app.user);
+				service.BridgeService.syncUserToHubspot(app.user);
 				service.BridgeService.triggerWorkflow(42244245, app.user.email);
 				
 			}catch(e:Dynamic){
