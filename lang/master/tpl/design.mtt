@@ -9,8 +9,6 @@
 			</script>
 		::end::
 
-	<div style="left:0; top: 0; bottom: 0; width: 240px;"/>
-
 	<div style="display: flex;">
 
 		<style>
@@ -38,9 +36,9 @@
 		</div>
 
 		<div style="flex-grow: 1;">
-		<div style="min-height: 64px;">
-			<div class="header-placeholder" style="position: absolute; top: 0; right: 0; left: 0;"/>
-			<div id='header-neo-container'/>
+			<div style="min-height: 64px;">
+				<div class="header-placeholder" style="position: absolute; top: 0; right: 0; left: 0;"/>
+				<div id='header-neo-container'/>
 			</div>
 			<main >
 				::if user!=null && noGroup!=true && group!=null && (group.disabled==null || isAdmin)::
@@ -188,7 +186,7 @@
 
 			neo.createNeoModule("navigation-neo-container", "navigation", {
 				groupName: ::if(group!=null):: "::group.name::" ::else:: null ::end::,
-				 vendors: [
+				vendors: [
 					::foreach cpro cagettePros::
 					{
 						id: ::cpro._vendor.id::,
