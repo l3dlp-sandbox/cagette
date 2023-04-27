@@ -95,38 +95,36 @@
 			</div>
             ::raw __content__::
         </div>
+        
+        <script language="javascript">
+            window.addEventListener("DOMContentLoaded", function() {
+                ::set group = getCurrentGroup()::
+                ::if(user!=null)::
+                    neo.createNeoModule("header-neo-container", "pageHeader", {
+                        groupName: ::if(group!=null):: "::group.name::" ::else:: null ::end::,
+                        userName: "::user.getName()::",
+                        isSuperAdmin: ::isAdmin::
+                    });
+                ::else::
+                    neo.createNeoModule("header-neo-container", "pageHeader", {
+                        groupName: ::if(group!=null):: "::group.name::" ::else:: null ::end::,
+                    });
+                ::end::
+
+                neo.createNeoModule("navigation-neo-container", "navigation", {
+                    groupName: ::if(group!=null):: "::group.name::" ::else:: null ::end::,
+                    vendors: [
+                        ::foreach cpro cagettePros::
+                        {
+                            id: ::cpro._vendor.id::,
+                            name: "::cpro._vendor.name::"
+                        },
+                        ::end::
+                        ]
+                });
+            });
+        </script>
     </div>
-
-	<script language="javascript">
-
-		window.addEventListener("DOMContentLoaded", function() {
-			::set group = getCurrentGroup()::
-			::if(user!=null)::
-				neo.createNeoModule("header-neo-container", "pageHeader", {
-					groupName: ::if(group!=null):: "::group.name::" ::else:: null ::end::,
-					userName: "::user.getName()::",
-					isSuperAdmin: ::isAdmin::
-				});
-			::else::
-				neo.createNeoModule("header-neo-container", "pageHeader", {
-					groupName: ::if(group!=null):: "::group.name::" ::else:: null ::end::,
-				});
-			::end::
-
-			neo.createNeoModule("navigation-neo-container", "navigation", {
-				groupName: ::if(group!=null):: "::group.name::" ::else:: null ::end::,
-				vendors: [
-					::foreach cpro cagettePros::
-					{
-						id: ::cpro._vendor.id::,
-						name: "::cpro._vendor.name::"
-					},
-					::end::
-					]
-			});
-
-		});
-	</script>
 
     $$googleTagManagerNoScript(::getVariable("googleTagManagerId")::)
 
