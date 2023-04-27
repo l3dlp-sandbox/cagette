@@ -95,7 +95,7 @@
 			</div>
             ::raw __content__::
         </div>
-        
+
         <script language="javascript">
             window.addEventListener("DOMContentLoaded", function() {
                 ::set group = getCurrentGroup()::
@@ -117,7 +117,8 @@
                         ::foreach cpro cagettePros::
                         {
                             id: ::cpro._vendor.id::,
-                            name: "::cpro._vendor.name::"
+                            name: "::cpro._vendor.name::",
+                            image: ::if cpro._vendor.imageId!=null:: '::file(cpro._vendor.imageId)::' ::else:: null ::end::
                         },
                         ::end::
                         ]
