@@ -35,7 +35,7 @@ class Vendor extends controller.Controller
 			{label: "Tous", value: "all"},
 			{label: "Gratuit", value: VTFree.string()},
 			{label: "Invité", value: VTInvited.string()},
-			{label: "Invité dans un compte producteur", value: VTInvitedPro.string()},
+			{label: "Invité dans un espace producteur", value: VTInvitedPro.string()},
 			{label: "Formule Membre (formé)", value: VTCpro.string()},
 			{label: "Compte pédagogique", value: VTStudent.string()},
 			{label: "Formule Découverte", value: VTDiscovery.string()},
@@ -227,6 +227,19 @@ class Vendor extends controller.Controller
 		req.setPostData("body",Json.stringify(v.getInfos()));
 		req.call("POST","https://hooks.zapier.com/hooks/catch/6566570/b868f9v/");
 		*/
+		if (app.params["giveAdminRights"] != null) {
+			var cproUsers = cpro.getUsers();
+			for( group in cpro.getGroups()){
+				for( user in cproUsers ){
+					var ua = db.UserGroup.getOrCreate(user, group);
+					ua.giveRight(db.UserGroup.Right.GroupAdmin);
+					ua.giveRight(db.UserGroup.Right.Membership);
+					ua.giveRight(db.UserGroup.Right.Messages);
+					ua.giveRight(db.UserGroup.Right.ContractAdmin());					
+				}
+			}	
+			throw Ok("/admin/vendor/view/"+v.id,"Droits donnés");
+		}		
 
 		view.stats = pro.db.VendorStats.getOrCreate(v);
 		view.courses = hosted.db.CompanyCourse.manager.search($company == cpro, false);
@@ -311,7 +324,7 @@ class Vendor extends controller.Controller
 			var uc = new pro.db.PUserCompany();
 			var u = service.UserService.get(f.getValueOf("email"));
 			if(u==null){
-				throw Error('/admin/vendor/view/${company.vendor.id}','Il n\'y a aucun compte avec l\'email "${f.getValueOf("email")}". Cette personne doit s\'inscrire avant que vous puissiez lui donner accès au compte producteur.');
+				throw Error('/admin/vendor/view/${company.vendor.id}','Il n\'y a aucun compte avec l\'email "${f.getValueOf("email")}". Cette personne doit s\'inscrire avant que vous puissiez lui donner accès à l\'espace producteur.');
 			}
 
 			uc.company = company;
@@ -343,7 +356,7 @@ class Vendor extends controller.Controller
 			
 			throw Ok('/admin/vendor/view/${company.vendor.id}', "Représentant légal modifié");
 		}
-		view.title = 'Nouveau Représentant légal du compte producteur ${company.vendor.name}';
+		view.title = 'Nouveau représentant légal du producteur "${company.vendor.name}"';
 		view.form = f;
 	}
 }

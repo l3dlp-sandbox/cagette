@@ -4,11 +4,6 @@ import sugoi.form.ListData.FormData;
 import sys.db.Object;
 import sys.db.Types;
 
-enum CatalogFlags {
-	UsersCanOrder;  		//adhérents peuvent saisir eux meme la commande en ligne
-	StockManagement; 		//gestion des commandes
-}
-
 @:index(startDate,endDate)
 class Catalog extends Object
 {
@@ -25,14 +20,11 @@ class Catalog extends Object
 	
 	@hideInForms @:relation(groupId) public var group:db.Group;
 	public var distributorNum:STinyInt;
-	public var flags : SFlags<CatalogFlags>;
 	
 	public function new() 
 	{
 		super();
-		flags = cast 0;
 		distributorNum = 0;	
-		flags.set(UsersCanOrder);		
 	}	
 	
 	/**
@@ -59,9 +51,9 @@ class Catalog extends Object
 	 */
 	public function isVisibleInShop():Bool {
 		
-		//yes if the contract is active and the 'UsersCanOrder' flag is checked
+		//yes if the contract is active
 		var n = Date.now().getTime();
-		return flags.has(UsersCanOrder) && n < this.endDate.getTime() && n > this.startDate.getTime();
+		return n < this.endDate.getTime() && n > this.startDate.getTime();
 	}
 
 	public function isActive():Bool{
@@ -74,16 +66,11 @@ class Catalog extends Object
 	 */
 	public function hasOpenOrders(){
 		var now = Date.now();
-		var contractOpen = flags.has(UsersCanOrder) && now.getTime() < this.endDate.getTime() && now.getTime() > this.startDate.getTime();
+		var contractOpen = now.getTime() < this.endDate.getTime() && now.getTime() > this.startDate.getTime();
 		var d = db.Distribution.manager.count( $orderStartDate <= now && $orderEndDate > now && $catalogId==this.id);
 		return contractOpen && d > 0;
 	}
 		
-	public function hasStockManagement():Bool {
-		// return flags.has(StockManagement);
-		return true;
-	}
-
 	public function check(){
 
 		if( this.description!=null && !UnicodeString.validate( haxe.io.Bytes.ofString(this.description), Encoding.UTF8 )){
@@ -164,21 +151,17 @@ class Catalog extends Object
 	}
 	
 	/**
-	 * Get all orders of this contract
-	 * @param	d	A delivery is needed for varying orders contract
-	 * @return
+	 * Get orders of this distribution	 
 	 */
-	public function getOrders( distribution : db.Distribution ) : Array<db.UserOrder> {
+	public function getOrders( distribution:db.Distribution ):Array<db.UserOrder> {
 
-		if ( distribution == null ) throw "This type of contract must have a delivery";
+		if ( distribution == null ) throw "distribution is null";
+		// var productIds = getProducts(false).map( p -> p.id );
+
+		var basketIds = distribution.multiDistrib.getBaskets().map( b -> b.id );
 		
-		//get product ids, some of the products may have been disabled but we keep the order
-		var productIds = getProducts(false).map( function( product ) return product.id );
+		return db.UserOrder.manager.search( $distribution == distribution && $basketId in basketIds, {orderBy:userId}, false ).array();	
 
-		var orders = new List<db.UserOrder>();
-		orders = db.UserOrder.manager.search( ( $productId in productIds ) && $distribution == distribution, {orderBy:userId}, false );	
-	
-		return Lambda.array(orders);
 	}
 
 	/**
@@ -260,7 +243,6 @@ class Catalog extends Object
 			"endDate" 			=> t._("End date"),
 			"description" 		=> t._("Description"),
 			"distributorNum" 	=> t._("Number of required volunteers during a distribution"),
-			"flags" 			=> t._("Options"),
 			"contact" 			=> t._("Contact"),
 			"vendor" 			=> t._("Farmer"),
 			"hasPayements" 					=> "Gestion des paiements",

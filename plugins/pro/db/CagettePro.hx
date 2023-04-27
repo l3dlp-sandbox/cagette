@@ -264,7 +264,7 @@ class CagettePro extends sys.db.Object
 			"desc" 		=> t._("Description"),			
 			"linkText" 	=> /*t._("Website Label")*/"Nom du site Web",			
 			"linkUrl" 	=> /*t._("Website URL")*/"URL du site web",			
-			"freeCpro" 	=> "Accès gratuit au compte producteur (stagiaire formation)",		
+			"freeCpro" 	=> "Accès gratuit a l'espace producteur (stagiaire formation)",		
 		];
 	}
 }

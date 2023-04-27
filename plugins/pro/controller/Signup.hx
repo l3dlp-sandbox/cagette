@@ -28,7 +28,7 @@ class Signup extends controller.Controller
 		var uc = pro.db.PUserCompany.manager.search($user ==app.user);
 		if( uc.length>0 && !App.current.user.isAdmin()){
 			// if (uc.find( c -> c.company.vendor.isTest==true) == null) {
-				throw Error("/","Vous avez déjà accès à un compte Producteur : "+uc.map(c -> return c.company.vendor.name).join(', ')+"</b>. Contactez le support sur <a href='mailto:"+app.getTheme().supportEmail+"'>"+app.getTheme().supportEmail+"</a> pour clarifier votre situation.");
+				throw Error("/","Vous avez déjà accès à un espace Producteur : "+uc.map(c -> return c.company.vendor.name).join(', ')+"</b>. Contactez le support sur <a href='mailto:"+app.getTheme().supportEmail+"'>"+app.getTheme().supportEmail+"</a> pour clarifier votre situation.");
 			// }
 		}
 
@@ -37,7 +37,7 @@ class Signup extends controller.Controller
 		if( vendor!=null && !App.current.user.isAdmin()){
 			//is this vendor cpro
 			if(vendor.getCpro()!=null){
-				throw Error("/","Vous avez déjà accès à un compte Producteur : "+vendor.name);
+				throw Error("/","Vous avez déjà accès à un espace Producteur : "+vendor.name);
 			}
 			view.vendorId = vendor.id;
 		}

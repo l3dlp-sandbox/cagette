@@ -85,8 +85,7 @@ class Contract extends Controller
 		});
 
 		view.vendors = vendors;
-		view.name = f.getValueOf('name');
-	
+		view.name = f.getValueOf('name');	
 		view.form = f;
 	}
 

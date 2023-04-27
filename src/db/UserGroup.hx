@@ -25,6 +25,7 @@ class UserGroup extends Object
 	public var balance : SFloat; 						//account balance in group currency
 	public static var CACHE = new Map<String,db.UserGroup>();
 	public var differenciatedPricingId : SNull<SInt>;
+	// @:relation(differenciatedPricingId) public var differenciatedPricing : SNull<DifferenciatedPricing>;
 	
 	public function new(){
 		super();

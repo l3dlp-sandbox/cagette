@@ -14,10 +14,15 @@ class ReportService{
 		var view = App.current.view;
 		var t = sugoi.i18n.Locale.texts;
 		if(distribution==null) throw "distribution should not be null";
+
+		//get baskets that are CONFIRMED or VALIDATED
+		var baskets = distribution.multiDistrib.getBaskets();
+		var basketIds:Array<Int> = baskets.map(b -> b.id);
 		
 		var exportName = t._("Delivery ::contractName:: of the ", {contractName:distribution.catalog.name}) + distribution.date.toString().substr(0, 10);
 		var where = ' and p.catalogId = ${distribution.catalog.id}';
 		where += ' and up.distributionId = ${distribution.id}';
+		if(basketIds.length>0) where += ' and up.basketId IN (${basketIds.join(',')})';
 
 		//Product price will be an average if price changed
 		var sql = 'select 
@@ -39,7 +44,6 @@ class ReportService{
 
 		//populate with full product names
 		for ( r in res){
-
 			var o : OrderByProduct = {
 				quantity:1.0 * r.quantity,
 				smartQt:"",

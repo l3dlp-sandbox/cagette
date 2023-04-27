@@ -359,7 +359,7 @@ if (App.current.getSettings().noCourse==true) {
 	 */
 	function doDisable(company:pro.db.CagettePro){
 
-		if(company.offer!=Training) throw "ce compte producteur n'est pas un compte pédagogique !";
+		if(company.offer!=Training) throw "cet espace producteur n'est pas un compte pédagogique !";
 		var cc = hosted.db.CompanyCourse.manager.select($company==company);
 
 		//remove access to this cpro
@@ -453,7 +453,7 @@ if (App.current.getSettings().noCourse==true) {
 				throw Ok("/p/hosted/course/");
 			}*/
 
-			throw Error("/p/hosted/course/view/"+course.id,"Impossible de trouver un compte producteur Découverte ou Pro avec le même email !
+			throw Error("/p/hosted/course/view/"+course.id,"Impossible de trouver un producteur Découverte ou Pro avec le même email !
 			Le producteur doit obligatoirement ouvrir un compte découverte pour faire la formation");
 		}
 		

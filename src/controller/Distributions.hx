@@ -480,10 +480,12 @@ class Distributions extends Controller {
 		view.distrib = d;
 		view.place = d.place;
 		view.contract = d.catalog;
-		view.orders = service.OrderService.prepare(d.getOrders());
+		var baskets = d.getBaskets();
+		//sort by user name
+		baskets.sort((a,b)-> return (a.user.lastName.toUpperCase() > b.user.lastName.toUpperCase() ? 1 : -1) );
+		view.baskets = baskets;
 		// volunteers whose role is linked to this contract
-		view.volunteers = Lambda.filter(d.multiDistrib.getVolunteers(),
-			function(v) return v.volunteerRole.catalog != null && v.volunteerRole.catalog.id == d.catalog.id);
+		view.volunteers = d.multiDistrib.getVolunteers().filter(v -> v.volunteerRole.catalog != null && v.volunteerRole.catalog.id == d.catalog.id);
 	}
 
 	/**
@@ -550,6 +552,21 @@ class Distributions extends Controller {
 			}
 			return total;
 		}
+	}
+
+	/**
+		Cancel a vendor participation to a multidistrib (delete a db.Distribution)
+	**/
+	function doDelete(d:db.Distribution) {
+		if (!app.user.isContractManager(d.catalog))
+			throw Error('/', t._("Forbidden action"));
+		var contractId = d.catalog.id;
+		try {
+			service.DistributionService.cancelParticipation(d, false);
+		} catch (e:tink.core.Error) {
+			throw Error("/contractAdmin/distributions/" + contractId, e.message);
+		}
+		throw Ok('/contractAdmin/distributions/${contractId}?_from=${app.params.get("_from")}&_to=${app.params.get("_to")}', "Ce producteur ne participe plus à la distribution");
 	}
 
 }

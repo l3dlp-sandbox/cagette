@@ -56,7 +56,7 @@
 			<div class="col-md-12">			
 				<div class="alert alert-danger">
 					<i class="icon icon-alert"></i>
-					Ce compte producteur est bloqué et n'accepte plus de commandes.<br/>
+					Cet espace producteur est bloqué et n'accepte plus de commandes.<br/>
 					Raison : <b>::vendor.getDisabledReason()::</b>
 				</div>
 			</div>
@@ -156,14 +156,11 @@
 			</div>
 			::end::	
 
-
-				
 			::if(unlinkedCatalogs.length>0 && company.getProducts().length>0)::
-			
 				<div class="col-md-12">			
 					<div class="alert alert-warning">
 						<i class="icon icon-info"></i>
-						Vous avez <b>::unlinkedCatalogs.length:: catalogue(s)</b> créés dans des groupes et qui ne sont pas reliés à votre compte producteur. <br/>
+						Vous avez <b>::unlinkedCatalogs.length:: catalogue(s)</b> créés dans des groupes et qui ne sont pas reliés à votre espace producteur.<br/>
 						<ul>
 							::foreach c unlinkedCatalogs::
 							<li><b>::c.name::</b> dans le groupe <a href="/group/::c._group.id::" target="_blank">::c._group.name::</a></li>
@@ -173,9 +170,7 @@
 						<a href="/p/pro/catalogLinker" class="btn btn-default btn-sm">Cliquez-ici pour les relier</a>
 					</div>
 				</div>
-			
 			::end::	
-
 			
 			<div class="col-md-12">
 				<a href="/p/pro/group/duplicate" class="btn btn-default btn-sm">

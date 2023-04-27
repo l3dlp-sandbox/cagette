@@ -59,9 +59,11 @@
 	
 		
 		::if user.canManageAllContracts():: 
-			<a href="/contract/searchVendor/" class="btn btn-primary"><i class="icon icon-star"></i> Découvrir les producteurs du réseau</a>		
+			<a href="/contract/searchVendor/" class="btn btn-primary"><i class="icon icon-star"></i> Découvrir les producteurs du réseau</a>
+			<!--		
 			<a href="/contract/defineVendor/" class="btn btn-primary"><i class="icon icon-mail"></i> Inviter un producteur</a>		
 			<a href="/contract/defineVendor/" class="btn btn-primary"><i class="icon icon-search"></i> Chercher un catalogue</a>		
+			-->
 		::end::
 
 		<a href="/contractAdmin?old=1" class="btn btn-default"><span class="glyphicon glyphicon-folder-close"></span> Anciens catalogues</a>
@@ -73,7 +75,6 @@
 			<span class="caret"></span>
 		  </button>
 		  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-			<li><a href="/contractAdmin/ordersByDate">::_("Same day")::</a></li>
 			<li><a href="/contractAdmin/ordersByTimeFrame">::_("Timeframe")::</a></li>			
 		  </ul>
 		</div>
@@ -82,7 +83,4 @@
 	</div>
 	
 </div>
-
-
-	
 ::end::

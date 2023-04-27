@@ -274,7 +274,7 @@ class Vendor extends Object
 			case DisabledReason.TurnoverLimitReached : "Ce producteur a atteint sa limite de chiffre d'affaires annuel";
 			case DisabledReason.MarketplaceDisabled : "Ce producteur est en défaut de paiement";
 			case DisabledReason.MarketplaceNotActivated : "Ce producteur n'a pas encore activé son compte";
-			case DisabledReason.DisabledInvited : "Les producteurs invités ne sont plus autorisés et doivent <a href='https://www.cagette.net/producteurs' target='_blank'>ouvrir un compte Producteur</a>";
+			case DisabledReason.DisabledInvited : "Les producteurs invités ne sont plus autorisés et doivent <a href='https://www.cagette.net/producteurs' target='_blank'>ouvrir un espace Producteur</a>";
 		};
 	}
 
@@ -317,25 +317,25 @@ class Vendor extends Object
 	}
 
 	function check(){
-		/*if(this.email==null){
+		if(this.email==null){
 			throw new tink.core.Error("Vous devez obligatoirement saisir un email pour ce producteur.");
-		}*/
+		}
 
 		if(this.email!=null && !EmailValidator.check(this.email) ) {
 			throw new tink.core.Error('Email du producteur ${this.id} invalide.');
 		}
 
-		//disable if missing legal infos
-		#if plugins
+		//disable if missing legal infos		
 		var cpro = pro.db.CagettePro.getFromVendor(this);
 		if(companyNumber==null){
 			if(cpro!=null && cpro.offer==Training){
 				//do not disable training accounts
+			}else if(App.config.DEBUG){
+				//do not disable vendor in dev env
 			}else{
 				disabled = DisabledReason.IncompleteLegalInfos;
 			}			
 		}
-		#end
 	}
 
 	override function insert(){

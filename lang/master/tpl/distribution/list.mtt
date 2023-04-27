@@ -46,108 +46,77 @@
 	
 	<table class="table table-bordered table-hover"  style="width:100%;">
 			::set total = 0:: <!-- big total -->
-			::set subtotal = 0:: <!-- total per user -->
 			
-			::foreach m orders::	
+			::foreach basket baskets::	
 			
-				::set i = repeat.m.index::
-			
-				<!-- name change -->
-				::if orders[i-1]==null || m.userName != orders[i-1].userName || m.userName2 != orders[i-1].userName2::
+				::set u = basket._user::
+				::set subtotal = 0::
 					
 					<tr class="name">
 						<td colspan="8">
 							<span  style="font-size:1.3em;">
-								::set basket = getBasket(m.basketId)::							
-								<span ::cond basket!=null::>N°::basket.num:: - </span>	
-								
-								::m.userName::
+								N°::basket.num:: - ::u.getName()::
 							</span>
-
-							::set u = getUser(m.userId)::
 							
 							::if u !=null && u.phone!=null::
 							- Tél. $$nullSafe(::u.phone::)
 							::end::
-
-							::if m.userName2 != null::
-								::_("alternately with")::
-								<span  style="font-size:1.3em;">
-								::m.userName2::
-								</span>
-
-								::set u = getUser(m.userId2):
-								::if u !=null::
-								- Tél. $$nullSafe(::u.phone::)
-								::end::
-							::end::
 						</td>
 					</tr>
+
 					<tr>
 						<th>::_("Qty")::</th>
 						<th>::_("Ref")::</th>
 						<th>::_("Product")::</th>
 						<th>::_("U.P.")::</th>
-						<th>::_("Sub-total")::</th>
 						<th>::_("Total")::</th>
 						<th>::_("Signature")::</th>
 					</tr>
-				::end::
-		
-				<!-- 1 order line -->
-				<tr class="order">
-					<td>
-						::if(m.quantity==0 && m.canceled)::
-							::_("Canceled")::
-						::else::
-							::raw m.smartQt::
-						::end::
-					</td>
-					<td>
-						$$nullSafe(::m.productRef::)
-					</td>
-					<td>
-						::m.productName::							
-					</td>
-					<td>
-						::formatNum(m.productPrice)::&nbsp;::currency()::
-					</td>
-					<td>
-						::formatNum(m.subTotal)::&nbsp;::currency()::
-					</td>
-					<td>
-						<!-- total -->
-						::formatNum(m.total)::&nbsp;::currency()::
-						::set total = total + m.total::
-						::set subtotal = subtotal + m.total::
-					</td>
-					<td style="width:20%;">						
-					</td>					
-				</tr>
-			
-				<!-- member total -->
-				::if (orders[i+1]==null || m.userName != orders[i+1].userName || m.userName2 != orders[i+1].userName2) ::
-					::if subtotal!=0:: 
-					<tr>	
-						<td colspan="5"></td>
-						<td class="total text-right">::_("TOTAL")::</td>
-						<td class="total">::formatNum(subtotal)::&nbsp;::currency()::</td>					
-						<td></td>
-						::set subtotal = 0::
+				
+				::foreach m	prepare(basket.getDistributionOrders(distrib))::
+					<tr class="order">
+						<td>
+							::if(m.quantity==0 && m.canceled)::
+								::_("Canceled")::
+							::else::
+								::raw m.smartQt::
+							::end::
+						</td>
+						<td>
+							$$nullSafe(::m.productRef::)
+						</td>
+						<td>
+							::m.productName::							
+						</td>
+						<td>
+							::formatNum(m.productPrice)::&nbsp;::currency()::
+						</td>						
+						<td>							
+							::formatNum(m.total)::&nbsp;::currency()::
+							::set total = total + m.total::
+							::set subtotal = subtotal + m.total::
+						</td>
+						<td style="width:20%;"></td>					
 					</tr>
-					::end::
+				
 				::end::
+			
+				<!-- member total -->				
+				<tr>	
+					<td class="total" colspan="3"></td>
+					<td class="total">::_("TOTAL")::</td>
+					<td class="total" colspan="2">::formatNum(subtotal)::&nbsp;::currency()::</td>
+				</tr>
 			::end::
+				
 			
 			<!-- big total -->
 			<tr style="font-size:1.3em;">					
-				<td class="text-right">::_("Total order:"):: </td>
-				<td>::formatNum(total)::&nbsp;::currency()::</td>					
-				<td colspan="6"></td>
+				<td class="total" colspan="4">::_("Total order:"):: </td>
+				<td class="total" colspan="2">::formatNum(total)::&nbsp;::currency()::</td>							
 			</tr>
+
 		</table>
-		
-		
 
 		<p class="hidden"><i>::_("Push on \"Control + P\" to print this page.")::</i></p>
 </body>

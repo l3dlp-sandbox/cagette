@@ -1,4 +1,5 @@
 package hosted.controller;
+import payment.Check;
 import mangopay.MangopayPlugin;
 import mangopay.Mangopay;
 import mangopay.db.MangopayLegalUserGroup;
@@ -99,20 +100,20 @@ class Main extends controller.Controller
 			mgpLegalUserGroup.delete();
 
 			//payments in cash
-			group.setAllowedPaymentTypes([Cash.TYPE]);
+			group.setAllowedPaymentTypes([Cash.TYPE,Check.TYPE]);
 			group.update();
 
-			throw Ok("/p/hosted/group/"+group.id,"Mangopay retiré, groupe passé en paiement sur place");
+			throw Ok("/p/hosted/group/"+group.id,"Mangopay retiré, ATTENTION : groupe passé en paiement sur place");
 
 		}
 
 		if( app.params.get("duplicate")=="1" ){
 
-			//duplicate group with MGP
+			//duplicate group
 
 			var g = GroupService.duplicateGroup(group);
 			g.name = group.name+" (marché)";
-			// g.setAllowedPaymentTypes([MangopayECPayment.TYPE]);
+			g.setAllowedPaymentTypes([Cash.TYPE,Check.TYPE]);
 			g.update();
 
 			var place = group.getMainPlace();
@@ -156,7 +157,6 @@ class Main extends controller.Controller
 				newcat.description = c.description;
 				newcat.contact = c.contact;
 				newcat.vendor = c.vendor;
-				newcat.flags.set(UsersCanOrder);
 				newcat.group = g;
 				newcat.insert();
 
