@@ -71,8 +71,10 @@
                 <div class="alert alert-warning">
                     <i class="icon icon-info"></i>
                     Lorsque tous les producteurs auront ouvert leur compte Stripe ( pastilles vertes pour tout le monde dans le tableau ci-dessus ), vous pourrez basculer ce marché en paiement en ligne Stripe.
-                </div></p>
+                </div>
+            </p>
 
+            <p class="text-center">
             ::if(group.isDispatch())::
                <a href="" class="btn btn-default disabled">
                 <i class="icon icon-check"></i> Le paiement avec Stripe est activé sur ce marché</a>                    
@@ -80,6 +82,7 @@
                <a href="?enableStripe=1" class="btn btn-primary">
                 <i class="icon icon-chevron-right"></i> Passer ce marché au paiement en ligne Stripe</a>                    
             ::end::
+            </p>
 
         </div>
 

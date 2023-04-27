@@ -309,7 +309,7 @@ class PCatalogService{
 
 		if(clientGroup.isDispatch()){
 			if(!pcatalog.company.vendor.isDispatchReady()){
-				throw new tink.core.Error("Ce catalogue ne peut pas être relié à ce groupe car le producteur n'a pas de compte Stripe (Obligatoire afin de pouvoir accepter le paiement en ligne).");
+				throw new tink.core.Error("Ce catalogue ne peut pas être relié à ce groupe car le producteur n'a pas de compte Stripe. <a href='/p/pro/company/stripe'>Cliquez-ici pour l'ouvrir</a>");
 			}
 		}
 
