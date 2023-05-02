@@ -51,7 +51,7 @@
 					<br/>
 
 					<div class="row" style="display: flex; align-items: center; flex-direction: row;">
-						<div class="col-md-12">Lien du catalogue à partager :
+						<div class="col-md-12">Lien du catalogue :
 							<div class="btn-group" style="margin-right: 4px;">
 								<a id="copy-url-::c.id::" href="http://::HOST::/p/pro/public/::c.id::" class="btn btn-default btn-sm" target="_blank">http://::HOST::/p/pro/public/::c.id::</a>
 								<a id="copy-url-button-::c.id::" href="#" class="btn btn-default btn-sm">
