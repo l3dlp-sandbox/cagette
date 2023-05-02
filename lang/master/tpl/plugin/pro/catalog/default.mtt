@@ -50,16 +50,31 @@
 					<br/>
 					<br/>
 
-					<div class="row">
-						<div class="col-md-5">Lien du catalogue à partager à vos contacts : </div>						
-						<div class="col-md-7">
-							<div class="btn-group">
-								<a href="http://::HOST::/p/pro/public/::c.id::" class="btn btn-default btn-sm" target="_blank">
-									 http://::HOST::/p/pro/public/::c.id::	
-								</a>
-								<a href="#" class="btn btn-default btn-sm">
+					<div class="row" style="display: flex; align-items: center; flex-direction: row;">
+						<div class="col-md-12">Lien du catalogue à partager :
+							<div class="btn-group" style="margin-right: 4px;">
+								<a id="copy-url-::c.id::" href="http://::HOST::/p/pro/public/::c.id::" class="btn btn-default btn-sm" target="_blank">http://::HOST::/p/pro/public/::c.id::</a>
+								<a id="copy-url-button-::c.id::" href="#" class="btn btn-default btn-sm">
 									<i class="icon icon-link"></i> Copier le lien
 								</a>
+								<script>
+									var copyTextBtn::c.id:: = document.querySelector('#copy-url-button-::c.id::');
+									var previousText = copyTextBtn::c.id::.innerHTML;
+									copyTextBtn::c.id::.addEventListener('click', function(event) {
+										var element = document.querySelector('#copy-url-::c.id::');
+										var storage = document.createElement('textarea');
+										storage.value = element.innerHTML;
+										element.appendChild(storage);
+										storage.select();
+										document.execCommand('copy');
+										element.removeChild(storage);
+
+										copyTextBtn::c.id::.innerHTML = "✔ copié"
+										setTimeout(function() {
+											copyTextBtn::c.id::.innerHTML = previousText;
+										}, 1000);
+									});
+								</script>
 							</div>
 						</div>
 					</div>
