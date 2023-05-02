@@ -277,11 +277,25 @@ $$browserDetection()
 
 		::if amap.txtHome!=null && amap.txtHome!=""::
 		::raw nl2br(amap.txtHome)::
-		::end::
+		::end::		
+	</div>
 
+	<div class="block">
+		
+		<h4>Lien du marché à partager</h4>
+			
+		<div class="btn-group">
+			<a href="http://::HOST::/group/::amap.id::" class="btn btn-default btn-sm" target="_blank">
+				http://::HOST::/group/::amap.id::
+			</a>
+			<a href="#" class="btn btn-default btn-sm">
+				<i class="icon icon-link"></i> Copier le lien
+			</a>
+		</div>
 	</div>
 
 	<div class="block hidden-sm hidden-xs">
+		<h4>Permanences</h4>
 		<a href="/distributions/volunteersCalendar" class="btn btn-default btn-sm">
 			<i class="icon icon-calendar"></i> ::_("Duty periods calendar")::
 		</a>

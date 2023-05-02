@@ -51,8 +51,8 @@
 					<br/>
 
 					<div class="row">
-						<div class="col-md-5">Lien du catalogue à partager à vos contacts : </div>						
-						<div class="col-md-7">
+						<div class="col-md-3">Lien du catalogue : </div>						
+						<div class="col-md-9">
 							<div class="btn-group">
 								<a href="http://::HOST::/p/pro/public/::c.id::" class="btn btn-default btn-sm" target="_blank">
 									 http://::HOST::/p/pro/public/::c.id::	
