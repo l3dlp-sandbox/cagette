@@ -283,15 +283,35 @@ $$browserDetection()
 	<div class="block">
 		
 		<h4>Lien du marché à partager</h4>
-			
-		<div class="btn-group">
-			<a href="http://::HOST::/group/::amap.id::" class="btn btn-default btn-sm" target="_blank">
-				http://::HOST::/group/::amap.id::
-			</a>
-			<a href="#" class="btn btn-default btn-sm">
+
+		::set group = amap::
+		<p>
+			<a id="copy-url-::group.id::" href="http://::HOST::/group/::group.id::" target="_blank">http://::HOST::/group/::group.id::</a><br/>
+		</p>
+		<p>
+			<a id="copy-url-button-::group.id::" href="#" class="btn btn-default btn-sm">
 				<i class="icon icon-link"></i> Copier le lien
 			</a>
-		</div>
+		</p>
+		
+		<script>
+			var copyTextBtn::group.id:: = document.querySelector('#copy-url-button-::group.id::');
+			var previousText = copyTextBtn::group.id::.innerHTML;
+			copyTextBtn::group.id::.addEventListener('click', function(event) {
+				var element = document.querySelector('#copy-url-::group.id::');
+				var storage = document.createElement('textarea');
+				storage.value = element.innerHTML;
+				element.appendChild(storage);
+				storage.select();
+				document.execCommand('copy');
+				element.removeChild(storage);
+
+				copyTextBtn::group.id::.innerHTML = "✔ copié"
+				setTimeout(function() {
+					copyTextBtn::group.id::.innerHTML = previousText;
+				}, 1000);
+			});
+		</script>
 	</div>
 
 	<div class="block hidden-sm hidden-xs">

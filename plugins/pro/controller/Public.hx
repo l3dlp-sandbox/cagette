@@ -61,7 +61,7 @@ class Public extends controller.Controller
 			e.setSubject("Le marché "+group.name+" a relié votre catalogue "+catalog.name);
 			e.setRecipient(catalog.company.vendor.email);			
 			e.setSender(App.current.getTheme().email.senderEmail,"Cagette.net");		
-			var html = app.processTemplate("plugin/pro/mail/catalogImport.mtt", {catalog:catalog,group:group,user:app.user});		
+			var html = app.processTemplate("plugin/pro/mail/catalogLinked.mtt", {catalog:catalog,group:group,user:app.user});		
 			e.setHtmlBody(html);
 			App.sendMail(e);	
 			
