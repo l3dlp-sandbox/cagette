@@ -283,16 +283,19 @@ $$browserDetection()
 	<div class="block">
 		
 		<h4>Lien du marché à partager</h4>
-			
-		<div class="btn-group">
-			<a id="copy-url" href="http://::HOST::/group/::amap.id::" class="btn btn-default btn-sm" target="_blank">
-				http://::HOST::/group/::amap.id::
-			</a>
+
+		::set group = amap::
+		<p>
+			<a id="copy-url" href="http://::HOST::/group/::group.id::" target="_blank">http://::HOST::/group/::group.id::</a><br/>
+		</p>
+		<p>
 			<a id="copy-url-button" href="#" class="btn btn-default btn-sm">
 				<i class="icon icon-link"></i> Copier le lien
 			</a>
-			<script>
-				var copyTextBtn = document.querySelector('#copy-url-button');
+		</p>
+		
+		<script>
+			var copyTextBtn = document.querySelector('#copy-url-button');
 				var previousText = copyTextBtn.innerHTML;
 				copyTextBtn.addEventListener('click', function(event) {
 					var element = document.querySelector('#copy-url');
@@ -308,8 +311,7 @@ $$browserDetection()
 						copyTextBtn.innerHTML = previousText;
 					}, 1000);
 				});
-			</script>
-		</div>
+		</script>
 	</div>
 
 	<div class="block hidden-sm hidden-xs">
