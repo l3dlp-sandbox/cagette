@@ -44,7 +44,7 @@ class Place extends Controller
 	public function doInsert() {
 		
 		var d = new db.Place();
-		var f = form.CagetteForm.froFmSpod(d);
+		var f = form.CagetteForm.fromSpod(d);
 		f.addElement(new sugoi.form.elements.StringSelect('country',t._("Country"),db.Place.getCountries(),"FR",true));
 		
 		if (f.isValid()) {
