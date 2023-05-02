@@ -285,12 +285,30 @@ $$browserDetection()
 		<h4>Lien du marché à partager</h4>
 			
 		<div class="btn-group">
-			<a href="http://::HOST::/group/::amap.id::" class="btn btn-default btn-sm" target="_blank">
+			<a id="copy-url" href="http://::HOST::/group/::amap.id::" class="btn btn-default btn-sm" target="_blank">
 				http://::HOST::/group/::amap.id::
 			</a>
-			<a href="#" class="btn btn-default btn-sm">
+			<a id="copy-url-button" href="#" class="btn btn-default btn-sm">
 				<i class="icon icon-link"></i> Copier le lien
 			</a>
+			<script>
+				var copyTextBtn = document.querySelector('#copy-url-button');
+				var previousText = copyTextBtn.innerHTML;
+				copyTextBtn.addEventListener('click', function(event) {
+					var element = document.querySelector('#copy-url');
+					var storage = document.createElement('textarea');
+					storage.value = element.innerHTML;
+					element.appendChild(storage);
+					storage.select();
+					document.execCommand('copy');
+					element.removeChild(storage);
+
+					copyTextBtn.innerHTML = "✔ copié"
+					setTimeout(function() {
+						copyTextBtn.innerHTML = previousText;
+					}, 1000);
+				});
+			</script>
 		</div>
 	</div>
 
