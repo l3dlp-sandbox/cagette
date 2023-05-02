@@ -1,0 +1,30 @@
+:: use 'mail/layout-group.mtt'::
+
+<h1>Le marché "::group.name::" a relié votre catalogue "::catalog.name::"</h1>
+
+<p>
+Bonne nouvelle, Le marché <b>::group.name::</b> a relié votre catalogue <b>::catalog.name::</b>.
+<br/>
+Vous pouvez dès à présent participer aux ventes qu'ils organisent depuis l'onglet "Vente" de votre espace producteur.
+</p>
+
+<table>
+	<tr>
+		<td>Contact de l'administrateur</td>
+		<td>::user.getName()::</td>
+	</tr>	
+	<tr>
+		<td>Téléphone :</td>
+		<td>::user.phone::</td>
+	</tr>
+	<tr>
+		<td>Email :</td>
+		<td><a href="mailto: ::user.email::" rel="notrack">::user.email::</a></td>
+	</tr>
+	<tr>
+		<td>Lieu :</td>
+		<td>::group.getMainPlace().getFullAddress()::</td>
+	</tr>
+</table>
+
+::end::
