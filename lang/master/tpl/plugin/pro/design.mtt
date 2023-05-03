@@ -1,31 +1,5 @@
 ﻿::use 'plugin/pro/base.mtt'::
 		
-	<div class="row header" style="margin-top:10px;">
-		<div class="col-md-6" style="display: flex;">
-			::if(company.offer==2 || company.offer==1 || (company.offer==4 && vendor.disabled!=4))::
-				<a href="/p/pro/upgrade">
-					<div class="iconBadge farmer-pro" style="margin-top:8px; margin-right: 8px;" data-toggle="tooltip" title="::if(company.offer==2)::Formule Pro::elseif(company.offer==3)::Formule Membre::end::">
-						<i class="icon icon-farmer-pro"></i>
-					</div>
-				</a>
-			::elseif(company.offer==3)::
-				<div class="iconBadge farmer-pro" style="margin-top:8px; margin-right: 8px;" data-toggle="tooltip" title="Compte pédagogique">
-					<i class="icon icon-student"></i>
-				</div>
-			::elseif(company.offer==4 && vendor.disabled==4)::
-				<a href="/p/pro/upgrade">
-					<div class="iconBadge farmer-pro" style="margin-top:8px; margin-right: 8px;" data-toggle="tooltip">
-						<i class="icon icon-farmer"></i>
-					</div>
-				</a>
-			::end::
-			<h1 ::cond vendor!=null:: >::vendor.name::</h1>
-		</div>
-		<div class="col-md-6 accountBlock" ::cond company!=null::>	
-			$$userMenu(::user::)
-		</div>
-	</div>
-		
 	::if user!= null && company!=null::
 
 		<nav class="navbar navbar-default">

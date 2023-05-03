@@ -50,7 +50,7 @@
 <body class="::container::">
 
     ::if DEBUG::
-    <div style="position: fixed;background: #666;padding: 8px;left: 0;bottom:0;color:#FF0;">DEBUG</div>
+    <div style="position: fixed;background: #666;padding: 8px;left: 0;bottom:0;color:#FF0; z-index:9999;">DEBUG</div>
     ::end::
 
     ::if ( HOST.indexOf(".dev.",null)!=-1 )::
@@ -63,7 +63,10 @@
     <!-- Modal window -->
     <div id="myModal" />
 
-    ::raw __content__::
+    ::set group = getCurrentGroup()::
+    ::set title = ""::
+    ::if(group!=null):: ::set title=group.name:: ::end::
+    $$nav(::title::, shopping)
 
     $$googleTagManagerNoScript(::getVariable("googleTagManagerId")::)
 

@@ -117,6 +117,88 @@
 		</div>
 			
 	</macro>
+
+	<macro name='nav(title, currentPage, ?vendorId)'>
+		<div style="display: flex;">
+			<style>
+				.nav-placeholder {
+					min-width: 240px;
+				}
+				@media (max-width: 900px){
+					.nav-placeholder {
+						min-width: 65px;
+					}
+				}
+				@media (max-width: 600px){
+					.nav-placeholder {
+						min-width: 0px;
+					}
+					.nav-md {
+						display: none;
+					}
+					#cavea-footer {
+						margin-bottom: 40px;
+					}
+				}
+			</style>
+
+			<div class="nav-placeholder">
+				<div class="nav-placeholder nav-md" style="background-color: white; position: absolute; top: 0; bottom: 0; left: 0; border-right: 1px solid rgba(0, 0, 0, 0.12);"/>
+				<div id='navigation-neo-container' />
+			</div>
+
+			<div style="flex-grow: 1;">
+				<div style="min-height: 64px;">
+					<div class="header-placeholder" style="position: absolute; top: 0; right: 0; left: 0;"/>
+					<div id='header-neo-container'/>
+				</div>
+				::raw __content__::
+			</div>
+
+			<script language="javascript">
+				window.addEventListener("DOMContentLoaded", function() {
+					::set group = getCurrentGroup()::
+					::if(user!=null)::
+						neo.createNeoModule("header-neo-container", "pageHeader", {
+							title: "::title::",
+							userName: "::user.getName()::",
+							isSuperAdmin: ::isAdmin::
+						});
+					::else::
+						neo.createNeoModule("header-neo-container", "pageHeader", {
+							title: "::title::",
+						});
+					::end::
+
+					neo.createNeoModule("navigation-neo-container", "navigation", {
+						currentPage: ::if (vendorId):: "::currentPage::::vendorId::" ::else:: "::currentPage::" ::end::,
+						vendors: [
+							::foreach cpro cagettePros::
+							{
+								id: ::cpro._vendor.id::,
+								name: "::cpro._vendor.name::",
+								image: ::if cpro._vendor.imageId!=null:: '::file(cpro._vendor.imageId)::' ::else:: null ::end::
+							},
+							::end::
+							]
+					});
+				});
+			</script>
+		</div>
+	</macro>
+
+	<macro name="news()">
+		<div class="col-md-12">
+			<div id="news-neo-container"></div>
+		</div>
+		<script>
+			document.addEventListener("DOMContentLoaded", function(event) {
+				neo.createNeoModule("news-neo-container", "newsFeed", {
+					userId: ::user.id::
+				});
+			});
+		</script>
+	</macro>
 	
 	<macro name="browse(b,url)">$$browseCustom(::b::,::url::,Page ::b.page:: ::if b.pages::/::b.pages:: ::end::)</macro>
 
@@ -467,7 +549,7 @@
 		::if(theme!=null && theme.footer!=null)::
 		<div class="row">
 			<div class="col-md-12">
-				<div id="footer" >
+				<div id="cavea-footer" >
 						<div class="col-md-3" >
 							::if(theme.footer.bloc1!=null):: ::raw theme.footer.bloc1:: ::end::
 						</div>

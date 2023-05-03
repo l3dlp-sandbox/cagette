@@ -82,25 +82,6 @@ class User extends Controller
 		view.groups = groups;
 		view.wl = db.WaitingList.manager.search($user == app.user, false);
 		
-
-		//vendor accounts
-		var cagettePros = service.VendorService.getCagetteProFromUser(app.user);
-		view.cagettePros = cagettePros;
-		view.discovery = cagettePros.find(cp -> cp.offer==Discovery)!=null;
-
-		//list tmpVendor that are not certified yet
-		view.tmpVendors = sys.db.Manager.cnx.request('select * from TmpVendor where userId = ${app.user.id} and certificationStatus < 2').results();
-		// view.isBlocked = pro.db.PUserCompany.getUserCompanies(app.user).find(uc -> return uc.disabled) != null;
-
-		//find free or invited vendor
-		/*var vendor = db.Vendor.manager.select($email==app.user.email,false);
-		if(vendor!=null){
-			var vs = VendorStats.getOrCreate(vendor);
-			if( vs.type == VTFree || vs.type == VTInvited || vs.type == VTInvitedPro ){
-				view.isFreeVendor = true;
-			}
-		}*/	
-
 		if(app.user!=null){
 			//need to check new ToS
 			if(app.user.tosVersion != sugoi.db.Variable.getInt('tosVersion')){
@@ -108,17 +89,34 @@ class User extends Controller
 			} 
 
 			//need to check new CGS
-			for( cpro in service.VendorService.getCagetteProFromLegalRep(app.user) ){
-				if(cpro.vendor.tosVersion != sugoi.db.Variable.getInt('platformtermsofservice')){
-					throw Redirect("/user/tos");
-				} 
-			}
+			// for( cpro in service.VendorService.getCagetteProFromLegalRep(app.user) ){
+			// 	if(cpro.vendor.tosVersion != sugoi.db.Variable.getInt('platformtermsofservice')){
+			// 		throw Redirect("/user/tos");
+			// 	} 
+			// }
 		}		
+	}
 
-		view.isGroupAdmin = app.user.getUserGroups().find(ug -> return ug.isGroupManager()) != null;
-		//view.cagetteProTest = cagettePros.find(cp -> cp.vendor.isTest)!=null;
-		view.memberVendor = cagettePros.find(cp -> cp.offer==Member)!=null;
+	@logged
+	@tpl("user/myMarkets.mtt")
+	function doMyMarkets(?args: { group:db.Group } ) {
 
+		//home page
+		app.breadcrumb = [];
+		
+		if (args!=null && args.group!=null) {
+			//select a group
+			var which = app.session.data==null ? 0 : app.session.data.whichUser ;
+			if(app.session.data==null) app.session.data = {};
+			app.session.data.order = null;
+			app.session.data.newGroup = null;
+			app.session.data.amapId = args.group.id;
+			app.session.data.whichUser = which;
+			throw Redirect('/home');
+		}
+		
+		var userGroups = app.user.getUserGroups().filter(ug -> return ug.isGroupManager());
+		view.groups = userGroups.map(ug -> ug.group);
 	}
 	
 	function doLogout() {
