@@ -111,7 +111,7 @@
 			::raw extraNotifBlock::
 		::end::
 		
-		<div class="row">
+		<div class="row">			
 			::raw __content__::
 		</div>
 
