@@ -77,8 +77,15 @@ class Main extends controller.Controller
 
 			group.update();
 
+<<<<<<< HEAD
 			throw Ok("/p/hosted/group/"+group.id,"Le groupe est configuré pour le dispatch");
 		}*/
+=======
+			throw Ok("/p/hosted/group/"+group.id,"Le marché est configuré pour le paiement Stripe (dispatch)");
+		}
+
+		
+>>>>>>> feature/market
 
 		if( app.params.get("removeMangopay")=="1" ){
 
@@ -106,7 +113,11 @@ class Main extends controller.Controller
 			group.setAllowedPaymentTypes(pt);
 			group.update();
 
+<<<<<<< HEAD
 			throw Ok("/p/hosted/group/"+group.id,"Mangopay retiré, moyens de paiements : "+pt.join(","));
+=======
+			throw Ok("/p/hosted/group/"+group.id,"Mangopay retiré, ATTENTION !!! : marché passé en paiement sur place");
+>>>>>>> feature/market
 
 		}
 
@@ -172,15 +183,13 @@ class Main extends controller.Controller
 				}
 
 			}
-
-
-
-
-			throw Ok("/p/hosted/group/"+g.id,"Groupe copié");
-
+			throw Ok("/p/hosted/group/"+g.id,"Marché copié");
 		}
 
+<<<<<<< HEAD
 	
+=======
+>>>>>>> feature/market
 		view.vendors = group.getActiveVendors();
 		var gs = GroupStats.getOrCreate(group.id,true);
 
@@ -260,7 +269,7 @@ class Main extends controller.Controller
 			m.flags.unset(db.User.UserFlags.HasEmailNotif4h);
 			m.update();
 		}
-		throw Ok("/p/hosted/group/"+g.id, "Notifications désactivées pour tous les membres de ce groupe");
+		throw Ok("/p/hosted/group/"+g.id, "Notifications désactivées pour tous les membres de ce marché");
 	}
 
 	function doEnableNotifs(g:db.Group){
@@ -271,7 +280,7 @@ class Main extends controller.Controller
 			m.flags.set(db.User.UserFlags.HasEmailNotifOuverture);
 			m.update();
 		}
-		throw Ok("/p/hosted/group/"+g.id, "Notifications activées pour tous les membres de ce groupe");
+		throw Ok("/p/hosted/group/"+g.id, "Notifications activées pour tous les membres de ce marché");
 	}
 	
 	public function doCacheDebug(){
@@ -313,7 +322,7 @@ class Main extends controller.Controller
 		if (checkToken()) {
 			a.lock();
 			a.delete();
-			throw Ok("/p/hosted/","Groupe effacé");
+			throw Ok("/p/hosted/","Marché effacé");
 		}
 	}
 	
@@ -338,7 +347,7 @@ class Main extends controller.Controller
 	}
 
 	/**
-	 * infos sur le membre d'un groupe
+	 * infos sur le membre d'un marché
 	 */
 	@admin @tpl("plugin/pro/hosted/usergroup.mtt")
 	public function doUserGroup(u:db.User, g:db.Group){

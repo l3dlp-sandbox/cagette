@@ -95,7 +95,6 @@
 					::if (cpro==null || cpro.offer==0)::
 						<p>
 							Ventes limitées à 1000€ par an.<br/>
-							<span class="disabled">(hors ventes réalisées dans des groupes en mode AMAP)</span><br/>
 						</p>
 						<p>
 							::set frdate = getDate(vendor.freemiumResetDate)::

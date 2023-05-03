@@ -3,37 +3,34 @@
 
 
 	<div class="article">
-		<h4>Groupe #::group.id::</h4>
+		<h4>Marché #::group.id::</h4>
 		<h2>::group.name::</h2>
 
 		<p>Actif : $$bool(::groupStats.active::)</p>
 
 		<p>
-
-		créé le : ::group.cdate::<br/>
-		
-		::if group._contact!=null::
-		
-			Par <a href="/p/hosted/userGroup/::group._contact.id::/::group.id::">::group._contact.getName()::</a>
-			<p>
-				Tel. <b>::group._contact.phone::</b><br/>
-				Email <b>::group._contact.email::</b><br/>
-				Dernier login ::group._contact.ldate:: <br/>				
-			</p>
+			créé le : ::group.cdate::<br/>
+			::if group._contact!=null::
 			
-			::set memberof = group._contact.getGroups()::		
-			<div ::cond memberof.length>1:: style="max-height:300px;overflow-y:scroll;">
-				Egalement membre de : 
-				<ul>
-				::foreach x memberof::
-					::if x.id!=group.id::
-					<li><a href="/p/hosted/group/::x.id::">#::x.id::-::x.name::</a></li>
+				Par <a href="/p/hosted/userGroup/::group._contact.id::/::group.id::">::group._contact.getName()::</a>
+				<p>
+					Tel. <b>::group._contact.phone::</b><br/>
+					Email <b>::group._contact.email::</b><br/>
+					Dernier login ::group._contact.ldate:: <br/>				
+				</p>
+				
+				::set memberof = group._contact.getGroups()::		
+				<div ::cond memberof.length>1:: style="max-height:300px;overflow-y:scroll;">
+					Egalement membre de : 
+					<ul>
+					::foreach x memberof::
+						::if x.id!=group.id::
+						<li><a href="/p/hosted/group/::x.id::">#::x.id::-::x.name::</a></li>
+						::end::
 					::end::
-				::end::
-				</ul>
-			</div>
-		
-		::end::
+					</ul>
+				</div>
+			::end::
 		</p>
 <hr/>
 
@@ -99,8 +96,7 @@
 		<hr/>
 		
 		<a href="/group/::group.id::" class="btn btn-default">Page publique</a>
-		<a href="/p/hosted/addMe/::group.id::" class="btn btn-default">Devenir Membre de ce groupe</a>
-		
+		<a href="/p/hosted/addMe/::group.id::" class="btn btn-default">Devenir Membre de ce marché</a>
 
 		<hr/>
 		
@@ -208,7 +204,7 @@
 
 		<a href="/p/hosted/deleteGroup/::group.id::?token=::token::" $$confirm(::_("Delete ?")::) class="btn btn-danger" >
 				<i class="icon icon-delete"></i>
-				Supprimer DEFINITIVEMENT le groupe (irréversible)
+				Supprimer DEFINITIVEMENT le marché (irréversible)
 		</a>
 		
 	</div>

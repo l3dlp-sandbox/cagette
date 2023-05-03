@@ -379,18 +379,18 @@ class Admin extends controller.Controller {
 			data.push({label: "#" + g.id + " " + g.name, value: g.id});
 		}
 
-		f.addElement(new sugoi.form.elements.IntSelect("group", "Choisissez un groupe à dupliquer", cast data, true));
+		f.addElement(new sugoi.form.elements.IntSelect("group", "Choisissez un marché à dupliquer", cast data, true));
 
 		if (f.isValid()) {
 			var s = new pro.service.ProGroupService();
 			var x = db.Group.manager.get(f.getValueOf("group"));
 			s.duplicateGroup(x, true, x.name + "(copy)", x.getMainPlace().name);
 
-			throw Ok("/", "Groupe dupliqué");
+			throw Ok("/", "Marché dupliqué");
 		}
 
 		view.form = f;
-		view.title = "Dupliquer un groupe";
+		view.title = "Dupliquer un marché";
 	}
 
 	/**
@@ -465,7 +465,7 @@ class Admin extends controller.Controller {
 		var f = new sugoi.form.Form("contract");
 		view.title = "Importer un catalogue invité dans un espace producteur";
 		if (catalog != null && cagettePro != null) {
-			/*f.addElement(new sugoi.form.elements.IntInput("cid",catalog.name+" dans le groupe "+catalog.group.name,catalog.id,true));
+			/*f.addElement(new sugoi.form.elements.IntInput("cid",catalog.name+" dans le marché "+catalog.group.name,catalog.id,true));
 				f.addElement(new sugoi.form.elements.IntInput("companyId",cagettePro.vendor.name,cagettePro.id,true)); */
 
 			view.text = 'Voulez vous importer ce catalogue <b>${catalog.name}</b><br/> dans l\'espace producteur <b>${cagettePro.vendor.name}</b> ?';
@@ -782,7 +782,7 @@ class Admin extends controller.Controller {
 
 			var gids:Array<Int> = groups.map(g -> g.id);
 			var groupsToDelete = db.Group.manager.unsafeObjects('select * from `Group` where id not in (${gids.join(",")}) LIMIT 1000',true);
-			print("====  1000 Groupes a effacer");
+			print("====  1000 Marchés a effacer");
 			for(g in groupsToDelete){
 				print("delete "+g.name);
 				g.delete();
@@ -792,7 +792,7 @@ class Admin extends controller.Controller {
 
 				for( u in db.User.manager.unsafeObjects("SELECT * FROM User order by RAND() limit "+usersToDelete,true)){
 
-					//ne pas effacer ceux qui sont dans un groupe VRAC
+					//ne pas effacer ceux qui sont dans un marché VRAC
 					if( db.UserGroup.manager.count($userId==u.id && $groupId in gids) > 0 ){
 						print(""+u.toString()+" is VRAC member");
 						continue;

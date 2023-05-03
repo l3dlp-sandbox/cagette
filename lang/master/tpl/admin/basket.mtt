@@ -7,7 +7,7 @@
 </p>
 <p>
     Distribution : ::hDate(basket._multiDistrib.distribStartDate):: ( #::basket.multiDistribId:: )<br/>
-    du groupe <a href="/p/hosted/group/::basket._multiDistrib.groupId::">::basket._multiDistrib._group.name::</a>
+    du marché <a href="/p/hosted/group/::basket._multiDistrib.groupId::">::basket._multiDistrib._group.name::</a>
 </p>
 <p>
     cdate : ::basket.cdate::<br/>

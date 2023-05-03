@@ -653,7 +653,7 @@ class OrderService
 		}
 
 		var group : db.Group = multiDistrib != null ? multiDistrib.group : catalog.group;
-		if ( group == null ) { throw new Error('Impossible de déterminer le groupe.'); }
+		if ( group == null ) { throw new Error('Impossible de déterminer le marché.'); }
 		
 		for ( order in ordersData ) {
 			

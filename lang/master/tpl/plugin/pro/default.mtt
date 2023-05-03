@@ -74,7 +74,7 @@
 	</script>
 
 	<div class="article">
-		<h2 style="margin-top:0">Mes groupes</h2>
+		<h2 style="margin-top:0">Mes marchés</h2>
 
 		<style>
 			.clickable{
@@ -86,13 +86,13 @@
 			::if(adminClients.length>0)::
 			<div class="col-md-12">
 				<p>
-					Les groupes dont je suis administrateur :
+					Les marchés dont je suis administrateur :
 				</p>
 			</div>
 			::end::
 
 			::foreach client adminClients::
-			<div class="col-md-4" data-toggle="tooltip" data-placement="bottom" title="Aller dans ce groupe">
+			<div class="col-md-4" data-toggle="tooltip" data-placement="bottom" title="Aller dans ce marché">
 				
 				::set group = client[0].getContract(false)._group::
 				<a href="/group/::group.id::" target="_blank" class="clickable" style="height:60px;">
@@ -123,13 +123,13 @@
 			::if(regularClients.length>0)::
 			<div class="col-md-12">
 				<p>
-					Les groupes que j'ai rejoins :
+					Les marchés que j'ai rejoins :
 				</p>
 			</div>
 			::end::
 	
 			::foreach client regularClients::
-			<div class="col-md-4" data-toggle="tooltip" data-placement="bottom"  title="Aller dans ce groupe">
+			<div class="col-md-4" data-toggle="tooltip" data-placement="bottom"  title="Aller dans ce marcher">
 				
 				::set group = client[0].getContract(false)._group::
 				<a href="/group/::group.id::" target="_blank" class="clickable" style="height:60px;" >
@@ -160,10 +160,10 @@
 				<div class="col-md-12">			
 					<div class="alert alert-warning">
 						<i class="icon icon-info"></i>
-						Vous avez <b>::unlinkedCatalogs.length:: catalogue(s)</b> créés dans des groupes et qui ne sont pas reliés à votre espace producteur.<br/>
+						Vous avez <b>::unlinkedCatalogs.length:: catalogue(s)</b> créés dans des marchés et qui ne sont pas reliés à votre espace producteur.<br/>
 						<ul>
 							::foreach c unlinkedCatalogs::
-							<li><b>::c.name::</b> dans le groupe <a href="/group/::c._group.id::" target="_blank">::c._group.name::</a></li>
+							<li><b>::c.name::</b> dans le marché <a href="/group/::c._group.id::" target="_blank">::c._group.name::</a></li>
 							::end::
 						</ul>
 							
@@ -174,11 +174,11 @@
 			
 			<div class="col-md-12">
 				<a href="/p/pro/group/duplicate" class="btn btn-default btn-sm">
-					<i class="icon icon-plus"></i> Dupliquer un groupe
+					<i class="icon icon-plus"></i> Dupliquer un marché
 				</a>
 
 				<a href="/p/pro/group/removeGroup" class="btn btn-default btn-sm">
-					<i class="icon icon-delete"></i> Retirer un groupe
+					<i class="icon icon-delete"></i> Retirer un marché
 				</a>
 			</div>	
 			

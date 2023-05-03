@@ -237,16 +237,16 @@ class App extends sugoi.BaseApp {
 		out.set("contract", "Contrat");
 		out.set("place", "Lieu");
 		out.set("name", "Nom");
-		out.set("cdate", "Date d'entrée dans le groupe");
+		out.set("cdate", "Date d'entrée dans le marché");
 		out.set("quantity", "Quantité");
 		out.set("paid", "Payé");
 		out.set("user2", "(facultatif) partagé avec ");
 		out.set("product", "Produit");
 		out.set("user", "Adhérent");
-		out.set("txtIntro", "Texte de présentation du groupe");
+		out.set("txtIntro", "Texte de présentation du marché");
 		out.set("txtHome", "Texte en page d'accueil pour les adhérents connectés");
 		out.set("txtDistrib", "Texte à faire figurer sur les listes d'émargement lors des distributions");
-		out.set("extUrl", "URL du site du groupe.");
+		out.set("extUrl", "URL du site du marché.");
 		
 		out.set("startDate", "Date de début");
 		out.set("endDate", "Date de fin");
@@ -291,7 +291,7 @@ class App extends sugoi.BaseApp {
 		out.set("membershipPrice", "Adhésions : Coût de l'adhésion");
 		out.set("contact", "Responsable");
 		out.set("fees", "frais");
-		out.set("AmapAdmin", "Administrateur du groupe");
+		out.set("AmapAdmin", "Administrateur du marché");
 		out.set("Membership", "Accès à la gestion des membres");
 		out.set("Messages", "Accès à la messagerie");
 		out.set("vat", "TVA");
@@ -302,24 +302,18 @@ class App extends sugoi.BaseApp {
 		out.set("HidePhone", "Masquer le téléphone du responsable sur la page publique");
 		out.set("PhoneRequired", "Saisie du numéro de téléphone obligatoire");
 		out.set("AddressRequired", "Saisie de l'adresse obligatoire");
-		out.set("CagetteNetwork", "Lister ce groupe sur la carte et sur les annuaires partenaires");
+		out.set("CagetteNetwork", "Lister ce marché sur la carte et sur les annuaires partenaires");
 		out.set("Show3rdCategoryLevel", "Classer les produits de la boutique par catégorie de troisième niveau");	
 
 		out.set("ref", "Référence");
 		out.set("linkText", "Intitulé du lien");
 		out.set("linkUrl", "URL du lien");
 		
-		//group type
-		out.set("Amap", "AMAP");
-		out.set("GroupedOrders", 	"Groupement d'achat");
-		out.set("ProducerDrive", 	"En direct d'un collectif de producteurs");
-		out.set("FarmShop", 		"En direct d'un producteur");
-		
 		out.set("regOption", 	"Inscription de nouveaux membres");
 		out.set("Closed", 		"Fermé : L'administrateur ajoute les nouveaux membres");
 		out.set("WaitingList", 	"Liste d'attente");
 		out.set("Open", 		"Ouvert : tout le monde peut s'inscrire");
-		out.set("Full", 		"Complet : Le groupe n'accepte plus de nouveaux membres");
+		out.set("Full", 		"Complet : Le marché n'accepte plus de nouveaux membres");
 
 		out.set("Soletrader"	, "Micro-entreprise");
 		out.set("Organization"	, "Association");

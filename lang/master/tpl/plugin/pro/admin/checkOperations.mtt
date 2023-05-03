@@ -3,7 +3,7 @@
 <h2>Vérification de la consistence entre commandes et opérations de paiement</h2>
 
 <p>
-    Groupe : <b>::group.name::</b><br/>
+    Marché : <b>::group.name::</b><br/>
     Période du <b>::hDate(from)::</b> au <b>::hDate(to)::</b>
 </p>
 

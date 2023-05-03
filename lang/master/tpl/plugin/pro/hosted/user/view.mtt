@@ -39,7 +39,7 @@
 		<p>
 			<table class="table table-bordered table-condensed">
 				<tr>
-					<th class="col-md-4">Groupe</th>
+					<th class="col-md-4">Marché</th>
 					<th class="col-md-8">Droits</th>
 				</tr>
 				::foreach ug member.getUserGroups()::

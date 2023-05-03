@@ -49,9 +49,9 @@ class PCatalogService{
 					disabledInGroup = Lambda.has(disabledProducts, groupProduct.id);
 					//debug
 					/*if(disabledInGroup){
-						log.push( pcatalogOffer.offer+" est désactivé dans le groupe" );
+						log.push( pcatalogOffer.offer+" est désactivé dans le marché" );
 					}else{
-						log.push( pcatalogOffer.offer+" est actif dans le groupe" );
+						log.push( pcatalogOffer.offer+" est actif dans le marché" );
 					}*/
 				}else{
 					//debug
@@ -300,16 +300,20 @@ class PCatalogService{
 		//checks
 		var contracts = connector.db.RemoteCatalog.getContracts(pcatalog, clientGroup);
 		if ( contracts.length>0 ){
-			throw new tink.core.Error("Ce catalogue existe déjà dans ce groupe. Il n'est pas nécéssaire d'importer plusieurs fois le même catalogue dans un groupe.");
+			throw new tink.core.Error("Ce catalogue existe déjà dans ce marché. Il n'est pas nécéssaire d'importer plusieurs fois le même catalogue dans un marché.");
 		}
 
 		if (pcatalog.company.vendor.disabled==db.Vendor.DisabledReason.MarketplaceNotActivated){
-			throw new tink.core.Error("Ce catalogue ne peut pas être relié à ce groupe car le producteur n'a pas activé le prélèvement des frais Cagette.net.");
+			throw new tink.core.Error("Ce catalogue ne peut pas être relié à ce marché car le producteur n'a pas activé le prélèvement des frais Cagette.net.");
 		}
 
 		if(clientGroup.isDispatch()){
 			if(!pcatalog.company.vendor.isDispatchReady()){
+<<<<<<< HEAD
 				throw new tink.core.Error("Ce catalogue ne peut pas être relié à ce groupe car le producteur n'a pas encore de compte Stripe.<br/>Le producteur peut ouvrir facilement son compte Stripe depuis son espace producteur (onglet \"producteur\",puis \"Paiement en ligne Stripe\").<br/>Plus d'informations dans la <a href='https://wiki.cagette.net/cpro:stripe'>documentation</a>.");
+=======
+				throw new tink.core.Error("Ce catalogue ne peut pas être relié à ce marché car le producteur n'a pas de compte Stripe (Obligatoire afin de pouvoir accepter le paiement en ligne).");
+>>>>>>> feature/market
 			}
 		}
 
@@ -373,7 +377,7 @@ class PCatalogService{
 
 		var cats = connector.db.RemoteCatalog.getContracts( pcatalog, catalog.group );
 		if ( cats.length>0 ){
-			throw new tink.core.Error("Ce catalogue existe déjà dans ce groupe. Il n'est pas nécéssaire d'importer plusieurs fois le même catalogue dans un groupe.");
+			throw new tink.core.Error("Ce catalogue existe déjà dans ce marché. Il n'est pas nécéssaire d'importer plusieurs fois le même catalogue dans un marché.");
 		}
 
 		var rc = new connector.db.RemoteCatalog();
