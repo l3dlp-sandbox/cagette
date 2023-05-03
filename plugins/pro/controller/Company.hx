@@ -71,7 +71,7 @@ class Company extends controller.Controller
 				throw Error(sugoi.Web.getURI(),e.message);
 			}			
 			vendor.update();
-			throw Ok('/p/pro/company','Votre compte producteur a été mis à jour');
+			throw Ok('/p/pro/company','Vos informations ont été mises à jour');
 		}
 		
 		view.form = form;
@@ -96,11 +96,11 @@ class Company extends controller.Controller
 			var v = new pro.db.PUserCompany();
 			var u = service.UserService.get(f.getValueOf("email"));
 			if(u==null){
-				throw Error('/p/pro/company/users','Il n\'y a aucun compte avec l\'email "${f.getValueOf("email")}". Cette personne doit s\'inscrire avant que vous puissiez lui donner accès à votre compte producteur.');
+				throw Error('/p/pro/company/users','Il n\'y a aucun compte avec l\'email "${f.getValueOf("email")}". Cette personne doit s\'inscrire avant que vous puissiez lui donner accès à votre espace producteur.');
 			}
 
 			if(company.getUsers().find(uc -> uc.id==u.id)!=null){
-				throw Error('/p/pro/company/users','Cet utilisateur a déjà accès à votre compte producteur.');
+				throw Error('/p/pro/company/users','Cet utilisateur a déjà accès à votre espace producteur.');
 			}
 
 			v.company = company;
@@ -135,7 +135,7 @@ class Company extends controller.Controller
 			
 			throw Ok("/p/pro/company/users", "Nouvel utilisateur ajouté");
 		}
-		view.title = "Ajouter un nouvel utilisateur à mon compte producteur";
+		view.title = "Ajouter un nouvel utilisateur à mon espace producteur";
 		view.form = f;
 	}
 
@@ -177,14 +177,14 @@ class Company extends controller.Controller
 				vendor.update();
 			}else{
 				// Prevent deleting the SalesRepresentative
-				throw Error("/p/pro/company/users", "Vous devez avoir un contact commercial pour votre compte Producteur.");
+				throw Error("/p/pro/company/users", "Vous devez avoir un contact commercial pour votre espace Producteur.");
 			}
 
 			uc.update();
 			
 			throw Ok("/p/pro/company/users", "Utilisateur mis à jour");
 		}
-		view.title = "Gérer un utilisateur de mon compte producteur";
+		view.title = "Gérer un utilisateur de mon espace producteur";
 		view.form = f;
 	}
 	
@@ -197,7 +197,7 @@ class Company extends controller.Controller
 			}
 
 			if(company.getUsers().count(user -> return userToDelete.id!=user.id)==0){
-				throw Error("/p/pro/company/users", "Vous ne pouvez pas supprimer cet utilisateur. Au moins une personne doit avoir accès à un compte producteur.");
+				throw Error("/p/pro/company/users", "Vous ne pouvez pas supprimer cet utilisateur. Au moins une personne doit avoir accès à un espace producteur.");
 			}
 			
 			var uc = pro.db.PUserCompany.get(userToDelete, company);			
@@ -228,86 +228,6 @@ class Company extends controller.Controller
 		view.vendors = company.getVendors();
 	}
 
-	/**
-		1- define the vendor
-	**/
-	/*@tpl("plugin/pro/form.mtt")
-	function doDefineVendor(){
-
-		if(company.getVendors().length >= PVendorCompany.MAX_VENDORS){
-			//exception for GASAP.be
-			if(company.vendor.id!=14908){
-				throw Error("/p/pro/company/vendors","Vous ne pouvez pas ajouter plus de 4 producteurs invités");
-			}
-			
-		}
-				
-		view.title = t._("Define a vendor");
-		var f = new sugoi.form.Form("defVendor");
-		f.addElement(new sugoi.form.elements.StringInput("name",t._("Vendor or farm name"),null,true));
-		f.addElement(new sugoi.form.elements.StringInput("email",t._("Vendor email"),null,false));
-
-		if(f.isValid()){
-			//look for identical names
-			var name : String = f.getValueOf('name');
-			var email : String = f.getValueOf('email');
-			
-			var vendors = service.VendorService.findVendors( {name:name , email:email} );
-			app.setTemplate('plugin/pro/company/defineVendor.mtt');
-			view.vendors = vendors;
-			view.email = email;
-			view.name = name;
-
-		}
-
-		view.form = f;
-	}*/
-
-	/**
-	  2- create vendor
-	**/
-	@tpl("plugin/pro/form.mtt")
-	/*public function doInsertVendor(email:String,name:String) {
-				
-		var vendor = new db.Vendor();
-		var form = VendorService.getForm(vendor);
-				
-		if (form.isValid()) {
-
-			try{
-				vendor = VendorService.create(form.getDatasAsObject());
-				pro.db.PVendorCompany.make(vendor,company);
-			}catch(e:tink.core.Error){
-				throw Error(sugoi.Web.getURI(),e.message);
-			}			
-			
-			throw Ok("/p/pro/company/vendors", "Nouveau producteur référencé");
-			
-			//service.VendorService.getOrCreateRelatedUser(vendor);			
-
-		}else{
-			form.getElement("email").value = email;
-			form.getElement("name").value = name;
-		}
-
-		view.title = t._("Key-in a new vendor");
-		//view.text = t._("We will send him/her an email to explain that your group is going to organize orders for him very soon");
-		view.form = form;
-	}*/
-
-
-	/**
-	3 - link vendor to this cagettePro
-	**/	
-/*	public function doLinkVendor(vendor:db.Vendor){
-		view.nav.push("vendors");
-		
-		pro.db.PVendorCompany.make(vendor,company);
-
-		throw Ok("/p/pro/company/vendors", "Nouveau producteur référencé");
-		
-	}*/
-	
 	public function doDeleteVendor(v:db.Vendor){
 		
 		if (checkToken()){

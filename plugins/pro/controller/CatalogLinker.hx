@@ -51,7 +51,7 @@ class CatalogLinker extends controller.Controller
 	public function doImportFirstCatalog(?catalog:db.Catalog){
 
 		if(catalog!=null){
-			if(company.getProducts().length>0) throw Error("/p/pro","Action interdite, vous avez déjà des produits dans votre compte producteur");
+			if(company.getProducts().length>0) throw Error("/p/pro","Action interdite, vous avez déjà des produits dans votre espace producteur");
 			pro.service.PCatalogService.linkFirstCatalog(catalog,company);
 			if(company.offer==Marketplace){
 				service.BridgeService.ga4Event(app.user.id,"FirstProduct");

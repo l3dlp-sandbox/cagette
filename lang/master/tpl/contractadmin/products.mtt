@@ -130,6 +130,6 @@
 	</form>
 
 	<div class="alert alert-warning">
-		<i class="icon icon-info"></i> Ce catalogue n'est pas modifiable, c'est le producteur depuis son <b>compte producteur</b> qui peut le mettre à jour.
+		<i class="icon icon-info"></i> Ce catalogue n'est pas modifiable, c'est le producteur depuis son <b>espace producteur</b> qui peut le mettre à jour.
 	</div>
 ::end::

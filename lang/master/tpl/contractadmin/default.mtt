@@ -59,14 +59,18 @@
 	
 		
 		::if user.canManageAllContracts():: 
-		<a href="/contract/defineVendor/" class="btn btn-primary btn-sm"><i class="icon icon-search"></i> Chercher un producteur</a>		
+			<a href="/contract/searchVendor/" class="btn btn-primary"><i class="icon icon-search"></i> Découvrir les producteurs du réseau</a>
+			<!--		
+			<a href="/contract/defineVendor/" class="btn btn-primary"><i class="icon icon-mail"></i> Inviter un producteur</a>		
+			<a href="/contract/defineVendor/" class="btn btn-primary"><i class="icon icon-search"></i> Chercher un catalogue</a>		
+			-->
 		::end::
 
-		<a href="/contractAdmin?old=1" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-folder-close"></span> Anciens catalogues</a>
+		<a href="/contractAdmin?old=1" class="btn btn-default"><span class="glyphicon glyphicon-folder-close"></span> Anciens catalogues</a>
 
 		::if user.canManageAllContracts():: 
 		<div class="dropdown" style="display:inline-block;">
-		  <button class="btn btn-default btn-sm dropdown-toggle btn-noAntiDoubleClick" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+		  <button class="btn btn-default dropdown-toggle btn-noAntiDoubleClick" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 			<i class="icon icon-list"></i> ::_("Global orders view")::
 			<span class="caret"></span>
 		  </button>
@@ -79,56 +83,4 @@
 	</div>
 	
 </div>
-
-
-
-<div class="col-md-6">
-	<div class="article" id="vendors">
-		<h2>::_("Farmers")::</h2>
-		<table class="table">
-			::foreach v vendors::		
-				<tr>
-					<td>
-						<div class="productImg" style="background-image:url('::v.getImage()::');width:48px;height:48px;"></div>
-					</td>
-					<td>
-						<b>::v.name::</b><br/>
-						::v.zipCode:: ::v.city::
-
-						::if(v.isDisabled())::
-							::if( v.disabled!=3 && v.disabled!=6) ::	
-								<div class="alert alert-danger"><i class="icon icon-alert"></i> Producteur désactivé : ::raw v.getDisabledReason()::</div>
-							::end::
-						::end::
-					</td>
-					<td>
-						<div class="btn-group" role="group">
-							::set cpro = v.getCpro()::
-							::if(cpro==null && user.canManageVendor(v))::
-								$$edit(::_("Edit")::,/vendor/edit/::v.id::)
-								<a href="/vendor/addImage/::v.id::" class="btn btn-default btn-sm"> <i class="icon icon-image"></i> ::_("Picture")::</a>
-							::end::
-							<!-- ::if user.isAmapManager():: $$delete(,/vendor/delete/::v.id::?token=::token::) ::end::-->
-						</div>
-					</td>
-				</tr>
-			::end::
-		</table>
-		<!--$$insert(::_("New farmer")::,/vendor/insert/) -->
-		<div class="alert alert-warning text-center">Pour référencer un nouveau producteur, cliquez sur "Chercher un producteur"</div>
-		
-	</div>	
-</div>
-
-<!--
-<div class="col-md-6">
-	<div class="article" id="places">
-		
-		<h2>::_("Delivery places")::</h2>
-		<div class="alert alert-warning text-center">La gestion des lieux a été déplacée dans <a href="/place">l'onglet "paramètres"</a></div>
-		
-	</div>
-</div>
--->
-	
 ::end::

@@ -16,12 +16,12 @@
 				<td>Liaison catalogue</td>
 				<td>
 					::if(rc==null)::
-						Catalogue invité ( non relié à un compte producteur)
+						Catalogue invité ( non relié à un espace producteur)
 					::else::
 						::set pcat = rc.getPCatalog()::
 
 						::if(pcat._company._vendor.id==contract._vendor.id)::
-							Catalogue géré depuis un compte producteur.
+							Catalogue géré depuis un espace producteur.
 						::else::
 							Catalogue <b>invité</b> sur le compte d'un autre producteur (<a href="::pcat._company._vendor.getLink()::">::pcat._company._vendor.name::</a>).
 						::end::
@@ -62,7 +62,7 @@
 		<table class="table table-bordered" style="width:600px;">
 			<tr>
 				<td class="col-md-3">::_("Name")::</td>
-				<td><b>::contract._vendor.name::</b></td>
+				<td><a href="::contract._vendor.getLink()::" target="_blank">::contract._vendor.name::</a></td>
 			</tr>
 			<tr>
 				<td>Email</td>
@@ -85,7 +85,7 @@
 						<div class="col-md-12">			
 							<div class="alert alert-danger">
 								<i class="icon icon-alert"></i>
-								Ce compte producteur est bloqué et n'accepte plus de commandes.<br/>
+								Cet espace producteur est bloqué et n'accepte plus de commandes.<br/>
 								Raison : <b>::raw vendor.getDisabledReason()::</b>
 							</div>
 						</div>
@@ -104,7 +104,7 @@
 						</p>
 						::if(cpro==null)::
 							<p>
-								<a href="/vendor/checkId/::c.id::" class="btn btn-primary">Ouvrir un compte Producteur</a>
+								<a href="/vendor/checkId/::c.id::" class="btn btn-primary">Ouvrir un espace Producteur</a>
 							</p>
 							<p>
 								<div id="discoveryVendorTurnoverLimit"></div>
@@ -119,18 +119,6 @@
 				</td>
 			</tr>
 		</table>
-		
-		<h4><a href="/contractAdmin/products/::c.id::">::_("Products")::</a></h4>
-		<div style="max-height:400px;overflow:auto;">
-			<table class="table table-bordered" style="width:600px;">
-				::foreach p contract.getProducts(true)::
-				<tr>
-					<td><img src="::p.getImage()::" style="width:32px;height:32px;" />	</td>
-					<td>::p.getName()::</td>
-					<td>::formatNum(p.price)::&nbsp;::currency()::</td>					
-				</tr>
-				::end::
-			</table>
-		</div>
+			
 
 ::end::

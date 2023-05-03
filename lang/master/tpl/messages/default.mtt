@@ -1,6 +1,6 @@
 ::use 'design.mtt'::
 
-	<div id="messages-neo-container" style="margin-right: 15px; margin-left: 15px;"></div>
+	<div id="messages-neo-container" style="margin-right: 15px; margin-left: 15px; transform: translateY(-24px);"></div>
 
 	<script>
 		document.addEventListener("DOMContentLoaded", function () {

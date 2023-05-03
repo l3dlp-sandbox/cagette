@@ -22,12 +22,10 @@
 
 		<table class="table table-striped">
 			<tr>
-				<th>Compte producteur</th>
+				<th>Espace producteur</th>
 				<th>Formule</th>
 				<th>Stagiaire</th>				
 				<th></th>
-				
-
 			</tr>
 			::foreach c companies::
 			<tr ::cond c._company!=null::>

@@ -89,14 +89,9 @@
 	</div>
 
 	<div class="col-md-12" ::cond cagettePros!=null && cagettePros.length>0::>
-		<p>Connectez-vous à votre <b>compte producteur</b> :</p>
+		<p>Connectez-vous à votre <b>espace producteur</b> :</p>
 	</div>
 
-
-
-
-
-	
 	<div class="col-md-12" ::cond cagettePros!=null || tmpVendors.length>0:: >
 		<div class="row">
 		<!-- cpro -->
@@ -126,7 +121,7 @@
 				<h4>::tmp.farmName::</h4>
 				<p class="disabled">
 					<i class="icon icon-clock"></i>
-					Demande d'ouverture de compte producteur en attente de validation par l'équipe ::theme.name::
+					Demande d'ouverture d'espace producteur en attente de validation par l'équipe ::theme.name::
 				</p>
 			</a>
 		</div>
@@ -137,7 +132,7 @@
 	</div>
 	
 	<div class="col-md-12" >
-		<p>Vous êtes membre des <b>groupes ::theme.name::</b> suivants :</p>
+		<p>Vous êtes membre des <b>marchés ::theme.name::</b> suivants :</p>
 	</div>
 
 	<!-- groups -->
@@ -176,7 +171,7 @@
 		::end::
 		::if settings.onlyVendorsCanCreateGroup==null || settings.onlyVendorsCanCreateGroup==false || (settings.onlyVendorsCanCreateGroup==true && cagettePros!=null && cagettePros.length>0)::
 			<a class="btn btn-default btn-lg" href="/group/create/">
-				<i class="icon icon-plus"></i> Créer un groupe
+				<i class="icon icon-plus"></i> Créer un marché
 			</a>
 		::end::
 	</div>

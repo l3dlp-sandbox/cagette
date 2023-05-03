@@ -10,18 +10,23 @@
 		</p>
 
 		<h2>Chercher un producteur</h2>		
+
+		<p>
+			::raw form.toString()::
+		</p>
 		
 		<div class="row">
 			::if(vendors.length>0)::
 
+				<!--
 				<div class="col-md-12" style="margin-bottom:8px;">
 					<p>::_("We found these vendors in our database :")::</p>
-				</div>
+				</div>-->
 
 				::foreach v vendors::
 				<div class="col-md-4 col-sm-6">
 					
-					<div class="boxed" style="height:300px">	
+					<div class="boxed" style="height:200px">	
 						<div class="row">
 							<div class="col-md-4">													
 								<div class="productImg xl" style="background-image:url('::v.getImage()::');"></div>								
@@ -30,45 +35,14 @@
 								<h4>
 									<a href="::v.getLink()::" target="_blank">::v.name::</a>
 								</h4>
-								<p>$$publicVendorIcon(::v::) ::v.zipCode:: ::v.city::</p>									
+								<p>$$nullSafe(::v.getProfession()::)</p>
+								<p>::v.zipCode:: ::v.city::</p>									
 							</div>
 						</div>
+						<div class="text-center">
+							<a href="::v.getLink()::" target="_blank" class="btn btn-default"><i class="icon icon-chevron-right"></i> Infos et contact</a>
+						</div>
 						
-						::set cpro = v.getCpro()::
-						<p style="line-height: 38px;">
-							::if(cpro!=null)::
-								<!-- compte producteur -->
-
-								::set catalogs = cpro.getActiveVisibleCatalogs()::
-								Catalogue(s) :
-								
-								::foreach catalog catalogs::									
-									<a href="/p/pro/public/::catalog.id::" class="btn btn-default btn-sm" target="_blank">
-										<i class="icon icon-book"></i> ::catalog.name::
-									</a>&nbsp;
-								::end::
-								
-							::else::
-								<!-- NOT compte producteur -->
-								::if settings.noVendorSignup!=true::
-									<!--<a href="/contract/insert/::v.id::" class="btn btn-default btn-sm">
-										<i class="icon icon-plus"></i> Nouveau catalogue
-									</a>-->
-									<div class="alert alert-warning">
-										<p>
-											Ce producteur est référencé mais n'a pas encore de compte producteur.
-										</p>
-										<p class="text-center">
-											<a href="/contract/inviteVendor/::v.id::" class="btn btn-default">L'inviter à ouvrir un compte producteur</a>
-										</p>
-									</div>
-								::else::
-									<a href="/contract/insertChoose/::v.id::" class="btn btn-default btn-sm">
-										<i class="icon icon-plus"></i> Nouveau catalogue
-									</a>
-								::end::
-							::end::
-						</p>
 					</div>
 				</div>
 				::end::
@@ -78,6 +52,7 @@
 				<div class="col-md-12">
 					$$empty(::_("We could not find any vendor matching your search")::)
 				</div>
+				
 				::if settings.noVendorSignup!=true:: 
 					<div class="col-md-12" style="margin-bottom:16px; text-align: center;">
 						<a href="/contract/inviteVendor" class="btn btn-primary btn-lg">
@@ -85,9 +60,8 @@
 						</a>
 					</div>
 				::end::
-				<div class="col-md-12">
-					$$back()
-				</div>
+				
+				
 
 			::end::
 		</div>

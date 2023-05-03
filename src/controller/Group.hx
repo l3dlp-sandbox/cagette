@@ -113,6 +113,8 @@ class Group extends controller.Controller
 	 */
 	@tpl("form.mtt")
 	function doCreate() {
+		App.current.session.data.amapId = null;
+
 		var cagettePros = service.VendorService.getCagetteProFromUser(App.current.user);
 		if (!(App.current.getSettings().onlyVendorsCanCreateGroup==null
 			 || App.current.getSettings().onlyVendorsCanCreateGroup==false 
@@ -186,39 +188,31 @@ class Group extends controller.Controller
 		
 	}
 
-	@admin
-	function doTest(){
-		#if plugins
-		
-		var user = db.User.manager.get(1,false);
-		Sys.print("sync user "+user.getName());
-		BridgeService.syncUserToHubspot(user);
-		service.BridgeService.triggerWorkflow(29805116, user.email);
-		#end
-	}
-	
 	/**
-		Displays a google map in a popup
-	**/
-	// @tpl('group/place.mtt')
-	// public function doPlace(place:db.Place){
-	// 	view.place = place;
+	 * create a new market
+	 */
+	@tpl("group/newMarket.mtt")
+	function doNewMarket() {
+		App.current.session.data.amapId = null;
+
+		var cagettePros = service.VendorService.getCagetteProFromUser(App.current.user);
+		if (!(App.current.getSettings().onlyVendorsCanCreateGroup==null
+			 || App.current.getSettings().onlyVendorsCanCreateGroup==false 
+			 || (App.current.getSettings().onlyVendorsCanCreateGroup==true && cagettePros!=null && cagettePros.length>0))
+			 ) {
+			throw Redirect("/");
+		}
 		
-	// 	//build adress for google maps
-	// 	var addr = "";
-	// 	if (place.address1 != null) addr += place.address1;
-	// 	if (place.address2 != null) addr += ", " + place.address2;
-	// 	if (place.zipCode != null) addr += " " + place.zipCode;
-	// 	if (place.city != null) addr += " " + place.city;
-		
-	// 	view.addr = view.escapeJS(addr);
-	// }
+		if(app.user==null) {
+			view.userName = "";
+			view.sid = App.current.session.sid;
+			return;
+		}
+	}
 
 	@tpl("group/map.mtt")
 	public function doMap(?args:{?lat:Float,?lng:Float,?address:String}){
-
 		view.container = "container-fluid";
-		
 		view.lat = args.lat;
 		view.lng = args.lng;
 		view.address = args.address;

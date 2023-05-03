@@ -59,7 +59,7 @@ class Main extends controller.Controller
 			}
 		}
 
-		if( app.params.get("dispatch")=="1" ){
+		/*if( app.params.get("dispatch")=="1" ){
 			//ENABLE DISPATCH
 			group.lock();
 			group.betaFlags.set(Dispatch);
@@ -77,9 +77,7 @@ class Main extends controller.Controller
 			group.update();
 
 			throw Ok("/p/hosted/group/"+group.id,"Le groupe est configuré pour le dispatch");
-		}
-
-		
+		}*/
 
 		if( app.params.get("removeMangopay")=="1" ){
 
@@ -100,10 +98,10 @@ class Main extends controller.Controller
 			mgpLegalUserGroup.delete();
 
 			//payments in cash
-			group.setAllowedPaymentTypes([Cash.TYPE]);
+			group.setAllowedPaymentTypes([Cash.TYPE,Check.TYPE]);
 			group.update();
 
-			throw Ok("/p/hosted/group/"+group.id,"Mangopay retiré, groupe passé en paiement sur place");
+			throw Ok("/p/hosted/group/"+group.id,"Mangopay retiré, ATTENTION : groupe passé en paiement sur place");
 
 		}
 

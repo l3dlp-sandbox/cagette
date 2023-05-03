@@ -16,7 +16,7 @@
 				::end::
 				
 				::if(company._vendor.canOpenStripeAccount())::
-				<li ::attr class if(nav[1]=="stripe") 	'active'::><a href="/p/pro/company/stripe">Paiement en ligne</a></li>
+				<li ::attr class if(nav[1]=="stripe") 	'active'::><a href="/p/pro/company/stripe">Paiement en ligne Stripe</a></li>
 				<li ::attr class if(nav[1]=="accounting") 	'active'::><a href="/p/pro/company/accounting">Comptabilité</a></li>
 				::end::
 

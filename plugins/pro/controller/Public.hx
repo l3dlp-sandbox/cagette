@@ -1,4 +1,5 @@
 package pro.controller;
+import pro.service.PCatalogService;
 import Common;
 import haxe.Json;
 import sugoi.Web;
@@ -29,32 +30,19 @@ class Public extends controller.Controller
 		
 		if(app.user==null) throw Error("/user/login?__redirect=/p/pro/public/askImport/"+catalog.id,"Vous devez être connecté à " + App.current.getTheme().name + " pour faire cette action");
 
-		var isVendor = isCproVendor(catalog.company);
-		view.title = isVendor ? 'Relier un catalogue' : 'Demande de liaison de catalogue';
+		// var isVendor = isCproVendor(catalog.company);
+		view.title = 'Relier un catalogue';
+		var group = app.user.getGroup();
 
 		var f = new sugoi.form.Form("import");		
-		f.addElement( new sugoi.form.elements.Html("html2",catalog.company.vendor.name+" : "+catalog.name, "Catalogue") );
-		var datas = [];
-		for( ua in app.user.getUserGroups()){
-			if(ua.isGroupManager() || ua.canManageAllContracts()){
-				datas.push({label:ua.group.name,value:ua.group.id});
-			}
-		}
-		var id = app.user.getGroup()==null ? null : app.user.getGroup().id;
-		f.addElement( new sugoi.form.elements.IntSelect("group","Groupe " + App.current.getTheme().name + " qui accueillera le catalogue", datas, id , true) );
-		if(!isVendor){
-			f.addElement( new sugoi.form.elements.TextArea("message","Message au producteur","Bonjour, \nJe souhaiterais proposer vos produits aux membres de mon groupe " + App.current.getTheme().name + "...",false,null,"rows='10'") );
-		}
-		
+		f.addElement( new sugoi.form.elements.Html("html1",catalog.company.vendor.name, "Producteur :") );
+		f.addElement( new sugoi.form.elements.Html("html2",catalog.name, "Catalogue :") );
+		f.addElement( new sugoi.form.elements.Html("html3",group.name, "Marché qui utilisera le catalogue :") );
 		view.form = f;
 		
 		
 		if ( f.isValid() ){
 			
-
-			//checks
-			var group = db.Group.manager.get(f.getValueOf("group"),false);
-
 			/*if (group.getPlaces().length == 0) {
 				throw Error("/p/pro/public/" + catalog.id, "Votre groupe n'a aucun lieu de livraison ! Vous devez en créer au moins un avant d'importer un catalogue.");
 			}
@@ -66,43 +54,19 @@ class Public extends controller.Controller
 				throw Error("/contractAdmin/view/" + contracts.first().id, "Ce catalogue existe déjà dans ce groupe. Il n'est pas nécéssaire d'importer plusieurs fois le même catalogue dans un groupe.");
 			}
 
-			//send notif to ask for linkage
-			var params : pro.db.PNotif.CatalogImportContent = {
-				message		: isVendor ? "" : f.getValueOf("message"),
-				catalogId 	: catalog.id,
-				//placeId 	: f.getValueOf("placeId"),
-				userId 		: app.user.id,
-			}
-
-			//var place = db.Place.manager.get(f.getValueOf("placeId"));
-			
-			//store notif
-			var n = new pro.db.PNotif();
-			n.company = catalog.company;
-			n.type = pro.db.PNotif.NotifType.NTCatalogImportRequest;
-			n.title = "Demande de liaison du catalogue \"" + catalog.name+"\" pour \"" + group.name + "\"";
-			n.content = haxe.Json.stringify(params);
-			n.group = group;
-			n.insert();
-			
-			//store token
-			var token = "catalog-token" + haxe.crypto.Md5.encode(Std.string(Std.random(99999)));
-			sugoi.db.Cache.set(token, n.id , 60 * 60 * 24 * 14);
+			PCatalogService.linkCatalogToGroup(catalog,group,App.current.user.id);
 			
 			//send email
 			var e = new sugoi.mail.Mail();		
-			e.setSubject(n.title);
+			e.setSubject("Le marché "+group.name+" a relié votre catalogue "+catalog.name);
 			e.setRecipient(catalog.company.vendor.email);			
 			e.setSender(App.current.getTheme().email.senderEmail,"Cagette.net");		
-			var html = app.processTemplate("plugin/pro/mail/catalogImport.mtt", {catalog:catalog,group:group,user:app.user,message:isVendor ? "" : f.getValueOf("message")});		
+			var html = app.processTemplate("plugin/pro/mail/catalogLinked.mtt", {catalog:catalog,group:group,user:app.user});		
 			e.setHtmlBody(html);
 			App.sendMail(e);	
 			
-			if (isVendor){
-				throw Ok("/contractAdmin", "La demande a été envoyée : <a href='/p/pro'>aller au Compte producteur pour la valider</a>");
-			}else {
-				throw Ok("/contractAdmin", "Votre demande a été envoyée au producteur. Vous serez prévenu par email de sa décision.");
-			}
+			throw Ok("/contractAdmin", "Le catalogue a été relié à votre marché. Le producteur a été prévenu par email.");
+			
 		}
 	}
 

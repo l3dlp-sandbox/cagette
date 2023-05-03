@@ -309,7 +309,7 @@ class PCatalogService{
 
 		if(clientGroup.isDispatch()){
 			if(!pcatalog.company.vendor.isDispatchReady()){
-				throw new tink.core.Error("Ce catalogue ne peut pas être relié à ce groupe car le producteur n'a pas de compte Stripe (Obligatoire afin de pouvoir accepter le paiement en ligne).");
+				throw new tink.core.Error("Ce catalogue ne peut pas être relié à ce groupe car le producteur n'a pas de compte Stripe. <a href='/p/pro/company/stripe'>Cliquez-ici pour l'ouvrir</a>");
 			}
 		}
 
@@ -338,7 +338,7 @@ class PCatalogService{
 	public static function breakLinkage(catalog:db.Catalog){
 
 		var rc = RemoteCatalog.getFromContract(catalog);
-		if(rc == null) throw new tink.core.Error("Ce catalogue n'est pas relié à un catalogue de compte producteur");
+		if(rc == null) throw new tink.core.Error("Ce catalogue n'est pas relié à un espace producteur");
 		
 		//do not participate in future distribs
 		var futureDistribs = db.Distribution.manager.search($end > Date.now() && $catalog == catalog,true);

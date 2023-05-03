@@ -10,13 +10,13 @@ using tools.DateTool;
 enum GroupFlags {
 	__HasMembership; 	//@deprecated membership management  
 	__ShopMode; 		//@deprecated shop mode / CSA mode
-	__HasPayments; 	//@deprecated manage payments and user balance
+	__HasPayments; 		//@deprecated manage payments and user balance
 	__ComputeMargin;	//compute margin instead of percentage
-	CagetteNetwork; //register in cagette.net groups directory
+	CagetteNetwork; 	//register in cagette.net groups directory
 	__CustomizedCategories;  //the custom categories are not used anymore, use product taxonomy instead
-	HidePhone; 		//Hide manager phone on group public page
-	PhoneRequired;	//phone number of members is required for this group	
-	AddressRequired;//address required for delivery at home
+	HidePhone; 			//Hide manager phone on group public page
+	PhoneRequired;		//phone number of members is required for this group	
+	AddressRequired;	//address required for delivery at home
 	__UnUsed;
 	Show3rdCategoryLevel; //Show the third category level in the shop (Only for shop V2)
 }
@@ -472,7 +472,7 @@ class Group extends Object
 	}
 
 	public function isDispatch():Bool{
-		return betaFlags.has(Dispatch);
+		return betaFlags.has(Dispatch) && this.getAllowedPaymentTypes()[0]==payment.Stripe.TYPE;
 	}
 
 	public function isDisabled():Bool{

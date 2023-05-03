@@ -274,7 +274,7 @@ class Vendor extends Object
 			case DisabledReason.TurnoverLimitReached : "Ce producteur a atteint sa limite de chiffre d'affaires annuel";
 			case DisabledReason.MarketplaceDisabled : "Ce producteur est en défaut de paiement";
 			case DisabledReason.MarketplaceNotActivated : "Ce producteur n'a pas encore activé son compte";
-			case DisabledReason.DisabledInvited : "Les producteurs invités ne sont plus autorisés et doivent <a href='https://www.cagette.net/producteurs' target='_blank'>ouvrir un compte Producteur</a>";
+			case DisabledReason.DisabledInvited : "Les producteurs invités ne sont plus autorisés et doivent <a href='https://www.cagette.net/producteurs' target='_blank'>ouvrir un espace Producteur</a>";
 		};
 	}
 
