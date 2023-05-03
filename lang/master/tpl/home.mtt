@@ -5,22 +5,18 @@ $$browserDetection()
 
 <div id="content" class="col-md-8">
 
-	<!-- Welcoming message + access to tutos-->
+	<!-- Welcoming message + access to tutos
 	::if newGroup::
 	<div class="alert alert-success">
 		<h3>Bienvenue sur ::theme.name:: !</h3>
 		<p>
 			Félicitations, vous venez juste de créer un nouveau marché !<br/>
-			Vous pouvez maintenant <a href="/contract/defineVendor/" style="font-weight: bold;">inviter des producteurs dans votre marché</a>, planifier des distributions et inviter des membres.
+			Vous pouvez maintenant <a href="/contract/searchVendor/" style="font-weight: bold;">inviter des producteurs dans votre marché</a>, planifier des distributions et inviter des membres.
 		</p>		
-		<!--<p>
-			<a href="/home?action=deleteDemoContracts&token=::token::" class="btn btn-default btn-sm">
-				::_("Delete example orders and catalogs")::
-			</a>
-		</p>-->
+
 	</div>
 	::end::
-
+-->
 	<!-- Empty planning -->
 	::if distribs==null || count(distribs)==0::
 	<div class="homeBlock">
@@ -314,7 +310,7 @@ $$browserDetection()
 		</script>
 	</div>
 
-	<div class="block hidden-sm hidden-xs">
+	<div class="block hidden-sm hidden-xs" ::cond hasRoles::>
 		<h4>Permanences</h4>
 		<a href="/distributions/volunteersCalendar" class="btn btn-default btn-sm">
 			<i class="icon icon-calendar"></i> ::_("Duty periods calendar")::

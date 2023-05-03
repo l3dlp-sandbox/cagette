@@ -4,14 +4,12 @@ import db.UserGroup;
 
 /**
  * Service for managing groups
- * @author fbarbut
  */
 class ProGroupService
 {
 	var company : pro.db.CagettePro;
 
-	public function new(?company:pro.db.CagettePro) 
-	{
+	public function new(?company:pro.db.CagettePro){
 		if(company!=null) this.company = company;
 	}	
 	
@@ -30,7 +28,6 @@ class ProGroupService
 		d.extUrl = g.extUrl;
 		d.membershipRenewalDate = g.membershipRenewalDate;
 		d.membershipFee = g.membershipFee;
-		d.setVatRates(g.getVatRates());
 		d.flags = g.flags;
 		d.image = g.image;
 		d.regOption = g.regOption;
@@ -105,63 +102,5 @@ class ProGroupService
 		
 		return d;
 	}
-	
-	/**
-	 *  Sync categories from a contract to another
-	 *  @param from - 
-	 *  @param to - 
-	 *  @param mapping - 
-	 */
-	/*function syncCatgories(from:db.Catalog, to:db.Catalog, mapping:Map<Int,Int>){
-		if (mapping == null) return;
-		for ( p in from.getProducts(false)){
-			for ( x in to.getProducts(false)){
-				if ( x.ref + x.name == p.ref + p.name ){
-					//need to tag x with p tags with mapping
-					for ( cat in p.getCategories()){
-						db.ProductCategory.getOrCreate(x, db.Category.manager.get(mapping[cat.id], false));						
-					}
-				}
-			}
-		}
-	}*/
-	
-	
-	/**
-	 * Duplicate custom categories and returns ID mapping
-	 * @param	from
-	 * @param	to
-	 */
-	/*function duplicateCategories(from:db.Group, to:db.Group){
-		
-		var mapping = new Map<Int,Int>(); //old categ id -> new categ id
-		
-		//useless if taxo is on
-		if ( !from.flags.has(db.Group.GroupFlags.CustomizedCategories) ) return null;
-		
-		for ( catgroup in db.CategoryGroup.get(from) ){
-			
-			var dcatgroup = new db.CategoryGroup();
-			dcatgroup.name = catgroup.name;
-			dcatgroup.color = catgroup.color;
-			dcatgroup.pinned = catgroup.pinned;
-			dcatgroup.amap = to;
-			dcatgroup.insert();
-			
-			for ( cat in catgroup.getCategories()){
-				
-				var dcat = new db.Category();
-				dcat.name = cat.name;
-				dcat.categoryGroup = dcatgroup;
-				dcat.insert();
-				
-				mapping[cat.id] = dcat.id;
-			}
-		}
-		
-		return mapping;
-	}*/
-	
-
 	
 }

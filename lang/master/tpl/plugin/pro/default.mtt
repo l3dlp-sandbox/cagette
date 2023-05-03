@@ -173,9 +173,15 @@
 			::end::	
 			
 			<div class="col-md-12">
-				<a href="/p/pro/group/duplicate" class="btn btn-default btn-sm">
+				::if company.offer==1::
+				<!--<a href="/p/pro/group/duplicate" class="btn btn-default btn-sm">
 					<i class="icon icon-plus"></i> Dupliquer un marché
+				</a>-->
+
+				<a href="/p/pro/createGroup" class="btn btn-default btn-sm">
+					<i class="icon icon-plus"></i> Créer un marché en paiement sur place
 				</a>
+				::end::
 
 				<a href="/p/pro/group/removeGroup" class="btn btn-default btn-sm">
 					<i class="icon icon-delete"></i> Retirer un marché

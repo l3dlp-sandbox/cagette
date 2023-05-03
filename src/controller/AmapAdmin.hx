@@ -211,49 +211,6 @@ class AmapAdmin extends Controller
 		
 	}
 	
-	@tpl('amapadmin/form.mtt')
-	public function doVatRates() {
-		addBc('vatrates','Taux de TVA','/amapadmin/vatRates');
-		
-		var f = new sugoi.form.Form("vat");
-		var a = app.user.getGroup();
-		
-		var i = 1;
-		var rates = a.getVatRatesOld();
-		//create field with a value
-		for (k in rates.keys()) {
-			f.addElement(new StringInput(i+"-k", t._("Name") +" "+ i, k));
-			f.addElement(new FloatInput(i + "-v", t._("Rate") +" "+ i, rates.get(k) ));
-			i++;
-		}
-		
-		//...fill in to get 4 fields
-		for (x in 0...5 - i) {
-			f.addElement(new StringInput(i+"-k", t._("Name") +" "+ i, null));
-			f.addElement(new FloatInput(i + "-v", t._("Rate") +" "+ i, null));
-			i++;
-		}
-		
-		if (f.isValid()) {
-			var d = f.getData();
-			var vats = [];
-			for (i in 1...5) {
-				if (d.get(i + "-k") == null) continue;
-				vats.push({
-					label : d.get(i + "-k"),
-					value : d.get(i + "-v")
-				});
-			}
-			a.lock();
-			a.setVatRates(vats);
-			a.update();
-			throw Ok("/amapadmin", t._("Rate updated"));
-			
-		}
-		view.title = t._("Edit VAT rates");
-		view.form = f;
-	}
-
 	function doVolunteers(d:haxe.web.Dispatch) {
 		addBc('volunteers',"Permanences","amapadmin/volunteers");
 		d.dispatch(new controller.amapadmin.Volunteers());

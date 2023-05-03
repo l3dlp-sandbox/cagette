@@ -11,10 +11,9 @@ using tools.ObjectListTool;
 class GroupService
 {
 
-	public function new() 
-	{
+	public function new(){}
 		
-	}
+	public static var STRIPIFICATION_DATE = new Date(2023,4,29,0,0,0);
 	
 	/**
 	 * copy groups.
@@ -31,7 +30,6 @@ class GroupService
 		d.extUrl = g.extUrl;
 		d.membershipRenewalDate = g.membershipRenewalDate;
 		d.membershipFee = g.membershipFee;
-		d.setVatRates(g.getVatRates());
 		d.flags = g.flags;
 		d.image = g.image;
 		d.regOption = g.regOption;
@@ -41,9 +39,6 @@ class GroupService
 		d.checkOrder = g.checkOrder;
 		d.IBAN = g.IBAN;		
 		d.insert();
-		
-		//put me in the group
-		
 		return d;
 	}
 	

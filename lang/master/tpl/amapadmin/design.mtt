@@ -9,10 +9,7 @@
 		<ul id="subnav" class="nav nav-pills nav-stacked" >
 			<li id="rights" ::attr class if(category=="rights") 'active'::>
 				<a href="/amapadmin/rights/">::_("Administration rights")::</a>
-			</li>
-			<li id="rates" ::attr class if(category=="vatrates") 'active'::>
-				<a href="/amapadmin/vatRates/">::_("VAT rates")::</a>
-			</li>			
+			</li>				
 			<li id="volunteers" ::attr class if(category=="volunteers") 'active'::>
 				<a href="/amapadmin/volunteers/">
 					<i class="icon icon-users"></i>  ::_("Duty Periods")::</a>

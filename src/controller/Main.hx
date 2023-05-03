@@ -1,5 +1,6 @@
 package controller;
 
+import service.VolunteerService;
 import db.Basket;
 import Common;
 import db.Distribution;
@@ -127,6 +128,7 @@ class Main extends Controller {
 		}
 
 		view.visibleDocuments = group.getVisibleDocuments(isMemberOfGroup);
+		view.hasRoles = VolunteerService.getRolesFromGroup(group).length>0;
 
 		view.user = app.user;
 	}

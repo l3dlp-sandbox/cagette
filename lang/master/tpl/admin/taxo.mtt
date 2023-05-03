@@ -3,10 +3,8 @@
 		<h2>Dictionnaire de produits</h2>
 		<p>
 			$$export(?csv=1)
-
 			<a href="/admin/mergeCategs" class="btn btn-default btn-sm">Fusion de categ de niveau 3</a>
 		</p>
-		
 
 		<table class="table table-bordered">
 		::foreach c categ::
