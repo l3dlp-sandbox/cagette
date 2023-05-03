@@ -1,4 +1,5 @@
 package hosted.controller;
+import mangopay.Types.Wallet;
 import payment.Check;
 import mangopay.MangopayPlugin;
 import mangopay.Mangopay;
@@ -97,11 +98,15 @@ class Main extends controller.Controller
 
 			mgpLegalUserGroup.delete();
 
-			//payments in cash
-			group.setAllowedPaymentTypes([Cash.TYPE,Check.TYPE]);
+			//payments types
+			var pt = group.getAllowedPaymentTypes().filter(p -> p!=MangopayECPayment.TYPE);
+			if(pt.length==0){
+				pt = [Cash.TYPE,Check.TYPE];
+			}
+			group.setAllowedPaymentTypes(pt);
 			group.update();
 
-			throw Ok("/p/hosted/group/"+group.id,"Mangopay retiré, ATTENTION : groupe passé en paiement sur place");
+			throw Ok("/p/hosted/group/"+group.id,"Mangopay retiré, moyens de paiements : "+pt.join(","));
 
 		}
 
@@ -167,12 +172,7 @@ class Main extends controller.Controller
 				}
 
 			}
-
-
-
-
-			throw Ok("/p/hosted/group/"+g.id,"Groupe copié");
-
+			throw Ok("/p/hosted/group/"+g.id,"Marché copié");
 		}
 
 	
@@ -255,7 +255,7 @@ class Main extends controller.Controller
 			m.flags.unset(db.User.UserFlags.HasEmailNotif4h);
 			m.update();
 		}
-		throw Ok("/p/hosted/group/"+g.id, "Notifications désactivées pour tous les membres de ce groupe");
+		throw Ok("/p/hosted/group/"+g.id, "Notifications désactivées pour tous les membres de ce marché");
 	}
 
 	function doEnableNotifs(g:db.Group){
@@ -266,7 +266,7 @@ class Main extends controller.Controller
 			m.flags.set(db.User.UserFlags.HasEmailNotifOuverture);
 			m.update();
 		}
-		throw Ok("/p/hosted/group/"+g.id, "Notifications activées pour tous les membres de ce groupe");
+		throw Ok("/p/hosted/group/"+g.id, "Notifications activées pour tous les membres de ce marché");
 	}
 	
 	public function doCacheDebug(){
@@ -308,7 +308,7 @@ class Main extends controller.Controller
 		if (checkToken()) {
 			a.lock();
 			a.delete();
-			throw Ok("/p/hosted/","Groupe effacé");
+			throw Ok("/p/hosted/","Marché effacé");
 		}
 	}
 	
@@ -333,7 +333,7 @@ class Main extends controller.Controller
 	}
 
 	/**
-	 * infos sur le membre d'un groupe
+	 * infos sur le membre d'un marché
 	 */
 	@admin @tpl("plugin/pro/hosted/usergroup.mtt")
 	public function doUserGroup(u:db.User, g:db.Group){
@@ -430,6 +430,23 @@ class Main extends controller.Controller
 	@admin
 	function doSeo(d:haxe.web.Dispatch){
 		d.dispatch(new hosted.controller.Seo());
+	}
+
+	/**
+		Empty MGP WALLETS
+	**/
+	@admin
+	@tpl("plugin/pro/mangopay/group/lugs.mtt")
+	function doEmptyWallets(){
+		var lugs = MangopayLegalUserGroup.manager.search(true,{limit:100},false);
+		for( lug in lugs ){
+
+			if(lug.walletId!=null){
+				var wallet:Wallet = Mangopay.callService("wallets/"+lug.walletId, "GET");
+				untyped lug.amount = wallet.Balance.Amount/100;
+			}
+		}
+		view.lugs = lugs;
 	}
 	
 }

@@ -85,14 +85,14 @@ class Network extends controller.Controller
 			}
 		}
 		var data = groups.map(g -> return {label:g.name,value:g.id});
-		form.addElement( new sugoi.form.elements.IntSelect("group","Groupe",data) );
+		form.addElement( new sugoi.form.elements.IntSelect("group","Marché",data) );
 
 		if(form.isValid()){
 
 			var networkGroupIds = company.getNetworkGroupIds();
 			networkGroupIds.push(form.getValueOf("group"));
 			company.setNetworkGroupIds( networkGroupIds );
-			throw Ok("/p/pro/network","Groupe ajouté");
+			throw Ok("/p/pro/network","Marché ajouté");
 		}
 
 		view.form = form;
@@ -103,7 +103,7 @@ class Network extends controller.Controller
 		var networkGroupIds = company.getNetworkGroupIds();
 		networkGroupIds.remove(group.id);
 		company.setNetworkGroupIds( networkGroupIds );
-		throw Ok("/p/pro/network","Groupe retiré");
+		throw Ok("/p/pro/network","Marché retiré");
 	}
 	
 	/**

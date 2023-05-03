@@ -19,7 +19,7 @@
 
 							<li ::attr class if(category!=null && category=="home") 'active' ::>
 								<a href="/p/pro">
-									<i class="icon icon-map-marker"></i> Mes groupes
+									<i class="icon icon-map-marker"></i> Mes marchés
 								</a>								
 							</li>
 

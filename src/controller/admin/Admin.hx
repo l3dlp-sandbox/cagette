@@ -342,7 +342,7 @@ class Admin extends Controller {
 
 		var f = new sugoi.form.Form("msg");
 		f.addElement(new sugoi.form.elements.TextArea("homeVendorMessage", "Accueil producteurs", homeVendorMessage));
-		f.addElement(new sugoi.form.elements.TextArea("homeGroupAdminMessage", "Accueil admin de groupes", homeGroupAdminMessage));
+		f.addElement(new sugoi.form.elements.TextArea("homeGroupAdminMessage", "Accueil admin de marchés", homeGroupAdminMessage));
 
 		if (f.isValid()) {
 			Variable.set("homeVendorMessage", f.getValueOf("homeVendorMessage"));
@@ -364,7 +364,7 @@ class Admin extends Controller {
 		// form
 		var f = new sugoi.form.Form("groups");
 		f.method = GET;
-		f.addElement(new sugoi.form.elements.StringInput("groupName", "Nom du groupe"));
+		f.addElement(new sugoi.form.elements.StringInput("groupName", "Nom du marché"));
 		f.addElement(new sugoi.form.elements.StringInput("zipCodes", "Saisir des numéros de département séparés par des virgules ou laisser vide."));
 		f.addElement(new sugoi.form.elements.StringSelect("country", "Pays", db.Place.getCountries(), "FR", true, ""));
 		
@@ -495,7 +495,7 @@ class Admin extends Controller {
 					});
 				}
 
-				sugoi.tools.Csv.printCsvDataFromObjects(data, headers, "groupes");
+				sugoi.tools.Csv.printCsvDataFromObjects(data, headers, "marchés");
 		}
 	}
 
@@ -641,7 +641,7 @@ class Admin extends Controller {
 	}
 
 	/**
-		Stats sur les groupes actifs
+		Stats sur les marchés actifs
 	**/
 	function doGroupStats() {
 		
@@ -679,9 +679,6 @@ class Admin extends Controller {
 				zipCode : g.zipCode,
 				vendorStatus : cpro==null ? null : Std.string(cpro.offer),
 				vendorProfession : cpro==null ? null : vendor.getProfession(),
-
-
-
 				// membersNum: untyped g.membersNum,
 				// inscriptions: Std.string(g.regOption),
 				// productNum: db.Product.manager.count($catalogId in cids),
@@ -694,7 +691,7 @@ class Admin extends Controller {
 			});
 		}
 		var headers = Reflect.fields(data[0]);
-		sugoi.tools.Csv.printCsvDataFromObjects(data, headers, "stats_groupes");
+		sugoi.tools.Csv.printCsvDataFromObjects(data, headers, "stats_marchés");
 
 	}
 }

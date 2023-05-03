@@ -5,7 +5,7 @@
 	<div class="row">
 	::if dept==null::
 	
-		<h2 class="col-md-12">Trouver un groupe près de chez moi</h2>
+		<h2 class="col-md-12">Trouver un marché près de chez moi</h2>
 		
 		
 		::foreach d departements::
@@ -48,7 +48,7 @@
 			::if groups.length==0::
 			<div class="col-md-12">
 				<div class="article text-center" style="height:200px;line-height:200px;">
-					Aucun groupe dans ce département.
+					Aucun marché dans ce département.
 				</div>
 			</div>
 			

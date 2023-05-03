@@ -39,7 +39,7 @@ class Main extends controller.Controller
 	**/
 	@logged @tpl("plugin/pro/default.mtt")
 	public function doDefault(?args:{vendor:Int}){
-		addBc("home","Mes groupes", "/p/pro");
+		addBc("home","Mes marchés", "/p/pro");
 		
 		//login to a vendor/cagettePro
 		if (args!=null && args.vendor!=null) {

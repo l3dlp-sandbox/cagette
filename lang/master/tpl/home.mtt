@@ -10,8 +10,8 @@ $$browserDetection()
 	<div class="alert alert-success">
 		<h3>Bienvenue sur ::theme.name:: !</h3>
 		<p>
-			Félicitations, vous venez juste de créer un nouveau groupe !<br/>
-			Vous pouvez maintenant <a href="/contract/defineVendor/" style="font-weight: bold;">inviter des producteurs dans votre groupe</a>, planifier des distributions et inviter des membres.
+			Félicitations, vous venez juste de créer un nouveau marché !<br/>
+			Vous pouvez maintenant <a href="/contract/defineVendor/" style="font-weight: bold;">inviter des producteurs dans votre marché</a>, planifier des distributions et inviter des membres.
 		</p>		
 		<!--<p>
 			<a href="/home?action=deleteDemoContracts&token=::token::" class="btn btn-default btn-sm">
@@ -238,7 +238,7 @@ $$browserDetection()
 			<img src="/img/join-a-group.png" />
 		</p>
 		<p>
-			Inscrivez-vous à ce groupe, <br />
+			Inscrivez-vous à ce marché, <br />
 			vous recevrez un email pour l'ouverture des prochaines commandes <br />
 			ainsi que des nouvelles des producteurs !
 		</p>
@@ -246,13 +246,13 @@ $$browserDetection()
 		::if (user==null)::		
 		<a href="#" class="btn btn-primary" onclick="neo.createNeoModule('login-registration-container', 'loginRegistration', { redirectUrl: '/user/joingroup', sid: '::loginBoxOptions.sid::', message: null, phoneRequired: ::loginBoxOptions.phoneRequired::, addressRequired: ::loginBoxOptions.addressRequired::, openRegistration:true})" >
 			<span class="glyphicon glyphicon-plus"></span>
-			M'inscrire à ce groupe
+			M'inscrire à ce marché
 		</a>
 		<div id='login-registration-container'></div>
 		::else::
 		<a href="/user/joingroup" class="btn btn-primary">
 			<span class="glyphicon glyphicon-plus"></span>
-			M'inscrire à ce groupe
+			M'inscrire à ce marché
 		</a>
 		::end::
 	</div>
@@ -289,7 +289,7 @@ $$browserDetection()
 			<a id="copy-url" href="http://::HOST::/group/::group.id::" target="_blank">http://::HOST::/group/::group.id::</a><br/>
 		</p>
 		<p>
-			<a id="copy-url-button" href="#" class="btn btn-default btn-sm">
+			<a id="copy-url-button" class="btn btn-default btn-sm">
 				<i class="icon icon-link"></i> Copier le lien
 			</a>
 		</p>

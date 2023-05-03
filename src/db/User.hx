@@ -602,7 +602,7 @@ class User extends Object {
 			var g  = this.getGroup();
 			if(g==null) return null;
 			infos = {
-				type:"Administrateur de groupe",
+				type:"Administrateur de marché",
 				id:g.id,
 				name:g.name
 			};

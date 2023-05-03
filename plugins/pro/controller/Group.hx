@@ -35,20 +35,14 @@ class Group extends controller.Controller
 		Delete linkage
 	**/
 	function doDelete(rc:connector.db.RemoteCatalog){
-		
 		if (checkToken()){
-			
 			var c = rc.getContract(true);
 			c.endDate = Date.now();
 			c.update();
-			
 			rc.lock();
 			rc.delete();
-			
-			throw Ok("/p/pro/group/"+c.group.id,"Le catalogue \""+c.name+"\" a été fermé. Il reste consultable dans les anciens contrats du groupe.");
-			
+			throw Ok("/p/pro/group/"+c.group.id,"Le catalogue \""+c.name+"\" a été fermé. Il reste consultable dans les anciens contrats du marché.");
 		}
-		
 	}
 
 	/**
@@ -64,8 +58,8 @@ class Group extends controller.Controller
 			data.push( {id:g.id , label:g.name , value:g.id} );
 		}
 		
-		form.addElement( new sugoi.form.elements.IntSelect("group", "Groupe à retirer", cast data, true) );
-		form.addElement( new sugoi.form.elements.Checkbox("stayMember","Rester membre ce groupe",false) );
+		form.addElement( new sugoi.form.elements.IntSelect("group", "Marché à retirer", cast data, true) );
+		form.addElement( new sugoi.form.elements.Checkbox("stayMember","Rester membre ce marché",false) );
 		form.addElement( new sugoi.form.elements.Checkbox("deleteDistribs","Supprimer les distributions futures",true) );
 
 		if(form.isValid()){
@@ -100,12 +94,12 @@ class Group extends controller.Controller
 				}
 			}
 
-			throw Ok("/p/pro","Le groupe a été retiré");
+			throw Ok("/p/pro","Le marché a été retiré");
 
 		}
 
 		view.form = form;
-		view.title = "Retirer un groupe";
+		view.title = "Retirer un marché";
 
 	}
 	
@@ -124,8 +118,8 @@ class Group extends controller.Controller
 		var data = tools.ObjectListTool.deduplicate(data);
 
 		
-		f.addElement( new sugoi.form.elements.IntSelect("group", "Choisissez un groupe à dupliquer", cast data, true) );
-		f.addElement( new sugoi.form.elements.StringInput("name", "Nom du nouveau groupe", null, true) );
+		f.addElement( new sugoi.form.elements.IntSelect("group", "Choisissez un marché à dupliquer", cast data, true) );
+		f.addElement( new sugoi.form.elements.StringInput("name", "Nom du nouveau marché", null, true) );
 		f.addElement( new sugoi.form.elements.StringInput("place", "Nom du nouveau lieu de livraison", null, true) );
 		
 		if (f.isValid()){
@@ -137,11 +131,11 @@ class Group extends controller.Controller
 				throw Error(sugoi.Web.getURI(),e.message);
 			}
 			
-			throw Ok("/p/pro", "Groupe dupliqué");
+			throw Ok("/p/pro", "Marché dupliqué");
 		}
 		
 		view.form = f;
-		view.title = "Dupliquer un groupe";
+		view.title = "Dupliquer un marché";
 		
 	}
 	

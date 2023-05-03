@@ -6,12 +6,10 @@
 			<a href="/p/hosted/user/view/::member.id::" >::member.getName()::</a>
 		</h2> 
 		<h4>
-		dans le groupe <a href="/p/hosted/group/::ua._group.id::" >::ua._group.name::</a>
+		dans le marché <a href="/p/hosted/group/::ua._group.id::" >::ua._group.name::</a>
 		</h4>
 
-
 		$$timeframe(::timeframe::)
-
 
 		<h3>Dernières commandes</h3>
 		<p>

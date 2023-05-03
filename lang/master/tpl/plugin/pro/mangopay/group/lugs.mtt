@@ -1,0 +1,31 @@
+::use 'amapadmin/design.mtt'::
+	
+	<div class=" article">
+		
+        <h2>::lugs.length:: groupes avec Mangopay</h2>
+
+        <table class="table table-bordered">
+            <tr>
+                <th>walletID</th>
+                <th>Amount</th>
+                <th>legalUserId</th>
+                <th>Groupe</th>
+            </tr>
+            ::foreach lug lugs::
+            <tr>
+                <td>::lug.walletId::</td>
+                <td>::lug.amount:: €</td>
+                <td>::lug.legalUserId::</td>
+                <td>
+                    <a href="/p/hosted/group/::lug._group.id::" target="_blank">
+                    ::lug._group.name::
+                    </a>
+                </td>
+            </tr>
+
+            ::end::
+        </table>
+        
+
+    </div>
+::end::

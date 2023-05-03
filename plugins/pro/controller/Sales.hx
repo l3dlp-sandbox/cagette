@@ -46,7 +46,7 @@ class Sales extends controller.Controller
 		var data = [
 			{label:"Par produits", value :"products"},
 			{label:"Par membres", value :"members"},
-			{label:"Par Groupe-produits (CSV)", value :"groups"},
+			{label:"Par Marché-produits (CSV)", value :"groups"},
 		];
 		form.addElement(new sugoi.form.elements.RadioGroup("type","Type",data,data[0].value));
 		var now = DateTime.now();	

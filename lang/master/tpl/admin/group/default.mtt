@@ -1,6 +1,6 @@
 ::use 'admin/design.mtt'::
 
-<h2>Admin Groupes</h2>
+<h2>Admin Marchés</h2>
 
 <p>
 	::raw form::

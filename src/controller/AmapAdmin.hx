@@ -47,7 +47,7 @@ class AmapAdmin extends Controller
 		
 		var str = "";
 		if(!o.cagetteNetwork){
-			str += "L'option 'Lister ce groupe sur la carte' n'est pas cochée.";
+			str += "L'option 'Lister ce marché sur la carte' n'est pas cochée.";
 		}
 		if (!o.geoloc){
 			str += "Votre lieu de distribution n'a pas pu être géolocaliser, merci de compléter ou corriger son adresse. ";
@@ -56,7 +56,7 @@ class AmapAdmin extends Controller
 			str += "Vous devez avoir des distributions planifiées. ";
 		}
 		if(!o.members){
-			str += "Vous devez avoir au moins 3 personnes dans votre groupe. ";
+			str += "Vous devez avoir au moins 3 personnes dans votre marché. ";
 		}
 
 		view.visibleOnMapText = str;
@@ -87,7 +87,7 @@ class AmapAdmin extends Controller
 
 		if (form.checkToken()) {
 
-			if( form.getValueOf("groupId") != group.id ) throw "Vous avez changé de groupe.";
+			if( form.getValueOf("groupId") != group.id ) throw "Vous avez changé de marché.";
 
 			group.lock();
 			group.hasMembership = form.getValueOf("membership")==true;			
@@ -304,7 +304,7 @@ class AmapAdmin extends Controller
 		var group = app.user.getGroup();
 
 		if(group.isDispatch()){
-			throw Error("/amapadmin","Ce groupe utilise le paiement en ligne avec Stripe, il n'est pas possible d'y ajouter d'autres moyens de paiement.");
+			throw Error("/amapadmin","Ce marché utilise le paiement en ligne avec Stripe, il n'est pas possible d'y ajouter d'autres moyens de paiement.");
 		}
 
 		// if (group.checkOrder == ""){
@@ -321,7 +321,7 @@ class AmapAdmin extends Controller
 
 		if (f.isValid()){
 			
-			if( f.getValueOf("groupId") != group.id ) throw "Vous avez changé de groupe.";
+			if( f.getValueOf("groupId") != group.id ) throw "Vous avez changé de marché.";
 
 			group.lock();
 			var paymentTypes:Array<String> = f.getValueOf("paymentTypes");
