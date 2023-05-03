@@ -1,5 +1,7 @@
 ::use 'admin/design.mtt'::
 
+
+
 	<div class="article">
 		<h4>Groupe #::group.id::</h4>
 		<h2>::group.name::</h2>
@@ -33,6 +35,32 @@
 		
 		::end::
 		</p>
+<hr/>
+
+
+<table class="table table-bordered text-center" >
+	<tr>
+		<th data-toggle="tooltip" title="indice de richesse de l'offre">IRO</th>
+		<th>CA 90 jours</th>
+		<th>Nbre de catalogues</th>
+		<th>Nbre de prod.</th>
+		<th>Nbre de clients</th>
+		<th>Type de l'admin.</th>
+	</tr>
+	<tr>
+		<td>::groupStats.iro:: / 9</td>
+		<td>::groupStats.turnover90days:: €</td>
+		<td>::groupStats.contractNum::</td>
+		<td>::groupStats.vendorNum::</td>
+		<td>::groupStats.membersNum::</td>
+		<td>::groupStats.contactType::</td>
+	</tr>
+
+</table>
+<a href='?refresh=1' class="btn btn-default btn-xs">Rafraichir</a>
+
+
+
 		<hr/>
 		<h3>Fonctionnalités en beta</h3>
 				

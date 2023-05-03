@@ -128,10 +128,11 @@ class Scripts extends Controller
     /**
         2023-04-17 migrate VRAC groups to differentiated pricing
 
-        targetGroup : the group we keep
-        targetPricing : the pricing given to the members of targetGroup
         sourceGroup : the group we empty        
         sourcePricing : the pricing given to the members of sourceGroup        
+        targetGroup : the group we keep
+        targetPricing : the pricing given to the members of targetGroup
+        
     **/
     function doMigratePricing(sourceGroup:db.Group,sourcePrice:db.DifferenciatedPricing,targetGroup:db.Group,targetPrice:db.DifferenciatedPricing){
 

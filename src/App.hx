@@ -146,7 +146,7 @@ class App extends sugoi.BaseApp {
 			terms: {
 				termsOfServiceLink: "https://www.cagette.net/wp-content/uploads/2023/01/Conditions-Generales-dUtilisation-de-Cagette.net.pdf",
 				termsOfSaleLink: "https://www.cagette.net/wp-content/uploads/2023/01/Conditions-Commerciales-de-la-Plateforme.pdf",
-				platformTermsOfServiceLink: "https://www.cagette.net/wp-content/uploads/2023/01/Conditions-Generales-de-Services-de-Cagette.net.pdf",
+				platformTermsOfServiceLink: "https://www.cagette.net/wp-content/uploads/2023/05/Conditions-Generales-de-Services-de-Cagette.net-mai-2023.pdf",
 				privacyPolicyLink: "https://www.cagette.net/wp-content/uploads/2023/01/Politique-de-confidentialite-Cagette.net.pdf",
 			}
 			

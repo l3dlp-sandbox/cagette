@@ -199,23 +199,17 @@ class Catalog extends controller.Controller
 		catalog.endDate = DateTools.delta(catalog.startDate, 1000.0 * 60 * 60 * 24 * 365 * 5);
 		
 		var f = CagetteForm.fromSpod(catalog);
-		// var e : sugoi.form.elements.IntSelect = cast f.getElement("vendorId");
-		// e.nullMessage = company.vendor.name;
 		f.getElement("contractName").value = "Commande "+company.vendor.name;
-
-		f.addElement(new sugoi.form.elements.StringSelect("visible","Visibilité",[{label:"Public",value:"public"},{label:"Privé",value:"private"}],(catalog.visible?"public":"private"),true ));
-
+		// f.addElement(new sugoi.form.elements.StringSelect("visible","Visibilité",[{label:"Public",value:"public"},{label:"Privé",value:"private"}],(catalog.visible?"public":"private"),true ));
 		
 		if (f.isValid()) {
 			f.toSpod(catalog);
 			catalog.company = company;
-			catalog.visible = f.getValueOf("visible") == "public";
+			catalog.visible = true;//f.getValueOf("visible") == "public";
 			catalog.insert();
-
 			if(company.offer==Marketplace && PCatalog.manager.count($company==this.company)==1){
 				service.BridgeService.ga4Event(app.user.id,"FirstCatalog");
 			}
-
 			throw Ok('/p/pro/catalog/products/'+catalog.id,'Le catalogue a été créé');
 		}
 		
@@ -232,9 +226,7 @@ class Catalog extends controller.Controller
 		checkRights(catalog);
 		view.nav.push("edit");
 		var f = CagetteForm.fromSpod(catalog);
-		// var e : sugoi.form.elements.IntSelect = cast f.getElement("vendorId");
-		// e.nullMessage = company.vendor.name;
-		f.addElement(new sugoi.form.elements.StringSelect("visible","Visibilité",[{label:"Public",value:"public"},{label:"Privé",value:"private"}],(catalog.visible?"public":"private"),true ));
+		// f.addElement(new sugoi.form.elements.StringSelect("visible","Visibilité",[{label:"Public",value:"public"},{label:"Privé",value:"private"}],(catalog.visible?"public":"private"),true ));
 
 		if(catalog.contractName==null){
 			f.getElement("contractName").value = "Commande "+company.vendor.name;
@@ -242,9 +234,8 @@ class Catalog extends controller.Controller
 		
 		if (f.isValid()) {
 			f.toSpod(catalog);
-			catalog.visible = f.getValueOf("visible") == "public";
+			catalog.visible = true;//f.getValueOf("visible") == "public";
 			catalog.update();
-
 			throw Ok('/p/pro/catalog/view/'+catalog.id,'Le catalogue a été mis à jour');
 		}
 		

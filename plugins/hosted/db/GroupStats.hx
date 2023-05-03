@@ -99,6 +99,33 @@ class GroupStats extends sys.db.Object
 			this.contactType = "NONE";
 		}
 
+
+		//IRO : nbre de cat de premier niveau
+
+		var catNum = db.TxpCategory.manager.count(true);
+
+		//products
+		var catalogs = [];
+		for( md in mds){
+			for ( d in md.getDistributions() ){
+				catalogs.push(d.catalog);
+			}
+		}
+		catalogs = catalogs.deduplicate();
+		var activeCats = [];
+		for ( cat in catalogs ){
+			for( p in cat.getProducts()){
+				if(p.txpProduct!=null){
+					activeCats.push(p.txpProduct.subCategory.category);
+				}
+			}
+		}
+		activeCats = activeCats.deduplicate();
+		// this.iro = Math.round(activeCats.length/catNum)*10;
+		this.iro = activeCats.length;
+
+
+
 		this.update();
 		
 		return {
@@ -108,6 +135,7 @@ class GroupStats extends sys.db.Object
 			members:this.membersNum >= 3,
 			visible:this.visible,
 			active:this.active,
+			iro:iro
 		};
 		
 	}

@@ -1,6 +1,6 @@
 ::use 'amapadmin/design.mtt'::
 
-	<h3>Lieux de distribution</h3>		
+	<h3>Lieu de distribution</h3>		
 	
 	<div class="row">
 		
@@ -12,13 +12,15 @@
                         <td>
                             <div class="btn-group" role="group">
                             $$edit(::_("Edit")::,/place/edit/::p.id::)
-                            ::if user.isAmapManager():: $$delete(::_("Del.||short version for delete")::,/place/delete/::p.id::?token=::token::) ::end::
+                            ::if user.isAmapManager() && places.length>1:: 
+                            $$delete(::_("Del.||short version for delete")::,/place/delete/::p.id::?token=::token::)
+                            ::end::
                             </div>
                         </td>
                     </tr>
                 ::end::
             </table>
-            $$insert(::_("New delivery place")::,/place/insert/)
+           <!--$$insert(::_("New delivery place")::,/place/insert/) --> 
         </div>
         
         <div class="col-md-4">

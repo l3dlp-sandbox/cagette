@@ -65,11 +65,15 @@
                     <td>::sales.transferTurnover.ttc:: &euro;</td>
                 </tr>
                 <tr>
-                    <td> <b>Encaissements par carte bancaire sur place</b> </td>
+                    <td> <b>Encaissements carte bancaire sur place</b> </td>
                     <td>::sales.cardTerminalTurnover.ttc:: &euro;</td>
                 </tr>
                 <tr>
-                    <td> <b>Encaissements Carte bancaire (Mangopay)</b> </td>
+                    <td> <b>Encaissements carte bancaire (Stripe)</b> </td>
+                    <td>::sales.stripeTurnover.ttc:: &euro;</td>
+                </tr>
+                <tr>
+                    <td> <b>Encaissements carte bancaire (Mangopay)</b> </td>
                     <td>
                         <table class="table">
                             <tr>

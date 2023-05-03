@@ -1,4 +1,5 @@
 package mangopay;
+import payment.Stripe;
 import Common;
 import db.MultiDistrib;
 import mangopay.Mangopay;
@@ -318,6 +319,7 @@ class MangopayPlugin extends PlugIn implements IPlugIn{
 			mpVariableFeeRate 	: conf==null ? null : conf.legalUser.variableFeeRate,
 			mpFixedFees			: {ht:0.0,ttc:0.0},
 			mpVariableFees		: {ht:0.0,ttc:0.0},
+			stripeTurnover		: {ht:0.0,ttc:0.0},
 			//other payment types
 			cashTurnover 		: {ht:0.0,ttc:0.0},
 			checkTurnover 		: {ht:0.0,ttc:0.0},
@@ -349,6 +351,9 @@ class MangopayPlugin extends PlugIn implements IPlugIn{
 						out.onTheSpotTurnover.ttc += op.amount;
 						//throw new Error("A validated distribution should not contain undefined 'on the spot' payments.");
 
+					case payment.Stripe.TYPE : 
+						out.stripeTurnover.ttc += op.amount;
+
 					case MangopayECPayment.TYPE :
 												
 						var amountAndFees = getAmountAndFees(op.amount,conf);
@@ -371,7 +376,8 @@ class MangopayPlugin extends PlugIn implements IPlugIn{
 		out.total.ttc += out.mpTurnover.ttc;
 		out.total.ttc += out.cardTerminalTurnover.ttc;
 		out.total.ttc -= out.mpFixedFees.ttc; 		
-		out.total.ttc -= out.mpVariableFees.ttc;	
+		out.total.ttc -= out.mpVariableFees.ttc;
+		out.total.ttc += out.stripeTurnover.ttc;	
 
 		return out;
 	}

@@ -2,6 +2,18 @@
 	
 	<div class=" article">
 		<h3>Paiements Mangopay</h3>
+
+        <div class="alert alert-danger">
+            <b>Le paiement en ligne Stripe avec dispatch des paiements est enfin disponible !</b>
+            <br/>
+            <p>
+                Pensez à organiser votre passage à Stripe en contactant le support sur <a href="mailto:support@cagette.net">support@cagette.net</a> 
+                car <b>le paiement Mangopay ne sera plus disponible à partir du 30 juin 2023.</b>
+            </p>
+            <p>
+                <a href="/amapadmin/stripe" class="btn btn-default">En savoir plus</a>
+            </p>
+        </div>
 		
 		<p class="text-center">
             Solde de votre compte Mangopay : <br/>

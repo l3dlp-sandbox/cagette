@@ -277,11 +277,45 @@ $$browserDetection()
 
 		::if amap.txtHome!=null && amap.txtHome!=""::
 		::raw nl2br(amap.txtHome)::
-		::end::
+		::end::		
+	</div>
 
+	<div class="block">
+		
+		<h4>Lien du marché à partager</h4>
+
+		::set group = amap::
+		<p>
+			<a id="copy-url" href="http://::HOST::/group/::group.id::" target="_blank">http://::HOST::/group/::group.id::</a><br/>
+		</p>
+		<p>
+			<a id="copy-url-button" href="#" class="btn btn-default btn-sm">
+				<i class="icon icon-link"></i> Copier le lien
+			</a>
+		</p>
+		
+		<script>
+			var copyTextBtn = document.querySelector('#copy-url-button');
+				var previousText = copyTextBtn.innerHTML;
+				copyTextBtn.addEventListener('click', function(event) {
+					var element = document.querySelector('#copy-url');
+					var storage = document.createElement('textarea');
+					storage.value = element.innerHTML;
+					element.appendChild(storage);
+					storage.select();
+					document.execCommand('copy');
+					element.removeChild(storage);
+
+					copyTextBtn.innerHTML = "✔ copié"
+					setTimeout(function() {
+						copyTextBtn.innerHTML = previousText;
+					}, 1000);
+				});
+		</script>
 	</div>
 
 	<div class="block hidden-sm hidden-xs">
+		<h4>Permanences</h4>
 		<a href="/distributions/volunteersCalendar" class="btn btn-default btn-sm">
 			<i class="icon icon-calendar"></i> ::_("Duty periods calendar")::
 		</a>
