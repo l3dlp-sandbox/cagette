@@ -54,7 +54,12 @@ class Public extends controller.Controller
 				throw Error("/contractAdmin/view/" + contracts.first().id, "Ce catalogue existe déjà dans ce groupe. Il n'est pas nécéssaire d'importer plusieurs fois le même catalogue dans un groupe.");
 			}
 
-			PCatalogService.linkCatalogToGroup(catalog,group,App.current.user.id);
+			try{
+				PCatalogService.linkCatalogToGroup(catalog,group,App.current.user.id);
+			}catch(e:tink.core.Error){
+				throw Error(sugoi.Web.getURI(), e.message);
+			}
+			
 			
 			//send email
 			var e = new sugoi.mail.Mail();		
