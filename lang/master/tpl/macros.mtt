@@ -130,6 +130,9 @@
 					}
 				}
 				@media (max-width: 600px){
+					.nav-placeholder {
+						min-width: 0px;
+					}
 					.nav-md {
 						display: none;
 					}
