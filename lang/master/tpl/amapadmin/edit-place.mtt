@@ -1,0 +1,10 @@
+﻿::use 'amapadmin/design.mtt'::
+	<div id="place-container"/>
+    <script>
+        document.addEventListener("DOMContentLoaded", function(event) {
+            neo.createNeoModule("place-container", "place-form", {
+                placeId: ::placeId::
+            });
+        });
+    </script>
+::end::

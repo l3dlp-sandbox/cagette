@@ -35,32 +35,9 @@ class Place extends Controller
 		view.addr = view.escapeJS(addr);
 	}
 	
-	@tpl('amapadmin/form.mtt')
+	@tpl('amapadmin/edit-place.mtt')
 	function doEdit(p:db.Place) {
-		
-		var currentAddress = p.getAddress();
-
-		var f = form.CagetteForm.fromSpod(p);
-		f.addElement(new sugoi.form.elements.StringSelect('country',t._("Country"),db.Place.getCountries(),p.country,true));
-			
-		if (f.isValid()) {
-		
-			f.toSpod(p); 
-
-			if(currentAddress!=p.getAddress() || p.lat==null){
-				try{
-					service.PlaceService.geocode(p);
-				}catch(e:Dynamic){
-					App.current.session.addMessage(t._("Oops, we're unable to find where is located this address. This place will not be shown on the map.")+'<br/>$e',true);
-				}
-			}
-
-			p.update();
-			throw Ok('/place',t._("this place has been updated"));
-		}
-		
-		view.form = f;
-		view.title = t._("Edit a place");
+		view.placeId = p.id;
 	}
 	
 	@tpl("amapadmin/form.mtt")

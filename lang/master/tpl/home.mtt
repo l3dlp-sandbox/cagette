@@ -286,31 +286,31 @@ $$browserDetection()
 
 		::set group = amap::
 		<p>
-			<a id="copy-url-::group.id::" href="http://::HOST::/group/::group.id::" target="_blank">http://::HOST::/group/::group.id::</a><br/>
+			<a id="copy-url" href="http://::HOST::/group/::group.id::" target="_blank">http://::HOST::/group/::group.id::</a><br/>
 		</p>
 		<p>
-			<a id="copy-url-button-::group.id::" href="#" class="btn btn-default btn-sm">
+			<a id="copy-url-button" href="#" class="btn btn-default btn-sm">
 				<i class="icon icon-link"></i> Copier le lien
 			</a>
 		</p>
 		
 		<script>
-			var copyTextBtn::group.id:: = document.querySelector('#copy-url-button-::group.id::');
-			var previousText = copyTextBtn::group.id::.innerHTML;
-			copyTextBtn::group.id::.addEventListener('click', function(event) {
-				var element = document.querySelector('#copy-url-::group.id::');
-				var storage = document.createElement('textarea');
-				storage.value = element.innerHTML;
-				element.appendChild(storage);
-				storage.select();
-				document.execCommand('copy');
-				element.removeChild(storage);
+			var copyTextBtn = document.querySelector('#copy-url-button');
+				var previousText = copyTextBtn.innerHTML;
+				copyTextBtn.addEventListener('click', function(event) {
+					var element = document.querySelector('#copy-url');
+					var storage = document.createElement('textarea');
+					storage.value = element.innerHTML;
+					element.appendChild(storage);
+					storage.select();
+					document.execCommand('copy');
+					element.removeChild(storage);
 
-				copyTextBtn::group.id::.innerHTML = "✔ copié"
-				setTimeout(function() {
-					copyTextBtn::group.id::.innerHTML = previousText;
-				}, 1000);
-			});
+					copyTextBtn.innerHTML = "✔ copié"
+					setTimeout(function() {
+						copyTextBtn.innerHTML = previousText;
+					}, 1000);
+				});
 		</script>
 	</div>
 
