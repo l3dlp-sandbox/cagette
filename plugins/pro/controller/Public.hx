@@ -37,9 +37,14 @@ class Public extends controller.Controller
 		var f = new sugoi.form.Form("import");		
 		f.addElement( new sugoi.form.elements.Html("html1",catalog.company.vendor.name, "Producteur :") );
 		f.addElement( new sugoi.form.elements.Html("html2",catalog.name, "Catalogue :") );
-		f.addElement( new sugoi.form.elements.Html("html3",group.name, "Marché qui utilisera le catalogue :") );
+		var datas = [];
+		for( ua in app.user.getUserGroups()){
+			if(ua.isGroupManager() || ua.canManageAllContracts()){
+				datas.push({label:ua.group.name,value:ua.group.id});
+			}
+		}
+		f.addElement( new sugoi.form.elements.IntSelect("group","Marché qui accueillera le catalogue", datas, (group==null ? null : group.id) , true) );
 		view.form = f;
-		
 		
 		if ( f.isValid() ){
 			
@@ -49,6 +54,9 @@ class Public extends controller.Controller
 			if (!app.user.isContractManager() && !app.user.isAmapManager()){
 				throw Error("/p/pro/public/askImport/" + catalog.id, "Vous devez être coordinateur pour pouvoir importer un catalogue.");
 			}*/
+
+			group = db.Group.manager.get(f.getValueOf("group"),false);
+
 			var contracts = connector.db.RemoteCatalog.getContracts( catalog, group );
 			if ( contracts.length>0 ){
 				throw Error("/contractAdmin/view/" + contracts.first().id, "Ce catalogue existe déjà dans ce groupe. Il n'est pas nécéssaire d'importer plusieurs fois le même catalogue dans un groupe.");
@@ -59,6 +67,8 @@ class Public extends controller.Controller
 			}catch(e:tink.core.Error){
 				throw Error(sugoi.Web.getURI(), e.message);
 			}
+
+			app.session.data.amapId = group.id;
 			
 			
 			//send email

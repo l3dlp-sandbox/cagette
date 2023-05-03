@@ -289,7 +289,7 @@ $$browserDetection()
 			<a id="copy-url" href="http://::HOST::/group/::group.id::" target="_blank">http://::HOST::/group/::group.id::</a><br/>
 		</p>
 		<p>
-			<a id="copy-url-button" href="#" class="btn btn-default btn-sm">
+			<a id="copy-url-button" class="btn btn-default btn-sm">
 				<i class="icon icon-link"></i> Copier le lien
 			</a>
 		</p>

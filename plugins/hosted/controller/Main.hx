@@ -1,4 +1,5 @@
 package hosted.controller;
+import mangopay.Types.Wallet;
 import payment.Check;
 import mangopay.MangopayPlugin;
 import mangopay.Mangopay;
@@ -97,11 +98,15 @@ class Main extends controller.Controller
 
 			mgpLegalUserGroup.delete();
 
-			//payments in cash
-			group.setAllowedPaymentTypes([Cash.TYPE,Check.TYPE]);
+			//payments types
+			var pt = group.getAllowedPaymentTypes().filter(p -> p!=MangopayECPayment.TYPE);
+			if(pt.length==0){
+				pt = [Cash.TYPE,Check.TYPE];
+			}
+			group.setAllowedPaymentTypes(pt);
 			group.update();
 
-			throw Ok("/p/hosted/group/"+group.id,"Mangopay retiré, ATTENTION : groupe passé en paiement sur place");
+			throw Ok("/p/hosted/group/"+group.id,"Mangopay retiré, moyens de paiements : "+pt.join(","));
 
 		}
 
@@ -430,6 +435,23 @@ class Main extends controller.Controller
 	@admin
 	function doSeo(d:haxe.web.Dispatch){
 		d.dispatch(new hosted.controller.Seo());
+	}
+
+	/**
+		Empty MGP WALLETS
+	**/
+	@admin
+	@tpl("plugin/pro/mangopay/group/lugs.mtt")
+	function doEmptyWallets(){
+		var lugs = MangopayLegalUserGroup.manager.search(true,{limit:100},false);
+		for( lug in lugs ){
+
+			if(lug.walletId!=null){
+				var wallet:Wallet = Mangopay.callService("wallets/"+lug.walletId, "GET");
+				untyped lug.amount = wallet.Balance.Amount/100;
+			}
+		}
+		view.lugs = lugs;
 	}
 	
 }
