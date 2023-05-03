@@ -77,15 +77,8 @@ class Main extends controller.Controller
 
 			group.update();
 
-<<<<<<< HEAD
 			throw Ok("/p/hosted/group/"+group.id,"Le groupe est configuré pour le dispatch");
 		}*/
-=======
-			throw Ok("/p/hosted/group/"+group.id,"Le marché est configuré pour le paiement Stripe (dispatch)");
-		}
-
-		
->>>>>>> feature/market
 
 		if( app.params.get("removeMangopay")=="1" ){
 
@@ -113,11 +106,7 @@ class Main extends controller.Controller
 			group.setAllowedPaymentTypes(pt);
 			group.update();
 
-<<<<<<< HEAD
 			throw Ok("/p/hosted/group/"+group.id,"Mangopay retiré, moyens de paiements : "+pt.join(","));
-=======
-			throw Ok("/p/hosted/group/"+group.id,"Mangopay retiré, ATTENTION !!! : marché passé en paiement sur place");
->>>>>>> feature/market
 
 		}
 
@@ -186,10 +175,7 @@ class Main extends controller.Controller
 			throw Ok("/p/hosted/group/"+g.id,"Marché copié");
 		}
 
-<<<<<<< HEAD
 	
-=======
->>>>>>> feature/market
 		view.vendors = group.getActiveVendors();
 		var gs = GroupStats.getOrCreate(group.id,true);
 

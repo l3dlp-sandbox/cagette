@@ -43,16 +43,7 @@ class Public extends controller.Controller
 				datas.push({label:ua.group.name,value:ua.group.id});
 			}
 		}
-<<<<<<< HEAD
 		f.addElement( new sugoi.form.elements.IntSelect("group","Marché qui accueillera le catalogue", datas, (group==null ? null : group.id) , true) );
-=======
-		var id = app.user.getGroup()==null ? null : app.user.getGroup().id;
-		f.addElement( new sugoi.form.elements.IntSelect("group","Marché " + App.current.getTheme().name + " qui accueillera le catalogue", datas, id , true) );
-		if(!isVendor){
-			f.addElement( new sugoi.form.elements.TextArea("message","Message au producteur","Bonjour, \nJe souhaiterais proposer vos produits aux membres de mon marché " + App.current.getTheme().name + "...",false,null,"rows='10'") );
-		}
-		
->>>>>>> feature/market
 		view.form = f;
 		
 		if ( f.isValid() ){

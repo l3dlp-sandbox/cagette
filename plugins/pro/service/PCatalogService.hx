@@ -309,11 +309,7 @@ class PCatalogService{
 
 		if(clientGroup.isDispatch()){
 			if(!pcatalog.company.vendor.isDispatchReady()){
-<<<<<<< HEAD
 				throw new tink.core.Error("Ce catalogue ne peut pas être relié à ce groupe car le producteur n'a pas encore de compte Stripe.<br/>Le producteur peut ouvrir facilement son compte Stripe depuis son espace producteur (onglet \"producteur\",puis \"Paiement en ligne Stripe\").<br/>Plus d'informations dans la <a href='https://wiki.cagette.net/cpro:stripe'>documentation</a>.");
-=======
-				throw new tink.core.Error("Ce catalogue ne peut pas être relié à ce marché car le producteur n'a pas de compte Stripe (Obligatoire afin de pouvoir accepter le paiement en ligne).");
->>>>>>> feature/market
 			}
 		}
 
