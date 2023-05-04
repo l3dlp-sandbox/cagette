@@ -414,6 +414,8 @@ class Main extends Controller {
 	@tpl("help.mtt")
 	public function doHelp() {
 		view.noGroup = true;
+		var userGroups = app.user.getUserGroups().filter(ug -> return ug.isGroupManager());
+		view.hasMarket = userGroups.length > 0;
 	}
 
 }
