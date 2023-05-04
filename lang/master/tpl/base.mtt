@@ -52,7 +52,7 @@
     ::end::
 
     ::if ( HOST.indexOf(".dev.",null)!=-1 )::
-    <div style="position: fixed;background: #600;padding: 8px;left:0;bottom:0;color: #FA0;width: 100%;z-index: 99;text-align: center;">
+    <div style="position: fixed;background: #600;padding: 8px;left:0;bottom:65px;color: #FA0;width: 100%;z-index: 99;text-align: center;">
         <i class="icon icon-alert"></i> 
         <b>Ce site est une instance de test.</b> Ne l'utilisez pas pour prendre de vraies commandes.
     </div>
