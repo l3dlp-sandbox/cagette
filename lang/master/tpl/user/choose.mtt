@@ -14,7 +14,7 @@
 	</div>
 
 	<div class="col-md-12" >
-		<p>Vous êtes membre des <b>marchés ::theme.name::</b> suivants :</p>
+		<p>Vous êtes membre des <b>marchés</b> suivants :</p>
 	</div>
 
 	<!-- groups -->
@@ -44,7 +44,7 @@
 		
 	</div>
 
-	<!-- actions -->
+	<!-- actions 
 	<div class="col-md-12 text-center" style="margin-bottom:12px;" >
 		::if session.lang!="de"::
 			<a class="btn btn-default btn-lg" href="/group/map">
@@ -56,7 +56,7 @@
 				<i class="icon icon-plus"></i> Créer un marché
 			</a>
 		::end::
-	</div>
+	</div>-->
 
 		
 	<!-- waiting list -->

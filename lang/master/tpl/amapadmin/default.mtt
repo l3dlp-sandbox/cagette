@@ -60,7 +60,7 @@
 				<br/>
 				<br/>
 				<br/>
-				<a class="btn btn-danger btn-sm" href="/p/hosted/group/::user.getGroup().id::">Fiche sur le backoffice</a>
+				<a class="btn btn-danger btn-sm" href="/admin/group/view/::user.getGroup().id::">Fiche sur le backoffice</a>
 			</p>
 			::end::
 

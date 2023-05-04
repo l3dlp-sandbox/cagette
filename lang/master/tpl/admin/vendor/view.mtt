@@ -246,7 +246,7 @@
 				::else::
 				Catalogue invité					
 				::end::</td>
-				<td><a href="/p/hosted/group/::c._group.id::">::c._group.name::</a></td>
+				<td><a href="/admin/group/view/::c._group.id::">::c._group.name::</a></td>
 				<td>
 					Boutique
 				</td>

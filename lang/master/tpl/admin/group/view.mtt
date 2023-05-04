@@ -1,7 +1,4 @@
 ::use 'admin/design.mtt'::
-
-
-
 	<div class="article">
 		<h4>Marché #::group.id::</h4>
 		<h2>::group.name::</h2>
@@ -25,36 +22,36 @@
 					<ul>
 					::foreach x memberof::
 						::if x.id!=group.id::
-						<li><a href="/p/hosted/group/::x.id::">#::x.id::-::x.name::</a></li>
+						<li><a href="/admin/group/view/::x.id::">#::x.id::-::x.name::</a></li>
 						::end::
 					::end::
 					</ul>
 				</div>
 			::end::
 		</p>
-<hr/>
+	<hr/>
 
 
-<table class="table table-bordered text-center" >
-	<tr>
-		<th data-toggle="tooltip" title="indice de richesse de l'offre">IRO</th>
-		<th>CA 90 jours</th>
-		<th>Nbre de catalogues</th>
-		<th>Nbre de prod.</th>
-		<th>Nbre de clients</th>
-		<th>Type de l'admin.</th>
-	</tr>
-	<tr>
-		<td>::groupStats.iro:: / 9</td>
-		<td>::groupStats.turnover90days:: €</td>
-		<td>::groupStats.contractNum::</td>
-		<td>::groupStats.vendorNum::</td>
-		<td>::groupStats.membersNum::</td>
-		<td>::groupStats.contactType::</td>
-	</tr>
+	<table class="table table-bordered text-center" >
+		<tr>
+			<th data-toggle="tooltip" title="indice de richesse de l'offre">IRO</th>
+			<th>CA 90 jours</th>
+			<th>Nbre de catalogues</th>
+			<th>Nbre de prod.</th>
+			<th>Nbre de clients</th>
+			<th>Type de l'admin.</th>
+		</tr>
+		<tr>
+			<td>::groupStats.iro:: / 9</td>
+			<td>::groupStats.turnover90days:: €</td>
+			<td>::groupStats.contractNum::</td>
+			<td>::groupStats.vendorNum::</td>
+			<td>::groupStats.membersNum::</td>
+			<td>::groupStats.contactType::</td>
+		</tr>
 
-</table>
-<a href='?refresh=1' class="btn btn-default btn-xs">Rafraichir</a>
+	</table>
+	<a href='?refresh=1' class="btn btn-default btn-xs">Rafraichir</a>
 
 
 
@@ -64,9 +61,9 @@
 		Dispatch : $$bool(::group.isDispatch()::)<br/>
 
 		<p>
-		::if(!group.isDispatch())::
+		<!--::if(!group.isDispatch())::
 			<a href="?dispatch=1" class="btn btn-default">Passer en Dispatch</a>
-		::end::
+		::end::-->
 		::if( group.disabled=="MOVED")::
 			<a href="?duplicate=1" class="btn btn-default">Dupliquer en mode Marché</a>
 		::end::
@@ -96,7 +93,7 @@
 		<hr/>
 		
 		<a href="/group/::group.id::" class="btn btn-default">Page publique</a>
-		<a href="/p/hosted/addMe/::group.id::" class="btn btn-default">Devenir Membre de ce marché</a>
+		<a href="/admin/group/addMe/::group.id::" class="btn btn-default">Devenir Membre de ce marché</a>
 
 		<hr/>
 		
@@ -144,7 +141,7 @@
 				::end::
 			</table>
 		</div>
-		<a href="/p/hosted/syncToHubspot/::group.id::" class="btn btn-default">Synchroniser les producteurs sur Hubspot</a>
+		<a href="/admin/group/syncToHubspot/::group.id::" class="btn btn-default">Synchroniser les producteurs sur Hubspot</a>
 
 
 		<hr/>
@@ -166,9 +163,8 @@
 		<hr/>
 
 		<h3>Paiements</h3>
-
-		<!--<a href="/p/hosted/debugOps/::group.id::">Trouver les ops de commande en doublon</a>-->
-		<a href="/p/hosted/resetBalances/::group.id::" class="btn btn-default" $$confirm()>Remise à l'équilibre des soldes adhérents</a>
+		
+		<a href="/admin/group/resetBalances/::group.id::" class="btn btn-default" $$confirm()>Remise à l'équilibre des soldes adhérents</a>
 		<hr/>
 
 		
@@ -192,17 +188,17 @@
 
 		<h3>Maintenance et debug</h3>
 		<a href="?roleIds=1" class="btn btn-default">Cocher automatiquement les rôles en fonction des catalogues actifs</a>
-		<a href="/p/hosted/geocode/::group.id::" class="btn btn-default">Géocoding</a>
-		<a href="/p/hosted/refresh/::group.id::" class="btn btn-default">Revérifier visibilité carte</a>
-		<a href="/p/hosted/disableNotifs/::group.id::" class="btn btn-default">Désactiver les notifs</a>
-		<a href="/p/hosted/enableNotifs/::group.id::" class="btn btn-default">Activer les notifs</a>
-		<a href="/p/hosted/deleteDemoContracts/::group.id::" class="btn btn-default">Effacer contrats de démo</a>
+		<a href="/admin/group/geocode/::group.id::" class="btn btn-default">Géocoding</a>
+		<a href="/admin/group/refresh/::group.id::" class="btn btn-default">Revérifier visibilité carte</a>
+		<a href="/admin/group/disableNotifs/::group.id::" class="btn btn-default">Désactiver les notifs</a>
+		<a href="/admin/group/enableNotifs/::group.id::" class="btn btn-default">Activer les notifs</a>
+		<a href="/admin/group/deleteDemoContracts/::group.id::" class="btn btn-default">Effacer contrats de démo</a>
 		<a href="/p/pro/admin/fixGroupOps/::group.id::" class="btn btn-default">Fix remoteIds + faux paiements mangopay</a>
 		<a href="/p/pro/admin/checkOperations/::group.id::/2021-01-01 00:00:00/2021-02-01 00:00:00" class="btn btn-default">Consistence commandes et operations</a>
 		<hr/>
 
 
-		<a href="/p/hosted/deleteGroup/::group.id::?token=::token::" $$confirm(::_("Delete ?")::) class="btn btn-danger" >
+		<a href="/admin/group/deleteGroup/::group.id::?token=::token::" $$confirm(::_("Delete ?")::) class="btn btn-danger" >
 				<i class="icon icon-delete"></i>
 				Supprimer DEFINITIVEMENT le marché (irréversible)
 		</a>

@@ -62,8 +62,6 @@ class Group extends Object
 	@hideInForms public var membershipRenewalDate : SNull<SDate>;
 	@hideInForms public var membershipFee : SNull<STinyInt>;
 	
-	@hideInForms public var vatRates : SNull<SSmallText>;
-	
 	//options and flags
 	public var flags:SFlags<GroupFlags>;
 	public var betaFlags:SFlags<BetaFlags>;
@@ -102,7 +100,6 @@ class Group extends Object
 		flags = cast 0;
 		flags.set(CagetteNetwork);
 		betaFlags = cast 0;
-		setVatRates([{label:"TVA alimentaire",value:5.5},{label:"TVA standard",value:20}]);
 		cdate = Date.now();
 		regOption = Open;
 		currency = "€";
@@ -428,35 +425,6 @@ class Group extends Object
 			"contact" 		=> t._("Main contact"),
 			"legalRepresentative" => t._("Legal representative")			
 		];
-	}
-
-	public function setVatRates(rates:Array<{value:Float,label:String}>){
-		vatRates = haxe.Json.stringify(rates);
-	}
-
-	public function getVatRates():Array<{value:Float,label:String}>{
-		try{
-			return haxe.Json.parse(vatRates);
-		}catch(e:Dynamic){
-			var rates = [{label:"TVA alimentaire",value:5.5},{label:"TVA standard",value:20}];
-			this.lock();
-			setVatRates(rates);
-			this.update();
-			return rates;
-		}
-	}
-
-	/**
-		get vat rates as map
-	**/
-	public function getVatRatesOld():Map<String,Float>{
-		var map = new Map<String,Float>();
-		var rates = getVatRates();
-		if(rates==null) return null;
-		for( r in rates){
-			map.set(r.label,r.value);
-		}
-		return map;
 	}
 
 	public function setAllowedPaymentTypes(pt:Array<String>){

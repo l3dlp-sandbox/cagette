@@ -26,8 +26,8 @@
 			</li>
 
 			<li><a href="/admin/stripe"><i class="icon icon-card"></i> Stripe</a> </li>		
-
-			<li><a href="/admin/groups"><i class="icon icon-users"></i> Marchés</a> </li>		
+			<li><a href="/admin/group"><i class="icon icon-users"></i> Marchés</a> </li>
+				
 			::if nav!=null::
 					::foreach i nav::
 					<li><a href="::i.link::">

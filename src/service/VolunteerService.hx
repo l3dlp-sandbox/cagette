@@ -251,11 +251,11 @@ class VolunteerService
 	}
 
 	public static function getRolesFromGroup(group:db.Group):Array<db.VolunteerRole>{
-		return Lambda.array(db.VolunteerRole.manager.search($group==group,{orderBy:[catalogId,name]}));
+		return db.VolunteerRole.manager.search($group==group,{orderBy:[catalogId,name]}).array();
 	}
 
 	public static function getRolesFromContract(catalog:db.Catalog):Array<db.VolunteerRole>{
-		return Lambda.array(db.VolunteerRole.manager.search($catalog==catalog,{orderBy:[catalogId,name]}));
+		return db.VolunteerRole.manager.search($catalog==catalog,{orderBy:[catalogId,name]}).array();
 	}
 
 	/**
