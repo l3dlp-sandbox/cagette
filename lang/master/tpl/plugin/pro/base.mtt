@@ -30,7 +30,7 @@
 	</head>
 
 	::if bgcolor==null:: ::set bgcolor="#bad096":: ::end::
-	<body cpro" style="background-url:none;background: ::raw bgcolor::">
+	<body class="cpro" style="background-url:none;background: ::raw bgcolor::">
 		
 		::if DEBUG::
 		<div style="position: absolute;background: #666;padding: 8px;left: 0;color: #FF0;">DEBUG</div>
