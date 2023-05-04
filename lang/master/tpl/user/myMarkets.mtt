@@ -38,7 +38,9 @@
 		<div id='my-markets-neo-container'/>
 		<script>
 			document.addEventListener("DOMContentLoaded", function(event) {
-				neo.createNeoModule("my-markets-neo-container", "my-markets");
+				neo.createNeoModule("my-markets-neo-container", "my-markets", {
+					hasMarket: ::groups.length > 0::
+				});
 			});
 		</script>
 	</div>
