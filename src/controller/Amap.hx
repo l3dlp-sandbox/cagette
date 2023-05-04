@@ -26,7 +26,7 @@ class Amap extends Controller
 		view.group = app.user.getGroup();
 	}
 	
-	@tpl("form.mtt")
+	@tpl("amapadmin/form.mtt")
 	function doEdit() {
 		
 		if (!app.user.isAmapManager()) throw t._("You don't have access to this section");

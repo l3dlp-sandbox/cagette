@@ -79,7 +79,7 @@ class ContractAdmin extends Controller
 	/**
 	 * Edit a contract/catalog
 	 */
-	 @logged @tpl("form.mtt")
+	 @logged @tpl("contractadmin/form.mtt")
 	 function doEdit( catalog : db.Catalog ) {
 		 
 		view.category = 'contractadmin';
@@ -202,7 +202,7 @@ class ContractAdmin extends Controller
 			
 			view.form = f;
 			view.title = t._("Global view of orders");
-			app.setTemplate("form.mtt");
+			app.setTemplate("contractadmin/form.mtt");
 			
 			if (f.checkToken()) {
 				

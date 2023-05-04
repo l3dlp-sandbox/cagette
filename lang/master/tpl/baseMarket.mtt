@@ -65,7 +65,7 @@
     ::set title = ""::
     ::if(group!=null && noGroup!=true):: ::set title=group.name:: ::end::
    
-    $$nav(::title::, shopping)
+    $$nav(::title::, myMarket)
 
     $$googleTagManagerNoScript(::getVariable("googleTagManagerId")::)
 

@@ -1,5 +1,5 @@
 
-::use 'design.mtt'::
+::use 'designMarket.mtt'::
 
 <div class="col-md-4">
 	<h3>::_("Contact informations")::</h3>
