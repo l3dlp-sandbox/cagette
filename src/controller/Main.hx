@@ -409,4 +409,9 @@ class Main extends Controller {
 		}
 	}
 
+	@tpl("help.mtt")
+	public function doHelp() {
+
+	}
+
 }
