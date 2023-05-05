@@ -47,7 +47,7 @@
 					<th>Producteur</th>
 					<th>Compte Stripe</th>
 				</tr>
-				::foreach v group.getActiveVendors()::
+				::foreach v vendors::
 				<tr>
 					<td>::v.name::</td>				
 					<td>
