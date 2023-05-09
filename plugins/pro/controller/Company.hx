@@ -1,4 +1,5 @@
 package pro.controller;
+import pro.db.CagettePro.CagetteProOffer;
 import sugoi.Web;
 import mangopay.Mangopay;
 import pro.db.PVendorCompany;
@@ -362,6 +363,8 @@ class Company extends controller.Controller
 	
 	@tpl('plugin/pro/company/stripe.mtt')
 	function doStripe(){
+
+		if(company.offer==CagetteProOffer.Training) throw "Les espaces producteurs de formation n'ont pas le droit d'ouvrir de compte Stripe";
 		var vendor = company.vendor;
 		view.vendor = vendor;
 		view.nav.push("stripe");
