@@ -100,9 +100,6 @@ class User extends Controller
 	@logged
 	@tpl("user/myMarkets.mtt")
 	function doMyMarkets(?args: { group:db.Group } ) {
-
-		//home page
-		app.breadcrumb = [];
 		
 		if (args!=null && args.group!=null) {
 			//select a group
@@ -112,7 +109,7 @@ class User extends Controller
 			app.session.data.newGroup = null;
 			app.session.data.amapId = args.group.id;
 			app.session.data.whichUser = which;
-			throw Redirect('/home');
+			throw Redirect('/distributions');
 		}
 		
 		var userGroups = app.user.getUserGroups().filter(ug -> return ug.isGroupManager());

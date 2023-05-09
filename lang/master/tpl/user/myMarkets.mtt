@@ -11,7 +11,7 @@
 		<div class="row">
 			::foreach group groups::				
 				<div class="col-md-4">
-					<a class="clickable groupBlock"  href="/user/choose?group=::group.id::">					
+					<a class="clickable groupBlock"  href="/user/myMarkets?group=::group.id::">					
 						::if group.imageId!=null::
 						<img src="::file(group.imageId)::" class="img-responsive" style="width:92px;float:left;margin-right:12px;" />
 						::end::						
