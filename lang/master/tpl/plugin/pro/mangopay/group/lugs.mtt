@@ -2,7 +2,12 @@
 	
 	<div class=" article">
 		
-        <h2>::lugs.length:: groupes avec Mangopay</h2>
+        <h2>::count:: groupes avec Mangopay</h2>
+
+        <p>
+            $$browse(::rb::,/p/hosted/emptyWallets)
+        </p>
+        
 
         <table class="table table-bordered">
             <tr>
@@ -11,8 +16,7 @@
                 <th>legalUserId</th>
                 <th>Groupe</th>
             </tr>
-            ::foreach lug lugs::
-            <tr>
+            <tr ::repeat lug rb.current()::>
                 <td>::lug.walletId::</td>
                 <td>::lug.amount:: €</td>
                 <td>::lug.legalUserId::</td>
@@ -22,10 +26,6 @@
                     </a>
                 </td>
             </tr>
-
-            ::end::
         </table>
-        
-
     </div>
 ::end::
