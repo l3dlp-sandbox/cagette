@@ -92,7 +92,7 @@
 			::end::
 
 			::foreach client adminClients::
-			<div class="col-md-4" data-toggle="tooltip" data-placement="bottom" title="Aller dans ce marché">
+			<div class="col-md-3" data-toggle="tooltip" data-placement="bottom" title="Aller dans ce marché">
 				
 				::set group = client[0].getContract(false)._group::
 				<a href="/group/::group.id::" target="_blank" class="clickable" style="height:60px;">
@@ -129,7 +129,7 @@
 			::end::
 	
 			::foreach client regularClients::
-			<div class="col-md-4" data-toggle="tooltip" data-placement="bottom"  title="Aller dans ce marcher">
+			<div class="col-md-3" data-toggle="tooltip" data-placement="bottom"  title="Aller dans ce marcher">
 				
 				::set group = client[0].getContract(false)._group::
 				<a href="/group/::group.id::" target="_blank" class="clickable" style="height:60px;" >

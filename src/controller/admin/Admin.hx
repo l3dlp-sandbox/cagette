@@ -30,6 +30,7 @@ class Admin extends Controller {
 		var e = Nav(nav, "admin");
 		app.event(e);
 		view.nav = e.getParameters()[0];
+		view.noGroup = true;
 	}
 
 	@tpl("admin/default.mtt")

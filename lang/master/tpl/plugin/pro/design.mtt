@@ -19,7 +19,7 @@
 
 							<li ::attr class if(category!=null && category=="home") 'active' ::>
 								<a href="/p/pro">
-									<i class="icon icon-map-marker"></i> Mes marchés
+									<i class="icon icon-home"></i> Tableau de bord
 								</a>								
 							</li>
 
@@ -43,7 +43,7 @@
 
 							<li ::attr class if(category!=null && category=="delivery" )	'active' ::>
 								<a href="/p/pro/sales">
-									<i class="icon icon-basket"></i> Vente
+									<i class="icon icon-basket"></i> Ventes
 								</a>
 							</li>
 
@@ -56,8 +56,8 @@
 
 							<li ::attr class if(category!=null && category=="company") 		'active' ::>
 								<a href="/p/pro/company">
-									<i class="icon icon-farmer"></i>
-									Producteur
+									<i class="icon icon-cog"></i>
+									Paramètres
 								</a>								
 							</li>
 
