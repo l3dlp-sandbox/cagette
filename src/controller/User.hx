@@ -117,6 +117,7 @@ class User extends Controller
 		
 		var userGroups = app.user.getUserGroups().filter(ug -> return ug.isGroupManager());
 		view.groups = userGroups.map(ug -> ug.group);
+		view.noGroup = true;
 	}
 	
 	function doLogout() {
