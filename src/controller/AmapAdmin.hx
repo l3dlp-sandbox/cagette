@@ -385,6 +385,13 @@ class AmapAdmin extends Controller
 				app.logError(Std.string(e));
 			}
 
+			try{
+				service.BridgeService.syncGroupToHubspot(app.user);
+			}catch(e:Dynamic){
+				//fail silently
+				app.logError(Std.string(e));
+			}
+
 			group.update();
 
 			throw Ok("/amapadmin/stripe","Votre marché est maintenant configuré avec le paiement en ligne Stripe.");
