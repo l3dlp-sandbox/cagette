@@ -118,7 +118,14 @@
 			
 	</macro>
 
-	<macro name='nav(title, currentPage, ?vendorId)'>
+	<macro name='nav(t, currentPage, ?vendorId)'>
+		
+		::if(pageTitle!=null && noGroup==true)::
+			::set title=pageTitle::
+		::else::
+			::set title=t::
+		::end::
+
 		<div style="display: flex;">
 			<style>
 				.nav-placeholder {
@@ -760,4 +767,14 @@
 
 	<macro name="openImageUploader(context, entityId, width, height, ?imageType, ?cProId)" onclick="neo.createNeoModule('image-uploader-container', 'imageUploaderDialog', { context: ::context::, entityId: ::entityId::, width: ::width::, height: ::height::, imageType: ::imageType::, currentCagetteProId: ::cProId:: });" />
 
+	<macro name="debug()">
+
+		::if ( HOST.indexOf(".dev.",null)!=-1 || HOST=="localhost")::
+		<div style="position: fixed;background: #600;padding: 8px;right:0;bottom:0;color: #FA0;width:auto;z-index: 99;text-align: center;" onclick="this.remove()">
+			<i class="icon icon-alert"></i> 
+			Instance de test : ::HOST::			
+		</div>
+		::end::
+
+	</macro>
 </macros>

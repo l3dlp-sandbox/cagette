@@ -94,7 +94,14 @@ class User extends Controller
 			// 		throw Redirect("/user/tos");
 			// 	} 
 			// }
-		}		
+		}
+		
+		if(app.user!=null){
+			view.pageTitle = "Bonjour "+(view.whichUser()==0?app.user.firstName:app.user.firstName2);
+		}else{
+			view.pageTitle = "Bonjour !";
+		}
+		
 	}
 
 	@logged
@@ -117,6 +124,9 @@ class User extends Controller
 		
 		var userGroups = app.user.getUserGroups().filter(ug -> return ug.isGroupManager());
 		view.groups = userGroups.map(ug -> ug.group);
+
+		view.pageTitle = "Mes marchés";
+		view.noGroup = true;
 	}
 	
 	function doLogout() {

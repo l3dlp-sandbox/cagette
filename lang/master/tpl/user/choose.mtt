@@ -2,16 +2,6 @@
 
 	$$news()
 
-	<div class="col-md-12">
-		<h2>::_("Hello")::
-		::if whichUser()==0::
-			::user.firstName::
-		::else::
-			::user.firstName2::
-		::end::
-		</h2>				
-	</div>
-
 	<div class="col-md-12" >
 		<p>Vous êtes membre des <b>marchés Cagette</b> suivants :</p>
 	</div>
