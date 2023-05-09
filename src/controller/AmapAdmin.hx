@@ -312,16 +312,17 @@ class AmapAdmin extends Controller
 	@tpl("amapadmin/stripe.mtt")
 	public function doStripe(){
 		var group = app.getCurrentGroup();
+
+		//get active and non disabled vendors
+		var vendors = group.getActiveContracts(false).map(c -> c.vendor).filter(v -> !v.isDisabled()).array();
+		vendors = tools.ObjectListTool.deduplicate(vendors);
+
 		if(app.params.get("enableStripe")=="1"){
 
 			//ENABLE DISPATCH
 			group.lock();
 			group.betaFlags.set(Dispatch);
 			group.setAllowedPaymentTypes(["stripe"]);
-			
-			//get active and non disabled vendors
-			var vendors = group.getActiveContracts(false).map(c -> c.vendor).filter(v -> !v.isDisabled()).array();
-			vendors = tools.ObjectListTool.deduplicate(vendors);
 
 			if( vendors.length > vendors.filter(v -> v.isDispatchReady()).length){
 				var badVendors = vendors.filter(v -> !v.isDispatchReady());
@@ -329,23 +330,20 @@ class AmapAdmin extends Controller
 			}
 
 			//block if MGP !
-			if(mangopay.db.MangopayLegalUserGroup.get(group)!=null){
-				throw Error("/amapadmin/stripe","Ce marché fonctionne avec le paiement en ligne Mangopay, vous devez d'abord fermer votre compte Mangopay avant de passer à Stripe. Contactez le support pour le faire en écrivant à support@cagette.net");
-
-			}
+			// if(mangopay.db.MangopayLegalUserGroup.get(group)!=null){
+			// 	throw Error("/amapadmin/stripe","Ce marché fonctionne avec le paiement en ligne Mangopay, vous devez d'abord fermer votre compte Mangopay avant de passer à Stripe. Contactez le support pour le faire en écrivant à support@cagette.net");
+			// }
 
 			try{
-				//sync if this user is not cpro && market mode group
 				service.BridgeService.syncUserToHubspot(app.user);
 				service.BridgeService.triggerWorkflow(42244245, app.user.email);
 				
 			}catch(e:Dynamic){
-				//fail silently
 				app.logError(Std.string(e));
 			}
 
 			try{
-				service.BridgeService.syncGroupToHubspot(app.user);
+				service.BridgeService.syncGroupToHubspot(group);
 			}catch(e:Dynamic){
 				//fail silently
 				app.logError(Std.string(e));
@@ -357,7 +355,7 @@ class AmapAdmin extends Controller
 
 		}
 
-
+		view.vendors = vendors;
 		view.group = group;
 	}
 }

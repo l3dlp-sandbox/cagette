@@ -104,15 +104,26 @@ class Main extends controller.Controller
 	@admin
 	@tpl("plugin/pro/mangopay/group/lugs.mtt")
 	function doEmptyWallets(){
-		var lugs = MangopayLegalUserGroup.manager.search(true,{limit:100},false);
-		for( lug in lugs ){
 
-			if(lug.walletId!=null){
-				var wallet:Wallet = Mangopay.callService("wallets/"+lug.walletId, "GET");
-				untyped lug.amount = wallet.Balance.Amount/100;
+		var count = MangopayLegalUserGroup.manager.count(true);
+
+		var browse = function(index:Int, limit:Int) {
+			//return db.Vendor.manager.search($id > index && $amap==app.user.getGroup(), { limit:limit, orderBy:-id }, false);
+
+			var lugs = MangopayLegalUserGroup.manager.search(true,{limit:[index,limit]},false);
+			for( lug in lugs ){
+
+				if(lug.walletId!=null){
+					var wallet:Wallet = Mangopay.callService("wallets/"+lug.walletId, "GET");
+					untyped lug.amount = wallet.Balance.Amount/100;
+				}
 			}
+			return lugs;
 		}
-		view.lugs = lugs;
+
+		var rb = new sugoi.tools.ResultsBrowser(count,50,browse);
+		view.rb = rb;
+		view.count = count;
 	}
 	
 }
