@@ -273,7 +273,7 @@ class Main extends controller.Controller
 
 		var p = new db.Place();
 		var f = form.CagetteForm.fromSpod(p);
-		f.addElement(new sugoi.form.elements.Html("html","<div class='alert alert-warning'><i class='icon icon-info'></i> En tant que producteur Membre, vous pouvez à titre exceptionnel créer un marché en paiement sur place</div>"),0);
+		f.addElement(new sugoi.form.elements.Html("html","<div class='alert alert-warning'><i class='icon icon-info'></i> En tant que producteur Membre, vous pouvez à titre exceptionnel créer un marché en paiement sur place, tant que vous restez seul sur ce marché.<br/><br/>N'oubliez pas que vous pouvez <a href=\"/group/newMarket\">créer directement un marché avec paiement en ligne Stripe</a> pour pouvoir collaborer avec d'autres producteurs sur ce marché.</div>"),0);
 		
 		f.addElement(new sugoi.form.elements.StringSelect('country',t._("Country"),db.Place.getCountries(),p.country,true));			
 		f.addElement(new sugoi.form.elements.StringInput("groupName", "Nom du marché", "La Cagette de ...", true),1);

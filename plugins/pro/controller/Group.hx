@@ -58,7 +58,7 @@ class Group extends controller.Controller
 			data.push( {id:g.id , label:g.name , value:g.id} );
 		}
 		
-		form.addElement( new sugoi.form.elements.IntSelect("group", "Marché à retirer", cast data, true) );
+		form.addElement( new sugoi.form.elements.IntSelect("group", "Marché à retirer de mon espace producteur", cast data, true) );
 		form.addElement( new sugoi.form.elements.Checkbox("stayMember","Rester membre ce marché",false) );
 		form.addElement( new sugoi.form.elements.Checkbox("deleteDistribs","Supprimer les distributions futures",true) );
 
