@@ -223,7 +223,7 @@ class ContractAdmin extends Controller
 			
 			//distribs
 			var distribs = db.Distribution.manager.search(($catalogId in cids)   && $date >= d1 && $date <= d2 /*&& place.id==$placeId*/, false);								
-			if (distribs.length == 0) throw Error("/contractAdmin/ordersByDate", t._("There is no delivery at this date"));
+			if (distribs.length == 0) throw Error("/contractAdmin/ordersByTimeFrame", t._("There is no delivery at this date"));
 			
 			var orders = [];
 			for ( d in distribs ){

@@ -33,7 +33,7 @@ class Distributions extends Controller {
 		var user = app.user;
 		var group = user.getGroup();
 
-		var returnUrl = args.returnUrl != null ? args.returnUrl : '/distribution/volunteersCalendar';
+		var returnUrl = args.returnUrl != null ? args.returnUrl : '/distributions/volunteersCalendar';
 		
 		if (args != null && args.distrib != null && args.role != null) {
 			// register to a role	
@@ -117,7 +117,7 @@ class Distributions extends Controller {
 
 		var form = new sugoi.form.Form("unsubscribe");
 
-		var returnUrl = App.current.session.data.volunteersReturnUrl != null ? App.current.session.data.volunteersReturnUrl : '/distribution/unsubscribeFromRole/'
+		var returnUrl = App.current.session.data.volunteersReturnUrl != null ? App.current.session.data.volunteersReturnUrl : '/distributions/unsubscribeFromRole/'
 			+ distrib.id
 			+ '/'
 			+ role.id;
@@ -202,7 +202,7 @@ class Distributions extends Controller {
 				var roleIds:Array<Int> = form.getValueOf("roles").map(Std.parseInt);
 				service.VolunteerService.updateMultiDistribVolunteerRoles(distrib, roleIds);
 			} catch (e:tink.core.Error) {
-				throw Error("/distribution/volunteerRoles/" + distrib.id, e.message);
+				throw Error("/distributions/volunteerRoles/" + distrib.id, e.message);
 			}
 
 			throw Ok("/distribution", t._("Volunteer Roles have been saved for this distribution"));
@@ -224,7 +224,7 @@ class Distributions extends Controller {
 		
 
 		if (volunteerRoles == null) {
-			throw Error('/distribution/volunteerRoles/${distrib.id}', t._("You need to first select the volunteer roles for this distribution"));
+			throw Error('/distributions/volunteerRoles/${distrib.id}', t._("You need to first select the volunteer roles for this distribution"));
 		}
 
 		var members = app.user.getGroup().getMembers().array().map(user -> {label: user.getName(), value: user.id});
@@ -242,7 +242,7 @@ class Distributions extends Controller {
 					roleIdsToUserIds[Std.parseInt(k)] = datas[k];
 				service.VolunteerService.updateVolunteers(distrib, roleIdsToUserIds);
 			} catch (e:tink.core.Error) {
-				throw Error("/distribution/volunteers/" + distrib.id, e.message);
+				throw Error("/distributions/volunteers/" + distrib.id, e.message);
 			}
 
 			throw Ok("/distribution", t._("Volunteers have been assigned to roles for this distribution"));
@@ -422,7 +422,7 @@ class Distributions extends Controller {
 			}
 			var productName = product.getName();
 			var priceStr = price + view.currency();
-			throw Ok("/distribution/validate/" + distrib.id,
+			throw Ok("/distributions/changePrice/" + distrib.id,
 				t._("The price of ::product:: has been modified to ::price:: in orders.", {product: productName, price: priceStr}));
 		}
 
@@ -465,7 +465,7 @@ class Distributions extends Controller {
 					count++;
 				}
 			}
-			throw Ok("/distribution/validate/" + distrib.id, t._("The undelivered product has been removed from ::n:: orders.", {n: count}));
+			throw Ok("/distributions/missingProduct/" + distrib.id, t._("The undelivered product has been removed from ::n:: orders.", {n: count}));
 		}
 
 		view.form = form;
