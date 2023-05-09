@@ -64,15 +64,6 @@
 		::end::
 	::end::
 
-	<div id="stats-module-container"></div>
-	<script>
-		document.addEventListener("DOMContentLoaded", function () {
-			neo.createNeoModule("stats-module-container", "vendorTurnover", {
-				vendorId: ::vendorId::
-			});
-		});
-	</script>
-
 	<div class="article">
 		<h2 style="margin-top:0">Mes marchés</h2>
 
@@ -190,7 +181,16 @@
 			
 			
 		</div>
-	</div>		
+	</div>
+
+	<div id="stats-module-container"></div>
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			neo.createNeoModule("stats-module-container", "vendorTurnover", {
+				vendorId: ::vendorId::
+			});
+		});
+	</script>
 	
 </div>
 
