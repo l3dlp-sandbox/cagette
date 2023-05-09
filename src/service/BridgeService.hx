@@ -118,6 +118,11 @@ class BridgeService {
 		var req = haxe.Http.requestUrl(App.config.get("cagette_bridge_api")+"/crm/hubspot/"+vendor.id+"/"+key);
 	}
 
+	public static function syncGroupToHubspot(group:db.Group) {
+		var key = haxe.crypto.Md5.encode(App.config.KEY + group.id);
+		var req = haxe.Http.requestUrl(App.config.get("cagette_bridge_api")+"/crm/hubspot-group/"+group.id+"/"+key);
+	}
+
 	public static function syncUserToHubspot(user:db.User, ?vendor: db.Vendor) {
 		var curl = new sugoi.apis.linux.Curl();
 		var url = '${App.config.get("cagette_bridge_api")}/crm/syncUser/${user.id}';

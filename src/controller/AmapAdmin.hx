@@ -344,6 +344,12 @@ class AmapAdmin extends Controller
 				app.logError(Std.string(e));
 			}
 
+			try{
+				service.BridgeService.syncGroupToHubspot(app.user);
+			}catch(e:Dynamic){
+				//fail silently
+				app.logError(Std.string(e));
+			}
 
 			group.update();
 
