@@ -23,9 +23,7 @@
 			::if groups.length==0::
 			<div class="col-md-12">
 				<div class="article text-center">
-					<p>
-						$$empty(::_("You don't belong to any group yet")::)
-					</p>	
+					$$empty(Vous n'êtes membre d'aucun marché pour l'instant)
 				</div>
 			</div>
 			::end::

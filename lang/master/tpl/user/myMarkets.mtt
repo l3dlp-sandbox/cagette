@@ -19,9 +19,7 @@
 			::if groups.length==0::
 			<div class="col-md-12">
 				<div class="article text-center">
-					<p>
-						$$empty(Vous n’êtes administrateur d’aucun marché...)
-					</p>	
+					$$empty(Vous n’êtes administrateur d’aucun marché...)
 				</div>
 			</div>
 			::end::

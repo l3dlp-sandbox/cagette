@@ -431,7 +431,7 @@
 	</macro>
 
 	<macro name="empty(txt)">	
-		<div style="text-align:center;width:100%;height:300px;color: #AAA;">
+		<div style="text-align:center;width:100%;color: #AAA;">
 			<img src="/img/empty.png" />
 			<p>
 				::txt::
