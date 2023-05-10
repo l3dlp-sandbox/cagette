@@ -119,7 +119,7 @@ class User extends Controller
 			throw Redirect('/distributions');
 		}
 		
-		var userGroups = app.user.getUserGroups().filter(ug -> return ug.isGroupManager());
+		var userGroups = app.user.getUserGroups().filter(ug -> return ug.getRights().length > 0);
 		view.groups = userGroups.map(ug -> ug.group);
 
 		view.pageTitle = "Mes marchés";
