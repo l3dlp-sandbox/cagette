@@ -54,7 +54,7 @@
 
     ::set group = getCurrentGroup()::
     ::set title = ""::
-    ::if(group!=null && noGroup!=true):: ::set title=group.name:: ::end::
+    ::if(group!=null):: ::set title=group.name:: ::end::
    
     $$nav(::title::, myMarket)
 
