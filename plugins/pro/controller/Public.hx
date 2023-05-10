@@ -11,6 +11,7 @@ class Public extends controller.Controller
 	@tpl("plugin/pro/public/default.mtt")
 	public function doDefault(catalog:pro.db.PCatalog,?args:{?bgcolor:String,?container:String}){
 		view.catalog = catalog;
+		view.noGroup = true;
 		
 		if (args != null && args.bgcolor != null){				
 			view.bgcolor = "#"+args.bgcolor;

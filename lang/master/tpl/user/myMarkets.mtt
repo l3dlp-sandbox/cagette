@@ -2,15 +2,11 @@
 
 	$$news()
 
-	<div class="col-md-12" >
-		<h4>Mes marchés</h4>
-	</div>
-
 	<!-- groups -->
 	<div class="col-md-12">
 		<div class="row">
 			::foreach group groups::				
-				<div class="col-md-4">
+				<div class="col-md-3">
 					<a class="clickable groupBlock"  href="/user/myMarkets?group=::group.id::">					
 						::if group.imageId!=null::
 						<img src="::file(group.imageId)::" class="img-responsive" style="width:92px;float:left;margin-right:12px;" />

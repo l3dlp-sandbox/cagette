@@ -24,6 +24,9 @@
 			::end::
 
 			<tr title="::title::" data-toggle="::toggle::">
+				<td class="ref">
+					N°::c.id::
+				</td>
 				<td>
 					<a class="::class::"  href="/p/pro/catalog/view/::c.id::" style="font-size:1.2em;">
 						::c.name::

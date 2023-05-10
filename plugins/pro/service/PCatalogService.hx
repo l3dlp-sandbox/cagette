@@ -307,8 +307,13 @@ class PCatalogService{
 			throw new tink.core.Error("Ce catalogue ne peut pas être relié à ce marché car le producteur n'a pas activé le prélèvement des frais Cagette.net.");
 		}
 
+
+		var activeCatalogs = clientGroup.getActiveContracts().array();
+		var activeVendors = activeCatalogs.map(c -> c.vendor).deduplicate();
+		var isTrainingGroup = activeVendors.map(v -> v.getCpro()).count(cpro -> cpro!=null && cpro.offer==Training) == activeVendors.length;
+
 		if( !clientGroup.isDispatch() && clientGroup.cdate.getTime() > service.GroupService.STRIPIFICATION_DATE.getTime()){
-			if(clientGroup.getActiveContracts().length>=1){
+			if(activeCatalogs.length>=1 && !isTrainingGroup){
 				throw new tink.core.Error("Ce catalogue ne peut pas être relié à ce marché car il est obligatoire de passer au paiement en ligne lorsque le marché compte plusieurs producteurs afin de faciliter la gestion des paiements.<br/>Plus d'informations sur <a href='/amapadmin/stripe'>cette page</a>.");
 			}
 		}

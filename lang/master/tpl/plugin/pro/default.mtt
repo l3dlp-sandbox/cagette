@@ -8,46 +8,44 @@
 </style>
 
 <div class="col-md-8">
+	
+
+
 	::if notifs.length>0::
-	<div class="article">
+	<ul class="list-group">
 		
 			::foreach n notifs::
-			<a href="#" class="clickable" onclick="neo.createNeoModule('myModal', 'dialog-url', { url: '/p/pro/notif/view/::n.id::', title:'Notification' })">
-			<table class="notifs">
-				<tr>
-				<td class="col-md-1">
-					<div class="iconBadge">
-						::switch n._type::
-						<!-- default -->
-						<i class="icon icon-alert"></i>
-						::case::
-						<!-- catalog import -->
-						<i class="icon icon-upload"></i>
-						::case::
-						<!-- delivery request -->
-						<i class="icon icon-truck"></i>
-						::end::
+			<li class="list-group-item">
+				<div class="row" onclick="neo.createNeoModule('myModal', 'dialog-url', { url: '/p/pro/notif/view/::n.id::', title:'Notification' })" style="cursor: pointer;">
+					
+					<div class="col-md-1">
+						<div class="iconBadge">
+							::switch n._type::
+							<!-- default -->
+							<i class="icon icon-alert"></i>
+							::case::
+							<!-- catalog import -->
+							<i class="icon icon-upload"></i>
+							::case::
+							<!-- delivery request -->
+							<i class="icon icon-truck"></i>
+							::end::
+						</div>
 					</div>
-				</td>
-				<td class="col-md-3">
+					<div class="col-md-3">
 						::if n._group!=null::
 						<b>::n._group.name::</b>
 						::end::
-					</td>
-				
-				<td class="col-md-8">
-					::n.title::<br/><span class="disabled">::hDate(n.date)::</span>
-				</td>
-			</tr>
-			</table>
-			</a>
+					</div>
+					
+					<div class="col-md-8">
+						::n.title::<br/><span class="disabled">::hDate(n.date)::</span>
+					</div>
+				</div>
+			</li>
 			::end::
-		
-	</div>
+		</ul>
 	::end::
-	
-	
-
 
 	::if(vendor.isDisabled())::
 		::if(vendor.disabled!=3 && vendor.disabled!=4)::
@@ -83,7 +81,7 @@
 			::end::
 
 			::foreach client adminClients::
-			<div class="col-md-4" data-toggle="tooltip" data-placement="bottom" title="Aller dans ce marché">
+			<div class="col-md-3" data-toggle="tooltip" data-placement="bottom" title="Aller dans ce marché">
 				
 				::set group = client[0].getContract(false)._group::
 				<a href="/group/::group.id::" target="_blank" class="clickable" style="height:60px;">
@@ -120,7 +118,7 @@
 			::end::
 	
 			::foreach client regularClients::
-			<div class="col-md-4" data-toggle="tooltip" data-placement="bottom"  title="Aller dans ce marcher">
+			<div class="col-md-3" data-toggle="tooltip" data-placement="bottom"  title="Aller dans ce marcher">
 				
 				::set group = client[0].getContract(false)._group::
 				<a href="/group/::group.id::" target="_blank" class="clickable" style="height:60px;" >
@@ -168,14 +166,24 @@
 				<!--<a href="/p/pro/group/duplicate" class="btn btn-default btn-sm">
 					<i class="icon icon-plus"></i> Dupliquer un marché
 				</a>-->
-
-				<a href="/p/pro/createGroup" class="btn btn-default btn-sm">
-					<i class="icon icon-plus"></i> Créer un marché en paiement sur place
+				
+				<div class="dropdown" style="display:inline-block;">
+					<button class="btn btn-default btn-sm dropdown-toggle btn-noAntiDoubleClick" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<i class="icon icon-plus"></i> Ouvrir un nouveau marché
+					</button>
+					<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">					
+						<li><a href="/group/newMarket"><i class="icon icon-bank-card"></i> avec paiement en ligne</a></li>
+						<li><a href="/p/pro/createGroup"><i class="icon icon-payment-type"></i> avec paiement sur place</a></li>			
+					</ul>
+				</div>
+				::else::
+				<a href="/group/newMarket" class="btn btn-default btn-sm">
+					<i class="icon icon-plus"></i> Créer un nouveau marché
 				</a>
 				::end::
 
 				<a href="/p/pro/group/removeGroup" class="btn btn-default btn-sm">
-					<i class="icon icon-delete"></i> Retirer un marché
+					<i class="icon icon-delete"></i> ne plus travailler avec un marché
 				</a>
 			</div>	
 			

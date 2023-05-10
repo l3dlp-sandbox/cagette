@@ -89,7 +89,7 @@ $$browserDetection()
 				<!-- products previews-->
 				::foreach p md.getProductsExcerpt(8)::
 				<div data-toggle="tooltip" data-placement="top" title="::p.name::" style="background-image:url('::p.image::')"
-					class="productImg medium" />
+					class="productImg large" />
 				::end::
 			</div>
 			::end::
