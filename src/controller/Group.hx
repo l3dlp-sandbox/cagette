@@ -132,6 +132,7 @@ class Group extends controller.Controller
 
 	@tpl("group/map.mtt")
 	public function doMap(?args:{?lat:Float,?lng:Float,?address:String}){
+		app.session.data.amapId = null;
 		view.container = "container-fluid";
 		view.lat = args.lat;
 		view.lng = args.lng;
