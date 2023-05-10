@@ -124,9 +124,14 @@ class GroupStats extends sys.db.Object
 		// this.iro = Math.round(activeCats.length/catNum)*10;
 		this.iro = activeCats.length;
 
-
-
 		this.update();
+
+		try{
+			service.BridgeService.syncGroupToHubspot(g);
+		}catch(e:Dynamic){
+			App.current.logError(Std.string(e));
+		}
+
 		
 		return {
 			cagetteNetwork:cn,

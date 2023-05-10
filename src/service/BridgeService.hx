@@ -115,23 +115,25 @@ class BridgeService {
 
 	public static function syncVendorToHubspot(vendor:db.Vendor) {
 		var key = haxe.crypto.Md5.encode(App.config.KEY + vendor.id);
-		var req = haxe.Http.requestUrl(App.config.get("cagette_bridge_api")+"/crm/hubspot/"+vendor.id+"/"+key);
+		var curl = new Curl();
+		curl.call("GET", App.config.get("cagette_bridge_api")+"/crm/hubspot/"+vendor.id+"/"+key, getHeaders() );
 	}
 
 	public static function syncGroupToHubspot(group:db.Group) {
 		var key = haxe.crypto.Md5.encode(App.config.KEY + group.id);
-		var req = haxe.Http.requestUrl(App.config.get("cagette_bridge_api")+"/crm/hubspot-group/"+group.id+"/"+key);
+		var curl = new Curl();
+		curl.call("GET",App.config.get("cagette_bridge_api")+"/crm/hubspot-group/"+group.id+"/"+key,getHeaders());
 	}
 
 	public static function syncUserToHubspot(user:db.User, ?vendor: db.Vendor) {
-		var curl = new sugoi.apis.linux.Curl();
+		var curl = new Curl();
 		var url = '${App.config.get("cagette_bridge_api")}/crm/syncUser/${user.id}';
 		if (vendor!=null) url += '/${vendor.id}';
 		return curl.call("GET", url, getHeaders());
 	}
 
 	public static function deleteHubspotAssociationContactToCompany(user:db.User, vendor: db.Vendor) {
-		var curl = new sugoi.apis.linux.Curl();
+		var curl = new Curl();
 		return curl.call("GET", '${App.config.get("cagette_bridge_api")}/crm/deleteAssociation/${user.id}/${vendor.id}', getHeaders());
 	}
 }
