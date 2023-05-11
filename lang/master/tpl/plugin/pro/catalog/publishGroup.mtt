@@ -2,7 +2,7 @@
 
 	<h4>Relier ce catalogue dans un marché que je pilote</h4>
 	<p>
-		Si vous êtes administrateur d'un marché Cagette, vous pouvez relier ce catalogue au marché.
+		Si vous êtes administrateur d'un ::theme.name::, vous pouvez relier ce catalogue au marché.
 	</p>
 
 	::raw form::
