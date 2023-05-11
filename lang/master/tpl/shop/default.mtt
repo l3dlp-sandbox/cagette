@@ -1,5 +1,5 @@
 
-::use 'reactBase.mtt'::
+::use 'base.mtt'::
 
 <div id='shop'></div>
 
