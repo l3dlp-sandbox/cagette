@@ -43,7 +43,7 @@
 		<table class="table table-bordered table-striped table-condensed" id="contracts">
 			<tr>
 				<th></th>
-				<th>Marché Cagette</th>
+				<th>::theme.groupWording::</th>
 				<th>Catalogue</th>
 				<th>Contrat</th>
 				<th>Lieu de livraison</th>

@@ -76,6 +76,10 @@ class App extends sugoi.BaseApp {
 		var cagetteTheme: Theme = {
 			id: "cagette",
 			name: "Cagette.net",
+			groupWording: 'marché Cagette',
+  			groupWording_plural: 'marchés Cagette',
+			groupWordingShort: 'marché',
+  			groupWordingShort_plural: 'marchés',
 			url: "https://www.cagette.net",
 			supportEmail: "support@cagette.net",			
 			footer: {

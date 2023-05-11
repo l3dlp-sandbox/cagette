@@ -1,7 +1,7 @@
 ::use 'design.mtt'::
 
 	<div class="col-md-12" >
-		<p>Vous êtes membre des <b>marchés Cagette</b> suivants :</p>
+		<p>Vous êtes membre des <b>::theme.groupWording::</b> suivants :</p>
 	</div>
 
 	<!-- groups -->
