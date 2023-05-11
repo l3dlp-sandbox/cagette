@@ -198,19 +198,6 @@
 		</div>
 	</macro>
 
-	<macro name="news()">
-		<div class="col-md-12">
-			<div id="news-neo-container"></div>
-		</div>
-		<script>
-			document.addEventListener("DOMContentLoaded", function(event) {
-				neo.createNeoModule("news-neo-container", "newsFeed", {
-					userId: ::user.id::
-				});
-			});
-		</script>
-	</macro>
-	
 	<macro name="browse(b,url)">$$browseCustom(::b::,::url::,Page ::b.page:: ::if b.pages::/::b.pages:: ::end::)</macro>
 
 	<macro name="browseCustom(b,url,custom)">
