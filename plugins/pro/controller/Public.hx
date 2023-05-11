@@ -118,6 +118,7 @@ class Public extends controller.Controller
 		App.current.setTemplate("plugin/pro/public/vendor.mtt");
 		App.current.view.vendor = vendor.getInfos();
 		App.current.view.pageTitle = vendor.name + " - " + App.current.getTheme().name;
+		App.current.view.noGroup = true;
 		var cpro = pro.db.CagettePro.getFromVendor(vendor);
 		if(cpro!=null && cpro.demoCatalog!=null){
 
