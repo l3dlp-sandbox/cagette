@@ -1,6 +1,6 @@
 ::use 'plugin/pro/catalog/design.mtt'::
 
-	<h3>Relier ce catalogue à des marchés</h3>	
+	<h3>Relier ce catalogue à des ::theme.groupWordingShort_plural::</h3>	
 	<div class="row">
 		::if(catalog.visible)::
 
@@ -10,11 +10,11 @@
 						<i class="icon icon-info"></i> <b>Ce catalogue est paramétré en mode public</b>
 					</p>
 					<p>
-						Il est donc visible par les coordinateurs des marchés Cagette qui recherchent des producteurs.
+						Il est donc visible par les coordinateurs des ::theme.groupWordingShort_plural:: Cagette qui recherchent des producteurs.
 					</p>
 					<p>
-						Pour relier ce catalogue à un marché, allez dans ce marché, puis dans l'onglet <b>Catalogues</b>, cliquez sur le bouton <b>"Créer ou trouver un catalogue"</b>.
-						Ensuite, faites une recherche sur <b>"::company._vendor.name::"</b> pour retrouver vos catalogues et faire la liaison. Si vous n'êtes pas administrateur de ce marché, donnez ces indications à un administrateur du marché.
+						Pour relier ce catalogue à un ::theme.groupWordingShort::, allez dans ce ::theme.groupWordingShort::, puis dans l'onglet <b>Catalogues</b>, cliquez sur le bouton <b>"Créer ou trouver un catalogue"</b>.
+						Ensuite, faites une recherche sur <b>"::company._vendor.name::"</b> pour retrouver vos catalogues et faire la liaison. Si vous n'êtes pas administrateur de ce ::theme.groupWordingShort::, donnez ces indications à un administrateur du ::theme.groupWordingShort::.
 					</p>					
 				</div>
 
@@ -38,8 +38,8 @@
 						<i class="icon icon-info"></i>  <b>Ce catalogue est paramétré en mode privé</b>
 					</p>
 					<p>
-						Les administrateurs de marchés Cagette ne peuvent donc pas le trouver par eux-même.<br/>
-						Copiez le lien ci-dessous dans un e-mail pour leur permettre de relier ce catalogue à leur marché.
+						Les administrateurs de ::theme.groupWordingShort_plural:: Cagette ne peuvent donc pas le trouver par eux-même.<br/>
+						Copiez le lien ci-dessous dans un e-mail pour leur permettre de relier ce catalogue à leur ::theme.groupWordingShort::.
 					</p>
 					
 					<p class="linkToShare">
@@ -54,7 +54,7 @@
 		::end::
 		
 		<div class="col-md-12 text-center">		
-			<a href="?force=1&token=::token::" class="btn btn-danger" $$confirm(::"Avertissement : En forçant la mise à jour de ce catalogue lorsque des commandes sont ouvertes, vous prenez le risque que des clients du même marché puissent acheter des produits à un tarif différent."::) >Forcer la synchronisation de ce catalogue dans les marchés</a>
+			<a href="?force=1&token=::token::" class="btn btn-danger" $$confirm(::"Avertissement : En forçant la mise à jour de ce catalogue lorsque des commandes sont ouvertes, vous prenez le risque que des clients du même ::theme.groupWordingShort:: puissent acheter des produits à un tarif différent."::) >Forcer la synchronisation de ce catalogue dans les ::theme.groupWordingShort_plural::</a>
 		</div>
 
 	</div>

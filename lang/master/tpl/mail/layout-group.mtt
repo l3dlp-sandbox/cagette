@@ -150,7 +150,7 @@
 			<p>Vous recevez ce message car vous faites partie de <b>::group.name::</b>::if list!=null:: (::list::) ::end::</p>
 			::if (user!=null)::
 			<p><a href="::user.getEditNotificationsLink(group)::" rel="notrack">Changer les préférences de notification</a></p>
-			<p><a href="::user.getQuitGroupLink(group)::" rel="notrack">Quitter ce marché</a></p>
+			<p><a href="::user.getQuitGroupLink(group)::" rel="notrack">Quitter ce ::theme.groupWordingShort::</a></p>
 			::end::
 		</div>
 	</body>

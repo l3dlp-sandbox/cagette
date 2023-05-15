@@ -1,6 +1,6 @@
 ::use 'admin/design.mtt'::
 
-<h2>Admin Marchés</h2>
+<h2>Admin ::theme.groupWordingShort_plural::</h2>
 
 <p>
 	::raw form::

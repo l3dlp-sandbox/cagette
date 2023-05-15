@@ -343,7 +343,7 @@ class Admin extends Controller {
 
 		var f = new sugoi.form.Form("msg");
 		f.addElement(new sugoi.form.elements.TextArea("homeVendorMessage", "Accueil producteurs", homeVendorMessage));
-		f.addElement(new sugoi.form.elements.TextArea("homeGroupAdminMessage", "Accueil admin de marchés", homeGroupAdminMessage));
+		f.addElement(new sugoi.form.elements.TextArea("homeGroupAdminMessage", "Accueil admin de "+App.current.getTheme().groupWordingShort_plural, homeGroupAdminMessage));
 
 		if (f.isValid()) {
 			Variable.set("homeVendorMessage", f.getValueOf("homeVendorMessage"));
@@ -498,7 +498,7 @@ class Admin extends Controller {
 	}
 
 	/**
-		Stats sur les marchés actifs
+		Stats sur les groupes actifs
 	**/
 	function doGroupStats() {
 		
@@ -548,7 +548,7 @@ class Admin extends Controller {
 			});
 		}
 		var headers = Reflect.fields(data[0]);
-		sugoi.tools.Csv.printCsvDataFromObjects(data, headers, "stats_marchés");
+		sugoi.tools.Csv.printCsvDataFromObjects(data, headers, "stats_"+App.current.getTheme().groupWordingShort_plural);
 
 	}
 }

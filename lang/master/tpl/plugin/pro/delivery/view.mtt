@@ -13,7 +13,7 @@
 
 	<table class="table table-striped">
 		<tr>
-			<td>Marché</td>
+			<td>::theme.groupWordingShort.toUpperCase()::</td>
 			<td>
 				<b>::distribution._catalog._group.name::</b>
 			</td>

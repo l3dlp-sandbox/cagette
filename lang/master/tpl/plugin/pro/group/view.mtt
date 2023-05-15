@@ -7,7 +7,7 @@
 		$$back() <h2>::group.name::</h2> 
 		
 		<p>
-			<a href="/group/::group.id::" class="btn btn-default btn-sm" target="blank">Aller dans ce marché</a>			
+			<a href="/group/::group.id::" class="btn btn-default btn-sm" target="blank">Aller dans ce ::theme.groupWordingShort::</a>			
 		</p>
 		
 		<table class="table">

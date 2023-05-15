@@ -16,7 +16,7 @@
 
 <div class="col-md-6">
 	<div class="article">		
-		<h4>Marchés appartenant au réseau :</h4>
+		<h4>::theme.groupWordingShort_plural.toUpperCase():: appartenant au réseau :</h4>
 		<table class="table table-condensed">
 			::foreach g company.getNetworkGroups()::
 			<tr>
@@ -26,7 +26,7 @@
 			</tr>
 			::end::
 		</table>
-		$$insert(Ajouter un marché, /p/pro/network/addGroup)
+		$$insert(Ajouter un ::theme.groupWordingShort::, /p/pro/network/addGroup)
 	</div>
 </div>
 

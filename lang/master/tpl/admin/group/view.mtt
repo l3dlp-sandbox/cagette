@@ -1,6 +1,6 @@
 ::use 'admin/design.mtt'::
 	<div class="article">
-		<h4>Marché #::group.id::</h4>
+		<h4>::theme.groupWordingShort:: #::group.id::</h4>
 		<h2>::group.name::</h2>
 
 		<p>Actif : $$bool(::groupStats.active::)</p>
@@ -93,7 +93,7 @@
 		<hr/>
 		
 		<a href="/group/::group.id::" class="btn btn-default">Page publique</a>
-		<a href="/admin/group/addMe/::group.id::" class="btn btn-default">Devenir Membre de ce marché</a>
+		<a href="/admin/group/addMe/::group.id::" class="btn btn-default">Devenir Membre de ce ::theme.groupWordingShort::</a>
 
 		<hr/>
 		
@@ -200,7 +200,7 @@
 
 		<a href="/admin/group/deleteGroup/::group.id::?token=::token::" $$confirm(::_("Delete ?")::) class="btn btn-danger" >
 				<i class="icon icon-delete"></i>
-				Supprimer DEFINITIVEMENT le marché (irréversible)
+				Supprimer DEFINITIVEMENT le ::theme.groupWordingShort:: (irréversible)
 		</a>
 		
 	</div>

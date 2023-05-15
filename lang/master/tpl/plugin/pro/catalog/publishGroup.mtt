@@ -1,8 +1,8 @@
 ::use 'plugin/pro/catalog/design.mtt'::
 
-	<h4>Relier ce catalogue dans un marché que je pilote</h4>
+	<h4>Relier ce catalogue dans un ::theme.groupWordingShort:: que je pilote</h4>
 	<p>
-		Si vous êtes administrateur d'un ::theme.name::, vous pouvez relier ce catalogue au marché.
+		Si vous êtes administrateur d'un ::theme.name::, vous pouvez relier ce catalogue au ::theme.groupWordingShort::.
 	</p>
 
 	::raw form::

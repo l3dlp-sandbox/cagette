@@ -41,7 +41,7 @@ class Group extends controller.Controller
 			c.update();
 			rc.lock();
 			rc.delete();
-			throw Ok("/p/pro/group/"+c.group.id,"Le catalogue \""+c.name+"\" a été fermé. Il reste consultable dans les anciens contrats du marché.");
+			throw Ok("/p/pro/group/"+c.group.id,"Le catalogue \""+c.name+"\" a été fermé. Il reste consultable dans les anciens contrats du "+App.current.getTheme().groupWordingShort+".");
 		}
 	}
 
@@ -58,8 +58,8 @@ class Group extends controller.Controller
 			data.push( {id:g.id , label:g.name , value:g.id} );
 		}
 		
-		form.addElement( new sugoi.form.elements.IntSelect("group", "Marché à retirer de mon espace producteur", cast data, true) );
-		form.addElement( new sugoi.form.elements.Checkbox("stayMember","Rester membre ce marché",false) );
+		form.addElement( new sugoi.form.elements.IntSelect("group", App.current.getTheme().groupWordingShort.toUpperCase()+" à retirer de mon espace producteur", cast data, true) );
+		form.addElement( new sugoi.form.elements.Checkbox("stayMember","Rester membre ce "+App.current.getTheme().groupWordingShort,false) );
 		form.addElement( new sugoi.form.elements.Checkbox("deleteDistribs","Supprimer les distributions futures",true) );
 
 		if(form.isValid()){
@@ -94,12 +94,12 @@ class Group extends controller.Controller
 				}
 			}
 
-			throw Ok("/p/pro","Le marché a été retiré");
+			throw Ok("/p/pro","Le "+App.current.getTheme().groupWordingShort+" a été retiré");
 
 		}
 
 		view.form = form;
-		view.title = "Retirer un marché";
+		view.title = "Retirer un "+App.current.getTheme().groupWordingShort;
 
 	}
 	
@@ -118,8 +118,8 @@ class Group extends controller.Controller
 		var data = tools.ObjectListTool.deduplicate(data);
 
 		
-		f.addElement( new sugoi.form.elements.IntSelect("group", "Choisissez un marché à dupliquer", cast data, true) );
-		f.addElement( new sugoi.form.elements.StringInput("name", "Nom du nouveau marché", null, true) );
+		f.addElement( new sugoi.form.elements.IntSelect("group", "Choisissez un "+App.current.getTheme().groupWordingShort+" à dupliquer", cast data, true) );
+		f.addElement( new sugoi.form.elements.StringInput("name", "Nom du nouveau "+App.current.getTheme().groupWordingShort, null, true) );
 		f.addElement( new sugoi.form.elements.StringInput("place", "Nom du nouveau lieu de livraison", null, true) );
 		
 		if (f.isValid()){
@@ -131,11 +131,11 @@ class Group extends controller.Controller
 				throw Error(sugoi.Web.getURI(),e.message);
 			}
 			
-			throw Ok("/p/pro", "Marché dupliqué");
+			throw Ok("/p/pro", App.current.getTheme().groupWordingShort.toUpperCase()+" dupliqué");
 		}
 		
 		view.form = f;
-		view.title = "Dupliquer un marché";
+		view.title = "Dupliquer un "+App.current.getTheme().groupWordingShort;
 		
 	}
 	

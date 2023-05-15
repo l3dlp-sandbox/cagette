@@ -34,7 +34,7 @@
 			
 
 		<p>
-			Cochez les marchés dans lesquels vous souhaitez créer une livraison.
+			Cochez les ::theme.groupWordingShort_plural:: dans lesquels vous souhaitez créer une livraison.
 		</p>	
 		<p>
 			<a onClick="check();" class='btn btn-default btn-sm'>Tout cocher</a>					

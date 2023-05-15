@@ -98,7 +98,7 @@ class PCatalog extends Object
 			"startDate"	=> t._("Start date"),
 			"endDate"	=> t._("End date"),
 			"vendor" 	=> t._("Farmer"),						
-			"contractName"	=> "Nom à afficher dans les marchés",
+			"contractName"	=> "Nom à afficher dans les "+App.current.getTheme().groupWordingShort_plural,
 		];
 	}
 	

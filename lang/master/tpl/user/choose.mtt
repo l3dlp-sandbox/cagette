@@ -21,7 +21,7 @@
 			::if groups.length==0::
 			<div class="col-md-12">
 				<div class="article text-center">
-					$$empty(Vous n'êtes membre d'aucun marché pour l'instant)
+					$$empty(Vous n'êtes membre d'aucun ::theme.groupWordingShort:: pour l'instant)
 				</div>
 			</div>
 			::end::
@@ -32,13 +32,13 @@
 	<div class="col-md-12 text-center" style="margin-bottom:12px;" >
 		::if session.lang!="de"::
 			<a class="btn btn-default btn-lg" href="/group/map">
-				<i class="icon icon-search"></i> Chercher des marchés près de chez moi
+				<i class="icon icon-search"></i> Chercher des ::theme.groupWordingShort_plural:: près de chez moi
 			</a>
 		::end::
 		<!-- actions 
 		::if settings.onlyVendorsCanCreateGroup==null || settings.onlyVendorsCanCreateGroup==false || (settings.onlyVendorsCanCreateGroup==true && cagettePros!=null && cagettePros.length>0)::
 			<a class="btn btn-default btn-lg" href="/group/create/">
-				<i class="icon icon-plus"></i> Créer un marché
+				<i class="icon icon-plus"></i> Créer un ::theme.groupWordingShort::
 			</a>
 		::end::
 		-->

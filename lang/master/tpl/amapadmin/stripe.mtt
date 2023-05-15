@@ -38,7 +38,7 @@
             <h4>Etape 1</h4>
 
             <div class="alert alert-warning">
-                <i class="icon icon-info"></i> <b>Les producteurs de ce marché doivent tous ouvrir un compte Stripe</b> afin de pouvoir encaisser des revenus issus du paiement en ligne. 
+                <i class="icon icon-info"></i> <b>Les producteurs de ce ::theme.groupWordingShort:: doivent tous ouvrir un compte Stripe</b> afin de pouvoir encaisser des revenus issus du paiement en ligne. 
                 L'ouverture de compte Stripe se fait depuis votre espace producteur, dans l'onglet "Producteur" , puis "Paiement en ligne".
             </div>
                 
@@ -70,17 +70,17 @@
             <p>
                 <div class="alert alert-warning">
                     <i class="icon icon-info"></i>
-                    Lorsque tous les producteurs auront ouvert leur compte Stripe ( pastilles vertes pour tout le monde dans le tableau ci-dessus ), vous pourrez basculer ce marché en paiement en ligne Stripe.
+                    Lorsque tous les producteurs auront ouvert leur compte Stripe ( pastilles vertes pour tout le monde dans le tableau ci-dessus ), vous pourrez basculer ce ::theme.groupWordingShort:: en paiement en ligne Stripe.
                 </div>
             </p>
 
             <p class="text-center">
             ::if(group.isDispatch())::
                <a href="" class="btn btn-default disabled">
-                <i class="icon icon-check"></i> Le paiement avec Stripe est activé sur ce marché</a>                    
+                <i class="icon icon-check"></i> Le paiement avec Stripe est activé sur ce ::theme.groupWordingShort::</a>                    
                ::else::
                <a href="?enableStripe=1" class="btn btn-primary">
-                <i class="icon icon-chevron-right"></i> Passer ce marché au paiement en ligne Stripe</a>                    
+                <i class="icon icon-chevron-right"></i> Passer ce ::theme.groupWordingShort:: au paiement en ligne Stripe</a>                    
             ::end::
             </p>
 

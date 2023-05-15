@@ -10,7 +10,7 @@ class CatalogService{
     public static function getForm( catalog:db.Catalog ) : sugoi.form.Form {
 
 		if ( catalog.group == null || catalog.vendor == null ) {
-			throw new tink.core.Error( "Un des éléments suivants est manquant : le marché ou le producteur." );
+			throw new tink.core.Error( "Un des éléments suivants est manquant : le "+App.current.getTheme().groupWordingShort+" ou le producteur." );
 		}
 
 		var t = sugoi.i18n.Locale.texts;

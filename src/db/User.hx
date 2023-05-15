@@ -602,7 +602,7 @@ class User extends Object {
 			var g  = this.getGroup();
 			if(g==null) return null;
 			infos = {
-				type:"Administrateur de marché",
+				type:"Administrateur de "+App.current.getTheme().groupWordingShort,
 				id:g.id,
 				name:g.name
 			};
