@@ -84,6 +84,10 @@
 			window._Cagette = {
 				theme: {
 					id: "::theme.id::",
+					groupWording: "::theme.groupWording::",
+					groupWording_plural: "::theme.groupWording_plural::",
+					groupWordingShort: "::theme.groupWordingShort::",
+					groupWordingShort_plural: "::theme.groupWordingShort_plural::",
 					footer: {
 						bloc1: `::raw theme.footer.bloc1::`,
 						bloc2: `::raw theme.footer.bloc2::`,
