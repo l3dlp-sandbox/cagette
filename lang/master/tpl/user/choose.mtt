@@ -31,7 +31,7 @@
 	
 	<div class="col-md-12 text-center" style="margin-bottom:12px;" >
 		::if session.lang!="de"::
-			<a class="btn btn-default btn-lg" href="/group/map">
+			<a class="btn btn-default btn-lg" href="/group/map" style="white-space: normal;">
 				<i class="icon icon-search"></i> Chercher des ::theme.groupWordingShort_plural:: près de chez moi
 			</a>
 		::end::
