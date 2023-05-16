@@ -27,7 +27,7 @@
                     </tr>
                     ::end::
                 </table>
-                <a href="/p/pro/catalogLinker/link/::catalog.id::/::c.id::" class="btn btn-primary">Relier à ce catalogue</a>
+                <a href="::vendor.getURL()::/catalogLinker/link/::catalog.id::/::c.id::" class="btn btn-primary">Relier à ce catalogue</a>
             </div>
             ::end::
             

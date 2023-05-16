@@ -12,11 +12,11 @@ class CatalogLinker extends controller.Controller
 	var company : pro.db.CagettePro;
 	var vendor : db.Vendor;
 	
-	public function new() 
+	public function new(company:pro.db.CagettePro) 
 	{
 		super();
-		view.company = company = pro.db.CagettePro.getCurrentCagettePro();
-		view.vendor = vendor = pro.db.CagettePro.getCurrentVendor();
+		view.company = this.company = company;
+		view.vendor = this.vendor = company.vendor;
 	}
 		
 	/**

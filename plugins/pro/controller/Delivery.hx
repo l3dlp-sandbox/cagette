@@ -9,13 +9,14 @@ using tools.ObjectListTool;
 
 class Delivery extends controller.Controller
 {
-
 	var company : pro.db.CagettePro;
+	var vendor : db.Vendor;
 	
-	public function new()
+	public function new(company:pro.db.CagettePro) 
 	{
 		super();
-		view.company = company = pro.db.CagettePro.getCurrentCagettePro();
+		view.company = this.company = company;
+		view.vendor = this.vendor = company.vendor;
 		view.nav = ["delivery"];
 	}
 	
@@ -276,7 +277,7 @@ class Delivery extends controller.Controller
 	function doExportAdherents(){
 
 		var authorizedCompanies = [3,4,323]; //agapes + corto + givrés
-		var company = pro.db.CagettePro.getCurrentCagettePro();
+		
 		if( !app.user.isAdmin() && !Lambda.has(authorizedCompanies,company.id)) throw "Accès interdit";
 		var headers =  ["groupId","group","firstName", "lastName", "email", "phone", "firstName2", "lastName2", "email2", "phone2", "address1", "address2", "zipCode", "city","ldate"];
 		var data = [];

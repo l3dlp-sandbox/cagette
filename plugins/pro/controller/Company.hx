@@ -14,12 +14,13 @@ class Company extends controller.Controller
 {
 	var company : pro.db.CagettePro;
 	var vendor : db.Vendor;
-
-	public function new() 
+	
+	public function new(company:pro.db.CagettePro) 
 	{
 		super();
-		view.company = company = pro.db.CagettePro.getCurrentCagettePro();
-		view.vendor = vendor = pro.db.CagettePro.getCurrentVendor();
+		view.company = this.company = company;
+		view.vendor = this.vendor = company.vendor;
+
 		view.nav = ["company"];
 		view.navbar = nav("company");
 	}
@@ -218,50 +219,6 @@ class Company extends controller.Controller
 		}else{
 			throw Redirect("/p/pro/company/users/");
 		}
-	}
-	
-	
-	
-	@tpl('plugin/pro/company/vendors.mtt')
-	public function doVendors(){
-		view.nav.push("vendors");
-		checkToken();
-		view.vendors = company.getVendors();
-	}
-
-	public function doDeleteVendor(v:db.Vendor){
-		
-		if (checkToken()){
-			var pv = pro.db.PVendorCompany.manager.search($company==this.company && $vendor==v,true).first();
-			if(pv==null) throw Error("/p/pro/company/vendors/", "Impossible de retrouver ce producteur");
-			pv.delete();
-			throw Ok("/p/pro/company/vendors/", "Producteur effacé");
-		}else{
-			throw Redirect("/p/pro/company/vendors/");
-		}
-	}
-	
-	/**
-		Edit a vendor
-	**/
-	@tpl('plugin/pro/form.mtt')
-	public function doEditVendor(vendor:db.Vendor){
-		view.nav.push("vendors");
-		
-		var form = VendorService.getForm(vendor);
-		
-		if (form.isValid()){
-			vendor.lock();
-			try{
-				vendor = VendorService.update(vendor,form.getDatasAsObject());
-			}catch(e:tink.core.Error){
-				throw Error(sugoi.Web.getURI(),e.message);
-			}			
-			vendor.update();		
-			throw Ok("/p/pro/company/vendors", "Producteur mis à jour");
-		}
-		
-		view.form = form;
 	}
 	
 	@tpl('plugin/pro/form.mtt')

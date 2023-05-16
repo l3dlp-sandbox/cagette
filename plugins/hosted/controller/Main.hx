@@ -107,7 +107,6 @@ class Main extends controller.Controller
 		var count = MangopayLegalUserGroup.manager.count(true);
 
 		var browse = function(index:Int, limit:Int) {
-			//return db.Vendor.manager.search($id > index && $amap==app.user.getGroup(), { limit:limit, orderBy:-id }, false);
 
 			var lugs = MangopayLegalUserGroup.manager.search(true,{limit:[index,limit]},false);
 			for( lug in lugs ){

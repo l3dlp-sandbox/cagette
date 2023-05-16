@@ -32,7 +32,7 @@ class VolunteerService
 			}
 		} else {
 			var str = "Vous ne pouvez pas supprimer ce rôle car il y a des bénévoles inscrits à ce rôle.";
-			str += "<a href='/amapadmin/volunteers/deleteRole/"+role.id+"?token="+App.current.view.token+"&force=1' class='btn btn-default'>Supprimer quand-même</a>";
+			str += "<a href='/marketadmin/volunteers/deleteRole/"+role.id+"?token="+App.current.view.token+"&force=1' class='btn btn-default'>Supprimer quand-même</a>";
 			throw new Error( str );
 		}
 	}

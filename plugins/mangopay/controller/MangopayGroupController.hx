@@ -38,7 +38,7 @@ class MangopayGroupController extends controller.Controller
 			wallet = Mangopay.getOrCreateGroupWallet(mgpLegalUser.mangopayUserId,group);
 
 		}catch(error:tink.core.Error){
-			throw Error("/amapadmin",error.message);
+			throw Error("/marketadmin",error.message);
 		}
 
 		view.wallet = wallet;
@@ -280,7 +280,7 @@ class MangopayGroupController extends controller.Controller
 			legalUserId = MangopayPlugin.getGroupLegalUserId(group);
 			wallet = Mangopay.getOrCreateGroupWallet(legalUserId,group);
 		}catch(error:tink.core.Error){
-			throw Error("/amapadmin",error.message);
+			throw Error("/marketadmin",error.message);
 		}
 
 		view.wallet = wallet;

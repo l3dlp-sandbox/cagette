@@ -16,7 +16,7 @@
 		
 			::foreach n notifs::
 			<li class="list-group-item">
-				<div class="row" onclick="neo.createNeoModule('myModal', 'dialog-url', { url: '/p/pro/notif/view/::n.id::', title:'Notification' })" style="cursor: pointer;">
+				<div class="row" onclick="neo.createNeoModule('myModal', 'dialog-url', { url: '::vendor.getURL()::/notif/view/::n.id::', title:'Notification' })" style="cursor: pointer;">
 					
 					<div class="col-md-1">
 						<div class="iconBadge">
@@ -156,14 +156,14 @@
 							::end::
 						</ul>
 							
-						<a href="/p/pro/catalogLinker" class="btn btn-default btn-sm">Cliquez-ici pour les relier</a>
+						<a href="::vendor.getURL()::/catalogLinker" class="btn btn-default btn-sm">Cliquez-ici pour les relier</a>
 					</div>
 				</div>
 			::end::	
 			
 			<div class="col-md-12">
 				::if company.offer==1::
-				<!--<a href="/p/pro/group/duplicate" class="btn btn-default btn-sm">
+				<!--<a href="::vendor.getURL()::/group/duplicate" class="btn btn-default btn-sm">
 					<i class="icon icon-plus"></i> Dupliquer un ::theme.groupWordingShort::
 				</a>-->
 				
@@ -173,7 +173,7 @@
 					</button>
 					<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">					
 						<li><a href="/group/newMarket"><i class="icon icon-bank-card"></i> avec paiement en ligne</a></li>
-						<li><a href="/p/pro/createGroup"><i class="icon icon-payment-type"></i> avec paiement sur place</a></li>			
+						<li><a href="::vendor.getURL()::/createGroup"><i class="icon icon-payment-type"></i> avec paiement sur place</a></li>			
 					</ul>
 				</div>
 				::else::
@@ -182,7 +182,7 @@
 				</a>
 				::end::
 
-				<a href="/p/pro/group/removeGroup" class="btn btn-default btn-sm">
+				<a href="::vendor.getURL()::/group/removeGroup" class="btn btn-default btn-sm">
 					<i class="icon icon-delete"></i> ne plus travailler avec un ::theme.groupWordingShort::
 				</a>
 			</div>	

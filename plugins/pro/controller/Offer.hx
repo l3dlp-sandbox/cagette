@@ -14,12 +14,10 @@ using Std;
 class Offer extends controller.Controller
 {
 
-	var company : pro.db.CagettePro;
 	
 	public function new()
 	{
 		super();
-		view.company = company = pro.db.CagettePro.getCurrentCagettePro();
 		view.category = "product";		
 	}
 	
@@ -28,6 +26,8 @@ class Offer extends controller.Controller
 	 */
 	@tpl('plugin/pro/offerform.mtt')
 	function doEdit(o:pro.db.POffer) {
+
+		var company = o.product.company;
 		
 		var f = CagetteForm.fromSpod(o);
 		
@@ -129,6 +129,8 @@ class Offer extends controller.Controller
 	 */
 	@tpl("plugin/pro/offerform.mtt")
 	public function doInsert(p:pro.db.PProduct) {
+
+		var company = p.company;
 		
 		var o = new pro.db.POffer();
 		o.product = p;
@@ -198,7 +200,7 @@ class Offer extends controller.Controller
 	@tpl('shop/productInfo.mtt')
 	public function doPreview(o:pro.db.POffer) {
 		view.p = o.getInfos();
-		view.vendor = company.vendor;
+		view.vendor = o.product.company.vendor;
 	}
 	
 	

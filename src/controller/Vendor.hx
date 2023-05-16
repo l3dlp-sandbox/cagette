@@ -17,27 +17,6 @@ class Vendor extends Controller
 		
 	}
 	
-	/*@logged
-	@tpl('vendor/default.mtt')
-	function doDefault() {
-		var browse:Int->Int->List<Dynamic>;
-		
-		//default display
-		browse = function(index:Int, limit:Int) {
-			return db.Vendor.manager.search($id > index && $amap==app.user.getGroup(), { limit:limit, orderBy:-id }, false);
-		}
-		
-		var count = db.Vendor.manager.count($amap==app.user.getGroup());
-		var rb = new sugoi.tools.ResultsBrowser(count, 10, browse);
-		view.vendors = rb;
-	}*/
-	
-	
-	/*@tpl("vendor/view.mtt")
-	function doView(vendor:db.Vendor) {
-		view.vendor = vendor;
-	}*/
-	
 	@tpl('form.mtt')
 	function doEdit(vendor:db.Vendor) {
 		

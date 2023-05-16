@@ -258,16 +258,9 @@ class PCatalogService{
 		}else{
 			groupCatalog.name = "Commande "+groupCatalog.vendor.name;
 		}
-
 				
 		//vendor
-		if( proCatalog.vendor==null){
-			if(proCatalog.company.vendor==null) throw "catalog "+proCatalog.id+" company has no vendor";
-			groupCatalog.vendor = proCatalog.company.vendor;
-		}else{
-			if(proCatalog.vendor==null) throw "catalog "+proCatalog.id+" vendor is null";
-			groupCatalog.vendor = proCatalog.vendor;	
-		}
+		groupCatalog.vendor = proCatalog.company.vendor;		
 		
 		if(groupCatalog.id==null){
 			groupCatalog.insert();
@@ -322,7 +315,7 @@ class PCatalogService{
 
 		if( !clientGroup.isDispatch() && clientGroup.cdate.getTime() > service.GroupService.STRIPIFICATION_DATE.getTime()){
 			if(activeCatalogs.length>=1 && !isTrainingGroup){
-				throw new tink.core.Error("Ce catalogue ne peut pas être relié à ce "+App.current.getTheme().groupWordingShort+" car il est obligatoire de passer au paiement en ligne lorsque le "+App.current.getTheme().groupWordingShort+" compte plusieurs producteurs afin de faciliter la gestion des paiements.<br/>Plus d'informations sur <a href='/amapadmin/stripe'>cette page</a>.");
+				throw new tink.core.Error("Ce catalogue ne peut pas être relié à ce "+App.current.getTheme().groupWordingShort+" car il est obligatoire de passer au paiement en ligne lorsque le "+App.current.getTheme().groupWordingShort+" compte plusieurs producteurs afin de faciliter la gestion des paiements.<br/>Plus d'informations sur <a href='/marketadmin/stripe'>cette page</a>.");
 			}
 		}
 		

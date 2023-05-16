@@ -8,14 +8,16 @@ import sugoi.form.Form;
 class Product extends controller.Controller
 {
 
-	var company : pro.db.CagettePro;
 	var baseUrl : String;
+
+	var company : pro.db.CagettePro;
+	var vendor : db.Vendor;
 	
-	public function new()
+	public function new(company:pro.db.CagettePro) 
 	{
 		super();
-		company = pro.db.CagettePro.getCurrentCagettePro();
-		view.company = company;
+		view.company = this.company = company;
+		view.vendor = this.vendor = company.vendor;
 		//subnav
 		view.nav = ["catalog"];
 		baseUrl = "/p/pro/product/";

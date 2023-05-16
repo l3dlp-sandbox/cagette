@@ -11,11 +11,13 @@ class Network extends controller.Controller
 {
 
 	var company : pro.db.CagettePro;
+	var vendor : db.Vendor;
 	
-	public function new()
+	public function new(company:pro.db.CagettePro) 
 	{
 		super();
-		view.company = company = pro.db.CagettePro.getCurrentCagettePro();
+		view.company = this.company = company;
+		view.vendor = this.vendor = company.vendor;
 		view.nav = ["network"];		
 	}
 	
@@ -68,7 +70,7 @@ class Network extends controller.Controller
 	function doStats(args:{from:Date,to:Date}){
 		view.fromDate = args.from;
 		view.toDate = args.to;
-		view.cagetteProId = pro.db.CagettePro.getCurrentCagettePro().id;
+		view.cagetteProId = company.id;
 	}
 
 	

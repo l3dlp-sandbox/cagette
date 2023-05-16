@@ -53,7 +53,7 @@ class Group extends Object
 	@:relation(userId)
 	public var contact : SNull<User>;	
 	
-	public var txtIntro:SNull<SText>; 	//introduction de l'amap
+	public var txtIntro:SNull<SText>; 	//introduction du marché
 	public var txtHome:SNull<SText>; 	//texte accueil adhérents
 	public var txtDistrib:SNull<SText>; //sur liste d'emargement
 	

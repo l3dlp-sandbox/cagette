@@ -1,4 +1,4 @@
-::use 'amapadmin/design.mtt'::
+::use 'marketadmin/design.mtt'::
 	
 	<div class=" article">
 		<h3>Paiements Mangopay</h3>
@@ -11,7 +11,7 @@
                 car <b>le paiement Mangopay ne sera plus disponible à partir du 30 juin 2023.</b>
             </p>
             <p>
-                <a href="/amapadmin/stripe" class="btn btn-default">En savoir plus</a>
+                <a href="/marketadmin/stripe" class="btn btn-default">En savoir plus</a>
             </p>
         </div>
 		

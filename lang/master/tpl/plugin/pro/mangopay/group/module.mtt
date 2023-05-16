@@ -1,4 +1,4 @@
-::use 'amapadmin/design2.mtt'::
+::use 'marketadmin/design2.mtt'::
     
     <div id="mangopay-neo-container" style="margin-bottom: 24px;"></div>
     <script>

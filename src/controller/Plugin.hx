@@ -3,8 +3,7 @@ package controller;
 class Plugin extends sugoi.BaseController
 {
 
-	public function new() 
-	{
+	public function new(){
 		super();
 	}
 	
@@ -16,9 +15,8 @@ class Plugin extends sugoi.BaseController
 	}	
 	
 	//cagette-pro
-	public function doPro(d:haxe.web.Dispatch) {
-		
-		d.dispatch(new pro.controller.Main());
+	public function doPro(?vendor:db.Vendor,d:haxe.web.Dispatch) {		
+		d.dispatch(new pro.controller.Main(vendor));
 	}	
 	
 	//cagette-connector

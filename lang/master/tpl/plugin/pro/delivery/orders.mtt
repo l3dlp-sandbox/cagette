@@ -11,13 +11,13 @@
 	::if( !catalog._group.isDispatch() )::
 	<div id="orders-dialog-container" />
 	<a class="btn btn-default btn-sm"
-		onclick="neo.createNeoModule('orders-dialog-container', 'ordersDialog', { userId: null, multiDistribId: ::multiDistribId::, catalogId: ::distribution._catalog.id::, groupId: ::catalog._group.id::, date: '::escapeJS(hDate(distribution.date))::', place: '::escapeJS(distribution._place.toString())::', userName: null, callbackUrl: '/p/pro/delivery/orders/::distribution.id::', basketId: null, differenciatedPricingSetting: ::settings.differenciatedPricing:: });">
+		onclick="neo.createNeoModule('orders-dialog-container', 'ordersDialog', { userId: null, multiDistribId: ::multiDistribId::, catalogId: ::distribution._catalog.id::, groupId: ::catalog._group.id::, date: '::escapeJS(hDate(distribution.date))::', place: '::escapeJS(distribution._place.toString())::', userName: null, callbackUrl: '::vendor.getURL()::/delivery/orders/::distribution.id::', basketId: null, differenciatedPricingSetting: ::settings.differenciatedPricing:: });">
 	<i class="icon icon-plus"></i>
 		::_("New order")::
 	</a>							
 	::end::
 	
-	$$export(/p/pro/delivery/csv/::distribution.id::)
+	$$export(::vendor.getURL()::/delivery/csv/::distribution.id::)
 	
 	<!--<a href="/contractAdmin/ordersByProduct/::catalog.id::?d=::distribution.id::" class="btn btn-default btn-sm">
 		<i class="icon icon-products"></i>
@@ -67,7 +67,7 @@ td.userRow a{ color:white; }
 						::if(basket.status=="CONFIRMED")::
 						<div id="orders-dialog-container" />
 						<a class="btn btn-default btn-xs"
-							onclick="neo.createNeoModule('orders-dialog-container', 'ordersDialog', { userId: ::basket.userId::, multiDistribId: ::multiDistribId::, catalogId: ::distribution._catalog.id::, groupId: ::catalog._group.id::, date: '::escapeJS(hDate(distribution.date))::', place: '::escapeJS(distribution._place.toString())::', userName: '::escapeJS(basket._user.getName())::', callbackUrl: '/p/pro/delivery/orders/::distribution.id::', basketId: ::basket.id::, differenciatedPricingSetting: ::settings.differenciatedPricing:: });">
+							onclick="neo.createNeoModule('orders-dialog-container', 'ordersDialog', { userId: ::basket.userId::, multiDistribId: ::multiDistribId::, catalogId: ::distribution._catalog.id::, groupId: ::catalog._group.id::, date: '::escapeJS(hDate(distribution.date))::', place: '::escapeJS(distribution._place.toString())::', userName: '::escapeJS(basket._user.getName())::', callbackUrl: '::vendor.getURL()::/delivery/orders/::distribution.id::', basketId: ::basket.id::, differenciatedPricingSetting: ::settings.differenciatedPricing:: });">
 							<i class="icon icon-edit"></i>
 							::_("Edit")::
 						</a>

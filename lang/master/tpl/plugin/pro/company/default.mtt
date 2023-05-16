@@ -27,7 +27,7 @@
 					</tr>
 					<tr>
 						<td></td>
-						<td>$$edit(Modifier,/p/pro/company/edit)</td>
+						<td>$$edit(Modifier,::vendor.getURL()::/company/edit)</td>
 					</tr>
 				</table>
 			</div>

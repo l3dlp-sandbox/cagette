@@ -24,8 +24,8 @@
 				</td>
 				<td>
 					<div class="btn-group">
-						$$edit(Mod.,/p/pro/company/editUser/::v._user.id::)
-						::if(!v.legalRepresentative && !v.salesRepresentative)::$$delete(Suppr.,/p/pro/company/deleteUser/::v._user.id::?token=::token::)::end::
+						$$edit(Mod.,::vendor.getURL()::/company/editUser/::v._user.id::)
+						::if(!v.legalRepresentative && !v.salesRepresentative)::$$delete(Suppr.,::vendor.getURL()::/company/deleteUser/::v._user.id::?token=::token::)::end::
 					</div>
 					
 				</td>
@@ -33,7 +33,7 @@
 			::end::
 		</table>
 		
-		$$insert(Nouvel utilisateur,/p/pro/company/insertUser/)
+		$$insert(Nouvel utilisateur,::vendor.getURL()::/company/insertUser/)
 	</div>
 
 ::end::

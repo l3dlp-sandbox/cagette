@@ -10,7 +10,7 @@
                 Cependant vous pouvez personnaliser vos conditions générales de vente si vous le souhaitez.<br/>  
             </p>
             <p>
-                <a href="/p/pro/company/cgv" class="btn btn-default btn-xs">Gérer mes conditions générales de vente</a>
+                <a href="::vendor.getURL()::/company/cgv" class="btn btn-default btn-xs">Gérer mes conditions générales de vente</a>
             </p>
         </div>
         <div class="col-md-6">

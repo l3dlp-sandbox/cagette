@@ -10,11 +10,11 @@ class Place extends Controller
 	public function new()
 	{
 		super();
-		addBc('amapadmin',"Admin","amapadmin");
+		addBc('marketadmin',"Admin","marketadmin");
 		addBc('places',"Lieux","place");
 	}
 
-	@tpl('amapadmin/places.mtt')
+	@tpl('marketadmin/places.mtt')
 	function doDefault(){
 		view.places = app.getCurrentGroup().getPlaces();
 		checkToken();
@@ -35,12 +35,12 @@ class Place extends Controller
 		view.addr = view.escapeJS(addr);
 	}
 	
-	@tpl('amapadmin/edit-place.mtt')
+	@tpl("marketadmin/edit-place.mtt")
 	function doEdit(p:db.Place) {
 		view.placeId = p.id;
 	}
 	
-	@tpl("amapadmin/form.mtt")
+	@tpl("marketadmin/form.mtt")
 	public function doInsert() {
 		
 		var d = new db.Place();
@@ -64,7 +64,7 @@ class Place extends Controller
 	}
 	
 	public function doDelete(p:db.Place) {
-		if (!app.user.isAmapManager()) throw "forbidden";
+		if (!app.user.isGroupManager()) throw "forbidden";
 		if (checkToken()) {
 			
 			if (db.Distribution.manager.search($placeId == p.id).length > 0) 

@@ -10,11 +10,23 @@ class Main extends controller.Controller
 	var company : pro.db.CagettePro;
 	var vendor : db.Vendor;
 	
-	public function new() 
+	public function new(?vendor:db.Vendor) 
 	{
 		super();
-		view.company = company = pro.db.CagettePro.getCurrentCagettePro();
-		view.vendor = vendor = pro.db.CagettePro.getCurrentVendor();
+		view.vendor = this.vendor = vendor;
+	}
+
+	function checkRights(){
+
+		if ( !pro.db.CagettePro.canLogIn(app.user,vendor)){
+			throw Error("/", "Vous ne pouvez pas gérer ce compte");
+		}
+		
+		view.company = this.company = vendor.getCpro();
+
+		if ( this.company==null){
+			throw Error("/", "Ce producteur n'a pas d'espace producteur");
+		}
 
 		//hack into breadcrumb
 		if(vendor!=null){
@@ -23,46 +35,18 @@ class Main extends controller.Controller
 	}
 	
 	/**
-	 * check is the user is looged to a company
-	 */
-	function checkCompanySelected(){
-
-		if (company == null && vendor == null){
-			throw Redirect('/user/choose?show=1');
-		}else if(company==null && vendor!=null){
-			throw Redirect('/p/pro/company');
-		}
-	}
-	
-	/**
 		CPro homepage + login
 	**/
 	@logged @tpl("plugin/pro/default.mtt")
-	public function doDefault(?args:{vendor:Int}){
+	public function doDefault(){
+		checkRights();
 		addBc("home","Tableau de bord", "/p/pro");
 		
-		//login to a vendor/cagettePro
-		if (args!=null && args.vendor!=null) {
-
-			var vendor = db.Vendor.manager.get(args.vendor,false);
-			if ( !pro.db.CagettePro.canLogIn(app.user,vendor) && !app.user.isAdmin()){
-				throw Error("/", "Vous ne pouvez pas gérer ce compte");
-			}
-
-			if(app.session.data==null) app.session.data = {};
-
-			app.session.data.vendorId = args.vendor;			
-
-			throw Redirect('/p/pro/');
-		}else{
-			checkCompanySelected();
-		}
-
 		//check CGS for non representative
 		if(this.vendor.tosVersion != sugoi.db.Variable.getInt('platformtermsofservice') && app.user.isAdmin()==false){
 			var isNonLegalRep = pro.db.PUserCompany.manager.select($user == app.user && $company == this.company && $legalRepresentative==false, false) != null;
 			if(isNonLegalRep){
-				throw Redirect("/p/pro/tosblocked");
+				throw Redirect(vendor.getURL()+"/tosblocked");
 			}
 		} 
 		
@@ -92,7 +76,6 @@ class Main extends controller.Controller
 		clients.sort(function(b, a) {
 			return (a[0].getContract().group.name.toUpperCase() < b[0].getContract().group.name.toUpperCase())?1:-1;
 		});
-
 
 		var adminClients = [];
 		var regularClients = [];
@@ -128,33 +111,32 @@ class Main extends controller.Controller
 		
 		//find unlinked catalogs		
 		view.unlinkedCatalogs = VendorService.getUnlinkedCatalogs(company);
-		
 		view.vendorId = vendor.id;
 
 	}
 
 	public function doCatalogLinker(d:haxe.web.Dispatch){
-		// checkCompanySelected();
-		d.dispatch(new pro.controller.CatalogLinker());
+		checkRights();
+		d.dispatch(new pro.controller.CatalogLinker(this.company));
 	}
 	
 	@logged 
 	public function doNotif(d:haxe.web.Dispatch){
-		checkCompanySelected();
-		d.dispatch(new pro.controller.Notif());
+		checkRights();
+		d.dispatch(new pro.controller.Notif(this.company));
 	}
 	
 	@logged 
 	public function doGroup(d:haxe.web.Dispatch){
-		checkCompanySelected();
-		d.dispatch(new pro.controller.Group());
+		checkRights();
+		d.dispatch(new pro.controller.Group(this.company));
 	}
 	
 	@logged 
 	public function doProduct(d:haxe.web.Dispatch){
-		checkCompanySelected();
+		checkRights();
 		addBc("product","Produits", "/p/pro/product");
-		d.dispatch(new pro.controller.Product());
+		d.dispatch(new pro.controller.Product(this.company));
 	}
 	
 	/**
@@ -162,9 +144,9 @@ class Main extends controller.Controller
 	**/
 	@logged 
 	public function doDelivery(d:haxe.web.Dispatch){
-		checkCompanySelected();
+		checkRights();
 		addBc("delivery","Vente", "/p/pro/delivery");
-		d.dispatch(new pro.controller.Delivery());
+		d.dispatch(new pro.controller.Delivery(this.company));
 	}
 
 	/**
@@ -172,74 +154,50 @@ class Main extends controller.Controller
 	**/
 	@logged 
 	public function doSales(d:haxe.web.Dispatch){
-		checkCompanySelected();
+		checkRights();
 		addBc("delivery","Vente", "/p/pro/delivery");
-		d.dispatch(new pro.controller.Sales());
+		d.dispatch(new pro.controller.Sales(this.company));
 	}
 	
 	@logged 
 	public function doOffer(d:haxe.web.Dispatch){
+		checkRights();
 		addBc("product","Produits", "/p/pro/product");
-		checkCompanySelected();		
 		d.dispatch(new pro.controller.Offer());
 	}
 	
 	@logged 
 	public function doCatalog(d:haxe.web.Dispatch){
+		checkRights();
 		addBc("catalog","Catalogues", "/p/pro/catalog");
-		checkCompanySelected();
-		d.dispatch(new pro.controller.Catalog());
+		d.dispatch(new pro.controller.Catalog(this.company));
 	}
 
 	@logged 
 	public function doStock(d:haxe.web.Dispatch){
+		checkRights();
 		addBc("stock","Stocks", "/p/pro/stock");
-		checkCompanySelected();
-		d.dispatch(new pro.controller.Stock());
+		d.dispatch(new pro.controller.Stock(company));
 	}
 	
 	@logged 
 	public function doCompany(d:haxe.web.Dispatch){
-		//checkCompanySelected(); should be accessible by a simple vendor
+		checkRights();
 		addBc("company","Producteur", "/p/pro/company");
-		d.dispatch(new pro.controller.Company());
+		d.dispatch(new pro.controller.Company(this.company));
 	}
 	
 	@logged 
 	public function doMessages(d:haxe.web.Dispatch){
-		checkCompanySelected();
+		checkRights();
 		addBc("messages","Messagerie", "/p/pro/messages");
-		d.dispatch(new pro.controller.Messages());
+		d.dispatch(new pro.controller.Messages(this.company));
 	}
 
 	@logged 
 	public function doNetwork(d:haxe.web.Dispatch){
-		checkCompanySelected();
-		d.dispatch(new pro.controller.Network());
-	}
-
-	/**
-	 * public pages for pros
-	 */
-	public function doPublic(d:haxe.web.Dispatch){
-		d.dispatch(new pro.controller.Public());
-	}
-	
-	public function doTransaction(d:haxe.web.Dispatch){
-		d.dispatch(new pro.controller.Transaction());
-	}
-
-	public function doDirectory(d:haxe.web.Dispatch){
-		d.dispatch(new pro.controller.Directory());
-	}
-	
-	@admin
-	function doAdmin(d:haxe.web.Dispatch){
-		d.dispatch(new pro.controller.Admin());		
-	}
-
-	public function doSignup(d:haxe.web.Dispatch){		
-		d.dispatch(new pro.controller.Signup());
+		checkRights();
+		d.dispatch(new pro.controller.Network(company));
 	}
 
 	@tpl('plugin/pro/tosblocked.mtt')
@@ -332,6 +290,21 @@ class Main extends controller.Controller
 		
 		view.form= f;
 		
+	}
+	
+	public function doTransaction(d:haxe.web.Dispatch){
+		d.dispatch(new pro.controller.Transaction());
+	}
+
+	
+	
+	@admin
+	function doAdmin(d:haxe.web.Dispatch){
+		d.dispatch(new pro.controller.Admin());		
+	}
+
+	public function doSignup(d:haxe.web.Dispatch){		
+		d.dispatch(new pro.controller.Signup());
 	}
 	
 }

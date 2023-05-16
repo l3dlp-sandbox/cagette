@@ -1,7 +1,7 @@
 ::if catalog != null::  
     ::set template = 'contractadmin/design.mtt'::
 ::else::
-    ::set template = 'amapadmin/design.mtt'::
+    ::set template = 'marketadmin/design.mtt'::
 ::end::
 
 ::use template::
@@ -27,7 +27,7 @@
         ::if catalog != null::
             $$insert( Nouveau document, /contractAdmin/documents/insert/::catalog.id:: )
         ::else::
-            $$insert( Nouveau document, /amapadmin/documents/insert )
+            $$insert( Nouveau document, /marketadmin/documents/insert )
         ::end::
 
         <div class="row" style="margin-top: 10px; margin-bottom: 24px;">
@@ -63,9 +63,9 @@
                                     &nbsp;&nbsp;
                                     $$delete( ::_("Delete")::, /contractAdmin/documents/delete/::doc.id::/::catalog.id::?token=::token:: )
                                 ::else::
-                                    $$edit( ::_("Edit")::, /amapadmin/documents/edit/::doc.id:: )
+                                    $$edit( ::_("Edit")::, /marketadmin/documents/edit/::doc.id:: )
                                     &nbsp;&nbsp;
-                                    $$delete( ::_("Delete")::, /amapadmin/documents/delete/::doc.id::?token=::token:: )
+                                    $$delete( ::_("Delete")::, /marketadmin/documents/delete/::doc.id::?token=::token:: )
                                 ::end::
                             </td>
                         </tr>

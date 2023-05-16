@@ -124,7 +124,7 @@
 			
 			<div class="text-center">
 				<!--<span class="pull-left">					
-					<a href="/p/pro/catalog/products/::catalog.id::" class="btn btn-default">
+					<a href="::vendor.getURL()::/catalog/products/::catalog.id::" class="btn btn-default">
 						<i class="icon icon-chevron-left"></i>	Précédent
 					</a>
 				</span>-->

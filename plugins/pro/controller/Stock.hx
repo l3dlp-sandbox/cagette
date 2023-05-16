@@ -7,9 +7,14 @@ using Std;
 class Stock extends controller.Controller
 {
 	
-	public function new()
+	var company : pro.db.CagettePro;
+	var vendor : db.Vendor;
+	
+	public function new(company:pro.db.CagettePro) 
 	{
 		super();
+		view.company = this.company = company;
+		view.vendor = this.vendor = company.vendor;
 		view.category = "stock";		
 	}
 	
@@ -18,7 +23,6 @@ class Stock extends controller.Controller
 	 */
 	@tpl("plugin/pro/offer/stock.mtt")
 	public function doDefault(){
-		view.vendor = pro.db.CagettePro.getCurrentVendor();
 	}
 	
 }

@@ -8,12 +8,13 @@ class Notif extends controller.Controller
 {
 
 	var company : pro.db.CagettePro;
+	var vendor : db.Vendor;
 	
-	public function new()
+	public function new(company:pro.db.CagettePro) 
 	{
 		super();
-		view.company = company = pro.db.CagettePro.getCurrentCagettePro();
-		view.category = "notif";		
+		view.company = this.company = company;
+		view.vendor = this.vendor = company.vendor;
 	}
 	
 	public function doDelete(n:pro.db.PNotif) {
@@ -21,9 +22,7 @@ class Notif extends controller.Controller
 		if (checkToken()){
 			n.lock();
 			n.delete();
-			throw Ok("/p/pro", "Notification effacée");
-			
-			//TODO : faire un mail à l'emetteur
+			throw Ok(vendor.getURL(), "Notification effacée");
 		}
 		
 	}
@@ -47,7 +46,6 @@ class Notif extends controller.Controller
 		view.getDistrib = function(did:Int){
 			return db.MultiDistrib.manager.get(did,false);
 		}
-		view.vendor = pro.db.CagettePro.getCurrentVendor();
 		checkToken();
 	}
 	

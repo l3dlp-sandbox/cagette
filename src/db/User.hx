@@ -47,8 +47,6 @@ class User extends Object {
 	public var nationality : SNull<SString<2>>;
 	public var countryOfResidence : SNull<SString<2>>;
 	
-	//@:skip public var amap(get_amap, null) : Amap;
-	
 	public var cdate : SDateTime; 			//creation date
 	public var ldate : SNull<SDateTime>;	//last connection
 	
@@ -120,10 +118,7 @@ class User extends Object {
 		return n;
 	}
 	
-	/**
-	 * is this user the manager of the current group
-	 */
-	public function isAmapManager() {
+	public function isGroupManager(){
 		var a = getGroup();
 		if (a == null) return false;
 
@@ -134,13 +129,9 @@ class User extends Object {
 
 		return ua.hasRight(Right.GroupAdmin);
 	}
-
-	public function isGroupManager(){
-		return isAmapManager();
-	}
 	
-	public function getUserGroup(amap:db.Group):db.UserGroup {
-		return db.UserGroup.get(this, amap);
+	public function getUserGroup(g:db.Group):db.UserGroup {
+		return db.UserGroup.get(this, g);
 	}
 
 	public function getUserGroups():Array<db.UserGroup>{
@@ -252,11 +243,10 @@ class User extends Object {
 	
 	/**
 	 * Renvoie les commandes actuelles du user
-	 * @param	_amap		force une amap
 	 * @param	lock=false
 	 */
-	public function getOrders(?_amap:db.Group,?lock = false):List<db.UserOrder> {
-		var a = _amap == null ? getGroup() : _amap;
+	public function getOrders(?_group:db.Group,?lock = false):List<db.UserOrder> {
+		var a = _group == null ? getGroup() : _group;
 		var c = a.getActiveContracts(true);
 		var cids = Lambda.map(c,function(m) return m.id);
 		var pids = Lambda.map(db.Product.manager.search($catalogId in cids,false), function(x) return x.id);
@@ -283,7 +273,7 @@ class User extends Object {
 	}
 	
 	/**
-	 * renvoie l'amap selectionnée par le user en cours
+	 * renvoie le groupe selectionnée par le user en cours
 	 */
 	public function getGroup() {
 		
@@ -427,52 +417,6 @@ class User extends Object {
 		return Lambda.list(out);
 	}
 	
-	/**
-	 *  Get users with no contracts
-	 **/ 
-	public static function getUsers_NoContracts(?index:Int,?limit:Int):List<db.User> {
-		var productsIds = App.current.user.getGroup().getProducts().map(function(x) return x.id);
-		var uc = db.UserOrder.manager.search($productId in productsIds, false);
-		var uc2 = uc.map(function(x) return x.user.id); //liste des userId avec un contrat dans cette amap
-
-		// J. Le Clerc - BUGFIX#1 Ne pas oublier les contrats alternés
-		for (u in uc) {
-			if (u.user2 != null) {
-				uc2.add(u.user2.id);
-			}
-		}
-		
-		if (uc2.length > 0){
-			//les gens qui sont dans cette amap et qui n'ont pas de contrat de cette amap
-			var ua = db.UserGroup.manager.unsafeObjects("select * from UserGroup where groupId=" + App.current.user.getGroup().id +" and userId NOT IN(" + uc2.join(",") + ")", false);						
-			return Lambda.map(ua, function(x) return x.user);	
-		}else{
-			return App.current.user.getGroup().getMembers();
-		}
-		
-	}
-	
-	/**
-	 * User with contracts
-	 */
-	public static function getUsers_Contracts(?index:Int,?limit:Int):List<db.User> {
-		var productsIds = App.current.user.getGroup().getProducts().map(function(x) return x.id);
-		if (productsIds.length == 0) return new List();
-		return db.User.manager.unsafeObjects("select u.* from User u, UserOrder uc where uc.productId IN(" + productsIds.join(",") + ") AND (uc.userId=u.id OR uc.userId2=u.id) group by u.id  ORDER BY u.lastName", false);	
-	}
-	
-	
-	public static function getUsers_NewUsers(?index:Int, ?limit:Int):List<db.User> {
-		
-		var uas = db.UserGroup.manager.search($group == App.current.user.getGroup(), false);
-		var ids = Lambda.map(uas, function(x) return x.user.id);
-		if (index == null && limit == null) {
-			return  db.User.manager.search($pass == "" && ($id in ids), {orderBy:lastName} ,false);
-		}else {
-			return  db.User.manager.search($pass == "" && ($id in ids), {limit:[index, limit] ,orderBy:lastName} , false);			
-		}
-		
-	}
 	
 	
 	

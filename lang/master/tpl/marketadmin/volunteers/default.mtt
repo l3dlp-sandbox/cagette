@@ -1,0 +1,71 @@
+::use 'marketadmin/design.mtt'::
+<h2>::_("Duty periods")::</h2>
+
+<p>
+	<a href="https://formation.alilo.fr/mod/page/view.php?id=820" target="_blank" class="btn btn-warning btn-sm">
+		<i class="icon icon-youtube"></i> Tuto vidéo
+	</a>
+</p>
+
+<h3>::_("Volunteer roles")::</h3>
+<p>
+	::raw _("Here you can define volunteers roles.")::
+</p>
+
+<table class="table table-bordered">
+	<tr>
+		<th>
+			::_("Volunteer Role")::
+		</th>
+		<th>
+			::_("Related catalog")::
+		</th>
+		<th></th>
+	</tr>
+	
+	::foreach role volunteerRoles::
+	<tr>
+		<td>
+			<span>::role.name::</span>
+		</td>
+		<td>
+			::if role._catalog!=null ::
+				<span>::role._catalog.name::</span>
+            ::else::
+				<span>::_("None")::</span>
+            ::end::
+		</td>
+		<td>
+			<div class="btn-group">
+			$$edit(::_("Edit")::,/marketadmin/volunteers/editRole/::role.id::)
+			$$delete(::_("Delete")::,/marketadmin/volunteers/deleteRole/::role.id::?token=::token::)
+			</div>
+		</td>
+	</tr>
+	
+	::end::
+</table>
+
+
+$$insert(::_("Add a role")::,/marketadmin/volunteers/insertRole)
+
+
+<h3>
+	::_("Delays and messages")::
+</h3>		
+
+::raw form::
+
+
+<script src="/js/tinymce/tinymce.min.js"></script>
+<script>
+	tinymce.init({ 
+		selector:'textarea',
+		plugins: "autolink textcolor emoticons image",
+		toolbar: "styleselect bold italic alignleft aligncenter emoticons image bullist outdent indent forecolor",
+		language: '::session.lang::',
+	
+	});	
+</script>
+
+::end::

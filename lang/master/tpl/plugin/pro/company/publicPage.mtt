@@ -15,7 +15,7 @@
         </p>
         ::else::
         <p>
-            $$insert(Créer ma page producteur,/p/pro/company/createLink)
+            $$insert(Créer ma page producteur,::vendor.getURL()::/company/createLink)
         </p>
         ::end::
         

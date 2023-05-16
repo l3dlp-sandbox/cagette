@@ -79,7 +79,7 @@ $$browserDetection()
 					<a onclick="neo.createNeoModule('myModal', 'dialog-url', { url: '/history/basket/::basket.id::', title:'::title::' })" class="btn btn-default btn-sm">
 						<i class="icon icon-basket"></i> ::_("My order"):: : ::formatNum(basket.getOrdersTotal()):: ::currency()::
 					</a>				
-					::if active && !amap.isDispatch() && !basket.hasOnlinePayment()::
+					::if active && !group.isDispatch() && !basket.hasOnlinePayment()::
 						$$edit(Modifier cette commande,/contract/editVarOrders/::md.id::)
 					::end::
 				</div>
@@ -262,25 +262,23 @@ $$browserDetection()
 
 	<div class="block">
 
-		::if amap.imageId!=null::
-		::if amap.extUrl!=null && amap.extUrl!=""::
-		<a href="::amap.extUrl::"><img src="::file(amap.imageId)::" style="margin:auto;display: block;width: 100%;"
+		::if group.imageId!=null::
+		::if group.extUrl!=null && group.extUrl!=""::
+		<a href="::group.extUrl::"><img src="::file(group.imageId)::" style="margin:auto;display: block;width: 100%;"
 				class="thumbnail" /><br /></a>
 		::else::
-		<img src="::file(amap.imageId)::" style="margin:auto;display: block;width: 100%;" class="thumbnail" /><br />
+		<img src="::file(group.imageId)::" style="margin:auto;display: block;width: 100%;" class="thumbnail" /><br />
 		::end::
 		::end::
 
-		::if amap.txtHome!=null && amap.txtHome!=""::
-		::raw nl2br(amap.txtHome)::
+		::if group.txtHome!=null && group.txtHome!=""::
+		::raw nl2br(group.txtHome)::
 		::end::		
 	</div>
 
 	<div class="block">
 		
 		<h4>Lien du ::theme.groupWordingShort:: à partager</h4>
-
-		::set group = amap::
 		<p>
 			<a id="copy-url" href="http://::HOST::/group/::group.id::" target="_blank">http://::HOST::/group/::group.id::</a><br/>
 		</p>
