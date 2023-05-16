@@ -27,7 +27,7 @@
 					::set rights = u.getRights()::
 					<ul ::cond rights!=null::>
 					::foreach r rights::
-						<li>::u.getJsonRightName(r)::</li>
+						<li>::getJsonRightName(r)::</li>
 					::end::
 					</ul>
 				</td>

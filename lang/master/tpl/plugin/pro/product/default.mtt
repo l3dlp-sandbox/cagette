@@ -4,12 +4,15 @@
 	<div class=" article">
 		
 		
-		<h2>Base de références</h2>	
+		<h2>Produits</h2>	
 
 		<div>
 			<p>
-				$$insert(Nouveau produit,/p/pro/product/insert/)
-				<a href="/p/pro/product/import/" class="btn btn-default btn-sm"><i class="icon icon-upload"></i> Import Excel/CSV</a>				
+				<a href="/p/pro/product/insert/" class="btn btn-primary btn-sm"><i class="icon icon-plus"></i> Nouveau produit</a>
+
+				<a href="/p/pro/product/import/" class="btn btn-default btn-sm"><i class="icon icon-upload"></i> Import Excel/CSV</a>
+				
+				<a href="/p/pro/company/vatRates" class="btn btn-default btn-sm"><i class="icon icon-products"></i> Gérer les taux de TVA</a>
 
 				<a href="https://formation.alilo.fr/mod/page/view.php?id=789" target="_blank" class="btn btn-warning btn-sm">
 					<i class="icon icon-youtube"></i> Tuto vidéo
@@ -38,20 +41,17 @@
 			<div class="col-md-12">
 				$$empty( )
 			</div>
-			
 		</div>			
-			
 		::end::
 
 
 		::if(products.length>0)::
-		<table class="table table-striped table-condensed">
+		<table class="table table-striped table-condensed table-hover">
 			<tr>
 				<th></th>
 				<th>Réf.</th>
 				<th>Nom</th>
 				<th></th>
-				<!--<th>Stock</th>-->
 				<th></th>
 			</tr>
 			::foreach p products::
@@ -74,37 +74,16 @@
 					<td>
 						::if p.organic ::<img src="/img/AB.png"/> ::end::
 					</td>
-					<!--<td>
-					
-						::if p.stock==null::
-							-
-						::else::
-							::if p.stock <= 10::
-								<span style="color:red;font-weight:bold;">							
-									::p.stock::
-								</span>
-							::else::
-								::p.stock::
-							::end::
-							
-							::unit(p._unitType)::
-							
-						::end::
-						
-					
-					</td>-->
 					<td>
 						<div class="btn-group" role="group" aria-label="...">
 							<a href="#row_p::p.id::" id="rowlink_p::p.id::" class="btn btn-default btn-sm" data-toggle="collapse">
                                 <i class="icon icon-chevron-down"></i> Voir les offres
                             </a>
 							$$edit(Modifier,/p/pro/product/edit/::p.id::)
-							
 
 							<a class="btn btn-default btn-sm" $$openImageUploader('pproduct', ::p.id::, 300, 300, null, ::company.id::)>
 								<i class="icon icon-image"></i> ::_("Picture")::
 							</a>
-
 
 							$$delete(Supprimer,/p/pro/product/delete/::p.id::?token=::token::)
 

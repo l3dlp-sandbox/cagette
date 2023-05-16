@@ -105,6 +105,7 @@ class AmapAdmin extends Controller
 	@tpl("amapadmin/rights.mtt")
 	public function doRights() {
 		view.users = app.user.getGroup().getGroupAdmins();
+		view.getJsonRightName = UserGroup.getJsonRightName;
 		addBc('rights','Droits d\'administration','/amapadmin/rights');
 	}
 	
@@ -119,9 +120,10 @@ class AmapAdmin extends Controller
 		}
 		
 		var data = [];
-		data.push({label:t._("Group administrator"), value:"GroupAdmin"});
-		data.push({label:t._("Membership management"),value:"Membership"});
-		data.push({label:t._("Messages"),value:"Messages"});
+		data.push({label:UserGroup.getRightName(Membership),value:"Membership"});
+		data.push({label:UserGroup.getRightName(ContractAdmin()), value:"ContractAdmin"});
+		data.push({label:UserGroup.getRightName(Messages),value:"Messages"});
+		data.push({label:UserGroup.getRightName(GroupAdmin), value:"GroupAdmin"});
 		
 		var ua : db.UserGroup = null;
 		var populate :Array<String> = null;
@@ -137,26 +139,22 @@ class AmapAdmin extends Controller
 		//Rights on contracts
 		var data = [];
 		var populate :Array<String> = [];
-		data.push({value:"contractAll",label:t._("All catalogs")});
-		for (r in app.user.getGroup().getActiveContracts(true)) {
-			data.push( { label:r.name , value:"contract"+Std.string(r.id) } );
+		
+		for (catalog in app.user.getGroup().getActiveContracts(true)) {
+			data.push( { label:catalog.name , value:"catalog"+Std.string(catalog.id) } );
 		}
 		
 		if(ua!=null && ua.getRights()!=null && ua.getRights().length>0){
 			for ( r in ua.getRights()) {
 				switch(r.right) {
 					case "ContractAdmin":
-						if (r.params == null) {
-							populate.push("contractAll");
-						}else {
-							populate.push("contract"+r.params[0]);	
+						if(r.params!=null && r.params.length>0){
+							populate.push("catalog"+r.params[0]);	
 						}
-						
 					default://
 				}
 			}
 		}
-		
 
 		form.addElement( new sugoi.form.elements.CheckboxGroup("rights", t._("Catalogs management") , data, populate, true, true) );
 		
@@ -171,14 +169,13 @@ class AmapAdmin extends Controller
 			ua.rights = "[]";
 
 			var arr : Array<String> = cast form.getElement("rights").value;
+			
 			for ( r in arr) {
-				if (r.substr(0, 8) == "contract") {
-					if (r == "contractAll") {
-						ua.giveRight( Right.ContractAdmin() );
-					}else {
-						ua.giveRight( Right.ContractAdmin(Std.parseInt(r.substr(8)) ) );	
-					}
-					
+				if (r.substr(0, 7) == "catalog") {
+					var cid = Std.parseInt(r.substr(7));
+					ua.giveRight( Right.ContractAdmin(cid) );
+				}else if(r=="ContractAdmin"){
+					ua.giveRight( Right.ContractAdmin(null) );				
 				}else {
 					ua.giveRight( Right.createByName(r) );	
 				}
@@ -197,8 +194,7 @@ class AmapAdmin extends Controller
 				throw Ok("/amapadmin/rights", t._("Rights removed"));
 			}else {
 				throw Ok("/amapadmin/rights", t._("Rights created or modified"));
-			}
-			
+			}			
 		}
 		
 		if (u == null) {

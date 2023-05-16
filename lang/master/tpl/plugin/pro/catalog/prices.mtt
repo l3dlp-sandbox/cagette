@@ -23,10 +23,10 @@
 
 				::if(company.offer<=2)::
 				<!-- discovery / member / pro / training -->
-				<a class="btn btn-default" onclick="applyRate(a)">Incorporer les frais<br/>de plateforme (3.6% TTC)</a>
+				<a class="btn btn-default" onclick="applyRate(a)">Incorporer les frais de<br/>paiement en ligne (3.6% TTC)</a>
 				::else::
 				<!-- training / marketplace -->
-				<a class="btn btn-default" onclick="applyRate(b)">Incorporer les frais<br/>de plateforme (10,8% TTC)</a>
+				<a class="btn btn-default" onclick="applyRate(b)">Incorporer les frais de service et <br/>de paiement en ligne (10,8% TTC)</a>
 				::end::
 			</div>
 		</div>
