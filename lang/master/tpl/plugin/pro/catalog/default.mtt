@@ -24,9 +24,7 @@
 			::end::
 
 			<tr title="::title::" data-toggle="::toggle::">
-				<td class="ref">
-					N°::c.id::
-				</td>
+
 				<td>
 					<a class="::class::"  href="/p/pro/catalog/view/::c.id::" style="font-size:1.2em;">
 						::c.name::
@@ -54,7 +52,13 @@
 					<br/>
 
 					<div class="row" style="display: flex; align-items: center; flex-direction: row;">
-						<div class="col-md-12">Lien du catalogue :
+						<div class="col-md-2">
+							Catalogue <span class="ref">N°::c.id::</span>
+						</div>
+						<div class="col-md-8">
+
+							
+							Lien du catalogue :
 							
 								<a id="copy-url-::c.id::" href="http://::HOST::/p/pro/public/::c.id::" target="_blank">http://::HOST::/p/pro/public/::c.id::</a>
 								&nbsp;&nbsp;<a id="copy-url-button-::c.id::" href="#" class="btn btn-default btn-sm">
@@ -78,6 +82,8 @@
 										}, 1000);
 									});
 								</script>
+
+								
 							
 						</div>
 					</div>

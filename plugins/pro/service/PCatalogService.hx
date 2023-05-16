@@ -303,9 +303,17 @@ class PCatalogService{
 			throw new tink.core.Error("Ce catalogue existe déjà dans ce "+App.current.getTheme().groupWordingShort+". Il n'est pas nécéssaire d'importer plusieurs fois le même catalogue dans un "+App.current.getTheme().groupWordingShort+".");
 		}
 
+		/*
 		if (pcatalog.company.vendor.disabled==db.Vendor.DisabledReason.MarketplaceNotActivated){
 			throw new tink.core.Error("Ce catalogue ne peut pas être relié à ce "+App.current.getTheme().groupWordingShort+" car le producteur n'a pas activé le prélèvement des frais Cagette.net.");
 		}
+		*/
+
+		/*if(clientGroup.isDispatch()){
+			if(!pcatalog.company.vendor.isDispatchReady()){
+				throw new tink.core.Error("Ce catalogue ne peut pas être relié à ce marché car le producteur n'a pas encore de compte Stripe.<br/>Le producteur peut ouvrir facilement son compte Stripe depuis son espace producteur (onglet \"producteur\",puis \"Paiement en ligne Stripe\").<br/>Plus d'informations dans la <a href='https://wiki.cagette.net/cpro:stripe'>documentation</a>.");
+			}
+		}*/
 
 
 		var activeCatalogs = clientGroup.getActiveContracts().array();
@@ -317,12 +325,12 @@ class PCatalogService{
 				throw new tink.core.Error("Ce catalogue ne peut pas être relié à ce "+App.current.getTheme().groupWordingShort+" car il est obligatoire de passer au paiement en ligne lorsque le "+App.current.getTheme().groupWordingShort+" compte plusieurs producteurs afin de faciliter la gestion des paiements.<br/>Plus d'informations sur <a href='/amapadmin/stripe'>cette page</a>.");
 			}
 		}
-
-		if(clientGroup.isDispatch()){
+		
+		/*if(clientGroup.isDispatch()){
 			if(!pcatalog.company.vendor.isDispatchReady()){
 				throw new tink.core.Error("Ce catalogue ne peut pas être relié à ce "+App.current.getTheme().groupWordingShort+" car le producteur n'a pas encore de compte Stripe.<br/>Le producteur peut ouvrir facilement son compte Stripe depuis son espace producteur (onglet \"producteur\",puis \"Paiement en ligne Stripe\").<br/>Plus d'informations dans la <a href='https://wiki.cagette.net/cpro:stripe'>documentation</a>.");
 			}
-		}
+		}*/
 
 		//coordinator
 		var contact = db.User.manager.get(remoteUserId);
