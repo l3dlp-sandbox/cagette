@@ -44,8 +44,10 @@ class Main extends controller.Controller
 	public function doOperation(op:db.Operation){
 		view.op = op ;
 	}
-	
-	
+
+	function doGroup(g:db.Group){
+		throw Redirect("/admin/group/view/"+g.id);
+	}
 	
 	function doUser(d:haxe.web.Dispatch) {
 		d.dispatch(new hosted.controller.User());
@@ -71,19 +73,16 @@ class Main extends controller.Controller
 		mds.reverse();
 		view.mds = mds;
 		view.timeframe = timeframe;
-
 	}
 
 	//check bug de brigitte
 	function doCheckBasket(b:db.Basket){
-
 		var orders = MangopayPlugin.checkTmpBasket(b);
 		if(orders!=null) {
 			throw Ok("/p/hosted/userGroup/"+b.user.id+"/"+b.multiDistrib.group.id,"basket #"+b.id+" confirmed !");
 		}else{
 			throw Ok("/p/hosted/userGroup/"+b.user.id+"/"+b.multiDistrib.group.id,"pas de bug de brigitte pour basket #"+b.id);
 		}
-
 	}
 
 	@admin
