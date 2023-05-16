@@ -33,12 +33,12 @@ style="width: 100%;"  width="100%" height="800"&gt;
 
 	<hr/>
 
-	<h4>Relier ce catalogue à un marché que je pilote</h4>
+	<h4>Relier ce catalogue à un ::theme.groupWordingShort:: que je pilote</h4>
 
 	<p>
-		Si vous êtes administrateur d'un marché, vous pouvez facilement intégrer ce catalogue au marché.<br/>
+		Si vous êtes administrateur d'un ::theme.groupWordingShort::, vous pouvez facilement intégrer ce catalogue au ::theme.groupWordingShort::.<br/>
 		<a class="btn btn-default" href="/p/pro/catalog/publishGroup/::catalog.id::">
-			<i class="icon icon-chevron-right"></i> Relier ce catalogue à un marché
+			<i class="icon icon-chevron-right"></i> Relier ce catalogue à un ::theme.groupWordingShort::
 		</a>		
 	</p>
 	

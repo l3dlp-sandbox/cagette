@@ -58,12 +58,12 @@ class Documents extends controller.Controller
 		form.addElement( new StringInput( "name","Nom du document", document.file.name, true ) );
 
 		var options = [ { value : "subscribers", label : "Souscripteurs du contrat" },
-						{ value : "members", label : "Membres du marché" },
+						{ value : "members", label : "Membres du "+App.current.getTheme().groupWordingShort },
 						{ value : "public", label : "Public" } ];
 
 		//In case of a group or shop mode
 		if ( catalog == null ) {
-			options = [	{ value : "members", label : "Membres du marché" }, { value : "public", label : "Public" } ];
+			options = [	{ value : "members", label : "Membres du "+App.current.getTheme().groupWordingShort }, { value : "public", label : "Public" } ];
 		}
 		form.addElement( new RadioGroup( 'visibility', 'Visibilité', options, document.data != null ? document.data : 'members' ) );
 	

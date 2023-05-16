@@ -2,7 +2,7 @@
 	<div class="article">
 		<h3>Activer le paiement en ligne</h3>
 		<p>
-            Il est possible de collecter des paiements en ligne dans ce marché Cagette. <br/>
+            Il est possible de collecter des paiements en ligne dans ce ::theme.groupWording::. <br/>
             Nous travaillons avec <a href="https://www.mangopay.com" target="_blank">Mangopay</a> qui prend en charge la gestion technique des paiements.<br/>
             <picture style="width:190px;height: 60px;display: block;background: url('https://www.mangopay.com/wp-content/themes/mangopay/assets/images/mangopay.svg') no-repeat left center;background-size: 100%;"></picture>	
              
@@ -14,7 +14,7 @@
             pour bien vérifier si cela correspond à vos besoins.             
         </p>
         <p>
-            Si après lecture du guide, vous souhaitez ouvrir le paiement en ligne sur ce marché,<br/>
+            Si après lecture du guide, vous souhaitez ouvrir le paiement en ligne sur ce ::theme.groupWordingShort::,<br/>
             cliquez sur le bouton ci-dessous.<br/>
         </p>
         <p>

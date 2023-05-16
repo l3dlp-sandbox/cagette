@@ -48,7 +48,7 @@ class Delivery extends controller.Controller
 		var data = [
 			{label:"Par produits", value :"products"},
 			{label:"Par membres", value :"members"},
-			{label:"Par Marchés-produits (CSV)", value :"groups"},
+			{label:"Par "+App.current.getTheme().groupWordingShort_plural.toUpperCase()+"-produits (CSV)", value :"groups"},
 		];
 		form.addElement(new sugoi.form.elements.RadioGroup("type","Type",data,data[0].value));
 		var now = DateTime.now();	
@@ -151,7 +151,7 @@ class Delivery extends controller.Controller
 
 	/**
 	 * special corto
-	 * totaux par produits par marché.
+	 * totaux par produits par groupe.
 	 */
 	public function doExportByGroups(args:{startDate:Date, endDate:Date}){		
 		
@@ -267,7 +267,7 @@ class Delivery extends controller.Controller
 	}
 
 	/**
-	 * Fonction cachée corto : Exporte tout les membres de chaque marché.
+	 * Fonction cachée corto : Exporte tout les membres de chaque groupe.
 	 */
 	function doExportMembers(){
 		doExportAdherents();
@@ -423,7 +423,7 @@ class Delivery extends controller.Controller
 			try{
 				for ( id in cids ){
 					var contract = db.Catalog.manager.get(id, false);
-					if(contract.group.getMainPlace()==null) throw new tink.core.Error(500,'Il n\'y a aucun lieu de livraison défini pour le marché "${contract.group.name}"');
+					if(contract.group.getMainPlace()==null) throw new tink.core.Error(500,'Il n\'y a aucun lieu de livraison défini pour le '+App.current.getTheme().groupWordingShort+' "${contract.group.name}"');
 
 					service.DistributionService.create(
 						contract,
@@ -508,7 +508,7 @@ class Delivery extends controller.Controller
 			try {
 				for ( cid in cids ){
 					var contract = db.Catalog.manager.get(cid,false);
-					if(contract.group.getMainPlace()==null) throw new tink.core.Error(500,'Il n\'y a aucun lieu de livraison défini pour le marché "${contract.group.name}"');
+					if(contract.group.getMainPlace()==null) throw new tink.core.Error(500,'Il n\'y a aucun lieu de livraison défini pour le '+App.current.getTheme().groupWordingShort+' "${contract.group.name}"');
 					service.DistributionService.createCycle(
 						contract.group,
 						form.getElement("cycleType").getValue(),
@@ -534,7 +534,7 @@ class Delivery extends controller.Controller
 		
 		view.form = form;
 		view.contracts = contracts;
-		view.title = "Créer des distributions récurrentes chez plusieurs marchés";
+		view.title = "Créer des distributions récurrentes chez plusieurs "+App.current.getTheme().groupWordingShort_plural;
 		
 	}
 

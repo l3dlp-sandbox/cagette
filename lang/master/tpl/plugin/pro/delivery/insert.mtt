@@ -34,7 +34,7 @@
 			
 
 		<p>
-			Cochez les marchés dans lesquels vous souhaitez créer une livraison.
+			Cochez les ::theme.groupWordingShort_plural:: dans lesquels vous souhaitez créer une livraison.
 		</p>	
 		<p>
 			<a onClick="check();" class='btn btn-default btn-sm'>Tout cocher</a>					
@@ -43,7 +43,7 @@
 		<table class="table table-bordered table-striped table-condensed" id="contracts">
 			<tr>
 				<th></th>
-				<th>Marché Cagette</th>
+				<th>::theme.groupWording::</th>
 				<th>Catalogue</th>
 				<th>Contrat</th>
 				<th>Lieu de livraison</th>

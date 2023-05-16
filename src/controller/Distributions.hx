@@ -143,7 +143,7 @@ class Distributions extends Controller {
 
 		view.title = 'Saisissez la raison pour laquelle vous vous désistez.';
 		if (App.current.getSettings().unsubscribeVolunteerRoleReasonOnlyForAdmin==true){
-			view.text = "La raison de votre désistement sera uniquement communiquée aux administrateurs de ce marché";
+			view.text = "La raison de votre désistement sera uniquement communiquée aux administrateurs de ce "+App.current.getTheme().groupWordingShort;
 		}
 		view.form = form;
 	}

@@ -63,7 +63,7 @@
 	::end::
 
 	<div class="article">
-		<h2 style="margin-top:0">Mes marchés</h2>
+		<h2 style="margin-top:0">Mes ::theme.groupWordingShort_plural::</h2>
 
 		<style>
 			.clickable{
@@ -75,13 +75,13 @@
 			::if(adminClients.length>0)::
 			<div class="col-md-12">
 				<p>
-					Les marchés dont je suis administrateur :
+					Les ::theme.groupWordingShort_plural:: dont je suis administrateur :
 				</p>
 			</div>
 			::end::
 
 			::foreach client adminClients::
-			<div class="col-md-3" data-toggle="tooltip" data-placement="bottom" title="Aller dans ce marché">
+			<div class="col-md-3" data-toggle="tooltip" data-placement="bottom" title="Aller dans ce ::theme.groupWordingShort::">
 				
 				::set group = client[0].getContract(false)._group::
 				<a href="/group/::group.id::" target="_blank" class="clickable" style="height:60px;">
@@ -112,7 +112,7 @@
 			::if(regularClients.length>0)::
 			<div class="col-md-12">
 				<p>
-					Les marchés que j'ai rejoins :
+					Les ::theme.groupWordingShort_plural:: que j'ai rejoins :
 				</p>
 			</div>
 			::end::
@@ -149,10 +149,10 @@
 				<div class="col-md-12">			
 					<div class="alert alert-warning">
 						<i class="icon icon-info"></i>
-						Vous avez <b>::unlinkedCatalogs.length:: catalogue(s)</b> créés dans des marchés et qui ne sont pas reliés à votre espace producteur.<br/>
+						Vous avez <b>::unlinkedCatalogs.length:: catalogue(s)</b> créés dans des ::theme.groupWordingShort_plural:: et qui ne sont pas reliés à votre espace producteur.<br/>
 						<ul>
 							::foreach c unlinkedCatalogs::
-							<li><b>::c.name::</b> dans le marché <a href="/group/::c._group.id::" target="_blank">::c._group.name::</a></li>
+							<li><b>::c.name::</b> dans le ::theme.groupWordingShort:: <a href="/group/::c._group.id::" target="_blank">::c._group.name::</a></li>
 							::end::
 						</ul>
 							
@@ -164,12 +164,12 @@
 			<div class="col-md-12">
 				::if company.offer==1::
 				<!--<a href="/p/pro/group/duplicate" class="btn btn-default btn-sm">
-					<i class="icon icon-plus"></i> Dupliquer un marché
+					<i class="icon icon-plus"></i> Dupliquer un ::theme.groupWordingShort::
 				</a>-->
 				
 				<div class="dropdown" style="display:inline-block;">
 					<button class="btn btn-default btn-sm dropdown-toggle btn-noAntiDoubleClick" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-						<i class="icon icon-plus"></i> Ouvrir un nouveau marché
+						<i class="icon icon-plus"></i> Ouvrir un nouveau ::theme.groupWordingShort::
 					</button>
 					<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">					
 						<li><a href="/group/newMarket"><i class="icon icon-bank-card"></i> avec paiement en ligne</a></li>
@@ -178,12 +178,12 @@
 				</div>
 				::else::
 				<a href="/group/newMarket" class="btn btn-default btn-sm">
-					<i class="icon icon-plus"></i> Créer un nouveau marché
+					<i class="icon icon-plus"></i> Créer un nouveau ::theme.groupWordingShort::
 				</a>
 				::end::
 
 				<a href="/p/pro/group/removeGroup" class="btn btn-default btn-sm">
-					<i class="icon icon-delete"></i> ne plus travailler avec un marché
+					<i class="icon icon-delete"></i> ne plus travailler avec un ::theme.groupWordingShort::
 				</a>
 			</div>	
 			

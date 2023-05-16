@@ -13,11 +13,11 @@
         <p>
             ::if(catalog !=null)::
                 Vous pouvez ici envoyer des documents PDF relatifs à ce catalogue.
-                Ils seront visibles sur la page du catalogue (accessible depuis l'onglet "producteurs" pour les membres du marché) 
+                Ils seront visibles sur la page du catalogue (accessible depuis l'onglet "producteurs" pour les membres du ::theme.groupWordingShort::) 
                 en fonction des paramètres de visibilités que vous aurez choisis.<br/>
-                Si vous êtes administrateur du marché, il est également possible d'envoyer des documents plus génériques au niveau du marché dans le menu "Documents" de l'onglet "paramètres".
+                Si vous êtes administrateur du ::theme.groupWordingShort::, il est également possible d'envoyer des documents plus génériques au niveau du ::theme.groupWordingShort:: dans le menu "Documents" de l'onglet "paramètres".
             ::else::
-                Vous pouvez ici envoyer des documents PDF relatifs à votre marché en général.<br/>
+                Vous pouvez ici envoyer des documents PDF relatifs à votre ::theme.groupWordingShort:: en général.<br/>
                 Ils seront visibles sur votre page publique et sur la page des commandes en fonction des paramètres de visibilités que vous aurez choisis.
                 Il est également possible d'envoyer des documents relatifs à un catalogue/contrat dans le menu "Documents" des catalogues.
             ::end::
@@ -51,7 +51,7 @@
                                     ::if doc.data == "subscribers"::
                                         Souscripteurs du contrat
                                     ::elseif doc.data == "members"::
-                                        Membres du marché
+                                        Membres du ::theme.groupWordingShort::
                                     ::else::
                                         Public
                                     ::end::

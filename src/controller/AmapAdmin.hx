@@ -47,7 +47,7 @@ class AmapAdmin extends Controller
 		
 		var str = "";
 		if(!o.cagetteNetwork){
-			str += "L'option 'Lister ce marché sur la carte' n'est pas cochée.";
+			str += "L'option 'Lister ce "+App.current.getTheme().groupWordingShort+" sur la carte' n'est pas cochée.";
 		}
 		if (!o.geoloc){
 			str += "Votre lieu de distribution n'a pas pu être géolocaliser, merci de compléter ou corriger son adresse. ";
@@ -56,7 +56,7 @@ class AmapAdmin extends Controller
 			str += "Vous devez avoir des distributions planifiées. ";
 		}
 		if(!o.members){
-			str += "Vous devez avoir au moins 3 personnes dans votre marché. ";
+			str += "Vous devez avoir au moins 3 personnes dans votre "+App.current.getTheme().groupWordingShort+".";
 		}
 
 		view.visibleOnMapText = str;
@@ -87,7 +87,7 @@ class AmapAdmin extends Controller
 
 		if (form.checkToken()) {
 
-			if( form.getValueOf("groupId") != group.id ) throw "Vous avez changé de marché.";
+			if( form.getValueOf("groupId") != group.id ) throw "Vous avez changé de "+App.current.getTheme().groupWordingShort+".";
 
 			group.lock();
 			group.hasMembership = form.getValueOf("membership")==true;			
@@ -257,7 +257,7 @@ class AmapAdmin extends Controller
 		var group = app.user.getGroup();
 
 		if(group.isDispatch()){
-			throw Error("/amapadmin","Ce marché utilise le paiement en ligne avec Stripe, il n'est pas possible d'y ajouter d'autres moyens de paiement.");
+			throw Error("/amapadmin","Ce "+App.current.getTheme().groupWordingShort+" utilise le paiement en ligne avec Stripe, il n'est pas possible d'y ajouter d'autres moyens de paiement.");
 		}
 
 		// if (group.checkOrder == ""){
@@ -274,7 +274,7 @@ class AmapAdmin extends Controller
 
 		if (f.isValid()){
 			
-			if( f.getValueOf("groupId") != group.id ) throw "Vous avez changé de marché.";
+			if( f.getValueOf("groupId") != group.id ) throw "Vous avez changé de "+App.current.getTheme().groupWordingShort+".";
 
 			group.lock();
 			var paymentTypes:Array<String> = f.getValueOf("paymentTypes");
@@ -327,7 +327,7 @@ class AmapAdmin extends Controller
 
 			//block if MGP !
 			// if(mangopay.db.MangopayLegalUserGroup.get(group)!=null){
-			// 	throw Error("/amapadmin/stripe","Ce marché fonctionne avec le paiement en ligne Mangopay, vous devez d'abord fermer votre compte Mangopay avant de passer à Stripe. Contactez le support pour le faire en écrivant à support@cagette.net");
+			// 	throw Error("/amapadmin/stripe","Ce "+App.current.getTheme().groupWordingShort+" fonctionne avec le paiement en ligne Mangopay, vous devez d'abord fermer votre compte Mangopay avant de passer à Stripe. Contactez le support pour le faire en écrivant à support@cagette.net");
 			// }
 
 			try{
@@ -347,7 +347,7 @@ class AmapAdmin extends Controller
 
 			group.update();
 
-			throw Ok("/amapadmin/stripe","Votre marché est maintenant configuré avec le paiement en ligne Stripe.");
+			throw Ok("/amapadmin/stripe","Votre "+App.current.getTheme().groupWordingShort+" est maintenant configuré avec le paiement en ligne Stripe.");
 
 		}
 

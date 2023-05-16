@@ -16,7 +16,7 @@
                         <tr class="darkhead">
                             <td colspan="3">
                                 <b>::c.name::</b><br/>
-                                dans le marché <b>::c._group.name::</b>
+                                dans le ::theme.groupWordingShort:: <b>::c._group.name::</b>
                             </td>
                         </tr>
                         

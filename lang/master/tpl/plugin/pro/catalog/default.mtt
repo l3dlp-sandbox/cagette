@@ -115,8 +115,8 @@
 						<table class="table">
 									<tr>
 										<th>Statut</th>
-										<th>Marché</th>				
-										<th>Nom dans le marché</th>
+										<th>::theme.groupWordingShort.toUpperCase()::</th>				
+										<th>Nom dans le ::theme.groupWordingShort.toUpperCase()::</th>
 										<th>Coordinateur</th>
 										<th></th>
 									</tr>
@@ -154,7 +154,7 @@
 										</td>
 										<td>
 											
-											::set warning = "Voulez vraiment casser la liaison ?\n\nLe catalogue sera archivé et vous ne pourrez plus commercialiser le catalogue '"+cata.name+"' auprès du marché '"+cont._group.name+"'.\nLes anciennes commandes seront conservées.\n\nATTENTION cette opération n'est pas annulable."::
+											::set warning = "Voulez vraiment casser la liaison ?\n\nLe catalogue sera archivé et vous ne pourrez plus commercialiser le catalogue '"+cata.name+"' auprès du "+theme.groupWordingShort+" '"+cont._group.name+"'.\nLes anciennes commandes seront conservées.\n\nATTENTION cette opération n'est pas annulable."::
 											<a href="/p/pro/catalog/breakLinkage/::l.id::?token=::token::" class="btn btn-danger btn-xs" onclick="return confirm('::escapeJS(warning)::')">
 												<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 												&nbsp;Casser la liaison

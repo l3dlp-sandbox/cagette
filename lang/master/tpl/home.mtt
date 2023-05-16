@@ -10,8 +10,8 @@ $$browserDetection()
 	<div class="alert alert-success">
 		<h3>Bienvenue sur ::theme.name:: !</h3>
 		<p>
-			Félicitations, vous venez juste de créer un nouveau marché !<br/>
-			Vous pouvez maintenant <a href="/contract/searchVendor/" style="font-weight: bold;">inviter des producteurs dans votre marché</a>, planifier des distributions et inviter des membres.
+			Félicitations, vous venez juste de créer un nouveau ::theme.groupWordingShort:: !<br/>
+			Vous pouvez maintenant <a href="/contract/searchVendor/" style="font-weight: bold;">inviter des producteurs dans votre ::theme.groupWordingShort::</a>, planifier des distributions et inviter des membres.
 		</p>		
 
 	</div>
@@ -234,7 +234,7 @@ $$browserDetection()
 			<img src="/img/join-a-group.png" />
 		</p>
 		<p>
-			Inscrivez-vous à ce marché, <br />
+			Inscrivez-vous à ce ::theme.groupWordingShort::, <br />
 			vous recevrez un email pour l'ouverture des prochaines commandes <br />
 			ainsi que des nouvelles des producteurs !
 		</p>
@@ -242,13 +242,13 @@ $$browserDetection()
 		::if (user==null)::		
 		<a href="#" class="btn btn-primary" onclick="neo.createNeoModule('login-registration-container', 'loginRegistration', { redirectUrl: '/user/joingroup', sid: '::loginBoxOptions.sid::', message: null, phoneRequired: ::loginBoxOptions.phoneRequired::, addressRequired: ::loginBoxOptions.addressRequired::, openRegistration:true})" >
 			<span class="glyphicon glyphicon-plus"></span>
-			M'inscrire à ce marché
+			M'inscrire à ce ::theme.groupWordingShort::
 		</a>
 		<div id='login-registration-container'></div>
 		::else::
 		<a href="/user/joingroup" class="btn btn-primary">
 			<span class="glyphicon glyphicon-plus"></span>
-			M'inscrire à ce marché
+			M'inscrire à ce ::theme.groupWordingShort::
 		</a>
 		::end::
 	</div>
@@ -278,7 +278,7 @@ $$browserDetection()
 
 	<div class="block">
 		
-		<h4>Lien du marché à partager</h4>
+		<h4>Lien du ::theme.groupWordingShort:: à partager</h4>
 
 		::set group = amap::
 		<p>

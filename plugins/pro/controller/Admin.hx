@@ -379,18 +379,18 @@ class Admin extends controller.Controller {
 			data.push({label: "#" + g.id + " " + g.name, value: g.id});
 		}
 
-		f.addElement(new sugoi.form.elements.IntSelect("group", "Choisissez un marché à dupliquer", cast data, true));
+		f.addElement(new sugoi.form.elements.IntSelect("group", "Choisissez un "+App.current.getTheme().groupWordingShort+" à dupliquer", cast data, true));
 
 		if (f.isValid()) {
 			var s = new pro.service.ProGroupService();
 			var x = db.Group.manager.get(f.getValueOf("group"));
 			s.duplicateGroup(x, true, x.name + "(copy)", x.getMainPlace().name);
 
-			throw Ok("/", "Marché dupliqué");
+			throw Ok("/", App.current.getTheme().groupWordingShort + " dupliqué");
 		}
 
 		view.form = f;
-		view.title = "Dupliquer un marché";
+		view.title = "Dupliquer un "+App.current.getTheme().groupWordingShort;
 	}
 
 	/**
@@ -406,7 +406,7 @@ class Admin extends controller.Controller {
 				for (cat in cpro.getCatalogs()) {
 					for (rc in connector.db.RemoteCatalog.getFromPCatalog(cat)) {
 						if (rc.getContract() != null) {
-							throw Error("/admin/vendor/view/" + vendor.id, "Ce producteur a encore des catalogues reliés à des marchés");
+							throw Error("/admin/vendor/view/" + vendor.id, "Ce producteur a encore des catalogues reliés à des "+App.current.getTheme().groupWordingShort_plural);
 						}
 					}
 				}
@@ -433,7 +433,7 @@ class Admin extends controller.Controller {
 				for (cat in cpro.getCatalogs()) {
 					for (rc in connector.db.RemoteCatalog.getFromPCatalog(cat)) {
 						if (rc.getContract() != null) {
-							throw Error("/admin/vendor/view/" + vendor.id, "Ce producteur a encore des catalogues reliés à des marchés");
+							throw Error("/admin/vendor/view/" + vendor.id, "Ce producteur a encore des catalogues reliés à des "+App.current.getTheme().groupWordingShort_plural);
 						}
 					}
 				}
@@ -447,7 +447,7 @@ class Admin extends controller.Controller {
 
 			case "delete":
 				if (vendor.getContracts().length > 0) {
-					throw Error("/admin/vendor/view/" + vendor.id, "Ce producteur a encore des catalogues dans des marchés");
+					throw Error("/admin/vendor/view/" + vendor.id, "Ce producteur a encore des catalogues dans des "+App.current.getTheme().groupWordingShort_plural);
 				} else {
 					vendor.lock();
 					vendor.delete();
@@ -465,7 +465,7 @@ class Admin extends controller.Controller {
 		var f = new sugoi.form.Form("contract");
 		view.title = "Importer un catalogue invité dans un espace producteur";
 		if (catalog != null && cagettePro != null) {
-			/*f.addElement(new sugoi.form.elements.IntInput("cid",catalog.name+" dans le marché "+catalog.group.name,catalog.id,true));
+			/*f.addElement(new sugoi.form.elements.IntInput("cid",catalog.name+" dans le "+App.current.getTheme().groupWordingShort+" "+catalog.group.name,catalog.id,true));
 				f.addElement(new sugoi.form.elements.IntInput("companyId",cagettePro.vendor.name,cagettePro.id,true)); */
 
 			view.text = 'Voulez vous importer ce catalogue <b>${catalog.name}</b><br/> dans l\'espace producteur <b>${cagettePro.vendor.name}</b> ?';
@@ -782,7 +782,7 @@ class Admin extends controller.Controller {
 
 			var gids:Array<Int> = groups.map(g -> g.id);
 			var groupsToDelete = db.Group.manager.unsafeObjects('select * from `Group` where id not in (${gids.join(",")}) LIMIT 1000',true);
-			print("====  1000 Marchés a effacer");
+			print("====  1000 "+App.current.getTheme().groupWordingShort_plural.toUpperCase()+" a effacer");
 			for(g in groupsToDelete){
 				print("delete "+g.name);
 				g.delete();
@@ -792,7 +792,7 @@ class Admin extends controller.Controller {
 
 				for( u in db.User.manager.unsafeObjects("SELECT * FROM User order by RAND() limit "+usersToDelete,true)){
 
-					//ne pas effacer ceux qui sont dans un marché VRAC
+					//ne pas effacer ceux qui sont dans un groupe VRAC
 					if( db.UserGroup.manager.count($userId==u.id && $groupId in gids) > 0 ){
 						print(""+u.toString()+" is VRAC member");
 						continue;

@@ -49,9 +49,9 @@ class PCatalogService{
 					disabledInGroup = Lambda.has(disabledProducts, groupProduct.id);
 					//debug
 					/*if(disabledInGroup){
-						log.push( pcatalogOffer.offer+" est désactivé dans le marché" );
+						log.push( pcatalogOffer.offer+" est désactivé dans le "+App.current.getTheme().groupWordingShort );
 					}else{
-						log.push( pcatalogOffer.offer+" est actif dans le marché" );
+						log.push( pcatalogOffer.offer+" est actif dans le "+App.current.getTheme().groupWordingShort );
 					}*/
 				}else{
 					//debug
@@ -300,12 +300,12 @@ class PCatalogService{
 		//checks
 		var contracts = connector.db.RemoteCatalog.getContracts(pcatalog, clientGroup);
 		if ( contracts.length>0 ){
-			throw new tink.core.Error("Ce catalogue existe déjà dans ce marché. Il n'est pas nécéssaire d'importer plusieurs fois le même catalogue dans un marché.");
+			throw new tink.core.Error("Ce catalogue existe déjà dans ce "+App.current.getTheme().groupWordingShort+". Il n'est pas nécéssaire d'importer plusieurs fois le même catalogue dans un "+App.current.getTheme().groupWordingShort+".");
 		}
 
 		/*
 		if (pcatalog.company.vendor.disabled==db.Vendor.DisabledReason.MarketplaceNotActivated){
-			throw new tink.core.Error("Ce catalogue ne peut pas être relié à ce marché car le producteur n'a pas activé le prélèvement des frais Cagette.net.");
+			throw new tink.core.Error("Ce catalogue ne peut pas être relié à ce "+App.current.getTheme().groupWordingShort+" car le producteur n'a pas activé le prélèvement des frais Cagette.net.");
 		}
 		*/
 
@@ -322,11 +322,15 @@ class PCatalogService{
 
 		if( !clientGroup.isDispatch() && clientGroup.cdate.getTime() > service.GroupService.STRIPIFICATION_DATE.getTime()){
 			if(activeCatalogs.length>=1 && !isTrainingGroup){
-				throw new tink.core.Error("Ce catalogue ne peut pas être relié à ce marché car il est obligatoire de passer au paiement en ligne lorsque le marché compte plusieurs producteurs afin de faciliter la gestion des paiements.<br/>Plus d'informations sur <a href='/amapadmin/stripe'>cette page</a>.");
+				throw new tink.core.Error("Ce catalogue ne peut pas être relié à ce "+App.current.getTheme().groupWordingShort+" car il est obligatoire de passer au paiement en ligne lorsque le "+App.current.getTheme().groupWordingShort+" compte plusieurs producteurs afin de faciliter la gestion des paiements.<br/>Plus d'informations sur <a href='/amapadmin/stripe'>cette page</a>.");
 			}
 		}
-
 		
+		/*if(clientGroup.isDispatch()){
+			if(!pcatalog.company.vendor.isDispatchReady()){
+				throw new tink.core.Error("Ce catalogue ne peut pas être relié à ce "+App.current.getTheme().groupWordingShort+" car le producteur n'a pas encore de compte Stripe.<br/>Le producteur peut ouvrir facilement son compte Stripe depuis son espace producteur (onglet \"producteur\",puis \"Paiement en ligne Stripe\").<br/>Plus d'informations dans la <a href='https://wiki.cagette.net/cpro:stripe'>documentation</a>.");
+			}
+		}*/
 
 		//coordinator
 		var contact = db.User.manager.get(remoteUserId);
@@ -388,7 +392,7 @@ class PCatalogService{
 
 		var cats = connector.db.RemoteCatalog.getContracts( pcatalog, catalog.group );
 		if ( cats.length>0 ){
-			throw new tink.core.Error("Ce catalogue existe déjà dans ce marché. Il n'est pas nécéssaire d'importer plusieurs fois le même catalogue dans un marché.");
+			throw new tink.core.Error("Ce catalogue existe déjà dans ce "+App.current.getTheme().groupWordingShort+". Il n'est pas nécéssaire d'importer plusieurs fois le même catalogue dans un "+App.current.getTheme().groupWordingShort+".");
 		}
 
 		var rc = new connector.db.RemoteCatalog();

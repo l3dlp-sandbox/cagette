@@ -44,13 +44,13 @@ class Public extends controller.Controller
 				datas.push({label:ua.group.name,value:ua.group.id});
 			}
 		}
-		f.addElement( new sugoi.form.elements.IntSelect("group","Marché qui accueillera le catalogue", datas, (group==null ? null : group.id) , true) );
+		f.addElement( new sugoi.form.elements.IntSelect("group",App.current.getTheme().groupWordingShort.toUpperCase()+" qui accueillera le catalogue", datas, (group==null ? null : group.id) , true) );
 		view.form = f;
 		
 		if ( f.isValid() ){
 			
 			/*if (group.getPlaces().length == 0) {
-				throw Error("/p/pro/public/" + catalog.id, "Votre marché n'a aucun lieu de livraison ! Vous devez en créer au moins un avant d'importer un catalogue.");
+				throw Error("/p/pro/public/" + catalog.id, "Votre "+App.current.getTheme().groupWordingShort+" n'a aucun lieu de livraison ! Vous devez en créer au moins un avant d'importer un catalogue.");
 			}
 			if (!app.user.isContractManager() && !app.user.isAmapManager()){
 				throw Error("/p/pro/public/askImport/" + catalog.id, "Vous devez être coordinateur pour pouvoir importer un catalogue.");
@@ -60,7 +60,7 @@ class Public extends controller.Controller
 
 			var contracts = connector.db.RemoteCatalog.getContracts( catalog, group );
 			if ( contracts.length>0 ){
-				throw Error("/contractAdmin/view/" + contracts.first().id, "Ce catalogue existe déjà dans ce marché. Il n'est pas nécéssaire d'importer plusieurs fois le même catalogue dans un marché.");
+				throw Error("/contractAdmin/view/" + contracts.first().id, "Ce catalogue existe déjà dans ce "+App.current.getTheme().groupWordingShort+". Il n'est pas nécéssaire d'importer plusieurs fois le même catalogue dans un "+App.current.getTheme().groupWordingShort+".");
 			}
 
 			try{
@@ -74,14 +74,14 @@ class Public extends controller.Controller
 			
 			//send email
 			var e = new sugoi.mail.Mail();		
-			e.setSubject("Le marché "+group.name+" a relié votre catalogue "+catalog.name);
+			e.setSubject("Le "+App.current.getTheme().groupWordingShort+" "+group.name+" a relié votre catalogue "+catalog.name);
 			e.setRecipient(catalog.company.vendor.email);			
 			e.setSender(App.current.getTheme().email.senderEmail,"Cagette.net");		
 			var html = app.processTemplate("plugin/pro/mail/catalogLinked.mtt", {catalog:catalog,group:group,user:app.user});		
 			e.setHtmlBody(html);
 			App.sendMail(e);	
 			
-			throw Ok("/contractAdmin", "Le catalogue a été relié à votre marché. Le producteur a été prévenu par email.");
+			throw Ok("/contractAdmin", "Le catalogue a été relié à votre "+App.current.getTheme().groupWordingShort+". Le producteur a été prévenu par email.");
 			
 		}
 	}
@@ -118,6 +118,7 @@ class Public extends controller.Controller
 		App.current.setTemplate("plugin/pro/public/vendor.mtt");
 		App.current.view.vendor = vendor.getInfos();
 		App.current.view.pageTitle = vendor.name + " - " + App.current.getTheme().name;
+		App.current.view.noGroup = true;
 		var cpro = pro.db.CagettePro.getFromVendor(vendor);
 		if(cpro!=null && cpro.demoCatalog!=null){
 

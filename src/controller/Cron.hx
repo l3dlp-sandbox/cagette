@@ -416,7 +416,7 @@ class Cron extends Controller
 		//stocke cache
 		for (d in distribs) {
 			dist.push(d.id);
-			task.log("Distrib : "+d.date+" de "+d.catalog.name+", marché : "+d.catalog.group.name);
+			task.log("Distrib : "+d.date+" de "+d.catalog.name+", "+App.current.getTheme().groupWordingShort+" : "+d.catalog.group.name);
 		}
 		if(!App.config.DEBUG) Cache.set(cacheId, dist, 24 * 60 * 60);
 
@@ -536,7 +536,7 @@ class Cron extends Controller
 		
 		//exclude disabled groups
 		distribs = distribs.filter(d -> d.multiDistrib.group.isDisabled()==false);
-		distribs.map( d -> task.log("Distrib : "+d.date+" de "+d.catalog.name+", marché : "+d.catalog.group.name) );
+		distribs.map( d -> task.log("Distrib : "+d.date+" de "+d.catalog.name+", "+App.current.getTheme().groupWordingShort+" : "+d.catalog.group.name) );
 				
 		/*
 		 * Group distribs by group.

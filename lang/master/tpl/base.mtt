@@ -66,7 +66,11 @@
 			theme: {
 				id: "::theme.id::",
 				name: "::theme.name::",
-				supportEmail: "::theme.supportEmail::"
+				supportEmail: "::theme.supportEmail::",
+                groupWording: "::theme.groupWording::",
+                groupWording_plural: "::theme.groupWording_plural::",
+                groupWordingShort: "::theme.groupWordingShort::",
+                groupWordingShort_plural: "::theme.groupWordingShort_plural::",
 			}
 		}
         

@@ -52,7 +52,7 @@ class Main extends controller.Controller
 	}
 
 	/**
-	 * infos sur le membre d'un marché
+	 * infos sur le membre d'un groupe
 	 */
 	@admin @tpl("plugin/pro/hosted/usergroup.mtt")
 	public function doUserGroup(u:db.User, g:db.Group){

@@ -26,7 +26,7 @@
         <div class="col-md-4">
             <div class="alert alert-warning">
                 <i class="icon icon-info"></i>
-                Pour être sûr d'apparaître sur la carte des marchés, 
+                Pour être sûr d'apparaître sur la carte des ::theme.groupWordingShort_plural::, 
                 <a href="https://wiki.cagette.net/admin:admin_carte" target="_blank">consultez la documentation</a>
             </div>
         </div>

@@ -12,7 +12,7 @@
 			<table class="table table-bordered">
 				<tr>
                     <th>Distribution</th>
-                    <th>Marché</th>
+                    <th>::theme.groupWordingShort.toUpperCase()::</th>
 					<th>C.A TTC</th>
 					<th>Virement correspondant</th>
 				</tr>

@@ -28,7 +28,7 @@ class Group extends controller.Controller
 		// form
 		var f = new sugoi.form.Form("groups");
 		f.method = GET;
-		f.addElement(new sugoi.form.elements.StringInput("groupName", "Nom du marché"));
+		f.addElement(new sugoi.form.elements.StringInput("groupName", "Nom du "+App.current.getTheme().groupWordingShort));
 		f.addElement(new sugoi.form.elements.StringInput("zipCodes", "Saisir des numéros de département séparés par des virgules ou laisser vide."));
 		f.addElement(new sugoi.form.elements.StringSelect("country", "Pays", db.Place.getCountries(), "FR", true, ""));
 		
@@ -159,7 +159,7 @@ class Group extends controller.Controller
 					});
 				}
 
-				sugoi.tools.Csv.printCsvDataFromObjects(data, headers, "marchés");
+				sugoi.tools.Csv.printCsvDataFromObjects(data, headers, App.current.getTheme().groupWordingShort_plural);
 		}
 	}
 
@@ -243,7 +243,7 @@ class Group extends controller.Controller
 			//duplicate group
 
 			var g = GroupService.duplicateGroup(group);
-			g.name = group.name+" (marché)";
+			g.name = group.name+" ("+App.current.getTheme().groupWordingShort+")";
 			g.setAllowedPaymentTypes([Cash.TYPE,Check.TYPE]);
 			g.update();
 
@@ -300,7 +300,7 @@ class Group extends controller.Controller
 				}
 
 			}
-			throw Ok("/admin/group/view/"+g.id,"Marché copié");
+			throw Ok("/admin/group/view/"+g.id,App.current.getTheme().groupWordingShort.toUpperCase()+" copié");
 		}
 
 	
@@ -330,7 +330,7 @@ class Group extends controller.Controller
 		if (checkToken()) {
 			a.lock();
 			a.delete();
-			throw Ok("/p/hosted/","Marché effacé");
+			throw Ok("/p/hosted/",App.current.getTheme().groupWordingShort.toUpperCase()+" effacé");
 		}
 	}
 	
@@ -415,7 +415,7 @@ class Group extends controller.Controller
 			m.flags.unset(db.User.UserFlags.HasEmailNotif4h);
 			m.update();
 		}
-		throw Ok("/admin/group/view/"+g.id, "Notifications désactivées pour tous les membres de ce marché");
+		throw Ok("/admin/group/view/"+g.id, "Notifications désactivées pour tous les membres de ce "+App.current.getTheme().groupWordingShort);
 	}
 
 	function doEnableNotifs(g:db.Group){
@@ -426,7 +426,7 @@ class Group extends controller.Controller
 			m.flags.set(db.User.UserFlags.HasEmailNotifOuverture);
 			m.update();
 		}
-		throw Ok("/admin/group/view/"+g.id, "Notifications activées pour tous les membres de ce marché");
+		throw Ok("/admin/group/view/"+g.id, "Notifications activées pour tous les membres de ce "+App.current.getTheme().groupWordingShort);
 	}
 
 }

@@ -269,14 +269,14 @@ class Main extends controller.Controller
 			throw "non autorisé";
 		}
 
-		view.title = "Créer un nouveau marché en paiement sur place";
+		view.title = "Créer un nouveau "+App.current.getTheme().groupWordingShort+" en paiement sur place";
 
 		var p = new db.Place();
 		var f = form.CagetteForm.fromSpod(p);
-		f.addElement(new sugoi.form.elements.Html("html","<div class='alert alert-warning'><i class='icon icon-info'></i> En tant que producteur Membre, vous pouvez à titre exceptionnel créer un marché en paiement sur place, tant que vous restez seul sur ce marché.<br/><br/>N'oubliez pas que vous pouvez <a href=\"/group/newMarket\">créer directement un marché avec paiement en ligne Stripe</a> pour pouvoir collaborer avec d'autres producteurs sur ce marché.</div>"),0);
+		f.addElement(new sugoi.form.elements.Html("html","<div class='alert alert-warning'><i class='icon icon-info'></i> En tant que producteur Membre, vous pouvez à titre exceptionnel créer un "+App.current.getTheme().groupWordingShort+" en paiement sur place, tant que vous restez seul sur ce "+App.current.getTheme().groupWordingShort+".<br/><br/>N'oubliez pas que vous pouvez <a href=\"/group/newMarket\">créer directement un "+App.current.getTheme().groupWordingShort+" avec paiement en ligne Stripe</a> pour pouvoir collaborer avec d'autres producteurs sur ce "+App.current.getTheme().groupWordingShort+".</div>"),0);
 		
 		f.addElement(new sugoi.form.elements.StringSelect('country',t._("Country"),db.Place.getCountries(),p.country,true));			
-		f.addElement(new sugoi.form.elements.StringInput("groupName", "Nom du marché", "La Cagette de ...", true),1);
+		f.addElement(new sugoi.form.elements.StringInput("groupName", "Nom du "+App.current.getTheme().groupWordingShort, "La Cagette de ...", true),1);
 		
 		f.getElement("name").label = "Nom du lieu";
 		f.removeElementByName("lat");

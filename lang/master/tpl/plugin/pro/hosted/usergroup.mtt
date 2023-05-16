@@ -6,7 +6,7 @@
 			<a href="/p/hosted/user/view/::member.id::" >::member.getName()::</a>
 		</h2> 
 		<h4>
-		dans le marché <a href="/admin/group/view/::ua._group.id::" >::ua._group.name::</a>
+		dans le ::theme.groupWordingShort:: <a href="/admin/group/view/::ua._group.id::" >::ua._group.name::</a>
 		</h4>
 
 		$$timeframe(::timeframe::)
