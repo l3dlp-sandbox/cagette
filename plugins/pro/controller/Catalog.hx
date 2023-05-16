@@ -335,51 +335,6 @@ class Catalog extends controller.Controller
 	}
 	
 	/**
-	 * Accept a delivery request from a group
-	 * @param	notif
-	 */
-	@tpl("plugin/pro/form.mtt")
-	function doAcceptDelivery(notif:pro.db.PNotif){
-		notif.lock();
-		if (notif.type != pro.db.PNotif.NotifType.NTDeliveryRequest){
-			throw "error";
-		}
-		
-		var content : pro.db.PNotif.DeliveryRequestContent = haxe.Json.parse(notif.content);
-		var catalog = pro.db.PCatalog.manager.get(content.pcatalogId,false);
-		var distrib = db.MultiDistrib.manager.get(content.distribId,false);
-		var rcs = connector.db.RemoteCatalog.getFromPCatalog(catalog);
-		var rc = Lambda.find(rcs,function(rc) return rc.getContract().group.id==notif.group.id );
-		if(rc==null){
-			throw Error("/p/pro","Vous n'êtes plus reliés à ce catalogue, vous pouvez supprimer cette demande.");
-		}
-
-		var contract = rc.getContract();
-
-		if(distrib==null){
-			notif.delete();
-			throw Ok("/p/pro", "La distribution a été supprimée par l'administrateur du "+App.current.getTheme().groupWordingShort+", il n'est donc plus possible d'y participer");
-		}
-
-		try{
-			service.DistributionService.participate(distrib,contract);
-		}catch(e:tink.core.Error){
-			throw Error('/p/pro/',e.message);
-		}
-
-		//email notif to sender
-		if( notif.sender!=null){
-			var title = "Votre invitation à la distribution du " + app.view.hDate(distrib.getDate()) + " a été acceptée par " + company.vendor.name;
-			App.quickMail(notif.sender.email, title, title, distrib.getGroup());
-		}		
-		
-		//delete notif
-		notif.delete();
-		
-		throw Ok("/p/pro", "Vous avez accepté l'invitation à participer à la distribution du "+distrib.getDate());		
-	}
-	
-	/**
 	 * delivery update from a group
 	 * @param	notif
 	 */
