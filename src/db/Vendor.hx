@@ -249,7 +249,7 @@ class Vendor extends Object
 	**/
 	public function getLink():String{		
 		var permalink = sugoi.db.Permalink.getByEntity(this.id,"vendor");
-		return permalink==null ? "/public/vendor/"+id : "/"+permalink.link;		
+		return permalink==null ? "/vendor/"+id : "/"+permalink.link;		
 	}
 
 	/**

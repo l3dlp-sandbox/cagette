@@ -5,11 +5,11 @@ import haxe.Json;
 import sugoi.Web;
 import sugoi.db.Variable;
 
-class Public extends controller.Controller
+class Catalog extends controller.Controller
 {
 
-	@tpl("public/catalog.mtt")
-	public function doCatalog(catalog:pro.db.PCatalog,?args:{?bgcolor:String,?container:String}){
+	@tpl("catalog/default.mtt")
+	public function doDefault(catalog:pro.db.PCatalog,?args:{?bgcolor:String,?container:String}){
 		view.catalog = catalog;
 		view.noGroup = true;
 		
@@ -26,12 +26,11 @@ class Public extends controller.Controller
 		}	
 	}
 	
-	@tpl("plugin/pro/catalog/askImport.mtt")
+	@tpl("catalog/askImport.mtt")
 	public function doAskImport(catalog:pro.db.PCatalog){
 		var vendor = catalog.company.vendor;
-		if(app.user==null) throw Error("/user/login?__redirect="+vendor.getURL()+"/public/askImport/"+catalog.id,"Vous devez être connecté à " + App.current.getTheme().name + " pour faire cette action");
+		if(app.user==null) throw Error("/user/login?__redirect=/catalog/askImport/"+catalog.id,"Vous devez être connecté à " + App.current.getTheme().name + " pour faire cette action");
 
-		// var isVendor = isCproVendor(catalog.company);
 		view.title = 'Relier un catalogue';
 		var group = app.user.getGroup();
 
@@ -71,7 +70,6 @@ class Public extends controller.Controller
 
 			app.session.data.amapId = group.id;
 			
-			
 			//send email
 			var e = new sugoi.mail.Mail();		
 			e.setSubject("Le "+App.current.getTheme().groupWordingShort+" "+group.name+" a relié votre catalogue "+catalog.name);
@@ -81,84 +79,7 @@ class Public extends controller.Controller
 			e.setHtmlBody(html);
 			App.sendMail(e);	
 			
-			throw Ok("/contractAdmin", "Le catalogue a été relié à votre "+App.current.getTheme().groupWordingShort+". Le producteur a été prévenu par email.");
-			
-		}
-	}
-
-	function isCproVendor(company:pro.db.CagettePro):Bool{
-		for( u in company.getUsers()){
-			if(u.id == app.user.id) return true;
-		}
-		return false;
-	}
-
-	@tpl('public/vendor.mtt')
-	public function doVendor(vendor:db.Vendor){
-
-		//Anti scraping
-		var bl = Variable.get('IPBlacklist');
-		if(bl!=null){
-			var bl : Array<String> = Json.parse(bl);
-			if( bl.has(Web.getClientIP())){
-				App.current.setTemplate(null);
-				return;
-			}
-		}
-
-		if(Web.getClientHeader('user-agent')==null || Web.getClientHeader('user-agent').toLowerCase().indexOf("python")>-1){
-			App.current.setTemplate(null);
-			return;
-		}
-
-		vendorPage(vendor);
-	}
-
-	public static function vendorPage(vendor:db.Vendor){
-		App.current.setTemplate("public/vendor.mtt");
-		App.current.view.vendor = vendor.getInfos();
-		App.current.view.pageTitle = vendor.name + " - " + App.current.getTheme().name;
-		App.current.view.noGroup = true;
-		var cpro = pro.db.CagettePro.getFromVendor(vendor);
-		if(cpro!=null && cpro.demoCatalog!=null){
-
-			App.current.view.catalog = cpro.demoCatalog;
-
-			//Twitter Card Meta Tags
-			if(cpro.demoCatalog.getOffers()[0]!=null){
-				var firstProduct = cpro.demoCatalog.getOffers()[0].offer.getInfos();
-				var socialShareData: SocialShareData = {
-					facebookType: "website",
-					url: "https://" + App.config.HOST + "/" + sugoi.Web.getURI(),
-					title: vendor.name,
-					description: vendor.desc,
-					imageUrl: "https://" + App.config.HOST + firstProduct.image,
-					imageAlt: firstProduct.name,
-					twitterType: "summary_large_image",
-					twitterUsername: "@Cagettenet"
-				};
-
-				App.current.view.socialShareData = socialShareData;
-			}
-			
-
-		}else{
-
-			//Twitter Card Meta Tags
-			var vendor = vendor.getInfos();
-			var socialShareData: SocialShareData = {
-				facebookType: "website",
-				url: "https://" + App.config.HOST + "/" + sugoi.Web.getURI(),
-				title: vendor.name,
-				description: vendor.desc,
-				imageUrl: "https://" + App.config.HOST + vendor.image,
-				imageAlt: vendor.name,
-				twitterType: "summary_large_image",
-				twitterUsername: "@Cagettenet"
-			};
-
-			App.current.view.socialShareData = socialShareData;
-
+			throw Ok("/contractAdmin", "Le catalogue a été relié à votre "+App.current.getTheme().groupWordingShort+". Le producteur a été prévenu par email.");			
 		}
 	}
 

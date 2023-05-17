@@ -90,7 +90,7 @@ class PCatalog extends Object
 	}
 
 	public function getURL(){
-		return "https://"+App.config.HOST+"/public/catalog/"+id;
+		return "https://"+App.config.HOST+"/catalog/"+id;
 	}
 	
 }

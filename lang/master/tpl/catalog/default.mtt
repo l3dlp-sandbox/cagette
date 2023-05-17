@@ -140,7 +140,7 @@
 				Si vous n'avez pas de ::theme.groupWording::, vous pouvez en créer un gratuitement sur <a href="http://www.cagette.net" target="_blank">www.cagette.net</a>
 			</p>
 			
-			<a href="/public/askImport/::catalog.id::" target="_top" class="btn btn-primary btn-lg"><i class="fa fa-download" style="color:white;" aria-hidden="true"></i> 
+			<a href="/catalog/askImport/::catalog.id::" target="_top" class="btn btn-primary btn-lg"><i class="fa fa-download" style="color:white;" aria-hidden="true"></i> 
 				Relier ce catalogue à un de mes ::theme.groupWordingShort_plural::			
 			</a>
 			</div>

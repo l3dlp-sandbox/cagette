@@ -392,8 +392,8 @@ class Main extends Controller {
 		}
 	}
 
-	public function doPublic(d:haxe.web.Dispatch){
-		d.dispatch(new controller.Public());
+	public function doCatalog(d:haxe.web.Dispatch){
+		d.dispatch(new controller.Catalog());
 	}
 
 

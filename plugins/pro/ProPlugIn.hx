@@ -35,7 +35,7 @@ class ProPlugIn extends PlugIn implements IPlugIn{
 					if(vendor==null) throw new tink.core.Error("Ce permalien n'est plus valide");
 					if(vendor.isDisabled()) throw ControllerAction.ErrorAction("/","Ce producteur est désactivé. Raison : "+vendor.getDisabledReason());
 
-					controller.Public.vendorPage(vendor);
+					controller.Vendor.vendorPage(vendor);
 				}	
 
 			case HourlyCron(now):
