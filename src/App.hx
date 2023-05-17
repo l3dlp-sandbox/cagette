@@ -73,91 +73,29 @@ class App extends sugoi.BaseApp {
 	}
 
 	public function setTheme(){
-		var cagetteTheme: Theme = {
-			id: "cagette",
-			name: "Cagette.net",
-			groupWording: 'marché Cagette',
-  			groupWording_plural: 'marchés Cagette',
-			groupWordingShort: 'marché',
-  			groupWordingShort_plural: 'marchés',
-			url: "https://www.cagette.net",
-			supportEmail: "support@cagette.net",			
-			footer: {
-				bloc1: '<a href="https://www.cagette.net" target="_blank">
-							<img src="/theme/cagette/logo.png" alt="logo Cagette.net" style="width:166px;"/>
-						</a>',
-				bloc2: '<ul>
-							<li> 
-								<a href="/charte/" target="_blank">Charte producteurs</a> 
-							</li>
-							<li> 
-								<a href="https://wiki.cagette.net" target="_blank">Documentation</a> 
-							</li>
-							<li>
-								<a href="https://www.facebook.com/groups/EntraideCagette/" target="_blank">Groupe d\'entraide</a> 
-							</li>
-							<li>
-								<a href="http://www.cagette.net/producteurs" target="_blank">Information producteurs</a> 
-							</li>												
-							<li>
-								<a href="/cgu" target="_blank">Conditions générales d\'utilisation</a> 
-							</li>
-							<li>
-								<a href="/privacypolicy" target="_blank">Politique de confidentialité</a> 
-							</li>
-							<li>
-								<a href="/termsofsale" target="_blank">Conditions commerciales (CCP)</a> 
-							</li>	
-							<li>
-								<a href="/mgp" target="_blank">C.G.U Mangopay</a> 
-							</li>
-						</ul>',
-				bloc3: 'SOUTENEZ-NOUS
-						<ul>
-							<li>
-								<a href="http://www.lilo.org/fr/cagette-net/?utm_source=cagette-net" target="_blank">Notre page sur Lilo.org</a>
-							</li>
-						</ul>
-						',
-				bloc4: 'SUIVEZ-NOUS
-						<ul class="cagsocialmedia">
-							<li class="cagfb">
-								<a title="Facebook" href="https://www.facebook.com/cagette" target="_blank"> <i class="icon icon-facebook"></i></a>	
-							</li>
-							<li class="cagyoutube">
-								<a title="Youtube" href="https://www.youtube.com/channel/UC3cvGxAUrbN9oSZmr1oZEaw" target="_blank"> <i class="icon icon-youtube"></i></a> 						
-							</li>							
-						</ul>
-						<br/>
-						Cagette.net est réalisé <br/>
-						par la SCOP Alilo'
-			},
-			email:{
-				senderEmail : 'noreply@mj.cagette.net',
-				brandedEmailLayoutFooter:  '<p>Cagette.net - ALILO SCOP, 4 impasse Durban, 33000 Bordeaux</p>
-				<div style="display: flex; justify-content: center; align-items: center;">
-					<a href="https://www.cagette.net" target="_blank" rel="noreferrer noopener notrack" class="bold-green" style="text-decoration:none !important; padding: 8px; display: flex; align-items: center;">
-						<img src="http://'+ App.config.HOST+'/img/emails/website.png" alt="Site web" height="25" style="width:auto!important; height:25px!important; vertical-align:middle" valign="middle" width="auto"/>Site web
-					</a>
-					<a href="https://www.facebook.com/cagette" target="_blank" rel="noreferrer noopener notrack" class="bold-green" style="text-decoration:none !important; padding: 8px; display: flex; align-items: center;">
-						<img src="http://'+ App.config.HOST+'/img/emails/facebook.png" alt="Facebook" height="25" style="width:auto!important; height:25px!important; vertical-align:middle" valign="middle" width="auto"/>Facebook
-					</a>
-					<a href="https://www.youtube.com/channel/UC3cvGxAUrbN9oSZmr1oZEaw" target="_blank" rel="noreferrer noopener notrack" class="bold-green" style="text-decoration:none !important; padding: 8px; display: flex; align-items: center;">
-						<img src="http://'+ App.config.HOST+'/img/emails/youtube.png" alt="YouTube" height="25" style="width:auto!important; height:25px!important; vertical-align:middle" valign="middle" width="auto"/>YouTube
-					</a>
-				</div>'
+		var defaultTheme: Theme = {
+			id: 'cavea',
+			name: 'CAVEA',
+			groupWording: 'groupe',
+			groupWording_plural: 'groupe',
+			groupWordingShort: 'groupe',
+			groupWordingShort_plural: 'groupe',
+			url: '',
+			supportEmail: '',
+			email: {
+				senderEmail: '',
+				brandedEmailLayoutFooter: '',
 			},
 			terms: {
-				termsOfServiceLink: "https://www.cagette.net/wp-content/uploads/2023/01/Conditions-Generales-dUtilisation-de-Cagette.net.pdf",
-				termsOfSaleLink: "https://www.cagette.net/wp-content/uploads/2023/01/Conditions-Commerciales-de-la-Plateforme.pdf",
-				platformTermsOfServiceLink: "https://www.cagette.net/wp-content/uploads/2023/05/Conditions-Generales-de-Services-de-Cagette.net-mai-2023.pdf",
-				privacyPolicyLink: "https://www.cagette.net/wp-content/uploads/2023/01/Politique-de-confidentialite-Cagette.net.pdf",
-			}
-			
+				termsOfServiceLink: '',
+				termsOfSaleLink: '',
+				platformTermsOfServiceLink: '',
+				privacyPolicyLink: ''
+			},
 		}
 		var res = this.cnx.request("SELECT value FROM Variable WHERE name='whiteLabel'").results();
 		var whiteLabelStringified = res.first()==null ? null : res.first().value;
-		App.theme = whiteLabelStringified != null ? haxe.Json.parse(whiteLabelStringified) : cagetteTheme;
+		App.theme = whiteLabelStringified != null ? haxe.Json.parse(whiteLabelStringified) : defaultTheme;
 	}
 
 	public function setSettings(){

@@ -46,6 +46,20 @@ class Notif extends controller.Controller
 		view.getDistrib = function(did:Int){
 			return db.MultiDistrib.manager.get(did,false);
 		}
+		
+
+		if (n.type == pro.db.PNotif.NotifType.NTDeliveryRequest){
+			view.multiDistribId = content.distribId;
+			var pCatalog = pro.db.PCatalog.manager.get(content.pcatalogId,false);
+			var rcs = connector.db.RemoteCatalog.getFromPCatalog(pCatalog);
+			var rc = Lambda.find(rcs,function(rc) return rc.getContract().group.id==n.group.id );
+			if(rc==null){
+				throw Error(vendor.getURL(),"Vous n'êtes plus reliés à ce catalogue, vous pouvez supprimer cette demande.");
+			}
+			var catalog = rc.getContract();
+			view.catalogId = catalog.id;
+		}
+
 		checkToken();
 	}
 	

@@ -332,6 +332,38 @@ class Catalog extends controller.Controller
 		throw Ok(vendor.getURL(), "Vous avez accepté l'invitation à participer à la distribution du "+distrib.getDate());		
 	}
 	
+	 * delivery update from a group
+	 * @param	notif
+	 */
+	@tpl("plugin/pro/form.mtt")
+	function doAcceptDeliveryUpdate(notif:pro.db.PNotif){
+		
+		if (notif.type != pro.db.PNotif.NotifType.NTDeliveryUpdate){
+			throw "error";
+		}
+		
+		/*var content : pro.db.PNotif.DeliveryUpdate = notif.content;
+		
+		//creation de la livraison
+		var d = db.Distribution.manager.get(content.did,true);
+		d.contract = db.Catalog.manager.get(content.newDistribution.remoteContractId,false);
+	
+
+		d = service.DistributionService.edit(d,content.newDistribution.date,content.newDistribution.end,content.newDistribution.remotePlaceId,
+	 	content.newDistribution.orderStartDate,content.newDistribution.orderEndDate, false);
+		
+		//email notif
+		var title = "Votre modification de distribution du " + app.view.hDate(d.date) + " a été acceptée par " + company.vendor.name;
+		App.quickMail(d.contract.contact.email, title, title);
+		
+		//delete notif
+		notif.lock();
+		notif.delete();
+		
+		throw Ok("/p/pro", "Vous avez bien validé la distribution");*/
+		
+	}
+
 	/**
 		break linkage
 	**/

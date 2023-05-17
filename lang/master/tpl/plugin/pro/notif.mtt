@@ -168,12 +168,10 @@
 		</table>
 	
 		<div class="text-center">
-			<a href="::vendor.getURL()::/catalog/acceptDelivery/::notif.id::" class="btn btn-primary btn-lg" >
-				<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-				&nbsp;Accepter
-			</a>
-			
-			<a href="::vendor.getURL()::/notif/delete/::notif.id::?token=::token::" $$confirm(Supprimer cette demande ?)  class="btn btn-danger btn-lg" >
+			<div id='participate-neo-container' class="btn btn-lg"/>
+			<style onload="neo.createNeoModule('participate-neo-container', 'participate',{multiDistribId: ::multiDistribId::, catalogId: ::catalogId::})"></style> 
+				
+			<a href="::vendor.getURL()::/notif/delete/::notif.id::?token=::token::" $$confirm(Supprimer cette demande ?)  class="btn btn-danger btn-sm" >
 				<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 
 				&nbsp;Refuser
