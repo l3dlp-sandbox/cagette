@@ -128,7 +128,7 @@ class MangopayController extends controller.Controller
 			},
 			CreditedWalletId: wallet.Id,
 			AuthorId: naturalUserId,
-			ReturnURL: host+"/p/pro/transaction/mangopay/return/"+type+"/"+tmpBasket.id,
+			ReturnURL: host+"/transaction/mangopay/return/"+type+"/"+tmpBasket.id,
 			CardType: "CB_VISA_MASTERCARD",
 			Culture: "FR",
 			SecureMode:"DEFAULT",

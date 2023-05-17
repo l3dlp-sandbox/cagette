@@ -292,14 +292,6 @@ class Main extends controller.Controller
 		view.form= f;
 		
 	}
-	
-	public function doTransaction(d:haxe.web.Dispatch){
-		d.dispatch(new pro.controller.Transaction());
-	}
-	
-	@admin
-	function doAdmin(d:haxe.web.Dispatch){
-		d.dispatch(new pro.controller.Admin());		
-	}
-	
+
+
 }

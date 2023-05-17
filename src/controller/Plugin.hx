@@ -7,7 +7,7 @@ class Plugin extends sugoi.BaseController
 		super();
 	}
 	
-	//cagette-pro
+	//redirect /p/pro?vendor=XXX
 	public function doPro() {		
 		if(app.params.exists("vendor")){
 			var v = db.Vendor.manager.get(app.params.get("vendor").parseInt(),false);

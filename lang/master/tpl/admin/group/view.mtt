@@ -175,8 +175,8 @@
 			Legal User Id : <a href="https://dashboard.mangopay.com/User/::mangopay._legalUser.mangopayUserId::/Details">#::mangopay._legalUser.mangopayUserId::</a> <br/>
 			Wallet Id : <a href="https://dashboard.mangopay.com/User/::mangopay._legalUser.mangopayUserId::/Wallets/::mangopay.walletId::">#::mangopay.walletId::</a> <br/>
 			
-			<a href="/p/pro/transaction/mangopay/group/debug/::mangopay.groupId::">Debug bug de Brigitte</a><br/>
-			<a href="/p/pro/transaction/mangopay/group/debug2/::mangopay.groupId::">Debug compta au centime près</a><br/>
+			<a href="/transaction/mangopay/group/debug/::mangopay.groupId::">Debug bug de Brigitte</a><br/>
+			<a href="/transaction/mangopay/group/debug2/::mangopay.groupId::">Debug compta au centime près</a><br/>
 			<a href="/debug/neo?hash=::debugLegalUserModule::">Debug Dossier Mangopay (mangopay-legal-user-module)</a><br/>
 			
 			<a href="?removeMangopay=1">Couper la liaison</a>

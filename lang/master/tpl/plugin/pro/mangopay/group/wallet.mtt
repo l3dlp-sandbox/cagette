@@ -51,7 +51,7 @@
                                 Annulé                                 
                                 <a href="?token=::token::&md=::md.id::" class="btn btn-primary btn-sm">Retenter le virement</a>                                    
                             ::end::                            
-                            <a href="/p/pro/transaction/mangopay/group/payOut/::payout.payOutId::" class="btn btn-default btn-sm">Détail</a>
+                            <a href="/transaction/mangopay/group/payOut/::payout.payOutId::" class="btn btn-default btn-sm">Détail</a>
                         </td>
                     ::else::
                         ::set amount = getMangopayECTotal(md)::
@@ -74,7 +74,7 @@
                     </td>
                 ::end::
                 <td>
-                    <a href="/p/pro/transaction/mangopay/group/multiDistrib/::md.id::" class="btn btn-default btn-sm">Justificatif</a>
+                    <a href="/transaction/mangopay/group/multiDistrib/::md.id::" class="btn btn-default btn-sm">Justificatif</a>
                 </td>
             </tr>
         ::end::

@@ -28,7 +28,7 @@
                         </tr>
                         ::end::
                     </table>
-                    <a href="/p/pro/catalogLinker/importFirstCatalog/::c.id::" class="btn btn-primary">Récupérer ce catalogue</a>
+                    <a href="::vendor.getURL()::/catalogLinker/importFirstCatalog/::c.id::" class="btn btn-primary">Récupérer ce catalogue</a>
                 </div>
                 
                     

@@ -72,6 +72,7 @@ class Member extends Controller
 
 		}
 		view.notifications = notifications;
+		view.getJsonRightName = db.UserGroup.getJsonRightName;
 
 		checkToken(); //to insert a token in tpl
 	

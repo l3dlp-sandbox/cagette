@@ -61,7 +61,6 @@ class MarketAdmin extends Controller
 
 		view.visibleOnMapText = str;
 		view.visibleOnMap = o.visible;
-
 		#else
 		view.visibleOnMap = true;
 		#end

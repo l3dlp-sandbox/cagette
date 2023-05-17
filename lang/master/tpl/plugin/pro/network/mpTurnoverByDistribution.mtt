@@ -35,13 +35,10 @@
                             ::set payouts = getMangopayGroupPayout(md)::
                             <td>
                             ::foreach payout payouts::
-                            
                                 ::payout.getAmount():: &euro;
-                                                                                                
-                                <a href="/p/pro/transaction/mangopay/group/payOut/::payout.payOutId::" class="btn btn-default btn-sm">Détail virement</a>
-                                <a href="/p/pro/transaction/mangopay/group/multiDistrib/::md.id::" target="_blank" class="btn btn-default btn-sm">Justificatif</a>
+                                <a href="/transaction/mangopay/group/payOut/::payout.payOutId::" class="btn btn-default btn-sm">Détail virement</a>
+                                <a href="/transaction/mangopay/group/multiDistrib/::md.id::" target="_blank" class="btn btn-default btn-sm">Justificatif</a>
                                 <br/>
-                            
                             ::end::
                             </td>                            
 
