@@ -77,9 +77,9 @@ class App extends sugoi.BaseApp {
 			id: 'cavea',
 			name: 'CAVEA',
 			groupWording: 'groupe',
-			groupWording_plural: 'groupe',
+			groupWording_plural: 'groupes',
 			groupWordingShort: 'groupe',
-			groupWordingShort_plural: 'groupe',
+			groupWordingShort_plural: 'groupes',
 			url: '',
 			supportEmail: '',
 			email: {
