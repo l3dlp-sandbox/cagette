@@ -28,8 +28,8 @@ class Public extends controller.Controller
 	
 	@tpl("plugin/pro/catalog/askImport.mtt")
 	public function doAskImport(catalog:pro.db.PCatalog){
-		
-		if(app.user==null) throw Error("/user/login?__redirect=/p/pro/public/askImport/"+catalog.id,"Vous devez être connecté à " + App.current.getTheme().name + " pour faire cette action");
+		var vendor = catalog.company.vendor;
+		if(app.user==null) throw Error("/user/login?__redirect="+vendor.getURL()+"/public/askImport/"+catalog.id,"Vous devez être connecté à " + App.current.getTheme().name + " pour faire cette action");
 
 		// var isVendor = isCproVendor(catalog.company);
 		view.title = 'Relier un catalogue';
@@ -50,10 +50,10 @@ class Public extends controller.Controller
 		if ( f.isValid() ){
 			
 			/*if (group.getPlaces().length == 0) {
-				throw Error("/p/pro/public/" + catalog.id, "Votre "+App.current.getTheme().groupWordingShort+" n'a aucun lieu de livraison ! Vous devez en créer au moins un avant d'importer un catalogue.");
+				throw Error(vendor.getURL()+"/public/" + catalog.id, "Votre "+App.current.getTheme().groupWordingShort+" n'a aucun lieu de livraison ! Vous devez en créer au moins un avant d'importer un catalogue.");
 			}
 			if (!app.user.isContractManager() && !app.user.isGroupManager()){
-				throw Error("/p/pro/public/askImport/" + catalog.id, "Vous devez être coordinateur pour pouvoir importer un catalogue.");
+				throw Error(vendor.getURL()+"/public/askImport/" + catalog.id, "Vous devez être coordinateur pour pouvoir importer un catalogue.");
 			}*/
 
 			group = db.Group.manager.get(f.getValueOf("group"),false);

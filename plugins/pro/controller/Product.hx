@@ -20,7 +20,7 @@ class Product extends controller.Controller
 		view.vendor = this.vendor = company.vendor;
 		//subnav
 		view.nav = ["catalog"];
-		baseUrl = "/p/pro/product/";
+		baseUrl = vendor.getURL()+"/product/";
 		
 	}
 
@@ -88,7 +88,7 @@ class Product extends controller.Controller
 			}
 			
 			if (d.txpProduct==null){
-				throw Error("/p/pro/product/edit/"+d.id, "Ce produit doit être catégorisé");
+				throw Error(vendor.getURL()+"/product/edit/"+d.id, "Ce produit doit être catégorisé");
 			}
 			
 			//if offers are in catalogs, update the lastUpdate field of the catalog (for synch purpose)
@@ -98,7 +98,7 @@ class Product extends controller.Controller
 			for ( c in catalogs) c.toSync();
 			
 			d.update();
-			throw Ok('/p/pro/product#product' + d.id, 'Le produit a été mis à jour');			
+			throw Ok(vendor.getURL()+'/product#product' + d.id, 'Le produit a été mis à jour');			
 		}
 		
 		view.form = f;
@@ -125,7 +125,7 @@ class Product extends controller.Controller
 			}
 
 			if (p.txpProduct==null){
-				throw Error("/p/pro/product/insert/", "Ce produit doit être catégorisé");
+				throw Error(vendor.getURL()+"/product/insert/", "Ce produit doit être catégorisé");
 			}
 			
 			p.insert();
@@ -187,7 +187,7 @@ class Product extends controller.Controller
 			try{
 				view.preview = s.importFromCsv(request.get("file"), true, false,false);
 			}catch(e:tink.core.Error){
-				throw Error("/p/pro/product/import",e.message);
+				throw Error(vendor.getURL()+"/product/import",e.message);
 			}
 			
 			view.catalogs = company.getCatalogs();
@@ -211,7 +211,7 @@ class Product extends controller.Controller
 			try{
 				out = s.importFromCsv(null,false,args.disableMissingProducts,args.ttcPrices,catalogs,args.doNotUpdateBaseProducts);						
 			}catch(e:tink.core.Error){
-				throw Error("/p/pro/product/import",e.message);
+				throw Error(vendor.getURL()+"/product/import",e.message);
 			}
 
 			//output

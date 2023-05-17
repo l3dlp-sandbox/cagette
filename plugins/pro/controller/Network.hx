@@ -50,16 +50,15 @@ class Network extends controller.Controller
 
 			switch(form.getValueOf("type")){
 				case "turnoverByVendors":
-					throw Redirect('/p/pro/network/turnoverByVendors/?startDate=${startDate}&endDate=${endDate}');
+					throw Redirect(vendor.getURL()+'/network/turnoverByVendors/?startDate=${startDate}&endDate=${endDate}');
 				case "mpTurnoverByDistribution" : 
-					throw Redirect('/p/pro/network/mpTurnoverByDistribution/?startDate=${startDate}&endDate=${endDate}');
+					throw Redirect(vendor.getURL()+'/network/mpTurnoverByDistribution/?startDate=${startDate}&endDate=${endDate}');
 				case "stats" :
-					throw Redirect('/p/pro/network/stats/?from=${startDate}&to=${endDate}');
+					throw Redirect(vendor.getURL()+'/network/stats/?from=${startDate}&to=${endDate}');
 				/*case "groups" : 
-					throw Redirect('/p/pro/delivery/exportByGroups/?startDate=${args.startDate}&endDate=${args.endDate}');*/
+					throw Redirect(vendor.getURL()+'/delivery/exportByGroups/?startDate=${args.startDate}&endDate=${args.endDate}');*/
 				default :
-					throw Error('/p/pro/delivery', "type d'export inconnu");
-				
+					throw Error(vendor.getURL()+'/delivery', "type d'export inconnu");
 			}
 		}
 
@@ -94,7 +93,7 @@ class Network extends controller.Controller
 			var networkGroupIds = company.getNetworkGroupIds();
 			networkGroupIds.push(form.getValueOf("group"));
 			company.setNetworkGroupIds( networkGroupIds );
-			throw Ok("/p/pro/network",App.current.getTheme().groupWordingShort.toUpperCase()+" ajouté");
+			throw Ok(vendor.getURL()+"/network",App.current.getTheme().groupWordingShort.toUpperCase()+" ajouté");
 		}
 
 		view.form = form;
@@ -105,7 +104,7 @@ class Network extends controller.Controller
 		var networkGroupIds = company.getNetworkGroupIds();
 		networkGroupIds.remove(group.id);
 		company.setNetworkGroupIds( networkGroupIds );
-		throw Ok("/p/pro/network",App.current.getTheme().groupWordingShort.toUpperCase()+" retiré");
+		throw Ok(vendor.getURL()+"/network",App.current.getTheme().groupWordingShort.toUpperCase()+" retiré");
 	}
 	
 	/**
@@ -141,7 +140,7 @@ class Network extends controller.Controller
 
 
 		}catch (e:tink.core.Error){
-			throw Error('/p/pro/network', e.message);
+			throw Error(vendor.getURL()+'/network', e.message);
 		}
 	}
 
@@ -169,14 +168,10 @@ class Network extends controller.Controller
 			view.getMangopayECTotal = mangopay.MangopayPlugin.getMultidistribNetTurnover; 
 			view.startDate = args.startDate;
 			view.endDate = args.endDate;
-			
-
 
 		}catch (e:tink.core.Error){
-			throw Error('/p/pro/network', e.message);
+			throw Error(vendor.getURL()+'/network', e.message);
 		}
 	}
-	
-	
 	
 }

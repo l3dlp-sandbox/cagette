@@ -31,20 +31,6 @@ class Group extends controller.Controller
 		view.linkages = linkages;
 		checkToken();
 	}
-	
-	/**
-		Delete linkage
-	**/
-	function doDelete(rc:connector.db.RemoteCatalog){
-		if (checkToken()){
-			var c = rc.getContract(true);
-			c.endDate = Date.now();
-			c.update();
-			rc.lock();
-			rc.delete();
-			throw Ok("/p/pro/group/"+c.group.id,"Le catalogue \""+c.name+"\" a été fermé. Il reste consultable dans les anciens contrats du "+App.current.getTheme().groupWordingShort+".");
-		}
-	}
 
 	/**
 		Remove a group and all its linkages
@@ -95,13 +81,10 @@ class Group extends controller.Controller
 				}
 			}
 
-			throw Ok("/p/pro","Le "+App.current.getTheme().groupWordingShort+" a été retiré");
-
+			throw Ok(vendor.getURL(),"Le "+App.current.getTheme().groupWordingShort+" a été retiré");
 		}
-
 		view.form = form;
 		view.title = "Retirer un "+App.current.getTheme().groupWordingShort;
-
 	}
 	
 	@tpl('plugin/pro/form.mtt')
@@ -132,13 +115,10 @@ class Group extends controller.Controller
 				throw Error(sugoi.Web.getURI(),e.message);
 			}
 			
-			throw Ok("/p/pro", App.current.getTheme().groupWordingShort.toUpperCase()+" dupliqué");
+			throw Ok(vendor.getURL(), App.current.getTheme().groupWordingShort.toUpperCase()+" dupliqué");
 		}
 		
 		view.form = f;
 		view.title = "Dupliquer un "+App.current.getTheme().groupWordingShort;
-		
 	}
-	
-	
 }

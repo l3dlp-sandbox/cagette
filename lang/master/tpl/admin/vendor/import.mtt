@@ -47,7 +47,7 @@
 						Avant de valider l'importation, vérifiez bien que le tableau ci dessus est correctement rempli.<br/>
 						Si des données sont décalées ou ne correspondent pas à la bonne colonne, c'est que votre fichier CSV n'est pas correct.
 					</p>
-					<a href="/p/pro/product/import/">Recommencer</a>
+					<a href="::vendor.getURL()::/product/import/">Recommencer</a>
 				</div>
 			<a href="?confirm=1" class="btn btn-danger">Importer</a>
 			::else::
@@ -56,7 +56,7 @@
 					<b>Oups !</b>
 					<p>On dirait qu'il n'y a aucune donnée à importer. 
 					Vérifiez que les données de votre fichier sont valides ou que les produits ne sont pas déjà enregistrées dans la base de données de Cagette.net</p>
-					<a href="/p/pro/product/import/">Recommencer</a>
+					<a href="::vendor.getURL()::/product/import/">Recommencer</a>
 				</div>
 			
 			::end::

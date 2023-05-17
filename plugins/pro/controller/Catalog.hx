@@ -263,55 +263,7 @@ class Catalog extends controller.Controller
 		
 		
 	}
-	
-	
-	@tpl('plugin/pro/catalog/publish.mtt')
-	function doPublish(catalog:pro.db.PCatalog){
-		checkRights(catalog);
-		view.catalog = catalog;
-		view.nav.push("publish");
-	}
-	
-	/**
-	   Publish catalog in a group 
-	**/
-	@tpl('plugin/pro/catalog/publishGroup.mtt')
-	function doPublishGroup(catalog:pro.db.PCatalog){
-		checkRights(catalog);
-		view.catalog = catalog;
-		view.nav.push("publish");
-		
-		//group list
-		var data = [];
-		for ( a in app.user.getGroups() ){
-			var ug = db.UserGroup.get(app.user, a);
-			if ( ug.hasRight(Right.GroupAdmin)) data.push({label:a.name,value:a.id});
-		}
-		data.sort(function(a,b){
-			return a.label.toUpperCase() > b.label.toUpperCase() ? 1 : -1;
-		});
-		
-		var form = new sugoi.form.Form("publicGroup");
-		form.addElement(new sugoi.form.elements.IntSelect("group",App.current.getTheme().groupWordingShort.toUpperCase(),data,null,true));
 
-		if(form.isValid()){
-			var gid : Int = form.getValueOf("group");
-			var group = db.Group.manager.get(gid,false);
-			try{
-				pro.service.PCatalogService.linkCatalogToGroup(catalog,group,app.user.id);
-			}catch(e:tink.core.Error){
-				throw Error(vendor.getURL()+"/catalog/publishGroup/"+catalog.id,e.message);
-			}
-			
-			throw Ok("/p/pro/","Votre catalogue a bien été importé dans le "+App.current.getTheme().groupWordingShort+" <b>"+group.name+"<b/>");
-
-		}
-
-		view.form = form;
-
-	}
-	
-	
 	/**
 	 * Approve a catalog import
 	 * @param	notif
@@ -327,12 +279,12 @@ class Catalog extends controller.Controller
 		try{
 			pro.service.PCatalogService.linkCatalogToGroup(catalog, notif.group , content.userId );
 		}catch(e:tink.core.Error){
-			throw Error('/p/pro/',e.message);
+			throw Error(vendor.getURL(),e.message);
 		}		
 		
 		notif.delete();
 		
-		throw Ok("/p/pro", "Félicitations, le catalogue a bien été relié dans à "+notif.group.name );
+		throw Ok(vendor.getURL(), "Félicitations, le catalogue a bien été relié dans à "+notif.group.name );
 	}
 	
 	/**
@@ -352,20 +304,20 @@ class Catalog extends controller.Controller
 		var rcs = connector.db.RemoteCatalog.getFromPCatalog(catalog);
 		var rc = Lambda.find(rcs,function(rc) return rc.getContract().group.id==notif.group.id );
 		if(rc==null){
-			throw Error("/p/pro","Vous n'êtes plus reliés à ce catalogue, vous pouvez supprimer cette demande.");
+			throw Error(vendor.getURL(),"Vous n'êtes plus reliés à ce catalogue, vous pouvez supprimer cette demande.");
 		}
 
 		var contract = rc.getContract();
 
 		if(distrib==null){
 			notif.delete();
-			throw Ok("/p/pro", "La distribution a été supprimée par l'administrateur du "+App.current.getTheme().groupWordingShort+", il n'est donc plus possible d'y participer");
+			throw Ok(vendor.getURL(), "La distribution a été supprimée par l'administrateur du "+App.current.getTheme().groupWordingShort+", il n'est donc plus possible d'y participer");
 		}
 
 		try{
 			service.DistributionService.participate(distrib,contract);
 		}catch(e:tink.core.Error){
-			throw Error('/p/pro/',e.message);
+			throw Error(vendor.getURL(),e.message);
 		}
 
 		//email notif to sender
@@ -377,42 +329,9 @@ class Catalog extends controller.Controller
 		//delete notif
 		notif.delete();
 		
-		throw Ok("/p/pro", "Vous avez accepté l'invitation à participer à la distribution du "+distrib.getDate());		
+		throw Ok(vendor.getURL(), "Vous avez accepté l'invitation à participer à la distribution du "+distrib.getDate());		
 	}
 	
-	/**
-	 * delivery update from a group
-	 * @param	notif
-	 */
-	@tpl("plugin/pro/form.mtt")
-	function doAcceptDeliveryUpdate(notif:pro.db.PNotif){
-		
-		if (notif.type != pro.db.PNotif.NotifType.NTDeliveryUpdate){
-			throw "error";
-		}
-		
-		/*var content : pro.db.PNotif.DeliveryUpdate = notif.content;
-		
-		//creation de la livraison
-		var d = db.Distribution.manager.get(content.did,true);
-		d.contract = db.Catalog.manager.get(content.newDistribution.remoteContractId,false);
-	
-
-		d = service.DistributionService.edit(d,content.newDistribution.date,content.newDistribution.end,content.newDistribution.remotePlaceId,
-	 	content.newDistribution.orderStartDate,content.newDistribution.orderEndDate, false);
-		
-		//email notif
-		var title = "Votre modification de distribution du " + app.view.hDate(d.date) + " a été acceptée par " + company.vendor.name;
-		App.quickMail(d.contract.contact.email, title, title);
-		
-		//delete notif
-		notif.lock();
-		notif.delete();
-		
-		throw Ok("/p/pro", "Vous avez bien validé la distribution");*/
-		
-	}
-
 	/**
 		break linkage
 	**/

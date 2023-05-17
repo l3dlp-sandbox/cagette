@@ -19,13 +19,13 @@ class Sales extends controller.Controller
 		view.company = this.company = company;
 		view.vendor = this.vendor = company.vendor;
 		view.nav = ["delivery"];
-        baseUrl = "/p/pro/sales";
+        baseUrl = vendor.getURL()+"/sales";
 	}
 	
 	@tpl('plugin/pro/sales/default.mtt')
 	public function doDefault(){
 
-        if(company.captiveGroups) throw Redirect("/p/pro/delivery");
+        if(company.captiveGroups) throw Redirect(vendor.getURL()+"/delivery");
 		
 		var now = Date.now();
 		var today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
@@ -64,13 +64,13 @@ class Sales extends controller.Controller
 			endDate = new Date(endDate.getFullYear(),endDate.getMonth(),endDate.getDate(),23,59,0);
 			switch(form.getValueOf("type")){
 				case "products":
-					throw Redirect('/p/pro/delivery/exportByProducts/?startDate=${startDate}&endDate=${endDate}');
+					throw Redirect(vendor.getURL()+'/delivery/exportByProducts/?startDate=${startDate}&endDate=${endDate}');
 				case "members" : 
-					throw Redirect('/p/pro/delivery/exportByMembers/?startDate=${startDate}&endDate=${endDate}');
+					throw Redirect(vendor.getURL()+'/delivery/exportByMembers/?startDate=${startDate}&endDate=${endDate}');
 				case "groups" : 
-					throw Redirect('/p/pro/delivery/exportByGroups/?startDate=${startDate}&endDate=${endDate}');
+					throw Redirect(vendor.getURL()+'delivery/exportByGroups/?startDate=${startDate}&endDate=${endDate}');
 				default :
-					throw Error('/p/pro/delivery', "type d'export inconnu");
+					throw Error(vendor.getURL()+'/delivery', "type d'export inconnu");
 				
 			}
 		}
@@ -133,10 +133,10 @@ class Sales extends controller.Controller
 				d = DistributionService.editAttendance(d,orderStartDate,orderEndDate,false);							
 
 			} catch(e:tink.core.Error){
-				throw Error('/p/pro/sales' , e.message);
+				throw Error(vendor.getURL()+'/sales' , e.message);
 			}
 			
-			throw Ok('/p/pro/sales', "Votre participation à cette distribution a été mise à jour" );
+			throw Ok(vendor.getURL()+'/sales', "Votre participation à cette distribution a été mise à jour" );
 			
 		} else {
 			app.event(PreEditDistrib(d));

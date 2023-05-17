@@ -8,9 +8,9 @@
 	::foreach v vendors::	
 	<tr>
 		<td>
-			<a href="/p/pro/admin/dedupInfo/::v.email::?token=::token::&vid=::v.id::" class="btn btn-default btn-sm">Dédup. en gardant celui là</a>
+			<a href="/admin/vendor/dedupInfo/::v.email::?token=::token::&vid=::v.id::" class="btn btn-default btn-sm">Dédup. en gardant celui là</a>
 			<br/>
-			<a href="/p/pro/admin/dedupInfo/::v.email::?token=::token::&vid=::v.id::&type=formation" class="btn btn-default btn-sm">Dédup. Formation</a>
+			<a href="/admin/vendor/dedupInfo/::v.email::?token=::token::&vid=::v.id::&type=formation" class="btn btn-default btn-sm">Dédup. Formation</a>
 			<br/>
 			<a href="/admin/vendor/view/::v.id::" class="btn btn-default btn-xs">&laquo; Fiche producteur</a>
 		</td>

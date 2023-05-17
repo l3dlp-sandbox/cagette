@@ -75,7 +75,7 @@ class Messages extends controller.Controller
 			m.recipientListId = listId;
 			m.insert();
 			
-			throw Ok("/p/pro/messages", "Le message a bien été envoyé");
+			throw Ok(vendor.getURL()+"/messages", "Le message a bien été envoyé");
 		}
 		
 		view.form = form;

@@ -28,6 +28,7 @@ class Offer extends controller.Controller
 	function doEdit(o:pro.db.POffer) {
 
 		var company = o.product.company;
+		var vendor = company.vendor;
 		
 		var f = CagetteForm.fromSpod(o);
 		
@@ -83,7 +84,7 @@ class Offer extends controller.Controller
 			
 			//ref uniqueness
 			if ( pro.db.POffer.refExists(company, o.ref, o) ){
-				throw Error("/p/pro/product", "Cette référence existe dejà dans votre catalogue");
+				throw Error(vendor.getURL()+"/product", "Cette référence existe dejà dans votre catalogue");
 			}
 			
 			var catalogsToUpdate:Array<Int> = f.getValueOf("catalogs");
@@ -117,7 +118,7 @@ class Offer extends controller.Controller
 			// }
 
 			o.update();
-			throw Ok('/p/pro/product#product'+o.product.id,'L\'offre a été mise à jour');
+			throw Ok(vendor.getURL()+'/product#product'+o.product.id,'L\'offre a été mise à jour');
 		}
 		
 		view.form = f;
@@ -131,6 +132,7 @@ class Offer extends controller.Controller
 	public function doInsert(p:pro.db.PProduct) {
 
 		var company = p.company;
+		var vendor = company.vendor;
 		
 		var o = new pro.db.POffer();
 		o.product = p;
@@ -169,11 +171,11 @@ class Offer extends controller.Controller
 			}
 			
 			if ( pro.db.POffer.refExists(company, o.ref) ){
-				throw Error("/p/pro/product", "Cette référence existe dejà dans votre catalogue");
+				throw Error(vendor.getURL()+"/product", "Cette référence existe dejà dans votre catalogue");
 			}
 			
 			o.insert();
-			throw Ok('/p/pro/product#product'+p.id,'L\'offre a été enregistrée');
+			throw Ok(vendor.getURL()+'/product#product'+p.id,'L\'offre a été enregistrée');
 		}
 		
 		view.form = f;
@@ -185,15 +187,15 @@ class Offer extends controller.Controller
 	 * @param	o
 	 */
 	public function doDelete(o:pro.db.POffer) {
-		
+		var vendor = o.product.company.vendor;
 		var catalogOffers = o.getCatalogOffers();
 		
 		if (catalogOffers.length > 0){
-			throw Error("/p/pro/product", "Cette offre est référencée dans le catalogue "+Lambda.map(catalogOffers,function(co) return "\""+co.catalog.name+"\"").join(", ")+". <br/>Plutôt que d'effacer complètement et définitivement le produit, il est recommandé de simplement retirer ce produit du catalogue.");
+			throw Error(vendor.getURL()+"/product", "Cette offre est référencée dans le catalogue "+Lambda.map(catalogOffers,function(co) return "\""+co.catalog.name+"\"").join(", ")+". <br/>Plutôt que d'effacer complètement et définitivement le produit, il est recommandé de simplement retirer ce produit du catalogue.");
 		}else{
 			o.lock();
 			o.delete();
-			throw Ok("/p/pro/product","Offre supprimée");
+			throw Ok(vendor.getURL()+"/product","Offre supprimée");
 		}
 	}
 	

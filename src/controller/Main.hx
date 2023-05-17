@@ -300,9 +300,12 @@ class Main extends Controller {
 			view.invitedGroupId = group.id;
 		}
 	}
+	public function doPro(vendor:db.Vendor,d:haxe.web.Dispatch) {		
+		d.dispatch(new pro.controller.Main(vendor));
+	}	
 
 	function doDiscovery(){
-		throw Redirect('/p/pro/signup/discovery');
+		throw Redirect('/vendor/signup/');
 	}
 
 	// TOS (CGU)

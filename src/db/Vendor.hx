@@ -256,7 +256,7 @@ class Vendor extends Object
 		cpro URL
 	**/
 	public function getURL(){
-		return "/p/pro/"+this.id;
+		return "/pro/"+this.id;
 	}
 
 	public function getAddress(){

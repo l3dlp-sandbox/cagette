@@ -10,7 +10,7 @@ class Main extends controller.Controller
 	var company : pro.db.CagettePro;
 	var vendor : db.Vendor;
 	
-	public function new(?vendor:db.Vendor) 
+	public function new(vendor:db.Vendor) 
 	{
 		super();
 		view.vendor = this.vendor = vendor;
@@ -30,7 +30,7 @@ class Main extends controller.Controller
 
 		//hack into breadcrumb
 		if(vendor!=null){
-			App.current.breadcrumb[0] = {id:"v"+vendor.id,name:"Espace producteur : "+vendor.name,link:"/p/pro"};
+			App.current.breadcrumb[0] = {id:"v"+vendor.id,name:"Espace producteur : "+vendor.name,link:vendor.getURL()};
 		}
 	}
 	
@@ -40,7 +40,7 @@ class Main extends controller.Controller
 	@logged @tpl("plugin/pro/default.mtt")
 	public function doDefault(){
 		checkRights();
-		addBc("home","Tableau de bord", "/p/pro");
+		addBc("home","Tableau de bord", vendor.getURL());
 		
 		//check CGS for non representative
 		if(this.vendor.tosVersion != sugoi.db.Variable.getInt('platformtermsofservice') && app.user.isAdmin()==false){
@@ -135,7 +135,7 @@ class Main extends controller.Controller
 	@logged 
 	public function doProduct(d:haxe.web.Dispatch){
 		checkRights();
-		addBc("product","Produits", "/p/pro/product");
+		addBc("product","Produits", vendor.getURL()+"/product");
 		d.dispatch(new pro.controller.Product(this.company));
 	}
 	
@@ -145,7 +145,7 @@ class Main extends controller.Controller
 	@logged 
 	public function doDelivery(d:haxe.web.Dispatch){
 		checkRights();
-		addBc("delivery","Vente", "/p/pro/delivery");
+		addBc("delivery","Vente", vendor.getURL()+"/delivery");
 		d.dispatch(new pro.controller.Delivery(this.company));
 	}
 
@@ -155,42 +155,42 @@ class Main extends controller.Controller
 	@logged 
 	public function doSales(d:haxe.web.Dispatch){
 		checkRights();
-		addBc("delivery","Vente", "/p/pro/delivery");
+		addBc("delivery","Vente", vendor.getURL()+"/delivery");
 		d.dispatch(new pro.controller.Sales(this.company));
 	}
 	
 	@logged 
 	public function doOffer(d:haxe.web.Dispatch){
 		checkRights();
-		addBc("product","Produits", "/p/pro/product");
+		addBc("product","Produits", vendor.getURL()+"/product");
 		d.dispatch(new pro.controller.Offer());
 	}
 	
 	@logged 
 	public function doCatalog(d:haxe.web.Dispatch){
 		checkRights();
-		addBc("catalog","Catalogues", "/p/pro/catalog");
+		addBc("catalog","Catalogues", vendor.getURL()+"/catalog");
 		d.dispatch(new pro.controller.Catalog(this.company));
 	}
 
 	@logged 
 	public function doStock(d:haxe.web.Dispatch){
 		checkRights();
-		addBc("stock","Stocks", "/p/pro/stock");
+		addBc("stock","Stocks", vendor.getURL()+"/stock");
 		d.dispatch(new pro.controller.Stock(company));
 	}
 	
 	@logged 
 	public function doCompany(d:haxe.web.Dispatch){
 		checkRights();
-		addBc("company","Producteur", "/p/pro/company");
+		addBc("company","Producteur", vendor.getURL()+"/company");
 		d.dispatch(new pro.controller.Company(this.company));
 	}
 	
 	@logged 
 	public function doMessages(d:haxe.web.Dispatch){
 		checkRights();
-		addBc("messages","Messagerie", "/p/pro/messages");
+		addBc("messages","Messagerie", vendor.getURL()+"/messages");
 		d.dispatch(new pro.controller.Messages(this.company));
 	}
 
@@ -214,6 +214,7 @@ class Main extends controller.Controller
 	 */
 	@tpl("plugin/pro/form.mtt")
 	function doCreateGroup() {
+		checkRights();
 		App.current.session.data.amapId = null;
 
 		// var cagettePros = service.VendorService.getCagetteProFromUser(App.current.user);
@@ -285,7 +286,7 @@ class Main extends controller.Controller
 			}
 			#end
 
-			throw Redirect("/");
+			throw Ok("/","Votre nouveau "+App.current.getTheme().groupWordingShort+" a été créé");
 		}
 		
 		view.form= f;
@@ -295,16 +296,10 @@ class Main extends controller.Controller
 	public function doTransaction(d:haxe.web.Dispatch){
 		d.dispatch(new pro.controller.Transaction());
 	}
-
-	
 	
 	@admin
 	function doAdmin(d:haxe.web.Dispatch){
 		d.dispatch(new pro.controller.Admin());		
-	}
-
-	public function doSignup(d:haxe.web.Dispatch){		
-		d.dispatch(new pro.controller.Signup());
 	}
 	
 }
