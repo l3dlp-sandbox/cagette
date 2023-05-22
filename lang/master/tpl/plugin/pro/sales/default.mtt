@@ -111,7 +111,7 @@
 						<div class="row ::class::">								
 							<div class="col-md-4">
 								::if(attend)::
-									<a href="/p/pro/delivery/view/::attend.id::">::contract.name::</a>
+									<a href="::vendor.getURL()::/delivery/view/::attend.id::">::contract.name::</a>
 								::else::
 									::contract.name::
 								::end::
@@ -119,14 +119,11 @@
 							<div class="col-md-8">
 								::if(attend)::
 								<div class="btn-group" role="group">
-									
-									<a href="/p/pro/delivery/view/::attend.id::" class="btn btn-default btn-sm"><i class="icon icon-basket"></i> Commandes</a>		
-
+									<a href="::vendor.getURL()::/delivery/view/::attend.id::" class="btn btn-default btn-sm"><i class="icon icon-basket"></i> Commandes</a>		
 									::if(contract.type!=0)::
-										<a href="/p/pro/sales/edit/::attend.id::" class="btn btn-default btn-sm"><i class="icon icon-calendar"></i> Dates</a>
+										<a href="/::vendor.getURL()::/sales/edit/::attend.id::" class="btn btn-default btn-sm"><i class="icon icon-calendar"></i> Dates</a>
 									::end::
-																				
-									<a href="/p/pro/sales/delete/::attend.id::" class="btn btn-default btn-sm"><i class="icon icon-delete"></i> Ne plus participer</a>
+									<a href="::vendor.getURL()::/sales/delete/::attend.id::" class="btn btn-default btn-sm"><i class="icon icon-delete"></i> Ne plus participer</a>
 								</div>							
 								::else::
 									::if (status=="open" || status=="notYetOpened")::	
@@ -162,107 +159,9 @@
 </div>
 
 <div class="col-md-4">
-
 	<div class="article">
-		
 		<h4>Récapitulatifs par période</h4>
-
 		::raw form.render()::
-		
-		<!--<form class="form-horizontal" action="/p/pro/delivery/export" method="GET">
-			
-			<script>
-			var setDate = function(name){
-				var d = $('#datetimepicker-'+name).data('DateTimePicker').date();//moment.js obj
-				$('#datetimepickerdata-'+name).val( d.format('YYYY-MM-DD HH:mm:ss'))
-			};
-			</script>
-			
-			<div class="form-group">
-				<label class="col-md-4 control-label">
-					Type 
-				</label>
-				
-				<div class="col-md-8">
-					<input type="radio" class="" name="type" value="products" checked="checked" /> Par produits<br/>
-					<input type="radio" class="" name="type" value="members" /> Par membres<br/>
-					<input type="radio" class="" name="type" value="groups" /> Par Groupe-produits (CSV)<br/>
-				</div>
-			</div>
-			
-			<div class="form-group">
-				
-				<label for="startDate" class="col-md-4 control-label" id="startDate__Label">
-					Du
-				</label>
-				
-				<div class="col-md-8">
-					<div class="input-group date" id="datetimepicker-startDate">       
-						<span class="input-group-addon">
-							<span class="glyphicon glyphicon-calendar"></span>
-						</span>
-						<input type="text" class="form-control" />
-					</div>
-					
-					<input type="hidden" name="startDate" id="datetimepickerdata-startDate" value=""/>
-					<script type="text/javascript">
-						document.addEventListener("DOMContentLoaded", function(event) {
-							$('#datetimepicker-startDate').datetimepicker(
-								{
-									locale:'fr',
-									format:'LLLL',
-									defaultDate:moment().format("YYYY-MM-DD 00:00:00")
-								}
-							);
-							//stores the date in mysql format in a hidden input element	
-							$('#datetimepicker-startDate').on('dp.change',function(e){ setDate("startDate"); });
-							setDate("startDate");
-						});
-					</script>
-				</div>
-			</div>
-					
-					
-			<div class="form-group">
-				
-				<label for="endDate" class="col-md-4 control-label" id="endDate__Label">
-					au
-				</label>
-				
-				<div class="col-md-8">
-					<div class="input-group date" id="datetimepicker-endDate">       
-						<span class="input-group-addon">
-							<span class="glyphicon glyphicon-calendar"></span>
-						</span>
-						<input type="text" class="form-control" />
-					</div>
-			
-					<input type="hidden" name="endDate" id="datetimepickerdata-endDate" value=""/>
-					<script type="text/javascript">
-						document.addEventListener("DOMContentLoaded", function(event) {
-							$('#datetimepicker-endDate').datetimepicker(
-								{
-									locale:'fr',
-									format:'LLLL',
-									defaultDate:moment().add(7, 'days').format("YYYY-MM-DD 23:59:59")
-								}
-							);
-							//stores the date in mysql format in a hidden input element	
-							$('#datetimepicker-endDate').on('dp.change',function(e){ setDate("endDate"); });
-							setDate("endDate");
-						});
-					</script>
-				</div>
-			</div>		
-					
-					
-			<div class="form-group">
-				<div class="col-md-offset-4 col-md-8">
-					<input type="submit" class="btn btn-primary" value="Valider" />
-				</div>
-			</div>		
-			
-		</form>-->
 	</div>	
 
 </div>

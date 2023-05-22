@@ -45,7 +45,7 @@ class Member extends Controller
 		if (userGroup == null) throw Error("/member", t._("This person does not belong to your group"));
 		
 		view.userGroup = userGroup; 
-		view.canLoginAs = (db.UserGroup.manager.count($userId == member.id) == 1 && app.user.isAmapManager()) || app.user.isAdmin(); 
+		view.canLoginAs = (db.UserGroup.manager.count($userId == member.id) == 1 && app.user.isGroupManager()) || app.user.isAdmin(); 
 		
 		var now = Date.now();
 		var from = new Date(now.getFullYear(), now.getMonth(), now.getDate()-7, 0, 0, 0);
@@ -72,6 +72,7 @@ class Member extends Controller
 
 		}
 		view.notifications = notifications;
+		view.getJsonRightName = db.UserGroup.getJsonRightName;
 
 		checkToken(); //to insert a token in tpl
 	
@@ -85,7 +86,7 @@ class Member extends Controller
 	 function doLoginas(member:db.User) {
 	
 		if (!app.user.isAdmin()){
-			if (!app.user.isAmapManager()) return;
+			if (!app.user.isGroupManager()) return;
 			if (member.isAdmin()) return;
 			if ( db.UserGroup.manager.count($userId == member.id) > 1 ) return;			
 		}
@@ -195,77 +196,12 @@ class Member extends Controller
 				ua.delete();
 				throw Ok("/member", t._("::user:: has been removed from your group",{user:user.getName()}));
 			}else {
-				throw Error("/member", t._("This person does not belong to \"::amapname::\"", {amapname:app.user.getGroup().name}));
+				throw Error("/member", "Cette personne n'appartient pas à \""+app.user.getGroup().name+"\"");
 			}	
 		}else {
 			throw Redirect("/member/view/"+user.id);
 		}
 	}
-	
-	/*@tpl('form.mtt')
-	function doMerge(user:db.User) {
-		
-		if (!app.user.canAccessMembership()) throw Error("/","Action interdite");
-		
-		view.title = t._("Merge an account with another one");
-		view.text = t._("This action allows you to merge two accounts (when you have duplicates in the database for example).<br/>Orders of account 2 will be moved to account 1, and account 2 will be deleted. Warning, it is not possible to cancel this action.");
-		
-		var form = new Form("merge");
-		
-		var members = app.user.getGroup().getMembers();
-		var members = Lambda.array(Lambda.map(members, function(x) return { key:Std.string(x.id), value:x.getName() } ));
-		var mlist = new Selectbox("member1", t._("Account 1"), members, Std.string(user.id));
-		form.addElement( mlist );
-		var mlist = new Selectbox("member2", t._("Account 2"), members);
-		form.addElement( mlist );
-		
-		if (form.checkToken()) {
-		
-			var m1 = Std.parseInt(form.getElement("member1").value);
-			var m2 = Std.parseInt(form.getElement("member2").value);
-			var m1 = db.User.manager.get(m1,true);
-			var m2 = db.User.manager.get(m2,true);
-			
-			//if (m1.amapId != m2.amapId) throw "ils ne sont pas de la même amap !";
-			
-			//on prend tout à m2 pour donner à m1			
-			//change usercontracts
-			var contracts = db.UserOrder.manager.search($user==m2 || $user2==m2,true);
-			for (c in contracts) {
-				if (c.user.id == m2.id) c.user = m1;
-				if (c.user2!=null && c.user2.id == m2.id) c.user2 = m1;
-				c.update();
-			}
-			
-			//group memberships
-			var adh = db.UserGroup.manager.search($user == m2, true);
-			for ( a in adh) {
-				a.user = m1;
-				a.update();
-			}
-			
-			//change contacts
-			var contacts = db.Catalog.manager.search($contact==m2,true);
-			for (c in contacts) {
-				c.contact = m1;
-				c.update();
-			}
-			//if (m2.amap.contact == m2) {
-				//m1.amap.lock();
-				//m1.amap.contact = m1;
-				//m1.amap.update();
-			//}
-			
-			m2.delete();
-			
-			throw Ok("/member/view/" + m1.id, t._("Both accounts have been merged"));
-			
-			
-		}
-		
-		view.form = form;
-		
-	}*/
 	
 	/**
 	 * user payments history

@@ -8,7 +8,7 @@
 		<b>Tous les messages envoyés</b>
 		<div style="overflow-y:scroll;height:600px;">
 		::foreach m sentMessages::
-		<a href="/p/pro/messages/message/::m.id::">::m.title::
+		<a href="::vendor.getURL()::/messages/message/::m.id::">::m.title::
 		<div style="color:#666;font-size:11px;border-bottom:1px solid #DDD;">::hDate(m.date)::</div> 
 		</a>
 		::end::

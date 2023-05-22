@@ -77,9 +77,9 @@ class App extends sugoi.BaseApp {
 			id: 'cavea',
 			name: 'CAVEA',
 			groupWording: 'groupe',
-			groupWording_plural: 'groupe',
+			groupWording_plural: 'groupes',
 			groupWordingShort: 'groupe',
-			groupWordingShort_plural: 'groupe',
+			groupWordingShort_plural: 'groupes',
 			url: '',
 			supportEmail: '',
 			email: {
@@ -233,7 +233,7 @@ class App extends sugoi.BaseApp {
 		out.set("membershipPrice", "Adhésions : Coût de l'adhésion");
 		out.set("contact", "Responsable");
 		out.set("fees", "frais");
-		out.set("AmapAdmin", "Administrateur du marché"); //out.set("AmapAdmin", "Administrateur du "+App.current.getTheme().groupWordingShort);
+		out.set("GroupAdmin", "Administrateur du marché"); //out.set("GroupAdmin", "Administrateur du "+App.current.getTheme().groupWordingShort);
 		out.set("Membership", "Accès à la gestion des membres");
 		out.set("Messages", "Accès à la messagerie");
 		out.set("vat", "TVA");
@@ -288,7 +288,7 @@ class App extends sugoi.BaseApp {
 		return out;
 	}
 	
-	public function populateAmapMembers() {		
+	public function populateGroupMembers() {		
 		return user.getGroup().getMembersFormElementData();
 	}
 	

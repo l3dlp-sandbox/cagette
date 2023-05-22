@@ -68,7 +68,7 @@ class Main extends Controller {
 				throw Redirect("/group/disabled");
 			}
 		}
-		view.amap = group;
+		view.group = group;
 
 		// freshly created group
 		view.newGroup = app.session.data.newGroup == true;
@@ -88,11 +88,6 @@ class Main extends Controller {
 
 		view.timeframe = timeframe;
 		view.distribs = distribs;
-
-		// view functions
-		view.getWhosTurn = function(orderId:Int, distrib:Distribution) {
-			return db.UserOrder.manager.get(orderId, false).getWhosTurn(distrib);
-		}
 
 		// register to group without ordering block
 		var isMemberOfGroup = app.user == null ? false : app.user.isMemberOf(group);
@@ -174,32 +169,7 @@ class Main extends Controller {
 		view.users = users;
 	}
 
-	@tpl("form.mtt")
-	function doInstall(d:Dispatch) {
-		d.dispatch(new controller.Install());
-	}
-
 	function doP(d:Dispatch) {
-		/*
-			* Invalid array access
-			Stack (ADMIN|DEBUG)
-
-			Called from C:\HaxeToolkit\haxe\std/haxe/web/Dispatch.hx line 463
-			Called from controller/Main.hx line 117
-			* 
-			var plugin = d.parts.shift();
-			for ( p in App.plugins) {
-				var n = Type.getClassName(Type.getClass(p)).toLowerCase();
-				n = n.split(".").pop();
-				if (plugin == n) {
-					d.dispatch( p.getController() );
-					return;
-				}
-			}
-
-			throw Error("/","Plugin '"+plugin+"' introuvable.");
-		 */
-
 		d.dispatch(new controller.Plugin());
 	}
 
@@ -252,9 +222,9 @@ class Main extends Controller {
 	}
 
 	@logged
-	function doAmap(d:Dispatch) {
-		addBc("amap", "Producteurs", "/amap");
-		d.dispatch(new controller.Amap());
+	function doMarket(d:Dispatch) {
+		addBc("market", "Producteurs", "/market");
+		d.dispatch(new controller.Market());
 	}
 
 	function doContract(d:Dispatch) {
@@ -280,9 +250,9 @@ class Main extends Controller {
 	}
 
 	@logged
-	function doAmapadmin(d:Dispatch) {
-		addBc("amapadmin", "Paramètres", "/amapadmin");
-		d.dispatch(new AmapAdmin());
+	function doMarketadmin(d:Dispatch) {
+		addBc("marketadmin", "Paramètres", "/marketadmin");
+		d.dispatch(new controller.MarketAdmin());
 	}
 
 	@admin
@@ -330,9 +300,12 @@ class Main extends Controller {
 			view.invitedGroupId = group.id;
 		}
 	}
+	public function doPro(vendor:db.Vendor,d:haxe.web.Dispatch) {		
+		d.dispatch(new pro.controller.Main(vendor));
+	}	
 
 	function doDiscovery(){
-		throw Redirect('/p/pro/signup/discovery');
+		throw Redirect('/vendor/signup/');
 	}
 
 	// TOS (CGU)
@@ -407,7 +380,6 @@ class Main extends Controller {
 			Sys.println("");
 
 			app.rollback();
-
 		}
 	}
 
@@ -419,5 +391,11 @@ class Main extends Controller {
 			view.hasMarket = userGroups.length > 0;
 		}
 	}
+
+	public function doCatalog(d:haxe.web.Dispatch){
+		d.dispatch(new controller.Catalog());
+	}
+
+
 
 }

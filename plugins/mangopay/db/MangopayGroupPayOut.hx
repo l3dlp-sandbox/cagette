@@ -23,12 +23,6 @@ class MangopayGroupPayOut extends sys.db.Object
         return payout;
 	}
 
-    /*public static function all(group:db.Amap){
-        var all = manager.search($group == group,{orderBy:-cdate}, false);
-        for ( a in all) a.refreshDatas();
-        return all;
-    }*/
-
     /**
         Get payout datas from Mangopay API
     **/

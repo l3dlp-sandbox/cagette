@@ -1,4 +1,4 @@
-::use 'amapadmin/design.mtt'::
+::use 'marketadmin/design.mtt'::
 	
 	<div class=" article">
         $$timeframe(::timeframe::)
@@ -32,7 +32,7 @@
                             ::if(payout!=null)::
 
                                 ::if(payout.hasSucceeded())::
-                                    <a href="/p/pro/transaction/mangopay/group/payOut/::payout.payOutId::">::payout.getAmount()::</a>
+                                    <a href="/transaction/mangopay/group/payOut/::payout.payOutId::">::payout.getAmount()::</a>
                                 ::elseif(payout._cachedDatas.Status=="CREATED")::
                                     Virement en attente
                                 ::else::
@@ -58,7 +58,7 @@
 
                 
             <td>
-                <a href="/p/pro/transaction/mangopay/group/multiDistribDebug/::md.id::" class="btn btn-default btn-sm">Détails distrib</a>
+                <a href="/transaction/mangopay/group/multiDistribDebug/::md.id::" class="btn btn-default btn-sm">Détails distrib</a>
             </td>
             </tr>
         ::end::

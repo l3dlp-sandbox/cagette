@@ -7,7 +7,7 @@
 			Du ::hDate(startDate):: au ::hDate(endDate)::
 		</p>
 		<div class="text-center">
-			$$export(/p/pro/network/turnoverByVendors?startDate=::startDate.toString()::&endDate=::endDate.toString()::&csv=1)
+			$$export(::vendor.getURL()::/network/turnoverByVendors?startDate=::startDate.toString()::&endDate=::endDate.toString()::&csv=1)
 		</div>	
 		<p>
 			<table class="table table-bordered">

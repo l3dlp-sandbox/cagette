@@ -5,8 +5,8 @@
 		<h2>Prochaines distributions</h2>
 		
 		<p>
-		$$insert(Livraison ponctuelle,/p/pro/delivery/insert)	
-		$$insert(Livraisons récurrentes,/p/pro/delivery/insertCycle)	
+		$$insert(Livraison ponctuelle,::vendor.getURL()::/delivery/insert)	
+		$$insert(Livraisons récurrentes,::vendor.getURL()::/delivery/insertCycle)	
 		</p>
 		
 		::foreach k distribs::
@@ -51,7 +51,7 @@
 					: Du ::hDate(c.startDate):: au ::hDate(c.endDate)::
 				</td>
 				<td>
-					$$delete(::_("Del.")::,::"/p/pro/delivery/deleteCycle/"+c.id+"?token="+token::)
+					$$delete(::_("Del.")::,::"::vendor.getURL()::/delivery/deleteCycle/"+c.id+"?token="+token::)
 				</td>
 			</tr>
 			::end::

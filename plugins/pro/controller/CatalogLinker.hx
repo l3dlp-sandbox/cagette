@@ -12,11 +12,11 @@ class CatalogLinker extends controller.Controller
 	var company : pro.db.CagettePro;
 	var vendor : db.Vendor;
 	
-	public function new() 
+	public function new(company:pro.db.CagettePro) 
 	{
 		super();
-		view.company = company = pro.db.CagettePro.getCurrentCagettePro();
-		view.vendor = vendor = pro.db.CagettePro.getCurrentVendor();
+		view.company = this.company = company;
+		view.vendor = this.vendor = company.vendor;
 	}
 		
 	/**
@@ -51,13 +51,13 @@ class CatalogLinker extends controller.Controller
 	public function doImportFirstCatalog(?catalog:db.Catalog){
 
 		if(catalog!=null){
-			if(company.getProducts().length>0) throw Error("/p/pro","Action interdite, vous avez déjà des produits dans votre espace producteur");
+			if(company.getProducts().length>0) throw Error(vendor.getURL(),"Action interdite, vous avez déjà des produits dans votre espace producteur");
 			pro.service.PCatalogService.linkFirstCatalog(catalog,company);
 			if(company.offer==Marketplace){
 				service.BridgeService.ga4Event(app.user.id,"FirstProduct");
 			}
 			
-			throw Ok('/p/pro/product',"Bravo, vous avez récupéré votre premier catalogue ! Vérifiez que les fiches produits sont correctes.");
+			throw Ok(vendor.getURL()+'/product',"Bravo, vous avez récupéré votre premier catalogue ! Vérifiez que les fiches produits sont correctes.");
 		}else{
 			view.unlinkedCatalogs = VendorService.getUnlinkedCatalogs(company);
 		}
@@ -99,11 +99,9 @@ class CatalogLinker extends controller.Controller
 			//make a sync 
 			PCatalogService.sync(pcatalog.id);
 
-			throw Ok("/p/pro/catalog" , "Le catalogue a été correctement relié");
+			throw Ok(vendor.getURL()+"/catalog" , "Le catalogue a été correctement relié");
 		}
-
 	}
-
 
 	/**
 		rest service
@@ -111,16 +109,12 @@ class CatalogLinker extends controller.Controller
 	function doCreateNewOffer(product:db.Product,pcatalog:pro.db.PCatalog){
 
 		if(product==null || pcatalog==null){
-			json({
-				error : "mauvais produit ou mauvais catalogue"
-			});
+			json({error : "mauvais produit ou mauvais catalogue"});
 			return;
 		}
 
 		if( company.getActiveCatalogs().find( cat -> return cat.id==pcatalog.id )==null ){
-			json({
-				error : "Ce catalogue ne vous appartient pas"
-			});
+			json({error : "Ce catalogue ne vous appartient pas"});
 			return;
 		}
 

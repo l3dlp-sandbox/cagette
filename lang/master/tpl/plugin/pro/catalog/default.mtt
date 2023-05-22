@@ -5,7 +5,7 @@
 		<h2>Catalogues</h2>	
 	
 		<p>
-			$$insert(Nouveau catalogue,/p/pro/catalog/insert/)
+			$$insert(Nouveau catalogue,::vendor.getURL()::/catalog/insert/)
 			<a href="https://formation.alilo.fr/course/view.php?id=7&section=3" target="_blank" class="btn btn-warning btn-sm">
 				<i class="icon icon-youtube"></i> Tuto vidéo
 			</a>
@@ -26,26 +26,26 @@
 			<tr title="::title::" data-toggle="::toggle::">
 
 				<td>
-					<a class="::class::"  href="/p/pro/catalog/view/::c.id::" style="font-size:1.2em;">
+					<a class="::class::"  href="::vendor.getURL()::/catalog/view/::c.id::" style="font-size:1.2em;">
 						::c.name::
 					</a>
 				</td>
 				<td>
 					<div class="btn-group">
-						<a href="/p/pro/catalog/view/::c.id::" class="btn btn-default btn-sm">
+						<a href="::vendor.getURL()::/catalog/view/::c.id::" class="btn btn-default btn-sm">
 							Récapitulatif
 						</a>
-						<a href="/p/pro/catalog/edit/::c.id::" class="btn btn-default btn-sm">
+						<a href="::vendor.getURL()::/catalog/edit/::c.id::" class="btn btn-default btn-sm">
 							<i class="icon icon-cog"></i> Paramètres
 						</a>
-						<a href="/p/pro/catalog/products/::c.id::" class="btn btn-default btn-sm">
+						<a href="::vendor.getURL()::/catalog/products/::c.id::" class="btn btn-default btn-sm">
 							<i class="icon icon-products"></i> Sélectionner les produits
 						</a>
-						<a href="/p/pro/catalog/prices/::c.id::" class="btn btn-default btn-sm">
+						<a href="::vendor.getURL()::/catalog/prices/::c.id::" class="btn btn-default btn-sm">
 							<i class="icon icon-euro"></i> Ajuster les prix
 						</a>
 						
-						$$delete( Supprimer ,/p/pro/catalog/delete/::c.id::?token=::token::)
+						$$delete( Supprimer ,::vendor.getURL()::/catalog/delete/::c.id::?token=::token::)
 					</div>
 
 					<br/>
@@ -60,7 +60,7 @@
 							
 							Lien du catalogue :
 							
-								<a id="copy-url-::c.id::" href="http://::HOST::/p/pro/public/::c.id::" target="_blank">http://::HOST::/p/pro/public/::c.id::</a>
+								<a id="copy-url-::c.id::" href="::c.getURL()::" target="_blank">::c.getURL()::</a>
 								&nbsp;&nbsp;<a id="copy-url-button-::c.id::" href="#" class="btn btn-default btn-sm">
 									<i class="icon icon-link"></i> Copier le lien
 								</a>
@@ -87,27 +87,6 @@
 							
 						</div>
 					</div>
-					
-
-					::if(c._vendor != null && c._vendor.id != company._vendor.id )::
-					<!--alert on invited catalogs-->					
-					<div class="alert alert-danger" style="margin-top: 12px;">
-						<p>
-							<i class="icon icon-alert"></i>
-							<b>Ce catalogue ne sera plus disponible sur votre espace producteur à partir du 1er mars 2023.</b>
-						</p>
-						<p>
-							Cagette.net invite chaque producteur à gérer ses propres catalogues en toute autonomie.
-						</p>						
-						<p>
-							Ce catalogue est associé à <b>::c._vendor.name::</b>.
-						</p>
-						<p>
-							Invitez <b>::c._vendor.name::</b> ( ::c._vendor.email:: ) à ouvrir son espace producteur sur <a href="https://www.cagette.net/producteurs" target="_blank">www.cagette.net</a>.<br/>
-							Il pourra alors récupérer ce catalogue et continuer à vendre sur Cagette.net. 
-						</p>
-					</div>
-					::end::
 					
 					::set linkages = getLinkages(c)::
 					::if linkages.length>0::
@@ -153,22 +132,17 @@
 											$$contact(::cont._contact::)
 										</td>
 										<td>
-											
 											::set warning = "Voulez vraiment casser la liaison ?\n\nLe catalogue sera archivé et vous ne pourrez plus commercialiser le catalogue '"+cata.name+"' auprès du "+theme.groupWordingShort+" '"+cont._group.name+"'.\nLes anciennes commandes seront conservées.\n\nATTENTION cette opération n'est pas annulable."::
-											<a href="/p/pro/catalog/breakLinkage/::l.id::?token=::token::" class="btn btn-danger btn-xs" onclick="return confirm('::escapeJS(warning)::')">
+											<a href="::vendor.getURL()::/catalog/breakLinkage/::l.id::?token=::token::" class="btn btn-danger btn-xs" onclick="return confirm('::escapeJS(warning)::')">
 												<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 												&nbsp;Casser la liaison
 											</a>
-											
 										</td>
 									</tr>
 									::end::
 								</table>
 							</p>
 					::end::
-
-
-
 				</td>
 			</tr>
 		::end::

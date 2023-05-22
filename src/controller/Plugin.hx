@@ -3,22 +3,22 @@ package controller;
 class Plugin extends sugoi.BaseController
 {
 
-	public function new() 
-	{
+	public function new(){
 		super();
 	}
 	
-	#if plugins
-	
-	//cagette-hosted
-	public function doHosted(d:haxe.web.Dispatch) {
-		d.dispatch(new hosted.controller.Main());
-	}	
-	
-	//cagette-pro
-	public function doPro(d:haxe.web.Dispatch) {
-		
-		d.dispatch(new pro.controller.Main());
+	//redirect /p/pro?vendor=XXX
+	public function doPro() {		
+		if(app.params.exists("vendor")){
+			var v = db.Vendor.manager.get(app.params.get("vendor").parseInt(),false);
+			if(v!=null){
+				throw Redirect(v.getURL());
+			}else{
+				throw Redirect("/");
+			}			
+		}else{
+			throw Redirect("/");
+		}
 	}	
 	
 	//cagette-connector
@@ -31,6 +31,9 @@ class Plugin extends sugoi.BaseController
 		d.dispatch(new who.controller.Main());
 	}
 	
-	#end
-	
+	//cagette-hosted
+	public function doHosted(d:haxe.web.Dispatch) {
+		d.dispatch(new hosted.controller.Main());
+	}	
+
 }

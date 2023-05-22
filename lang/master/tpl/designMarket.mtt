@@ -36,8 +36,8 @@
 									<i class="icon icon-list"></i> Historique 
 								</a>
 							</li>
-							<li ::attr class if(category=="amap") 		'active' ::>
-								<a href="/amap">
+							<li ::attr class if(category=="market") 		'active' ::>
+								<a href="/market">
 									<i class="icon icon-farmer"></i> ::_("Farmers")::
 								</a>
 							</li>
@@ -65,8 +65,8 @@
 									<i class="icon icon-mail"></i>  ::_("Messaging")::
 								</a>
 							</li>
-							<li id="amapadmin" ::attr class if(category=="amapadmin") 	'active' ::>
-								<a href="/amapadmin" ::cond user.isAmapManager()::>
+							<li id="marketadmin" ::attr class if(category=="marketadmin") 	'active' ::>
+								<a href="/marketadmin" ::cond user.isGroupManager()::>
 									<i class="icon icon-cog"></i>  Paramètres
 								</a>
 							</li>							
@@ -136,7 +136,7 @@
 		</div>
 	</main>
 		
-	::if (user!=null && user.isAmapManager())::
+	::if (user!=null && user.isGroupManager())::
 		<script>
 			// Include the UserVoice JavaScript SDK (only needed once on a page)
 			UserVoice=window.UserVoice||[];(function(){var uv=document.createElement('script');uv.type='text/javascript';uv.async=true;uv.src='//widget.uservoice.com/sayZ1eIZLfSZUa3IwslHCw.js';var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(uv,s)})();

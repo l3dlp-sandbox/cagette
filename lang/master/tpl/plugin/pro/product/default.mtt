@@ -3,17 +3,13 @@
 <div class="col-md-12">
 	<div class=" article">
 		
-		
 		<h2>Produits</h2>	
 
 		<div>
 			<p>
-				<a href="/p/pro/product/insert/" class="btn btn-primary btn-sm"><i class="icon icon-plus"></i> Nouveau produit</a>
-
-				<a href="/p/pro/product/import/" class="btn btn-default btn-sm"><i class="icon icon-upload"></i> Import Excel/CSV</a>
-				
-				<a href="/p/pro/company/vatRates" class="btn btn-default btn-sm"><i class="icon icon-products"></i> Gérer les taux de TVA</a>
-
+				<a href="::vendor.getURL()::/product/insert/" class="btn btn-primary btn-sm"><i class="icon icon-plus"></i> Nouveau produit</a>
+				<a href="::vendor.getURL()::/product/import/" class="btn btn-default btn-sm"><i class="icon icon-upload"></i> Import Excel/CSV</a>
+				<a href="::vendor.getURL()::/company/vatRates" class="btn btn-default btn-sm"><i class="icon icon-products"></i> Gérer les taux de TVA</a>
 				<a href="https://formation.alilo.fr/mod/page/view.php?id=789" target="_blank" class="btn btn-warning btn-sm">
 					<i class="icon icon-youtube"></i> Tuto vidéo
 				</a>		
@@ -33,7 +29,7 @@
 					Cliquez sur le lien ci-dessous pour choisir un catalogue et le récupérer dans votre espace producteur.
 				</p>
 				<p>
-					<a href="/p/pro/catalogLinker/importFirstCatalog" class="btn btn-primary">Récupérer un catalogue</a>
+					<a href="::vendor.getURL()::/catalogLinker/importFirstCatalog" class="btn btn-primary">Récupérer un catalogue</a>
 				</p>
 				
 			</div>
@@ -79,13 +75,13 @@
 							<a href="#row_p::p.id::" id="rowlink_p::p.id::" class="btn btn-default btn-sm" data-toggle="collapse">
                                 <i class="icon icon-chevron-down"></i> Voir les offres
                             </a>
-							$$edit(Modifier,/p/pro/product/edit/::p.id::)
+							$$edit(Modifier,::vendor.getURL()::/product/edit/::p.id::)
 
 							<a class="btn btn-default btn-sm" $$openImageUploader('pproduct', ::p.id::, 300, 300, null, ::company.id::)>
 								<i class="icon icon-image"></i> ::_("Picture")::
 							</a>
 
-							$$delete(Supprimer,/p/pro/product/delete/::p.id::?token=::token::)
+							$$delete(Supprimer,::vendor.getURL()::/product/delete/::p.id::?token=::token::)
 
 							<div id="image-uploader-container" />
 						</div>
@@ -142,13 +138,13 @@
 									<td>::formatNum(off.price)::&nbsp;::currency()::</td>
 									<td>
 										<div class="btn-group" role="group" aria-label="...">
-											<a onclick="neo.createNeoModule('myModal', 'dialog-url', { url: '/p/pro/offer/preview/::off.id::', title:'::escapeJS(off.getName())::' })"class="btn btn-default btn-sm">
+											<a onclick="neo.createNeoModule('myModal', 'dialog-url', { url: '::vendor.getURL()::/offer/preview/::off.id::', title:'::escapeJS(off.getName())::' })"class="btn btn-default btn-sm">
 												<i class="icon icon-eye"></i> Voir</a>
-											$$edit(Mod.,/p/pro/offer/edit/::off.id::)
+											$$edit(Mod.,::vendor.getURL()::/offer/edit/::off.id::)
 											<a class="btn btn-default btn-sm" $$openImageUploader('poffer', ::off.id::, 300, 300, null, ::company.id::)>
 												<i class="icon icon-image"></i> ::_("Picture")::
 											</a>
-											$$delete( ,/p/pro/offer/delete/::off.id::)
+											$$delete( ,::vendor.getURL()::/offer/delete/::off.id::)
 											<div id="image-uploader-container" />
 										</div>
 									</td>
@@ -156,7 +152,7 @@
 							::end::
 							<tr>
 								<td colspan="6">
-									<a href="/p/pro/offer/insert/::p.id::" class="btn btn-default btn-xs">
+									<a href="::vendor.getURL()::/offer/insert/::p.id::" class="btn btn-default btn-xs">
 										<i class="icon icon-plus"></i> Ajouter une offre
 									</a>
 								</td>

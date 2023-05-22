@@ -9,11 +9,13 @@ class Messages extends controller.Controller
 {
 
 	var company : pro.db.CagettePro;
+	var vendor : db.Vendor;
 	
-	public function new()
+	public function new(company:pro.db.CagettePro) 
 	{
 		super();
-		view.company = company = pro.db.CagettePro.getCurrentCagettePro();
+		view.company = this.company = company;
+		view.vendor = this.vendor = company.vendor;
 		view.category = "messages";
 		view.nav = ["messages"];
 	}
@@ -73,7 +75,7 @@ class Messages extends controller.Controller
 			m.recipientListId = listId;
 			m.insert();
 			
-			throw Ok("/p/pro/messages", "Le message a bien été envoyé");
+			throw Ok(vendor.getURL()+"/messages", "Le message a bien été envoyé");
 		}
 		
 		view.form = form;
@@ -97,15 +99,7 @@ class Messages extends controller.Controller
 			//{value:'2', label:'Le bureau : les responsables + contrats + adhésions' },			
 		];
 		
-		//out.push( { value:'3', label:'TEST : moi uniquement' } );
-		//out.push( { value:'4', label:'Adhérents sans contrat/commande' } );
-		//if(app.user.amap.hasMembership) out.push( { value:'5', label:'Adhésions à renouveler' } );
-		
-		
-		//var contracts = db.Catalog.getActiveContracts(app.user.amap,true);
-		//for ( c in contracts) {
-			//out.push({value:'c'+c.id,label:'Souscripteurs '+c.toString()});
-		//}
+	
 		return out ;
 		
 	}
@@ -161,43 +155,10 @@ class Messages extends controller.Controller
 						}	
 					}
 				}
-				
-					
-			/*case "2":
-				
-				var users = [];
-				users.push(app.user.amap.contact);
-				for ( c in db.Catalog.manager.search($amap == app.user.amap)) {
-					if (!Lambda.has(users, c.contact)) {
-						users.push(c.contact);
-					}
-				}
-				
-				//ajouter les autres personnes ayant les droits Admin ou Gestion Adhérents ou Gestion Contrats
- 				for (ua in Lambda.array(db.UserAmap.manager.search($rights != null && $amap == app.user.amap, false))) {
- 					if (ua.hasRight(AmapAdmin) || ua.hasRight(Membership) || ua.hasRight(ContractAdmin())) {
- 						if (!Lambda.has(users, ua.user)) users.push(ua.user);
- 					}
- 				}
-				
-				out = users;
-			
-			case "3":
-				//moi
-				return [app.user];
-			case "4":
-				return Lambda.array(db.User.getUsers_NoContracts());
-			case "5":
-				return Lambda.array(db.User.getUsers_NoMembership());*/
-			}
-			
+			}	
 			return tools.ObjectListTool.deduplicate(out);
 			
 		//}
 	}
-	
-	
-
-	
 	
 }

@@ -1,54 +1,49 @@
-::use 'design.mtt'::
-<div class="col-md-9">
-<div class="article">
-	
-	<h2>::_("Suppliers")::</h2>
-	
-	
+::use 'reactBase.mtt'::
 
-	<table class="table table-bordered table-hover"  style="width:100%;">
+		::if catalog!=null::
+		::set cid = catalog.id::
+		::end::
 		
-	::foreach m vendors.current()::	
-	<tr>
-		
-		<td>
-			<a href="/vendor/view/::m.id::">
-			::m.name::
-			</a>		
-		</td>
-		<td>
+		<div id="vendor-page-neo-container"></div>
+
+		<script>
+			document.addEventListener("DOMContentLoaded", function(event) {
+				neo.createNeoModule("vendor-page-neo-container", "vendorPublicPage", {
+					vendorId: ::vendor.id::,
+                	pCatalogId: ::cid::
+				});
+			});
+		</script>
+
+		<noscript>
 			
-		</td>
-	</tr>
-	::end::
+			<h1>::vendor.name::</h1>
+			<h4>::vendor.profession::</h4>
+			<p>
+				::raw nl2br(vendor.desc)::
+			</p>
+				
+			<p>
+				<i class="icon icon-map-marker"></i>
+				$$nullSafe(::vendor.address1::) $$nullSafe(::vendor.address2::)
+				$$nullSafe(::vendor.zipCode::) $$nullSafe(::vendor.city::)
+			</p>
 
-	<tr >
-		<th colspan="2">
-			<a href="?page=::vendors.page-1::"> &lt;&lt; </a>
-			&nbsp;
-			page ::vendors.page::/::vendors.pages::
-			&nbsp;
-			<a href="?page=::vendors.page+1::"> &gt;&gt; </a>
-		</th>
-	</tr>
+			<p>
+				::if catalog!=null::
+				<h2>Produits</h2>
+					<ul>
+					::foreach off catalog.getOffers()::
+					::set p = off._offer.getInfos()::
+						<li>::p.name::</li>
 
-	</table>
+					::end::
+					</ul>
+				::end::
+			</p>
+				
+		</noscript>
 
-	<div>
-		<a href="/vendor/insert" class="btn btn-default">::_("New suppliers")::</a>	
-	</div>
 	
-	<hr/>
-		
-</div>
-</div>
-
-<div class="col-md-3">
-	
-	
-	<div class="block">
-		::_("On this page you can manage the list of suppliers of your group.")::
-	</div>
-</div>
 
 ::end::

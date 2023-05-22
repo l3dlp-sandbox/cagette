@@ -44,10 +44,10 @@ class MangopayPlugin extends PlugIn implements IPlugIn{
 						//Mangopay-ec for groups
 						var groupConf = MangopayPlugin.getGroupConfig(App.current.user.getGroup());
 						if(  groupConf!= null ) {							
-							nav.push({id: "mangopay-kyc", 	name: "Dossier Mangopay", link:"/p/pro/transaction/mangopay/group/module",icon:"book"});
-							nav.push({id: "mangopay-wallet",name: "Paiements Mangopay", 	link:"/p/pro/transaction/mangopay/group/wallet",icon:"bank-transfer"});				
+							nav.push({id: "mangopay-kyc", 	name: "Dossier Mangopay", link:"/transaction/mangopay/group/module",icon:"book"});
+							nav.push({id: "mangopay-wallet",name: "Paiements Mangopay", 	link:"/transaction/mangopay/group/wallet",icon:"bank-transfer"});				
 						}else{
-							// nav.push({id: "mangopay-setup",name: "Paiement en ligne", 	link:"/p/pro/transaction/mangopay/group/module", icon:"bank-card"});				
+							// nav.push({id: "mangopay-setup",name: "Paiement en ligne", 	link:"/transaction/mangopay/group/module", icon:"bank-card"});				
 						}
 				}
 

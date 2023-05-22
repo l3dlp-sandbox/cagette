@@ -38,33 +38,11 @@ class CagettePro extends sys.db.Object
 		cdate = Date.now();
 	}
 
-	public static function getCurrentVendor():db.Vendor{
-
-		if (App.current.session.data == null || App.current.session.data.vendorId == null) {
-			return null;
-		}else{			
-			var v = db.Vendor.manager.get(App.current.session.data.vendorId, false);	
-			//if (v == null) throw "no vendor selected" else return v;
-			return v;
-		}
-	}
-
 	public static function getFromVendor(vendor:db.Vendor){
 		return manager.select($vendor==vendor,false);
 	}
 
-	/**
-	 * get current connected company 
-	 */
-	public static function getCurrentCagettePro():CagettePro{
-		
-		var v = getCurrentVendor();
-		if(v==null) return null;
 
-		var cpro = manager.select($vendor==v,false);
-		if(cpro==null) return null else return cpro;
-
-	}
 	
 	public function getProducts(){
 		return pro.db.PProduct.manager.search($company == this,{orderBy:name},false);
@@ -176,14 +154,6 @@ class CagettePro extends sys.db.Object
 		
 	}
 	
-	/**
-		get vendors linked to this company (product reselling/distribution)
-	**/
-	public function getVendors():Array<db.Vendor>{
-		return Lambda.map(pro.db.PVendorCompany.manager.search($company == this, false), x -> x.vendor).array();
-	}
-
-
 	public function getClients():Array<db.Group>{
 
 		var remoteCatalogs = connector.db.RemoteCatalog.manager.search($remoteCatalogId in Lambda.map(this.getCatalogs(), function(x) return x.id), false); 
@@ -209,17 +179,18 @@ class CagettePro extends sys.db.Object
 		can this user acces this vendor/cpro account ?
 	**/
 	public static function canLogIn(user:db.User,vendor:db.Vendor){
+		if(vendor==null) return false;
 		if(user.isAdmin()) return true;
 
 		var cpro = vendor.getCpro();
 		if(cpro!=null){
 			var cpros = pro.db.PUserCompany.getCompanies(user);
-			return Lambda.exists(cpros, function(a) return a.id == cpro.id);
+			return Lambda.exists(cpros, a -> a.id == cpro.id);
 		}else{
 			return false;
 		}
 	}
-	
+
 	public function getGroups(){
 		var remoteCatalogs = connector.db.RemoteCatalog.manager.search($remoteCatalogId in Lambda.map(this.getCatalogs(), function(x) return x.id), false); 
 		var groups = [];

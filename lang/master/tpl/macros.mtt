@@ -94,7 +94,7 @@
 			::end::
 				
 			::if(theme.id=="vrac")::
-				::if (user!=null && user.isAmapManager())::
+				::if (user!=null && user.isGroupManager())::
 				<a  class="dropdown-toggle" type="button" id="dropdownMenuHelp" data-toggle="dropdown">
 					<i class="icon icon-info"></i> ::_("Aide"):: 
 				</a>
@@ -463,7 +463,7 @@
 							::set notyetopened = notyetopened+1::
 						::end::
 					::else::
-						<!-- AMAP : commande terminée -->
+						<!-- commande terminée -->
 						::set closed = closed+1::
 					::end::
 				::end::
@@ -516,20 +516,20 @@
 								<i class="icon icon-circle-empty" style="color:#666;" data-toggle="tooltip" title="Commande pas encore ouverte"></i>
 								::end::
 							::else::
-								<!-- AMAP -->
+								
 								<i class="icon icon-circle" style="color:#0A0;" data-toggle="tooltip" title="Commande close. Préparez votre livraison"></i>
 							::end::
 							
 							::set c = getCatalog(d)::
-							<a href="/p/pro/delivery/view/::d.id::">::c.name::</a>&nbsp;&nbsp;
+							<a href="::vendor.getURL()::/delivery/view/::d.id::">::c.name::</a>&nbsp;&nbsp;
 						</td>
 						<td>
 							::if showBtns::
 							<div class="btn-group">
-								<a href="/p/pro/delivery/edit/::d.id::" title="::_("Edit")::" data-toggle="tooltip" class="btn btn-default btn-sm">
+								<a href="::vendor.getURL()::/delivery/edit/::d.id::" title="::_("Edit")::" data-toggle="tooltip" class="btn btn-default btn-sm">
 									<i class="icon icon-edit"></i>
 								</a>
-								<a href="/p/pro/delivery/delete/::d.id::?token=::token::"  title="::_("Delete")::" data-toggle="tooltip" $$confirm(::_("Delete ?")::) class="btn btn-default btn-sm" >
+								<a href="::vendor.getURL()::/delivery/delete/::d.id::?token=::token::"  title="::_("Delete")::" data-toggle="tooltip" $$confirm(::_("Delete ?")::) class="btn btn-default btn-sm" >
 									<i class="icon icon-delete"></i>
 								</a>
 							</div>

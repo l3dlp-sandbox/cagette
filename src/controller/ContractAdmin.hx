@@ -61,7 +61,7 @@ class ContractAdmin extends Controller
 		}
 
 		//filter if current user is not manager
-		if (!app.user.isAmapManager()) {
+		if (!app.user.isGroupManager()) {
 			for ( c in Lambda.array(contracts).copy()) {				
 				if(!app.user.canManageContract(c)) contracts.remove(c);				
 			}
@@ -533,8 +533,6 @@ class ContractAdmin extends Controller
 		var pids = contract.getProducts().map(function(x) return x.id);
 		switch(args.stat) {
 			case 0 : 
-				//ancienneté des amapiens
-				
 				if(pids.length==0){
 					view.anciennete = new List();
 				}else{

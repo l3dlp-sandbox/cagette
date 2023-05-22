@@ -41,7 +41,7 @@ class Contract extends Controller
 	@tpl("contract/view.mtt")
 	public function doView( catalog : db.Catalog ) {
 
-		view.category = 'amap';
+		view.category = 'market';
 		view.catalog = catalog;
 	
 		view.visibleDocuments = catalog.getVisibleDocuments( app.user );
@@ -132,6 +132,6 @@ class Contract extends Controller
 	function doSearchCatalog(cid:Int){
 		var pCatalog = PCatalog.manager.get(cid,false);
 		if(pCatalog==null) throw Error('/contractAdmin','Ce catalogue n\'existe pas');
-		throw Redirect("/p/pro/public/"+cid);
+		throw Redirect(pCatalog.getURL());
 	}
 }

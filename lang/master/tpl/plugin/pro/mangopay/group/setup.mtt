@@ -1,4 +1,4 @@
-::use 'amapadmin/design.mtt'::
+::use 'marketadmin/design.mtt'::
 	<div class="article">
 		<h3>Activer le paiement en ligne</h3>
 		<p>

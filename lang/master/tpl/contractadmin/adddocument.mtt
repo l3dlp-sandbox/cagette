@@ -1,7 +1,7 @@
 ::if catalog != null::  
     ::set template = 'contractadmin/design.mtt'::
 ::else::
-    ::set template = 'amapadmin/design.mtt'::
+    ::set template = 'marketadmin/design.mtt'::
 ::end::
 
 ::use template::

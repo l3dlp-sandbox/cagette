@@ -24,16 +24,13 @@
 				<td>
 					<ul>
 					::foreach d distributions::
-					<li><a href="/p/pro/delivery/view/::d.id::">::d._catalog._group.name::</a> : ::hDate(d.date)::, ::d._place.name:: </li>
+					<li><a href="::vendor.getURL()::/delivery/view/::d.id::">::d._catalog._group.name::</a> : ::hDate(d.date)::, ::d._place.name:: </li>
 					::end::
 					</ul>
 				</td>				
 			</tr>
 			
 		</table>
-		
-	
-		
 
 		<table class="table table-bordered table-hover"  style="width:100%;">
 			<tr>

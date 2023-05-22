@@ -13,21 +13,22 @@ class Catalog extends controller.Controller
 {
 
 	var company : pro.db.CagettePro;
+	var vendor : db.Vendor;
+	
+	public function new(company:pro.db.CagettePro) 
+	{
+		super();
+		view.company = this.company = company;
+		view.vendor = this.vendor = company.vendor;
+		view.category = "catalog";
+		view.nav = ["catalog"];
+	}
 	
 	private function checkRights(catalog:pro.db.PCatalog){
 		if (catalog.company.id != this.company.id){
 			throw "Erreur, accès interdit à ce catalogue";
 		}
 	}
-	
-	public function new()
-	{
-		super();
-		view.company = company = pro.db.CagettePro.getCurrentCagettePro();
-		view.category = "catalog";
-		view.nav = ["catalog"];
-	}
-	
 	
 	@logged @tpl("plugin/pro/catalog/default.mtt")
 	public function doDefault() {
@@ -99,7 +100,7 @@ class Catalog extends controller.Controller
 			}
 			
 			catalog.toSync();			
-			throw Redirect("/p/pro/catalog/prices/" + catalog.id);
+			throw Redirect(vendor.getURL()+"/catalog/prices/" + catalog.id);
 		}
 	}
 	
@@ -129,7 +130,7 @@ class Catalog extends controller.Controller
 			
 			catalog.toSync();
 			
-			throw Ok("/p/pro/catalog/view/"+catalog.id,"Prix mis à jour");
+			throw Ok(vendor.getURL()+"/catalog/view/"+catalog.id,"Prix mis à jour");
 		}
 	}
 	
@@ -142,7 +143,7 @@ class Catalog extends controller.Controller
 
 		if(checkToken()){
 			var log = pro.service.PCatalogService.sync(catalog.id );
-			throw Ok("/p/pro/catalog/view/"+catalog.id,"Mise à jour effectuée<br/>"+log.join("<br/>"));
+			throw Ok(vendor.getURL()+"/catalog/view/"+catalog.id,"Mise à jour effectuée<br/>"+log.join("<br/>"));
 		}
 	}
 	
@@ -184,7 +185,7 @@ class Catalog extends controller.Controller
 	// 		}
 			
 	// 		c.update();
-	// 		throw Ok("/p/pro/catalog/publish/" + c.id, "Conditions mises à jour");
+	// 		throw Ok(vendor.getURL()+"/catalog/publish/" + c.id, "Conditions mises à jour");
 	// 	}
 	// }
 
@@ -210,7 +211,7 @@ class Catalog extends controller.Controller
 			if(company.offer==Marketplace && PCatalog.manager.count($company==this.company)==1){
 				service.BridgeService.ga4Event(app.user.id,"FirstCatalog");
 			}
-			throw Ok('/p/pro/catalog/products/'+catalog.id,'Le catalogue a été créé');
+			throw Ok(vendor.getURL()+"/catalog/products/"+catalog.id,'Le catalogue a été créé');
 		}
 		
 		view.form = f;
@@ -236,12 +237,12 @@ class Catalog extends controller.Controller
 			f.toSpod(catalog);
 			catalog.visible = true;//f.getValueOf("visible") == "public";
 			catalog.update();
-			throw Ok('/p/pro/catalog/view/'+catalog.id,'Le catalogue a été mis à jour');
+			throw Ok(vendor.getURL()+"/catalog/view/"+catalog.id,'Le catalogue a été mis à jour');
 		}
 		
 		view.form = f;
 		view.title = 'Propriétés du catalogue';
-		view.text = "Nommez votre catalogue de produits, par exemple \"Catalogue AMAP\" ou \"Tarifs Vente à la ferme\".";
+		view.text = "Nommez votre catalogue de produits, par exemple \"Tarifs Vente à la ferme\".";
 		view.catalog = catalog;
 	}
 	
@@ -252,65 +253,17 @@ class Catalog extends controller.Controller
 		if (checkToken()){
 			
 			if (connector.db.RemoteCatalog.manager.search($remoteCatalogId == catalog.id).length > 0){
-				throw Error("/p/pro/catalog","Vous ne pouvez pas effacer ce catalogue car il est utilisé par vos clients.");
+				throw Error(vendor.getURL()+"/catalog","Vous ne pouvez pas effacer ce catalogue car il est utilisé par vos clients.");
 			}
 			
 			catalog.lock();
 			catalog.delete();
-			throw Ok("/p/pro/catalog","Catalogue supprimé");
+			throw Ok(vendor.getURL()+"/catalog","Catalogue supprimé");
 		}
 		
 		
 	}
-	
-	
-	@tpl('plugin/pro/catalog/publish.mtt')
-	function doPublish(catalog:pro.db.PCatalog){
-		checkRights(catalog);
-		view.catalog = catalog;
-		view.nav.push("publish");
-	}
-	
-	/**
-	   Publish catalog in a group 
-	**/
-	@tpl('plugin/pro/catalog/publishGroup.mtt')
-	function doPublishGroup(catalog:pro.db.PCatalog){
-		checkRights(catalog);
-		view.catalog = catalog;
-		view.nav.push("publish");
-		
-		//group list
-		var data = [];
-		for ( a in app.user.getGroups() ){
-			var ug = db.UserGroup.get(app.user, a);
-			if ( ug.hasRight(Right.GroupAdmin)) data.push({label:a.name,value:a.id});
-		}
-		data.sort(function(a,b){
-			return a.label.toUpperCase() > b.label.toUpperCase() ? 1 : -1;
-		});
-		
-		var form = new sugoi.form.Form("publicGroup");
-		form.addElement(new sugoi.form.elements.IntSelect("group",App.current.getTheme().groupWordingShort.toUpperCase(),data,null,true));
 
-		if(form.isValid()){
-			var gid : Int = form.getValueOf("group");
-			var group = db.Group.manager.get(gid,false);
-			try{
-				pro.service.PCatalogService.linkCatalogToGroup(catalog,group,app.user.id);
-			}catch(e:tink.core.Error){
-				throw Error("/p/pro/catalog/publishGroup/"+catalog.id,e.message);
-			}
-			
-			throw Ok("/p/pro/","Votre catalogue a bien été importé dans le "+App.current.getTheme().groupWordingShort+" <b>"+group.name+"<b/>");
-
-		}
-
-		view.form = form;
-
-	}
-	
-	
 	/**
 	 * Approve a catalog import
 	 * @param	notif
@@ -326,47 +279,14 @@ class Catalog extends controller.Controller
 		try{
 			pro.service.PCatalogService.linkCatalogToGroup(catalog, notif.group , content.userId );
 		}catch(e:tink.core.Error){
-			throw Error('/p/pro/',e.message);
+			throw Error(vendor.getURL(),e.message);
 		}		
 		
 		notif.delete();
 		
-		throw Ok("/p/pro", "Félicitations, le catalogue a bien été relié dans à "+notif.group.name );
+		throw Ok(vendor.getURL(), "Félicitations, le catalogue a bien été relié dans à "+notif.group.name );
 	}
 	
-	/**
-	 * delivery update from a group
-	 * @param	notif
-	 */
-	@tpl("plugin/pro/form.mtt")
-	function doAcceptDeliveryUpdate(notif:pro.db.PNotif){
-		
-		if (notif.type != pro.db.PNotif.NotifType.NTDeliveryUpdate){
-			throw "error";
-		}
-		
-		/*var content : pro.db.PNotif.DeliveryUpdate = notif.content;
-		
-		//creation de la livraison
-		var d = db.Distribution.manager.get(content.did,true);
-		d.contract = db.Catalog.manager.get(content.newDistribution.remoteContractId,false);
-	
-
-		d = service.DistributionService.edit(d,content.newDistribution.date,content.newDistribution.end,content.newDistribution.remotePlaceId,
-	 	content.newDistribution.orderStartDate,content.newDistribution.orderEndDate, false);
-		
-		//email notif
-		var title = "Votre modification de distribution du " + app.view.hDate(d.date) + " a été acceptée par " + company.vendor.name;
-		App.quickMail(d.contract.contact.email, title, title);
-		
-		//delete notif
-		notif.lock();
-		notif.delete();
-		
-		throw Ok("/p/pro", "Vous avez bien validé la distribution");*/
-		
-	}
-
 	/**
 		break linkage
 	**/
@@ -378,10 +298,10 @@ class Catalog extends controller.Controller
 			try{
 				pro.service.PCatalogService.breakLinkage(c);
 			}catch(e:tink.core.Error){
-				throw Error("/p/pro/catalog/" , e.message);
+				throw Error(vendor.getURL()+"/catalog/" , e.message);
 			}
 			
-			throw Ok("/p/pro/catalog/","Le catalogue \""+c.name+"\" a été archivé. Il reste consultable dans les catalogues archivés du "+App.current.getTheme().groupWordingShort+".");
+			throw Ok(vendor.getURL()+"/catalog/","Le catalogue \""+c.name+"\" a été archivé. Il reste consultable dans les catalogues archivés du "+App.current.getTheme().groupWordingShort+".");
 			
 		}
 		
