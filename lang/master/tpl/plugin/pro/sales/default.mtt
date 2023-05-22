@@ -127,12 +127,13 @@
 								</div>							
 								::else::
 									::if (status=="open" || status=="notYetOpened")::	
-									<div id='participate-neo-container'/>
+									<div id='participate-neo-container-::d.id::-::contract.id::'/>
 									<script>
 										document.addEventListener("DOMContentLoaded", function(event) {
-											neo.createNeoModule("participate-neo-container", "participate",{
+											neo.createNeoModule('participate-neo-container-::d.id::-::contract.id::', "participate",{
 												multiDistribId: ::d.id::,
-												catalogId: ::contract.id::
+												catalogId: ::contract.id::,
+												vendorId: ::vendor.id::
 											});
 										});
 									</script>
