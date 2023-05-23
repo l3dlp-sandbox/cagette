@@ -119,9 +119,9 @@
 	</macro>
 
 	<macro name='nav(t, currentPage, ?vendorId)'>
-		
+
 		::if(noGroup==true)::
-			::if(pageTitle!=null)::
+			::if(pageTitle!=null&&t.length>0)::
 				::set title=pageTitle::
 			::else::
 				::set title=""::
