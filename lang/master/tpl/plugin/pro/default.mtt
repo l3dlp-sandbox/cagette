@@ -189,7 +189,7 @@
 		</div>
 	</div>
 
-	<div id="stats-module-container"></div>
+	<div id="stats-module-container" style="max-width: calc(100vw - 30px);"></div>
 	<script>
 		document.addEventListener("DOMContentLoaded", function () {
 			neo.createNeoModule("stats-module-container", "vendorTurnover", {
