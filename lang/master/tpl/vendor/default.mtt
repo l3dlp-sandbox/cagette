@@ -1,49 +1,46 @@
 ::use 'reactBase.mtt'::
 
-		::if catalog!=null::
-		::set cid = catalog.id::
-		::end::
-		
-		<div id="vendor-page-neo-container"></div>
-
-		<script>
-			document.addEventListener("DOMContentLoaded", function(event) {
-				neo.createNeoModule("vendor-page-neo-container", "vendorPublicPage", {
-					vendorId: ::vendor.id::,
-                	pCatalogId: ::cid::
-				});
-			});
-		</script>
-
-		<noscript>
-			
-			<h1>::vendor.name::</h1>
-			<h4>::vendor.profession::</h4>
-			<p>
-				::raw nl2br(vendor.desc)::
-			</p>
-				
-			<p>
-				<i class="icon icon-map-marker"></i>
-				$$nullSafe(::vendor.address1::) $$nullSafe(::vendor.address2::)
-				$$nullSafe(::vendor.zipCode::) $$nullSafe(::vendor.city::)
-			</p>
-
-			<p>
-				::if catalog!=null::
-				<h2>Produits</h2>
-					<ul>
-					::foreach off catalog.getOffers()::
-					::set p = off._offer.getInfos()::
-						<li>::p.name::</li>
-
-					::end::
-					</ul>
-				::end::
-			</p>
-				
-		</noscript>
-
+	::if catalog!=null::
+	::set cid = catalog.id::
+	::end::
 	
+	<div id="vendor-page-neo-container"></div>
 
+	<script>
+		document.addEventListener("DOMContentLoaded", function(event) {
+			neo.createNeoModule("vendor-page-neo-container", "vendorPublicPage", {
+				vendorId: ::vendor.id::,
+				pCatalogId: ::cid::
+			});
+		});
+	</script>
+
+	<noscript>
+		
+		<h1>::vendor.name::</h1>
+		<h4>::vendor.profession::</h4>
+		<p>
+			::raw nl2br(vendor.desc)::
+		</p>
+			
+		<p>
+			<i class="icon icon-map-marker"></i>
+			$$nullSafe(::vendor.address1::) $$nullSafe(::vendor.address2::)
+			$$nullSafe(::vendor.zipCode::) $$nullSafe(::vendor.city::)
+		</p>
+
+		<p>
+			::if catalog!=null::
+			<h2>Produits</h2>
+				<ul>
+				::foreach off catalog.getOffers()::
+				::set p = off._offer.getInfos()::
+					<li>::p.name::</li>
+
+				::end::
+				</ul>
+			::end::
+		</p>
+			
+	</noscript>
 ::end::

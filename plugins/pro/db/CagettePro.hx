@@ -41,11 +41,9 @@ class CagettePro extends sys.db.Object
 	public static function getFromVendor(vendor:db.Vendor){
 		return manager.select($vendor==vendor,false);
 	}
-
-
 	
 	public function getProducts(){
-		return pro.db.PProduct.manager.search($company == this,{orderBy:name},false);
+		return pro.db.PProduct.manager.search($company == this,{orderBy:name},false).array();
 	}
 	
 	public function getCatalogs(){

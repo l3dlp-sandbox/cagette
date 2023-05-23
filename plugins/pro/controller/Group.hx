@@ -45,21 +45,16 @@ class Group extends controller.Controller
 			data.push( {id:g.id , label:g.name , value:g.id} );
 		}
 		
-		form.addElement( new sugoi.form.elements.IntSelect("group", App.current.getTheme().groupWordingShort.toUpperCase()+" à retirer de mon espace producteur", cast data, true) );
-		form.addElement( new sugoi.form.elements.Checkbox("stayMember","Rester membre ce "+App.current.getTheme().groupWordingShort,false) );
-		form.addElement( new sugoi.form.elements.Checkbox("deleteDistribs","Supprimer les distributions futures",true) );
+		form.addElement( new sugoi.form.elements.IntSelect("group", App.current.getTheme().groupWordingShort+" à retirer de mon espace producteur", cast data, true) );
+		// form.addElement( new sugoi.form.elements.Checkbox("stayMember","Rester membre ce "+App.current.getTheme().groupWordingShort,false) );
+		// form.addElement( new sugoi.form.elements.Checkbox("deleteDistribs","Supprimer les distributions futures",true) );
+		form.addElement( new sugoi.form.elements.Checkbox("check","Je suis sûr(e) de vouloir quitter ce marché",true) );
 
 		if(form.isValid()){
 
 			var group = db.Group.manager.get(form.getValueOf("group"),false);
 
-			if(form.getValueOf("stayMember")==false){
-				var ua = db.UserGroup.get(app.user,group,true);
-				ua.delete();
-			}
-
-
-			for( rc in connector.db.RemoteCatalog.getFromGroup(company, group)){
+				for( rc in connector.db.RemoteCatalog.getFromGroup(company, group)){
 				var c = rc.getContract(true);
 				c.endDate = Date.now();
 				c.update();
@@ -67,24 +62,20 @@ class Group extends controller.Controller
 				rc.lock();
 				rc.delete();
 
-				if( form.getValueOf("deleteDistribs") == true ){
-
-					for( distrib in c.getDistribs(true) ){
-						try{
-							service.DistributionService.cancelParticipation(distrib,false);
-						}catch(e:tink.core.Error){
-							throw Error(sugoi.Web.getURI(),e.message);
-						}
-						 
+				for( distrib in c.getDistribs(true) ){
+					try{
+						service.DistributionService.cancelParticipation(distrib,false);
+					}catch(e:tink.core.Error){
+						throw Error(sugoi.Web.getURI(),e.message);
 					}
-
 				}
 			}
 
-			throw Ok(vendor.getURL(),"Le "+App.current.getTheme().groupWordingShort+" a été retiré");
+			throw Ok(vendor.getURL(),"Vous avez quitté le "+App.current.getTheme().groupWordingShort+".");
 		}
 		view.form = form;
-		view.title = "Retirer un "+App.current.getTheme().groupWordingShort;
+		view.title = "Quitter un "+App.current.getTheme().groupWordingShort;
+		view.text = "En quittant un "+App.current.getTheme().groupWordingShort+", vous faites le choix de ne plus pouvoir y vendre vos produits.";
 	}
 	
 	@tpl('plugin/pro/form.mtt')

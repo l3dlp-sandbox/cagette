@@ -1,0 +1,24 @@
+::use 'plugin/pro/company/design.mtt'::
+	<div class="article">
+		<h3 ::cond title!=null::>::title::</h3>
+		<p ::cond text!=null::>
+			::raw text::
+		</p>
+		::raw form::
+	</div>
+
+
+	::if(tinymce)::
+	<script src="/js/tinymce/tinymce.min.js"></script>
+	<script>
+		tinymce.init({ 
+			selector:'textarea',
+			plugins: "autolink textcolor emoticons image ",
+			toolbar: "styleselect bold italic alignleft aligncenter emoticons bullist outdent indent forecolor",
+			language: '::session.lang::',
+			menubar: false,
+			height:300
+		});	
+	</script>
+	::end::
+::end::
