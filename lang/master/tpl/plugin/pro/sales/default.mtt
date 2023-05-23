@@ -1,6 +1,6 @@
 ::use 'plugin/pro/design.mtt'::
 
-<div class="col-md-8">
+<div class="col-sm-8">
 	<div class="article">
 		<h2>Prochaines ventes</h2>
 		
@@ -159,7 +159,7 @@
 	</div>
 </div>
 
-<div class="col-md-4">
+<div class="col-sm-4">
 	<div class="article">
 		<h4>Récapitulatifs par période</h4>
 		::raw form.render()::
