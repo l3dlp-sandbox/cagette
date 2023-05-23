@@ -168,7 +168,7 @@
 		</table>
 	
 		<div class="text-center">
-			<div id='participate-neo-container' class="btn btn-lg"/>
+			<div id='participate-neo-container' style="display: inline-block; margin-right: 8px;"/>
 			<style onload="neo.createNeoModule('participate-neo-container', 'participate',{multiDistribId: ::multiDistribId::, catalogId: ::catalogId::})"></style> 
 				
 			<a href="::vendor.getURL()::/notif/delete/::notif.id::?token=::token::" $$confirm(Supprimer cette demande ?)  class="btn btn-danger btn-sm" >

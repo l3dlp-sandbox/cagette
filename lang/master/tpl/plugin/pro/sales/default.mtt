@@ -116,7 +116,7 @@
 									::contract.name::
 								::end::
 							</div>
-							<div class="col-md-8">
+							<div class="col-md-8" style="margin-bottom: 8px;">
 								::if(attend)::
 								<div class="btn-group" role="group">
 									<a href="::vendor.getURL()::/delivery/view/::attend.id::" class="btn btn-default btn-sm"><i class="icon icon-basket"></i> Commandes</a>		
