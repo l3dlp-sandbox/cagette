@@ -125,8 +125,31 @@
 		
 		<!-- make space, otherwise itll be hidden by the import block-->
 		<hr style="clear: both;" /><div class="row" style="height:150px;"></div>
+
+		<style>
+				.bottom-fixed {
+					position: fixed;
+					bottom: 0;
+					left: 240px;
+					right: 0;
+					background: white;
+					padding: 12px;
+					border-top: solid 4px #AAA;
+				}
+				@media (max-width: 900px){
+					.bottom-fixed {
+						left: 65px;
+					}
+				}
+				@media (max-width: 600px){
+					.bottom-fixed {
+						left: 0;
+						bottom: 70px;
+					}
+				}
+			</style>
 		
-		<div class="text-center" style="position:fixed;bottom:0;left:0;width:100%;background:white;padding:12px;border-top:solid 4px #AAA;">
+		<div class="text-center bottom-fixed">
 			<p>
 				Ce catalogue est destiné aux <b>commandes groupées</b> réalisées sur <b>Cagette.net</b>.
 				<br/>
