@@ -191,7 +191,8 @@
 								image: ::if cpro._vendor.imageId!=null:: '::file(cpro._vendor.imageId)::' ::else:: null ::end::
 							},
 							::end::
-							]
+							],
+						isMarketAdmin: ::isMarketAdmin::
 					});
 				});
 			</script>
