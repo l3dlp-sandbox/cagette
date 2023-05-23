@@ -17,15 +17,15 @@ class Main extends controller.Controller
 	}
 
 	function checkRights(){
-
-		if ( !pro.db.CagettePro.canLogIn(app.user,vendor)){
-			throw Error("/", "Vous ne pouvez pas gérer ce compte");
-		}
 		
 		view.company = this.company = vendor.getCpro();
 
-		if ( this.company==null){
+		if (this.company==null){
 			throw Error("/", "Ce producteur n'a pas d'espace producteur");
+		}
+
+		if ( !pro.db.CagettePro.canLogIn(app.user,company)){
+			throw Error("/", "Vous n'avez pas accès à cet espace producteur");
 		}
 
 		//hack into breadcrumb

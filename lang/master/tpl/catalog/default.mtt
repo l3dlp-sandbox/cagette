@@ -151,7 +151,7 @@
 		
 		<div class="text-center bottom-fixed">
 			<p>
-				Ce catalogue est destiné aux <b>commandes groupées</b> réalisées sur <b>Cagette.net</b>.
+				Ce catalogue est destiné aux commandes réalisées sur <b>::theme.name::</b>.
 				<br/>
 				Si vous n'avez pas de ::theme.groupWording::, vous pouvez en créer un gratuitement sur <a href="http://www.cagette.net" target="_blank">www.cagette.net</a>
 			</p>

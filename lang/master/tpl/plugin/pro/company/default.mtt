@@ -3,100 +3,240 @@
 	<div class=" article">
 		
 		<div class="row">
-			<div class="col-md-6">
-				<h4>Informations principales</h4>
+			<div class="col-md-12">
+				<h3>Mon profil</h3>
 				
-				<table class="table table-condensed table-striped table-bordered">
+				<table class="table table-condensed table-striped table-bordered">					
 					<tr>
-						<td>N° producteur</td>
-						<td>::vendor.id::</td>
-					</tr>
-					<tr>
-						<td>Nom</td>
-						<td>
+						<th class="col-md-4">Nom de l'entreprise</th>
+						<td colspan="2">
 							<b>::vendor.name::</b>
 						</td>
 					</tr>
 					<tr>
-						<td>Exploitant(s)</td>
-						<td>
+						<th>Adresse</th>
+						<td colspan="2">::vendor.getAddress()::</td>
+					</tr>
+					<tr>
+						<th>Exploitant(s)</th>
+						<td colspan="2">
 							::if(vendor.peopleName!=null)::
 								::vendor.peopleName::
 							::end::
 						</td>
 					</tr>
 					<tr>
-						<td></td>
+						<th>Email commercial (public)</th>
+						<td colspan="2">
+							::vendor.email::
+						</td>
+					</tr>						
+					::set images = vendor.getImages()::					
+					<tr>
+						<th class="col-md-4">Logo de votre entreprise</th>
+						<td>
+							::if images.logo!=null::
+							<img src="::file(images.logo)::" style="max-width: 256px;max-height: 128px;" />
+							::end::
+						</td>
+						<td>
+							<a class="btn btn-default btn-sm" $$openImageUploader('company', ::company.id::, 300, 300, 'logo')>
+								<i class="icon icon-image"></i> ::_("Choose a logo")::
+							</a>
+							<div id="image-uploader-container" />
+						</td>
+					</tr>
+
+					<tr>
+						<th class="col-md-4">Portrait</th>
+						<td>
+							::if images.portrait!=null::
+							<img src="::file(images.portrait)::" style="max-width: 256px;max-height: 128px;" />
+							::end::
+						</td>
+						<td>
+							<a class="btn btn-default btn-sm" $$openImageUploader('company', ::company.id::, 300, 300, 'portrait')>
+								<i class="icon icon-image"></i> Définir un portrait
+							</a>
+							<div id="image-uploader-container" />
+						</td>
+					</tr>								
+					<tr>
+						<th class="col-md-4">Description courte (pour les fiches produits)</th>
+						<td class="col-md-6">
+							<p ::cond vendor.desc!=null::>
+								<i>::vendor.desc::</i>
+							</p>
+							
+						</td>
+						<td class="col-md-2">$$edit(Modifier,::vendor.getURL()::/company/edit)</td>
+					</tr>
+					<tr>
+						<th >Votre site web ou page Facebook</th>
+						<td>
+							<p ::cond vendor.linkUrl!=null::>
+							::vendor.linkText:: ( <a href="::vendor.linkUrl::" target="_blank">::vendor.linkUrl::</a> )
+							</p>
+						</td>
 						<td>$$edit(Modifier,::vendor.getURL()::/company/edit)</td>
 					</tr>
 				</table>
 			</div>
-			<div class="col-md-6">
-				<h4>Informations légales</h4>
-				<table class="table table-condensed table-striped table-bordered">
-					<tr>
-						<td>SIRET</td>
-						<td>::vendor.companyNumber::</td>
-					</tr>
-					<tr>
-						<td>Métier</td>
-						<td>::vendor.getProfession()::</td>						
-					</tr>
-					<tr>
-						<td>Forme juridique</td>
-						<td>::vendor.getLegalStatus(true)::</td>
-					</tr>
-					<tr>
-						<td>code NAF</td>
-						<td>
-							::set act = vendor.getActivity()::
-							::if(act!=null)::
-								::act.name:: (::act.id::)
-							::end::
-						</td>
-					</tr>
-				</table>
-	
-				
-			</div>
 		</div>
-
-		::set images = vendor.getImages()::
 
 		<div class="row">
-			<div class="col-md-3">
-				<p>	
-					<h4>Votre logo</h4>
-					<a class="btn btn-default btn-sm" $$openImageUploader('company', ::company.id::, 300, 300, 'logo')>
-						<i class="icon icon-image"></i> ::_("Choose a logo")::
-					</a>
-					<div id="image-uploader-container" />
-				</p>
-			</div>			
-			<div class="col-md-3">				
-				::if images.logo!=null::
-				<img src="::file(images.logo)::" style="max-width: 256px;max-height: 128px;" class="thumbnail" />
-				::end::
+			<div class="col-md-6">
+				<div class='alert alert-warning'>
+					<p><i class='icon icon-info'></i> 
+						Si vous souhaitez changer le nom de votre entreprise, son adresse ou une information légale,   
+						contactez le support sur <a href='mailto: ::theme.supportEmail::' target='_blank'>::theme.supportEmail::</a>.<br/>
+					</p>
+				</div>
 			</div>
-		
-			<div class="col-md-3">
-				<p>	
-					<h4>Votre portrait</h4>				
-					<a class="btn btn-default btn-sm" $$openImageUploader('company', ::company.id::, 300, 300, 'portrait')>
-						<i class="icon icon-image"></i> Définir un portrait
-					</a>
-					<div id="image-uploader-container" />
-				</p>
-			</div>			
-			<div class="col-md-3">				
-				::if images.portrait!=null::
-				<img src="::file(images.portrait)::" style="max-width: 256px;max-height: 128px;" class="thumbnail" />
-				::end::
+			<div class="col-md-6">
+				<div class='alert alert-warning'>
+					<p><i class='icon icon-info'></i> 
+						Pour changer l'email commercial de votre entreprise,   
+						définissez un utilisateur comme contact commercial sur <a href="::vendor.getURL()::/company/users" target="_blank">la page "utilisateurs"</a>						
+					</p>
+				</div>
 			</div>
 		</div>
 
+		<div class="row">
+			<div class="col-md-12">
+				<h3>Page vitrine</h3>
 
-		
+				<table class="table table-condensed table-bordered">
+					<tr>
+						<th class="col-md-4">URL de votre page vitrine</th>
+						<td>
+							::set url = "https://"+HOST+vendor.getLink()::
+							<b>
+								<a id="copy-url" href="::url::" target="_blank">::url::</a>
+							</b>
+							
+						</td>
+						<td>
+							
+							&nbsp;&nbsp;<a id="copy-url-button" class="btn btn-default btn-sm">
+								<i class="icon icon-link"></i> Copier le lien
+							</a>
+							<script>
+								var copyTextBtn = document.querySelector('#copy-url-button');
+								var previousText = copyTextBtn.innerHTML;
+								copyTextBtn.addEventListener('click', function(event) {
+									var element = document.querySelector('#copy-url');
+									var storage = document.createElement('textarea');
+									storage.value = element.innerHTML;
+									element.appendChild(storage);
+									storage.select();
+									document.execCommand('copy');
+									element.removeChild(storage);
 
+									copyTextBtn.innerHTML = "✔ copié"
+									setTimeout(function() {
+										copyTextBtn.innerHTML = previousText;
+									}, 1000);
+								});
+							</script>
+						</td>						
+					</tr>					
+					<tr>
+						<th >Description longue</th>
+						<td class="col-md-6">
+							<p ::cond vendor.longDesc!=null::>
+								<i>::vendor.longDesc::</i>
+							</p>
+							
+						</td>
+						<td class="col-md-2">$$edit(Modifier,::vendor.getURL()::/company/edit)</td>
+					</tr>
+					<tr>
+						<th>Bannière ( bandeau utilisé pour l'entête de votre page vitrine )</th>
+						<td class="col-md-6">				
+							::if images.banner!=null::
+							<img src="::file(images.banner)::" style="max-width: 256px;max-height: 128px;" />
+							::end::			
+							
+						</td>
+						<td class="col-md-2">
+							<div id="image-uploader-container" />
+							<a class="btn btn-default btn-sm" $$openImageUploader('company', ::company.id::, 1500, 500, 'banner')>
+							<i class="icon icon-image"></i> Envoyer une image
+							</a>
+						</td>
+					</tr>
+					<tr>
+						<th>Description longue de votre exploitation</th>
+						<td class="col-md-6">				
+							<i>::vendor.longDesc::</i>
+						</td>
+						<td class="col-md-2">
+							$$edit(Modifier,/edit)
+						</td>
+					</tr>
+					<tr>
+						<th>En dehors de Cagette.net, où peut on trouver vos produits ?</th>
+						<td class="col-md-6">				
+							<i>::vendor.longDesc::</i>
+						</td>
+						<td class="col-md-2">
+							$$edit(Modifier,/edit)
+						</td>
+					</tr>
+					<tr>
+						<th>Photo 1</th>
+						<td class="col-md-6">				
+							::if images.farm1!=null::<img src="::file(images.farm1)::" style="max-width: 256px;max-height: 128px;" />::end::									
+						</td>
+						<td class="col-md-2">
+							<a class="btn btn-default btn-sm" $$openImageUploader('company', ::company.id::, 300, 300, 'farm1')>
+								<i class="icon icon-image"></i> ::if images.farm1==null::Envoyer une image ::else:: Modifier l'image ::end::
+							</a>
+							<div id="image-uploader-container" />
+						</td>
+					</tr>
+					<tr>
+						<th>Photo 2</th>
+						<td class="col-md-6">				
+							::if images.farm2!=null::<img src="::file(images.farm2)::" style="max-width: 256px;max-height: 128px;" class="thumbnail" />::end::
+						</td>
+						<td class="col-md-2">
+							<a class="btn btn-default btn-sm" $$openImageUploader('company', ::company.id::, 300, 300, 'farm2')>
+								<i class="icon icon-image"></i> ::if images.farm2==null::Envoyer une image ::else:: Modifier l'image ::end::
+							</a>
+							<div id="image-uploader-container" />
+						</td>
+					</tr>
+					<tr>
+						<th>Photo 3</th>
+						<td class="col-md-6">				
+							::if images.farm3!=null::<img src="::file(images.farm3)::" style="max-width: 256px;max-height: 128px;" class="thumbnail" />::end::
+						</td>
+						<td class="col-md-2">
+							<a class="btn btn-default btn-sm" $$openImageUploader('company', ::company.id::, 300, 300, 'farm3')>
+								<i class="icon icon-image"></i> ::if images.farm3==null::Envoyer une image ::else:: Modifier l'image ::end::
+							</a>
+							<div id="image-uploader-container" />
+						</td>
+					</tr>
+					<tr>
+						<th>Photo 4</th>
+						<td class="col-md-6">				
+							::if images.farm4!=null::<img src="::file(images.farm4)::" style="max-width: 256px;max-height: 128px;" class="thumbnail" />::end::
+						</td>
+						<td class="col-md-2">
+							<a class="btn btn-default btn-sm" $$openImageUploader('company', ::company.id::, 300, 300, 'farm4')>
+								<i class="icon icon-image"></i> ::if images.farm4==null::Envoyer une image ::else:: Modifier l'image ::end::
+							</a>	
+							<div id="image-uploader-container" />
+						</td>
+					</tr>
+					
+				</table>
+			</div>
+
+		</div>
 	</div>
 ::end::

@@ -37,9 +37,9 @@ $config->set_att(
     host               => $ENV{NEKO_HOST_PUBLIC},
     key                => $ENV{PW_HASH_KEY},
     debug              => "0",
-    mapbox_server_token => $ENV{MAPBOX_TOKEN},
-    MANGOPAY_CLIENT_ID => $ENV{MANGOPAY_CLIENT_ID},
-    MANGOPAY_API_KEY   => $ENV{MANGOPAY_API_KEY}
+    mapbox_server_token => $ENV{MAPBOX_TOKEN}
+    # MANGOPAY_CLIENT_ID => $ENV{MANGOPAY_CLIENT_ID},
+    # MANGOPAY_API_KEY   => $ENV{MANGOPAY_API_KEY}
 );
 
 $twig->print_to_file( $ARGV[1] ); # output the twig

@@ -91,12 +91,12 @@
 				</tr>
 				::set offers = p.getOffers(false)::
 				::if(offers.length > 0)::
-					::set css="display:none;"::
+					::set cl=""::
 				::else::
-					::set css=""::
+					::set cl="in"::
 				::end::
 
-				<tr id="row_p::p.id::"  class="collapse">
+				<tr id="row_p::p.id::"  class="collapse ::cl::">
 					<td></td>
 					
 					<td colspan="5">
@@ -160,22 +160,13 @@
 							
 						</table>
 					</td>
-					
-					
-					
 				</tr>
-			
-			
 			::end::
 		</table>
 		::end::
 
-
-
-		
 		<script>
 			document.addEventListener("DOMContentLoaded", function(event) {
-
 				var h = document.location.hash;
 				if(h.substr(1,7)=="product") {
 					var pid = h.substr(8);
@@ -189,7 +180,4 @@
 		
 	</div>
 </div>
-
-
-
 ::end::

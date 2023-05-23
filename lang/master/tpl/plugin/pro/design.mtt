@@ -54,14 +54,16 @@
 						</a>								
 					</li>
 
-					<li ::attr class if(category!=null && category=="messages") 		'active' ::>
+					::if(vendor.id < 25814)::
+					<li ::attr class if(category!=null && category=="messages") 'active' ::>
 						<a href="::vendor.getURL()::/messages">
 							<i class="icon icon-mail"></i>
 							Messagerie
 						</a>								
 					</li>
+					::end::
 
-					<li ::attr class if(category!=null && category=="company") 		'active' ::>
+					<li ::attr class if(category!=null && category=="company") 	'active' ::>
 						<a href="::vendor.getURL()::/company">
 							<i class="icon icon-cog"></i>
 							Paramètres
