@@ -8,9 +8,6 @@
 </style>
 
 <div class="col-md-8">
-	
-
-
 	::if notifs.length>0::
 	<ul class="list-group">
 		

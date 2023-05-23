@@ -30,6 +30,20 @@ class Company extends controller.Controller
 
 		view.nav.push("default");
 
+		//create permalink
+		var link = sugoi.db.Permalink.getByEntity(vendor.id,"vendor");
+		if(link==null){
+			var proposals = sugoi.db.Permalink.propose(vendor.name,[vendor.zipCode.substr(0,2),vendor.city]);
+			if(proposals.length>0){
+				link  = new sugoi.db.Permalink();
+				link.entityType = "vendor";
+				link.entityId = vendor.id;
+				link.link = proposals[0];
+				link.insert();
+			}
+			
+		}
+
 		if(company==null){
 			var groups = Lambda.map(vendor.getActiveContracts(),function(c) return c.group);
 			view.groups = tools.ObjectListTool.deduplicate(groups);

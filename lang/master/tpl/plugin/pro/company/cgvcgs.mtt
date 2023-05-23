@@ -1,6 +1,35 @@
 ::use 'plugin/pro/company/design.mtt'::
 	
-    <h3>C.G.V & C.G.S</h3>
+    <h3>Infos légales</h3>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Identification de votre entreprise</h4>
+            <table class="table table-condensed table-striped table-bordered">
+                <tr>
+                    <td>SIRET</td>
+                    <td>::vendor.companyNumber::</td>
+                </tr>
+                <tr>
+                    <td>Métier</td>
+                    <td>::vendor.getProfession()::</td>						
+                </tr>
+                <tr>
+                    <td>Forme juridique</td>
+                    <td>::vendor.getLegalStatus(true)::</td>
+                </tr>
+                <tr>
+                    <td>code NAF</td>
+                    <td>
+                        ::set act = vendor.getActivity()::
+                        ::if(act!=null)::
+                            ::act.name:: (::act.id::)
+                        ::end::
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
 
     <div class="row">
         <div class="col-md-6">
