@@ -7,9 +7,7 @@
 	}
 </style>
 
-<div class="col-md-8 col-xs-7">
-	
-
+<div class="col-md-8 col-sm-7">
 
 	::if notifs.length>0::
 	<ul class="list-group">
@@ -202,7 +200,7 @@
 	
 </div>
 
-<div class="col-md-4 col-xs-5">
+<div class="col-md-4 col-sm-5">
 
 	<div class=" article">
 		<h2 style="margin-top:0">Prochaines distributions</h2>	
