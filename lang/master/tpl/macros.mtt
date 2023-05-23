@@ -119,9 +119,9 @@
 	</macro>
 
 	<macro name='nav(t, currentPage, ?vendorId)'>
-		
+
 		::if(noGroup==true)::
-			::if(pageTitle!=null)::
+			::if(pageTitle!=null&&t.length>0)::
 				::set title=pageTitle::
 			::else::
 				::set title=""::
@@ -130,7 +130,7 @@
 			::set title=t::
 		::end::
 
-		<div style="display: flex;">
+		<div style="display: flex; position: relative;">
 			<style>
 				.nav-placeholder {
 					min-width: 240px;
@@ -191,7 +191,8 @@
 								image: ::if cpro._vendor.imageId!=null:: '::file(cpro._vendor.imageId)::' ::else:: null ::end::
 							},
 							::end::
-							]
+							],
+						isMarketAdmin: ::isMarketAdmin::
 					});
 				});
 			</script>

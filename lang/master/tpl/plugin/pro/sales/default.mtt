@@ -1,6 +1,6 @@
 ::use 'plugin/pro/design.mtt'::
 
-<div class="col-md-8">
+<div class="col-sm-8">
 	<div class="article">
 		<h2>Prochaines ventes</h2>
 		
@@ -116,7 +116,7 @@
 									::contract.name::
 								::end::
 							</div>
-							<div class="col-md-8">
+							<div class="col-md-8" style="margin-bottom: 8px;">
 								::if(attend)::
 								<div class="btn-group" role="group">
 									<a href="::vendor.getURL()::/delivery/view/::attend.id::" class="btn btn-default btn-sm"><i class="icon icon-basket"></i> Commandes</a>		
@@ -127,12 +127,13 @@
 								</div>							
 								::else::
 									::if (status=="open" || status=="notYetOpened")::	
-									<div id='participate-neo-container'/>
+									<div id='participate-neo-container-::d.id::-::contract.id::'/>
 									<script>
 										document.addEventListener("DOMContentLoaded", function(event) {
-											neo.createNeoModule("participate-neo-container", "participate",{
+											neo.createNeoModule('participate-neo-container-::d.id::-::contract.id::', "participate",{
 												multiDistribId: ::d.id::,
-												catalogId: ::contract.id::
+												catalogId: ::contract.id::,
+												vendorId: ::vendor.id::
 											});
 										});
 									</script>
@@ -158,7 +159,7 @@
 	</div>
 </div>
 
-<div class="col-md-4">
+<div class="col-sm-4">
 	<div class="article">
 		<h4>Récapitulatifs par période</h4>
 		::raw form.render()::

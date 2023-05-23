@@ -7,7 +7,8 @@
 	}
 </style>
 
-<div class="col-md-8">
+<div class="col-md-8 col-sm-7">
+
 	::if notifs.length>0::
 	<ul class="list-group">
 		
@@ -78,7 +79,7 @@
 			::end::
 
 			::foreach client adminClients::
-			<div class="col-md-3" data-toggle="tooltip" data-placement="bottom" title="Aller dans ce ::theme.groupWordingShort::">
+			<div class="col-lg-3 col-md-4 col-xs-6" data-toggle="tooltip" data-placement="bottom" title="Aller dans ce ::theme.groupWordingShort::">
 				
 				::set group = client[0].getContract(false)._group::
 				<a href="/group/::group.id::" target="_blank" class="clickable" style="height:60px;">
@@ -158,7 +159,7 @@
 				</div>
 			::end::	
 			
-			<div class="col-md-12">
+			<div class="col-xs-12">
 				::if company.offer==1::
 				<!--<a href="::vendor.getURL()::/group/duplicate" class="btn btn-default btn-sm">
 					<i class="icon icon-plus"></i> Dupliquer un ::theme.groupWordingShort::
@@ -186,7 +187,7 @@
 		</div>
 	</div>
 
-	<div id="stats-module-container"></div>
+	<div id="stats-module-container" style="max-width: calc(100vw - 30px);"></div>
 	<script>
 		document.addEventListener("DOMContentLoaded", function () {
 			neo.createNeoModule("stats-module-container", "vendorTurnover", {
@@ -197,7 +198,7 @@
 	
 </div>
 
-<div class="col-md-4">
+<div class="col-md-4 col-sm-5">
 
 	<div class=" article">
 		<h2 style="margin-top:0">Prochaines distributions</h2>	
