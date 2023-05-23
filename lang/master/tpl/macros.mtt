@@ -130,7 +130,7 @@
 			::set title=t::
 		::end::
 
-		<div style="display: flex;">
+		<div style="display: flex; position: relative;">
 			<style>
 				.nav-placeholder {
 					min-width: 240px;
