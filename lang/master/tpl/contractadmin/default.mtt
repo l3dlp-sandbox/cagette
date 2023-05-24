@@ -39,7 +39,8 @@
 		</div>
 		<div style="vertical-align: middle;">
 			<a href="/contract/searchVendor/" class="btn btn-primary"><i class="icon icon-search"></i> Découvrir les producteurs du réseau</a>
-			<a href="/contract/inviteVendor/" class="btn btn-default"><i class="icon icon-mail"></i> Inviter un producteur</a>		
+			
+			<!--<a href="/contract/inviteVendor/" class="btn btn-default"><i class="icon icon-mail"></i> Inviter un producteur</a>		-->
 			
 			<script>
 				var searchCatalog = function(){

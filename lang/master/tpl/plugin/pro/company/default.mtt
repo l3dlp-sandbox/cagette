@@ -76,7 +76,10 @@
 					</tr>						
 					::set images = vendor.getImages()::					
 					<tr>
-						<th class="col-md-4">Logo de votre entreprise</th>
+						<td class="col-md-4">
+							<b>Logo de votre entreprise</b>
+							<div class="disabled">Taille recommandée : 300 x 300 px</div> 
+						</td>
 						<td>
 							::if images.logo!=null::
 							<img src="::file(images.logo)::" style="max-width: 256px;max-height: 128px;" />
@@ -91,7 +94,10 @@
 					</tr>
 
 					<tr>
-						<th class="col-md-4">Portrait du ou des producteur(s)</th>
+						<td class="col-md-4">
+							<b>Portrait du ou des producteur(s)</b>
+							<div class="disabled">Taille recommandée : 300 x 300 px</div> 
+						</td>
 						<td>
 							::if images.portrait!=null::
 							<img src="::file(images.portrait)::" style="max-width: 256px;max-height: 128px;" />
