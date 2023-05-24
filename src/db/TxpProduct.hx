@@ -2,10 +2,6 @@ package db;
 import sys.db.Object;
 import sys.db.Types;
 
-/**
- * ...
- * @author fbarbut
- */
 class TxpProduct extends Object
 {
 
