@@ -1,5 +1,11 @@
 ::use 'designMarket.mtt'::
 
+	::if groups.length>0::
+	<div class="col-md-12" >
+		<p>Voici les <b>::theme.groupWording_plural::</b> dont vous êtes administrateur :</p>
+	</div>
+	::end::
+	
 	<!-- groups -->
 	<div class="col-md-12">
 		<div class="row">
@@ -17,7 +23,7 @@
 			::if groups.length==0::
 			<div class="col-md-12">
 				<div class="article text-center">
-					$$empty(Vous n’êtes administrateur d’aucun ::theme.groupWordingShort::...)
+					$$empty(Vous n’êtes pas encore administrateur d’un ::theme.groupWording::)
 				</div>
 			</div>
 			::end::
