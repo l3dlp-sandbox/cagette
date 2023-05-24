@@ -6,12 +6,6 @@
 		$$timeframe(::timeframe::)
 	</p>
 
-	<p>
-		<a href="/contractAdmin/distributions/::c.id::?participateToAllDistributions=1&_from=::timeframe.from.toString()::&_to=::timeframe.to.toString()::" class="btn btn-default">
-			<i class="icon icon-check"></i> Participer à toutes les distributions
-		</a>		
-	</p>
-
 	<table class="table">
 		::set now = now().getTime()::
 
@@ -34,9 +28,6 @@
 						du ::hDate(md.getDate())::
 					</td>
 					<td>
-						<a href="/contractAdmin/participate/::md.id::/::c.id::?_from=::timeframe.from.toString()::&_to=::timeframe.to.toString()::" class="btn btn-default btn-sm">
-							<i class="icon icon-plus"></i> ::_("Participate")::
-						</a>
 					</td>
 				::else::
 					<!--<span style="display:none;">::d.populate()::</span>-->
@@ -56,10 +47,6 @@
 
 							<a href="/contractAdmin/orders/::d._catalog.id::?d=::d.id::" class="btn btn-default btn-sm">
 								<i class="icon icon-basket"></i>&nbsp;::_("Orders")::
-							</a>
-
-							<a href="/distributions/delete/::d.id::?_from=::timeframe.from.toString()::&_to=::timeframe.to.toString()::" class="btn btn-default btn-sm">
-								<i class="icon icon-delete"></i>&nbsp;Ne plus participer
 							</a>
 
 						</div>

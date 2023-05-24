@@ -33,7 +33,8 @@ class Sales extends controller.Controller
 
         //get multidistribs 
         var distribs = [];
-        for( group in company.getClients()){
+		var groups = company.getClients();
+        for( group in groups){
             for( md in db.MultiDistrib.getFromTimeRange(group, today,sixMonth) ){
                 distribs.push(md);
             }
@@ -76,20 +77,12 @@ class Sales extends controller.Controller
 		}
 		view.form = form;
 
+		view.groups = groups;
         view.distribs = distribs;
         view.getFromGroup = connector.db.RemoteCatalog.getFromGroup;
 
 		checkToken();
 
-	}
-
-    function doParticipate(md:db.MultiDistrib,contract:db.Catalog){
-		try{
-			service.DistributionService.participate(md,contract);
-		}catch(e:tink.core.Error){
-			throw Error(baseUrl,e.message);
-		}		
-		throw Ok(baseUrl,"Vous participez maintenant à la distribution du "+view.hDate(md.getDate()));
 	}
 
     /**
