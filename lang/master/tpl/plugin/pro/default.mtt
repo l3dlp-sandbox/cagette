@@ -170,22 +170,20 @@
 						<i class="icon icon-plus"></i> Ouvrir un nouveau ::theme.groupWordingShort::
 					</button>
 					<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">					
-						<li><a href="/group/newMarket"><i class="icon icon-bank-card"></i> avec paiement en ligne</a></li>
+						<li><a href="/user/myMarkets"><i class="icon icon-bank-card"></i> avec paiement en ligne</a></li>
 						<li><a href="::vendor.getURL()::/createGroup"><i class="icon icon-payment-type"></i> avec paiement sur place</a></li>			
 					</ul>
 				</div>
 				::else::
-				<a href="/group/newMarket" class="btn btn-default btn-sm">
+				<a href="/user/myMarkets" class="btn btn-default btn-sm">
 					<i class="icon icon-plus"></i> Créer un nouveau ::theme.groupWordingShort::
 				</a>
 				::end::
 
 				<a href="::vendor.getURL()::/group/removeGroup" class="btn btn-default btn-sm">
-					<i class="icon icon-delete"></i> ne plus travailler avec un ::theme.groupWordingShort::
+					<i class="icon icon-delete"></i> Quitter un ::theme.groupWordingShort::
 				</a>
 			</div>	
-			
-			
 		</div>
 	</div>
 
@@ -193,7 +191,7 @@
 	<script>
 		document.addEventListener("DOMContentLoaded", function () {
 			neo.createNeoModule("stats-module-container", "vendorTurnover", {
-				vendorId: ::vendorId::
+				vendorId: ::vendor.id::
 			});
 		});
 	</script>

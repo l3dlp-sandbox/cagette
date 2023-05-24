@@ -3,8 +3,10 @@
     <h3>Infos légales</h3>
 
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-12">
             <h4>Identification de votre entreprise</h4>
+        </div>
+        <div class="col-md-6">            
             <table class="table table-condensed table-striped table-bordered">
                 <tr>
                     <td>SIRET</td>
@@ -28,6 +30,9 @@
                     </td>
                 </tr>
             </table>
+        </div>
+        <div class="col-md-6">
+            Pour toute demande de modification, écrivez à <a href="::"mailto:"+theme.supportEmail::">::theme.supportEmail::</a>.  
         </div>
     </div>
 

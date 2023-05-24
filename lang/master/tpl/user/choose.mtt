@@ -1,7 +1,7 @@
 ::use 'design.mtt'::
 
 	<div class="col-md-12" >
-		<p>Vous êtes membre des <b>::theme.groupWording::</b> suivants :</p>
+		<p>Voici vos <b>::theme.groupWording_plural::</b> préférés :</p>
 	</div>
 
 	<!-- groups -->
@@ -31,8 +31,8 @@
 	
 	<div class="col-md-12 text-center" style="margin-bottom:12px;" >
 		::if session.lang!="de"::
-			<a class="btn btn-default btn-lg" href="/group/map" style="white-space: normal;">
-				<i class="icon icon-search"></i> Chercher des ::theme.groupWordingShort_plural:: près de chez moi
+			<a class="btn btn-primary btn-lg" href="/group/map" style="white-space: normal;">
+				<i class="icon icon-search"></i> Voir tous les ::theme.groupWordingShort_plural::
 			</a>
 		::end::
 		<!-- actions 

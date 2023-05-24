@@ -18,7 +18,6 @@
 				</tr>
 				::foreach md multidistribs::
                     <tr>
-
                         <td>
                             ::hDate(md.getDate())::<br/>                        
                         </td>

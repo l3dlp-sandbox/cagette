@@ -209,6 +209,15 @@ class Vendor extends Object
 		return p.name;
 	}
 
+	public function getProfessions():Array<String>{
+		var out = [];
+		var profs = service.VendorService.getVendorProfessions();
+		if(this.profession!=null) out.push(profs.find(x -> x.id==this.profession).name);
+		if(this.production2!=null) out.push(profs.find(x -> x.id==this.production2).name);
+		if(this.production3!=null) out.push(profs.find(x -> x.id==this.production3).name);
+		return out;
+	}
+
 	public function getGroups():Array<db.Group>{
 		var contracts = getActiveContracts();
 		var groups = Lambda.map(contracts,function(c) return c.group);

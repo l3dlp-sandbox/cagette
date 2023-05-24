@@ -3,7 +3,7 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" xml:lang="::LANG::" lang="::LANG::" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>Espace producteur - ::theme.name::</title>
+		<title>::if(vendor!=null):: ::vendor.name:: ::end::- ::theme.name::</title>
 
 		$$favicons()
 

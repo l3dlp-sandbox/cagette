@@ -50,34 +50,17 @@ class Company extends controller.Controller
 		}
 	}
 	
-	@tpl('plugin/pro/form.mtt')
+	@tpl('plugin/pro/company/form.mtt')
 	function doEdit() {
 		view.nav.push("default");
 		var theme = App.current.getTheme();
-
-		// var form = VendorService.getForm(vendor, company.offer!=Training );
+		
 		var form = new sugoi.form.Form("company");
-		form.addElement( new Html("html",vendor.name,"Nom"));
-		form.addElement( new Html("html",vendor.getAddress(),"Adresse"));
-		form.addElement( new Html("html","<div class='alert alert-warning'><p><i class='icon icon-info'></i> 
-		Si vous souhaitez changer le nom de votre entreprise, son adresse ou une information légale,   
-		contactez le support sur <a href='mailto:"+theme.supportEmail+"' target='_blank'>"+theme.supportEmail+"</a>
-		</p></div>",""));
 		form.addElement(new TextArea("desc","Description courte de votre ferme",vendor.desc));
-		form.addElement(new StringInput("linkText","Intitulé du lien<br/>(site web, page facebook...)",vendor.linkText));
-		form.addElement(new StringInput("linkUrl","URL du lien",vendor.linkUrl));
+		// form.addElement(new StringInput("linkText","Intitulé du lien<br/>(site web, page facebook...)",vendor.linkText));
+		// form.addElement(new StringInput("linkUrl","URL du lien",vendor.linkUrl));
 		
-		form.addElement( new Html("html",vendor.email,"Email commercial (public)"));
-		form.addElement( new Html("html","<div class='alert alert-warning'><p><i class='icon icon-info'></i> 
-		Pour changer le contact commercial de votre entreprise,   
-		définissez un utilisateur comme contact commercial sur <a href='"+vendor.getURL()+"/company/users' target='_blank'>la page \"utilisateurs\"</a>
-		</p></div>",""));
-		
-		view.title = "Modifier les propriétés";
-
-		// if(company.offer!=Training){ 
-		// 	app.session.addMessage("Attention, afin de mieux informer les consommateurs, vous devez maintenant renseigner votre <b>numéro SIRET</b> et confirmer le fait que votre activité est conforme à la <b><a href=\"https://www.cagette.net/charte-producteurs\" target=\"_blank\">Charte Producteurs Cagette.net</a></b>.");
-		// }
+		view.title = "Modifier la description";
 				
 		if (form.isValid()) {
 			vendor.lock();
@@ -87,11 +70,102 @@ class Company extends controller.Controller
 				throw Error(sugoi.Web.getURI(),e.message);
 			}			
 			vendor.update();
-			throw Ok(vendor.getURL()+'/company','Vos informations ont été mises à jour');
-		}
-		
+			throw Ok(vendor.getURL()+'/company','Votre profil a été mis à jour');
+		}		
 		view.form = form;
-	}	
+	}
+	
+	@tpl('plugin/pro/company/form.mtt')
+	function doEditLink() {
+		view.nav.push("default");
+		var theme = App.current.getTheme();
+		
+		var form = new sugoi.form.Form("company");
+		form.addElement(new StringInput("linkText","Intitulé du lien<br/>(site web, page facebook...)",vendor.linkText));
+		form.addElement(new StringInput("linkUrl","URL du lien",vendor.linkUrl));		
+		view.title = "Modifier le lien de votre site web";
+				
+		if (form.isValid()) {
+			vendor.lock();
+			try{
+				vendor = VendorService.update(vendor,form.getDatasAsObject(),false);
+			}catch(e:tink.core.Error){
+				throw Error(sugoi.Web.getURI(),e.message);
+			}			
+			vendor.update();
+			throw Ok(vendor.getURL()+'/company','Votre profil a été mis à jour');
+		}		
+		view.form = form;
+	}
+
+	@tpl('plugin/pro/company/form.mtt')
+	function doEditPeople() {
+		view.nav.push("default");
+		var theme = App.current.getTheme();
+		
+		var form = new sugoi.form.Form("company");
+		form.addElement(new StringInput("peopleName","Nom du ou des producteur(s)",vendor.peopleName));		
+		view.title = "Modifier le nom du ou des producteur(s)";
+				
+		if (form.isValid()) {
+			vendor.lock();
+			try{
+				vendor = VendorService.update(vendor,form.getDatasAsObject(),false);
+			}catch(e:tink.core.Error){
+				throw Error(sugoi.Web.getURI(),e.message);
+			}			
+			vendor.update();
+			throw Ok(vendor.getURL()+'/company','Votre profil a été mis à jour');
+		}		
+		view.form = form;
+	}
+
+	@tpl('plugin/pro/company/form.mtt')
+	function doEditLongDesc() {
+		view.nav.push("default");
+		var theme = App.current.getTheme();
+		
+		var form = new sugoi.form.Form("company");
+		// form.addElement(new StringInput("peopleName","Nom du ou des producteur(s)",vendor.peopleName));		
+		form.addElement(new sugoi.form.elements.TextArea("longDesc","Description longue de votre exploitation",vendor.longDesc));
+		view.title = "Modifier la description";
+				
+		if (form.isValid()) {
+			vendor.lock();
+			try{
+				vendor = VendorService.update(vendor,form.getDatasAsObject(),false);
+			}catch(e:tink.core.Error){
+				throw Error(sugoi.Web.getURI(),e.message);
+			}			
+			vendor.update();
+			throw Ok(vendor.getURL()+'/company','Votre profil a été mis à jour');
+		}		
+		view.form = form;
+		view.tinymce = true;
+	}
+
+	@tpl('plugin/pro/company/form.mtt')
+	function doEditOffCagette() {
+		view.nav.push("default");
+		var theme = App.current.getTheme();
+		
+		var form = new sugoi.form.Form("company");
+		form.addElement(new sugoi.form.elements.TextArea("offCagette","En dehors de Cagette.net, où peut-on trouver vos produits ?",vendor.offCagette));
+		// view.title = "Modifier la description";
+				
+		if (form.isValid()) {
+			vendor.lock();
+			try{
+				vendor = VendorService.update(vendor,form.getDatasAsObject(),false);
+			}catch(e:tink.core.Error){
+				throw Error(sugoi.Web.getURI(),e.message);
+			}			
+			vendor.update();
+			throw Ok(vendor.getURL()+'/company','Votre profil a été mis à jour');
+		}		
+		view.form = form;
+		view.tinymce = true;
+	}
 	
 	@tpl('plugin/pro/company/users.mtt')
 	public function doUsers(){
