@@ -121,7 +121,7 @@
 								<div class="btn-group" role="group">
 									<a href="::vendor.getURL()::/delivery/view/::attend.id::" class="btn btn-default btn-sm"><i class="icon icon-basket"></i> Commandes</a>		
 									::if(contract.type!=0)::
-										<a href="/::vendor.getURL()::/sales/edit/::attend.id::" class="btn btn-default btn-sm"><i class="icon icon-calendar"></i> Dates</a>
+										<a href="::vendor.getURL()::/sales/edit/::attend.id::" class="btn btn-default btn-sm"><i class="icon icon-calendar"></i> Dates</a>
 									::end::
 									<a href="::vendor.getURL()::/sales/delete/::attend.id::" class="btn btn-default btn-sm"><i class="icon icon-delete"></i> Ne plus participer</a>
 								</div>							
