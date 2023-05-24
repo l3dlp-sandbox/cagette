@@ -33,7 +33,8 @@ class Sales extends controller.Controller
 
         //get multidistribs 
         var distribs = [];
-        for( group in company.getClients()){
+		var groups = company.getClients();
+        for( group in groups){
             for( md in db.MultiDistrib.getFromTimeRange(group, today,sixMonth) ){
                 distribs.push(md);
             }
@@ -76,6 +77,7 @@ class Sales extends controller.Controller
 		}
 		view.form = form;
 
+		view.groups = groups;
         view.distribs = distribs;
         view.getFromGroup = connector.db.RemoteCatalog.getFromGroup;
 

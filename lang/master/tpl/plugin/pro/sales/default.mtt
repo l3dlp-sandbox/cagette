@@ -1,6 +1,6 @@
 ::use 'plugin/pro/design.mtt'::
 
-<div class="col-sm-8">
+<div class="col-sm-7">
 	<div class="article">
 		<h2>Prochaines ventes</h2>
 		
@@ -56,7 +56,7 @@
 
 		::foreach d distribs::
 			
-			<div class="row distrib" style="padding-top:12px; margin-bottom: 12px;" id="::d.id::">
+			<div class="row distrib" style="padding-top:12px; margin-bottom: 12px;" id="md_::d.id::">
 				<div class="col-md-2 text-center">
 					
 					<div style="display:inline-block;">
@@ -127,7 +127,7 @@
 								</div>							
 								::else::
 									::if (status=="open" || status=="notYetOpened")::	
-									<div id='participate-neo-container-::d.id::-::contract.id::'/>
+									<div id='participate-neo-container-::d.id::-::contract.id::' style="min-height: 34px;"/>
 									<script>
 										document.addEventListener("DOMContentLoaded", function(event) {
 											neo.createNeoModule('participate-neo-container-::d.id::-::contract.id::', "participate",{
@@ -159,10 +159,38 @@
 	</div>
 </div>
 
-<div class="col-sm-4">
+<div class="col-sm-5">
 	<div class="article">
 		<h4>Récapitulatifs par période</h4>
 		::raw form.render()::
+	</div>	
+</div>
+
+<div class="col-sm-5">
+	<div class="article">
+		<h4>Participer à toutes les distributions d'un ::theme.groupWordingShort::</h4>
+		<div style="margin-top: 16px; margin-bottom: 16px;">
+			::foreach g groups::
+				<h5><b><i class="icon icon-map-marker" style="margin-right: 8px;"></i>::g.name::</b></h5>
+					<ul>
+					::foreach rc getFromGroup(company,g)::
+					::set contract = rc.getContract(false)::
+						<li style="margin-bottom: 8px;">
+							::contract.name::
+							<div id='participate-to-all-neo-container-::g.id::-::contract.id::' style="display:inline;"/>
+							<script>
+								document.addEventListener("DOMContentLoaded", function(event) {
+									neo.createNeoModule('participate-to-all-neo-container-::g.id::-::contract.id::', "participateToAllDistributions",{
+										catalogId: ::contract.id::,
+										vendorId: ::vendor.id::
+									});
+								});
+							</script>
+						</li>
+					::end::
+					</ul>
+			::end::
+		</div>
 	</div>	
 
 </div>
