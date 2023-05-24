@@ -6,6 +6,16 @@
 		$$timeframe(::timeframe::)
 	</p>
 
+
+	<div class="alert alert-warning">
+		<i class="icon icon-info"></i>
+		Il n'est plus possible de participer aux distributions depuis cette page.<br/>
+		<ul>
+			<li>Si vous êtes administrateur de ::theme.groupWordingShort::, invitez le producteur aux distributions via <a href="/distributions">la page "Distributions"</a>.</li>
+			<li>Si vous êtes producteur, participez aux distributions depuis <a href="::contract._vendor.getURL()::/sales/" >votre page "Ventes".</a></li>
+		</ul>
+	</div>
+
 	<table class="table">
 		::set now = now().getTime()::
 

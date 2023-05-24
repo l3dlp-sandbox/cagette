@@ -23,8 +23,8 @@
                 <a href="https://wiki.cagette.net/cpro:stripe" target="_blank" class="btn btn-default">
                     <i class="icon icon-info"></i> Consultez la documentation</a>
 
-                    <!--<a href="https://meetings.hubspot.com/charlotte-chamboissier/demande-dinformations-rdv-tel-avec-un-conseiller-cagette" target="_blank" class="btn btn-default">
-                        <i class="icon icon-phone"></i> Prenez rendez-vous avec un conseiller</a>-->
+                    <a href="::"mailto:"+theme.supportEmail::" class="btn btn-default">
+                        <i class="icon icon-mail"></i> Une question ? contactez le support</a>
                     
                 <br/>
             </p>
