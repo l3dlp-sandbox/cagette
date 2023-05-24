@@ -85,15 +85,6 @@ class Sales extends controller.Controller
 
 	}
 
-    function doParticipate(md:db.MultiDistrib,contract:db.Catalog){
-		try{
-			service.DistributionService.participate(md,contract);
-		}catch(e:tink.core.Error){
-			throw Error(baseUrl,e.message);
-		}		
-		throw Ok(baseUrl,"Vous participez maintenant à la distribution du "+view.hDate(md.getDate()));
-	}
-
     /**
 		Delete a distribution
 	**/

@@ -456,7 +456,7 @@ class ContractAdmin extends Controller
 	 * Lists deliveries for this contract
 	 */
 	@tpl("contractadmin/distributions.mtt")
-	function doDistributions(contract:db.Catalog, ?args: { ?participateToAllDistributions:Bool } ) {
+	function doDistributions(contract:db.Catalog ) {
 
 		view.nav.push("distributions");
 		sendNav(contract);
@@ -471,35 +471,12 @@ class ContractAdmin extends Controller
 
 		var multidistribs =  db.MultiDistrib.getFromTimeRange(contract.group,timeframe.from , timeframe.to);
 
-		if(args!=null && args.participateToAllDistributions){
-			for( d in multidistribs){
-				if( d.getDistributionForContract(contract)==null ){
-					try{
-						service.DistributionService.participate(d,contract);
-					}catch(e:Error){
-						app.session.addMessage(e.message,true);
-					}
-				}				
-			}
-			app.session.addMessage(contract.vendor.name+" participe maintenant à toutes les distributions");
-		}
-		
 		view.multidistribs = multidistribs;
 		view.c = contract;
 		view.contract = contract;
 		view.timeframe = timeframe;
 
 				
-	}
-
-	function doParticipate(md:db.MultiDistrib,contract:db.Catalog){
-		try{
-			service.DistributionService.participate(md,contract);
-		}catch(e:tink.core.Error){
-			throw Error("/contractAdmin/distributions/"+contract.id,e.message);
-		}
-		
-		throw Ok('/contractAdmin/distributions/${contract.id}?_from=${app.params.get("_from")}&_to=${app.params.get("_to")}',t._("Distribution date added"));
 	}
 	
 	@tpl("contractadmin/view.mtt")
