@@ -104,23 +104,27 @@ class User extends Controller
 		
 	}
 
-	@logged
+	// @logged
 	@tpl("user/myMarkets.mtt")
 	function doMyMarkets(?args: { group:db.Group } ) {
-		
-		if (args!=null && args.group!=null) {
-			//select a group
-			var which = app.session.data==null ? 0 : app.session.data.whichUser ;
-			if(app.session.data==null) app.session.data = {};
-			app.session.data.order = null;
-			app.session.data.newGroup = null;
-			app.session.data.amapId = args.group.id;
-			app.session.data.whichUser = which;
-			throw Redirect('/distributions');
+
+		if(app.user!=null){
+			if (args!=null && args.group!=null) {
+				//select a group
+				var which = app.session.data==null ? 0 : app.session.data.whichUser ;
+				if(app.session.data==null) app.session.data = {};
+				app.session.data.order = null;
+				app.session.data.newGroup = null;
+				app.session.data.amapId = args.group.id;
+				app.session.data.whichUser = which;
+				throw Redirect('/distributions');
+			}
+			
+			var userGroups = app.user.getUserGroups().filter(ug -> return ug.getRights().length > 0);
+			view.groups = userGroups.map(ug -> ug.group);
+		}else{
+			view.groups = [];
 		}
-		
-		var userGroups = app.user.getUserGroups().filter(ug -> return ug.getRights().length > 0);
-		view.groups = userGroups.map(ug -> ug.group);
 
 		view.pageTitle = "Mes "+App.current.getTheme().groupWordingShort_plural;
 		view.noGroup = true;
