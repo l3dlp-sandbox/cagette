@@ -8,7 +8,7 @@
 
    <table class="table table-striped">
 		<tr>
-			<td>::theme.groupWordingShort.toUpperCase()::</td>
+			<td>::fluc(theme.groupWordingShort)::</td>
 			<td>
 				<b>::distribution._catalog._group.name::</b>
 			</td>

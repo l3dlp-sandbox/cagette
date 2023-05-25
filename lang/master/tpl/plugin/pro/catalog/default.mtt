@@ -92,8 +92,8 @@
 						<table class="table">
 									<tr>
 										<th>Statut</th>
-										<th>::theme.groupWordingShort.toUpperCase()::</th>				
-										<th>Nom dans le ::theme.groupWordingShort.toUpperCase()::</th>
+										<th>::fluc(theme.groupWordingShort)::</th>				
+										<th>Nom dans le ::fluc(theme.groupWordingShort)::</th>
 										<th>Coordinateur</th>
 										<th></th>
 									</tr>

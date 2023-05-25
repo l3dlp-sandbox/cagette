@@ -16,7 +16,7 @@
 
 <div class="col-md-6">
 	<div class="article">		
-		<h4>::theme.groupWordingShort_plural.toUpperCase():: appartenant au réseau :</h4>
+		<h4>::fluc(theme.groupWordingShort_plural):: appartenant au réseau :</h4>
 		<table class="table table-condensed">
 			::foreach g company.getNetworkGroups()::
 			<tr>

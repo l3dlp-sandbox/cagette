@@ -7,12 +7,11 @@
 			Du ::hDate(startDate):: au ::hDate(endDate)::
 		</p>
         
-        
 		<p>
 			<table class="table table-bordered">
 				<tr>
                     <th>Distribution</th>
-                    <th>::theme.groupWordingShort.toUpperCase()::</th>
+                    <th>::fluc(theme.groupWordingShort)::</th>
 					<th>C.A TTC</th>
 					<th>Virement correspondant</th>
 				</tr>

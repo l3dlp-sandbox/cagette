@@ -227,8 +227,7 @@
 	<table class="table table-bordered">
 		<tr>
 			<th>Type</th>
-			<th>::theme.groupWordingShort.toUpperCase()::</th>
-			<th>Mode du ::theme.groupWordingShort.toUpperCase()::</th>
+			<th>::fluc(theme.groupWordingShort)::</th>
 			<th>Catalogue</th>
 			<th>Dates</th>
 			<th>Actions</th>
@@ -246,13 +245,9 @@
 				::else::
 				Catalogue invité					
 				::end::</td>
-				<td><a href="/admin/group/view/::c._group.id::">::c._group.name::</a></td>
-				<td>
-					Boutique
-				</td>
+				<td><a href="/admin/group/view/::c._group.id::">::c._group.name::</a></td>				
 				<td>::c.name::</td>
 				<td>du ::sDate(c.startDate):: au ::sDate(c.endDate)::</td>
-				
 			</tr>
 		::end::
 		</table>

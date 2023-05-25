@@ -8,7 +8,7 @@
 		<td>::user.getName()::</td>
 	</tr>
 	<tr>
-		<td>::theme.groupWordingShort.toUpperCase():: :</td>
+		<td>::fluc(theme.groupWordingShort):: :</td>
 		<td>::group.name::</td>
 	</tr>
 	<tr>
