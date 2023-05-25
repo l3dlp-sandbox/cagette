@@ -190,7 +190,6 @@ class Main extends Controller {
 		d.dispatch(new controller.Account());
 	}
 
-	@logged
 	function doVendor(d:Dispatch) {
 		addBc("contractAdmin", "Producteur", "/contractAdmin");
 		d.dispatch(new controller.Vendor());
