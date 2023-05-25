@@ -173,22 +173,15 @@ class App extends sugoi.BaseApp {
 		out.set("city", "commune");
 		out.set("phone", "téléphone");
 		out.set("phone2", "téléphone du conjoint");
-
-
 		out.set("select", "sélectionnez");
 		out.set("contract", "Contrat");
 		out.set("place", "Lieu");
 		out.set("name", "Nom");
-		out.set("cdate", "Date d'entrée dans le marché"); //out.set("cdate", "Date d'entrée dans le "+App.current.getTheme().groupWordingShort);
 		out.set("quantity", "Quantité");
 		out.set("paid", "Payé");
 		out.set("user2", "(facultatif) partagé avec ");
 		out.set("product", "Produit");
 		out.set("user", "Adhérent");
-		out.set("txtIntro", "Texte de présentation du marché"); //out.set("txtIntro", "Texte de présentation du "+App.current.getTheme().groupWordingShort);
-		out.set("txtHome", "Texte en page d'accueil pour les adhérents connectés");
-		out.set("txtDistrib", "Texte à faire figurer sur les listes d'émargement lors des distributions");
-		out.set("extUrl", "URL du site du marché."); //out.set("extUrl", "URL du site du "+App.current.getTheme().groupWordingShort);
 		
 		out.set("startDate", "Date de début");
 		out.set("endDate", "Date de fin");
@@ -233,9 +226,6 @@ class App extends sugoi.BaseApp {
 		out.set("membershipPrice", "Adhésions : Coût de l'adhésion");
 		out.set("contact", "Responsable");
 		out.set("fees", "frais");
-		out.set("GroupAdmin", "Administrateur du marché"); //out.set("GroupAdmin", "Administrateur du "+App.current.getTheme().groupWordingShort);
-		out.set("Membership", "Accès à la gestion des membres");
-		out.set("Messages", "Accès à la messagerie");
 		out.set("vat", "TVA");
 		out.set("desc", "Description");
 		
@@ -255,7 +245,7 @@ class App extends sugoi.BaseApp {
 		out.set("Closed", 		"Fermé : L'administrateur ajoute les nouveaux membres");
 		out.set("WaitingList", 	"Liste d'attente");
 		out.set("Open", 		"Ouvert : tout le monde peut s'inscrire");
-		out.set("Full", 		"Complet : Le marché n'accepte plus de nouveaux membres"); //out.set("Full", 		"Complet : Le "+App.current.getTheme().groupWordingShort+" n'accepte plus de nouveaux membres");
+		out.set("Full", 		"Complet : N'accepte plus de nouveaux membres");
 
 		out.set("Soletrader"	, "Micro-entreprise");
 		out.set("Organization"	, "Association");

@@ -374,6 +374,10 @@ class Group extends Object
 		return currency;		
 	}
 
+	public function getURL():String{
+		return "https://"+App.config.HOST+"/group/"+id;
+	}
+
 	public function getVisibleDocuments( isMemberOfGroup : Bool ) : List<sugoi.db.EntityFile> {
 
 		if ( isMemberOfGroup ) {

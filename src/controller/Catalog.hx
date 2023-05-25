@@ -75,7 +75,12 @@ class Catalog extends controller.Controller
 			e.setSubject("Le "+App.current.getTheme().groupWordingShort+" "+group.name+" a relié votre catalogue "+catalog.name);
 			e.setRecipient(catalog.company.vendor.email);			
 			e.setSender(App.current.getTheme().email.senderEmail,"Cagette.net");		
-			var html = app.processTemplate("plugin/pro/mail/catalogLinked.mtt", {catalog:catalog,group:group,user:app.user});		
+			var html = app.processTemplate("plugin/pro/mail/catalogLinked.mtt", {
+				catalog:catalog,
+				group:group,
+				user:app.user,
+				cta:{label:"Aller sur votre espace producteur",link:vendor.getURL()+"/sales"}
+			});		
 			e.setHtmlBody(html);
 			App.sendMail(e);	
 			
