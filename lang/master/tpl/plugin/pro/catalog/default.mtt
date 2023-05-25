@@ -64,6 +64,11 @@
 								&nbsp;&nbsp;<a id="copy-url-button-::c.id::" href="#" class="btn btn-default btn-sm">
 									<i class="icon icon-link"></i> Copier le lien
 								</a>
+
+								<a href="/catalog/askImport/::c.id::" class="btn btn-default btn-sm">
+									Relier à un des mes ::theme.groupWordingShort_plural::
+								</a>
+
 								<script>
 									var copyTextBtn::c.id:: = document.querySelector('#copy-url-button-::c.id::');
 									var previousText = copyTextBtn::c.id::.innerHTML;

@@ -52,11 +52,7 @@
     <!-- Modal window -->
     <div id="myModal" />
 
-    ::set group = getCurrentGroup()::
-    ::set title = ""::
-    ::if(group!=null):: ::set title=group.name:: ::end::
-   
-    $$nav(::title::, myMarket)
+    $$nav(myMarket)
 
     $$googleTagManagerNoScript(::getVariable("googleTagManagerId")::)
 

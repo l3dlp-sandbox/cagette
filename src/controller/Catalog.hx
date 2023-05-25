@@ -11,7 +11,7 @@ class Catalog extends controller.Controller
 	@tpl("catalog/default.mtt")
 	public function doDefault(catalog:pro.db.PCatalog,?args:{?bgcolor:String,?container:String}){
 		view.catalog = catalog;
-		view.noGroup = true;
+		view.pageTitle = "Catalogue n°"+catalog.id;
 		
 		if (args != null && args.bgcolor != null){				
 			view.bgcolor = "#"+args.bgcolor;
@@ -43,7 +43,7 @@ class Catalog extends controller.Controller
 				datas.push({label:ua.group.name,value:ua.group.id});
 			}
 		}
-		f.addElement( new sugoi.form.elements.IntSelect("group",App.current.getTheme().groupWordingShort.toUpperCase()+" qui accueillera le catalogue", datas, (group==null ? null : group.id) , true) );
+		f.addElement( new sugoi.form.elements.IntSelect("group",view.fluc(App.current.getTheme().groupWordingShort)+" qui accueillera le catalogue", datas, (group==null ? null : group.id) , true) );
 		view.form = f;
 		
 		if ( f.isValid() ){

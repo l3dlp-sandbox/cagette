@@ -14,6 +14,7 @@ class Main extends controller.Controller
 	{
 		super();
 		view.vendor = this.vendor = vendor;
+		view.pageTitle = vendor.name;
 	}
 
 	function checkRights(){

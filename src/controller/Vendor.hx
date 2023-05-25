@@ -18,7 +18,7 @@ class Vendor extends Controller
 	@tpl('vendor/signup.mtt')
 	public function doSignup(?group:db.Group, ?invitationSender:db.User){
 
-		view.noGroup = true;
+		view.pageTitle = "";
 
 		if (App.current.getSettings().noVendorSignup == true) {
 			throw Redirect("/");
@@ -88,8 +88,8 @@ class Vendor extends Controller
 	public static function vendorPage(vendor:db.Vendor){
 		App.current.setTemplate("vendor/default.mtt");
 		App.current.view.vendor = vendor.getInfos();
-		App.current.view.pageTitle = vendor.name + " - " + App.current.getTheme().name;
-		App.current.view.noGroup = true;
+		App.current.view.pageTitle = ""/*vendor.name + " - " + App.current.getTheme().name*/;
+
 		var cpro = pro.db.CagettePro.getFromVendor(vendor);
 		if(cpro!=null && cpro.demoCatalog!=null){
 

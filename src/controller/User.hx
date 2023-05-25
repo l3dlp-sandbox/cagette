@@ -66,8 +66,6 @@ class User extends Controller
 		
 		var groups = app.user.getGroups();
 		
-		view.noGroup = true; //force template to not display current group
-				
 		if (args!=null && args.group!=null) {
 			//select a group
 			var which = app.session.data==null ? 0 : app.session.data.whichUser ;
@@ -127,7 +125,6 @@ class User extends Controller
 		}
 
 		view.pageTitle = "Mes "+App.current.getTheme().groupWordingShort_plural;
-		view.noGroup = true;
 	}
 	
 	function doLogout() {

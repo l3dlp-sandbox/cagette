@@ -300,7 +300,7 @@ class Group extends controller.Controller
 				}
 
 			}
-			throw Ok("/admin/group/view/"+g.id,App.current.getTheme().groupWordingShort.toUpperCase()+" copié");
+			throw Ok("/admin/group/view/"+g.id,view.fluc(App.current.getTheme().groupWordingShort)+" copié");
 		}
 
 	
@@ -330,7 +330,7 @@ class Group extends controller.Controller
 		if (checkToken()) {
 			a.lock();
 			a.delete();
-			throw Ok("/p/hosted/",App.current.getTheme().groupWordingShort.toUpperCase()+" effacé");
+			throw Ok("/p/hosted/",view.fluc(App.current.getTheme().groupWordingShort)+" effacé");
 		}
 	}
 	

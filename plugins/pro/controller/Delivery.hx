@@ -49,7 +49,7 @@ class Delivery extends controller.Controller
 		var data = [
 			{label:"Par produits", value :"products"},
 			{label:"Par membres", value :"members"},
-			{label:"Par "+App.current.getTheme().groupWordingShort_plural.toUpperCase()+"-produits (CSV)", value :"groups"},
+			{label:"Par "+view.fluc(App.current.getTheme().groupWordingShort_plural)+"-produits (CSV)", value :"groups"},
 		];
 		form.addElement(new sugoi.form.elements.RadioGroup("type","Type",data,data[0].value));
 		var now = DateTime.now();	

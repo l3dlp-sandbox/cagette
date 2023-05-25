@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta charset="utf-8" />
     <title>
-        ::if pageTitle!=null::
+        ::if pageTitle!=null && pageTitle!=""::
             ::pageTitle::
         ::else::
             ::theme.name::
@@ -52,11 +52,7 @@
     <!-- Modal window -->
     <div id="myModal" />
 
-    ::set group = getCurrentGroup()::
-    ::set title = ""::
-    ::if(group!=null):: ::set title=group.name:: ::end::    
-   
-    $$nav(::title::, shopping)
+    $$nav(shopping)
 
     $$googleTagManagerNoScript(::getVariable("googleTagManagerId")::)
 

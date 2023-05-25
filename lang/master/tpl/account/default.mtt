@@ -1,8 +1,6 @@
 ::use 'design.mtt'::
 <div class="col-md-12">
 
-	<h3>Mon compte utilisateur</h3>
-
 	<div>
 		<div id="user-account-neo-container"></div>
 		

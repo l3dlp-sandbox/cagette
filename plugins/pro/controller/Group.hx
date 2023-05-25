@@ -106,7 +106,7 @@ class Group extends controller.Controller
 				throw Error(sugoi.Web.getURI(),e.message);
 			}
 			
-			throw Ok(vendor.getURL(), App.current.getTheme().groupWordingShort.toUpperCase()+" dupliqué");
+			throw Ok(vendor.getURL(), view.fluc(App.current.getTheme().groupWordingShort)+" dupliqué");
 		}
 		
 		view.form = f;

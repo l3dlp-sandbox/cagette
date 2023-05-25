@@ -118,16 +118,16 @@
 			
 	</macro>
 
-	<macro name='nav(t, currentPage, ?vendorId)'>
-
-		::if(noGroup==true)::
-			::if(pageTitle!=null&&t.length>0)::
-				::set title=pageTitle::
+	<macro name='nav(currentPage, ?vendorId)'>
+		::if(pageTitle!=null)::
+			::set title=pageTitle::
+		::else::
+			::set group = getCurrentGroup()::
+			::if(group!=null)::
+				::set title=group.name::
 			::else::
 				::set title=""::
 			::end::
-		::else::
-			::set title=t::
 		::end::
 
 		<div style="display: flex; position: relative;">

@@ -385,7 +385,7 @@ class Main extends Controller {
 
 	@tpl("help.mtt")
 	public function doHelp() {
-		view.noGroup = true;
+		view.pageTitle = "";
 		if (app.user!=null){
 			var userGroups = app.user.getUserGroups().filter(ug -> return ug.isGroupManager());
 			view.hasMarket = userGroups.length > 0;
