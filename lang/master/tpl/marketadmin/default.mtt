@@ -38,7 +38,7 @@
 				<a href="/group/::user.getGroup().id::" class="btn btn-default"><i class="icon icon-chevron-right"></i>&nbsp; ::_("Display")::</a>
 			</p>
 
-			
+			<!--
 			<p>				
 				::if(visibleOnMap)::
 				<div class="alert alert-success">
@@ -50,10 +50,8 @@
 					$$check(false) Votre ::theme.groupWordingShort:: n'est pas visible sur la carte, pour les raisons suivantes : ::visibleOnMapText::
 					<br/><a href="https://wiki.cagette.net/admin:admin_carte" target="_blank">Documentation</a>
 				</div>
-				::end::
-								
-			</p>
-			
+				::end::								
+			</p>-->
 			
 			::if isAdmin::
 			<p>
@@ -63,9 +61,6 @@
 				<a class="btn btn-danger btn-sm" href="/admin/group/view/::user.getGroup().id::">Fiche sur le backoffice</a>
 			</p>
 			::end::
-
-
-			
 			
 		</div>
 		
@@ -74,10 +69,5 @@
 			<img src="::file(user.getGroup().imageId)::" style="width: 100%; max-width: 400px" class="thumbnail" />
 			::end::
 		</div>
-
-
-
 	</div>
-
-
 ::end::

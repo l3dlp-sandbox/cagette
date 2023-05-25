@@ -41,7 +41,7 @@ class MarketAdmin extends Controller
 		view.contractsNum = group.getActiveContracts().length;
 		
 		//visible on map
-		#if plugins
+		/*
 		var h = hosted.db.GroupStats.getOrCreate(group.id, true);
 		var o = h.updateStats();
 		
@@ -61,9 +61,8 @@ class MarketAdmin extends Controller
 
 		view.visibleOnMapText = str;
 		view.visibleOnMap = o.visible;
-		#else
-		view.visibleOnMap = true;
-		#end
+		*/
+		
 	}
 	
 	@tpl("marketadmin/form.mtt")
