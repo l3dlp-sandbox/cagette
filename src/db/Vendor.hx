@@ -265,7 +265,8 @@ class Vendor extends Object
 		cpro URL
 	**/
 	public function getURL(){
-		return "/pro/"+this.id;
+		var protocol = App.config.HOST=="localhost" ? "http" : "https";
+		return protocol+"://"+App.config.HOST+"/pro/"+this.id;
 	}
 
 	public function getAddress(){

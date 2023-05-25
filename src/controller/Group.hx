@@ -137,6 +137,7 @@ class Group extends controller.Controller
 		view.lat = args.lat;
 		view.lng = args.lng;
 		view.address = args.address;
+		view.pageTitle = "Rechercher un "+App.current.getTheme().groupWordingShort+" près de chez moi";
 	}
 
 	@tpl("group/disabled.mtt")

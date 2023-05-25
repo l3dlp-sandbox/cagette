@@ -375,7 +375,8 @@ class Group extends Object
 	}
 
 	public function getURL():String{
-		return "https://"+App.config.HOST+"/group/"+id;
+		var protocol = App.config.HOST=="localhost" ? "http" : "https";		
+		return protocol+"://"+App.config.HOST+"/group/"+id;
 	}
 
 	public function getVisibleDocuments( isMemberOfGroup : Bool ) : List<sugoi.db.EntityFile> {

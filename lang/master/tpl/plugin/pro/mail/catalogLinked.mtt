@@ -1,6 +1,6 @@
 :: use 'mail/layout-cagette.mtt'::
 
-<h1>Le ::theme.groupWordingShort:: "::group.name::" a relié votre catalogue "::catalog.name::"</h1>
+<h2>Le ::theme.groupWordingShort:: "::group.name::" a relié votre catalogue "::catalog.name::"</h2>
 <p>
 	Bonne nouvelle, Le ::theme.groupWordingShort:: <b>::group.name::</b> a relié votre catalogue <b>::catalog.name::</b>.
 	<br/>
@@ -13,7 +13,7 @@
 		<td><a href="::group.getURL()::">::group.name::</a></td>
 	</tr>
 	<tr>
-		<td>Contact de l'administrateur</td>
+		<td>Contact de l'administrateur :</td>
 		<td>::user.getName()::</td>
 	</tr>	
 	<tr>
