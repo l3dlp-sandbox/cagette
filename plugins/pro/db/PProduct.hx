@@ -151,7 +151,8 @@ class PProduct extends Object
 			"variablePrice" 	=> "Prix variable selon pesée"/*t._("Variable price based on weight")*/,			
 			"multiWeight" 		=> "Multi-pesée",	
 			"stockStrategy"		=> "Gestion des stocks",
-			"bulk"				=> "Vrac"
+			"bulk"				=> "Vrac",
+			"txpProduct"		=> "Catégorie de produit"
 		];
 	}
 }

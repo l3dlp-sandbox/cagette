@@ -262,7 +262,7 @@ class App extends sugoi.BaseApp {
 		out.set("htPrice", "Prix H.T");
 		out.set("amount", "Montant");
 		out.set("percent", "Pourcentage");
-		out.set("pinned", "Mets en avant les produits");
+		out.set("pinned", "Mets en avant les produits");		
 		
 		out.set("byMember", "Par adhérent");
 		out.set("byProduct", "Par produit");
