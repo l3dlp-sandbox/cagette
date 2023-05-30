@@ -44,6 +44,7 @@ class User extends sugoi.BaseController
 			vendors.push(uv.company.vendor);
 		}
 		view.vendors = ObjectListTool.deduplicate(vendors);
+		view.getJsonRightName = db.UserGroup.getJsonRightName;
 	}
 	
     /**
