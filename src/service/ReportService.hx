@@ -17,12 +17,13 @@ class ReportService{
 
 		//get baskets that are CONFIRMED or VALIDATED
 		var baskets = distribution.multiDistrib.getBaskets();
+		if (baskets.length == 0) return [];
 		var basketIds:Array<Int> = baskets.map(b -> b.id);
 		
 		var exportName = t._("Delivery ::contractName:: of the ", {contractName:distribution.catalog.name}) + distribution.date.toString().substr(0, 10);
 		var where = ' and p.catalogId = ${distribution.catalog.id}';
 		where += ' and up.distributionId = ${distribution.id}';
-		if(basketIds.length>0) where += ' and up.basketId IN (${basketIds.join(',')})';
+		where += ' and up.basketId IN (${basketIds.join(',')})';
 
 		//Product price will be an average if price changed
 		var sql = 'select 
