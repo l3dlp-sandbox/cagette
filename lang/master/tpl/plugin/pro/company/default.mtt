@@ -194,6 +194,27 @@
 						</td>
 						<td class="col-md-2">$$edit(Modifier,::vendor.getURL()::/company/editLongDesc)</td>
 					</tr>
+
+					<tr>
+						<td>
+							<b>Catalogue de démonstration</b>
+							<p class="disabled">
+								Le catalogue de démonstration vous permet de choisir quels produits vous mettez en avant sur votre page vitrine
+							</p> 
+						</td>
+						<td class="col-md-6">				
+							::if company._demoCatalog!=null::
+								::foreach catOff company._demoCatalog.getOffers()::
+									::set off = catOff._offer::
+									<div class="productImg sm" title="::off.getName()::" style="background-image:url('::off.getImage()::');" />
+								::end::
+							::end::			
+						</td>
+						<td class="col-md-2">
+							...
+						</td>
+					</tr>
+
 					<tr>
 						<td>
 							<b>Bannière</b>
