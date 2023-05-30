@@ -347,6 +347,11 @@ class PProductService
 
 		var f = form.CagetteForm.fromSpod(d);
 
+		var ref = d.ref;
+		var txId = d.txpProduct == null ? null : d.txpProduct.id;
+		var html = service.ProductService.getCategorizerHtml(txId,f.name);
+		f.addElement(new sugoi.form.elements.Html("html",html, 'Catégorie *'),3);
+
 		if(d.id==null){
 			f.getElement("ref").value = pro.service.PProductService.generateRef(company);
 		}
@@ -363,11 +368,6 @@ class PProductService
 
 		f.getElement("txpProductId").required = true;
 
-		var ref = d.ref;
-		var txId = d.txpProduct == null ? null : d.txpProduct.id;
-		var html = service.ProductService.getCategorizerHtml(d.name,txId,f.name);
-		f.addElement(new sugoi.form.elements.Html("html",html, 'Nom'),1);
-		f.addElement(new sugoi.form.elements.Html("html","<span class='disabled'>Une catégorie manquante selon vous ? Écrivez au support : "+App.current.getTheme().supportEmail+"</span><br/>",""),2);
 
 		return f;
 	}

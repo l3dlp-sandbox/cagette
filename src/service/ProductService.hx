@@ -55,14 +55,11 @@ class ProductService{
 		return ttcPrice / (1 + vatRate / 100);
 	}
 
-	public static function getCategorizerHtml(productName:String,categId:Int,formName:String){
-		productName = Formatting.escapeJS(productName);
+	public static function getCategorizerHtml(categId:Int,formName:String){
 		return '<div id="txp-neo-container"></div><script language="javascript">
 			document.addEventListener("DOMContentLoaded", function(event) {
-				document.querySelector("form input[name=\'${formName}_name\']").parentElement.parentElement.remove();
 				document.querySelector("form select[name=\'${formName}_txpProductId\']").parentElement.parentElement.remove();
 				neo.createNeoModule("txp-neo-container", "productCategorizer", {
-					originalProductName: "${productName}",
 					originalTxpProductId: $categId,
 					formName: "${formName}"
 				});
