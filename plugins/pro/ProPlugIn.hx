@@ -24,9 +24,8 @@ class ProPlugIn extends PlugIn implements IPlugIn{
 				
 				if(name=="admin"){
 					nav.push({id:"cpro",name:"Producteurs", link:"/admin/vendor",icon:"farmer"});
-					nav.push({id:"cprodedup",name:"Déduplication Producteurs", link:"/p/pro/admin/deduplicate",icon:"farmer"});		
-					nav.push({id:"siret",name:"Producteurs Siret", link:"/p/pro/admin/siret",icon:"farmer"});		
-					nav.push({id:"certification",name:"Certification Producteurs", link:"/p/pro/admin/certification",icon:"farmer-pro"});		
+					nav.push({id:"cprodedup",name:"Déduplication Producteurs", link:"/admin/vendor/deduplicate",icon:"farmer"});		
+					nav.push({id:"certification",name:"Certification Producteurs", link:"/admin/vendor/certification",icon:"farmer-pro"});		
 				}
 
 			case Permalink(p):
@@ -36,7 +35,7 @@ class ProPlugIn extends PlugIn implements IPlugIn{
 					if(vendor==null) throw new tink.core.Error("Ce permalien n'est plus valide");
 					if(vendor.isDisabled()) throw ControllerAction.ErrorAction("/","Ce producteur est désactivé. Raison : "+vendor.getDisabledReason());
 
-					pro.controller.Public.vendorPage(vendor);
+					controller.Vendor.vendorPage(vendor);
 				}	
 
 			case HourlyCron(now):

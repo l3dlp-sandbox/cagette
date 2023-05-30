@@ -1,5 +1,5 @@
 
-::use 'design.mtt'::
+::use 'designMarket.mtt'::
 
 <div class="col-md-4">
 	<h3>::_("Contact informations")::</h3>
@@ -197,7 +197,7 @@
 	<div class="article">
 		<ul>
 		::foreach r rights::
-		<li>::userGroup.getJsonRightName(r)::</li>
+		<li>::getJsonRightName(r)::</li>
 		::end::
 		</ul>
 	</div>	

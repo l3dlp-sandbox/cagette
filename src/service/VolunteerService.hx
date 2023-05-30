@@ -32,7 +32,7 @@ class VolunteerService
 			}
 		} else {
 			var str = "Vous ne pouvez pas supprimer ce rôle car il y a des bénévoles inscrits à ce rôle.";
-			str += "<a href='/amapadmin/volunteers/deleteRole/"+role.id+"?token="+App.current.view.token+"&force=1' class='btn btn-default'>Supprimer quand-même</a>";
+			str += "<a href='/marketadmin/volunteers/deleteRole/"+role.id+"?token="+App.current.view.token+"&force=1' class='btn btn-default'>Supprimer quand-même</a>";
 			throw new Error( str );
 		}
 	}
@@ -251,11 +251,11 @@ class VolunteerService
 	}
 
 	public static function getRolesFromGroup(group:db.Group):Array<db.VolunteerRole>{
-		return Lambda.array(db.VolunteerRole.manager.search($group==group,{orderBy:[catalogId,name]}));
+		return db.VolunteerRole.manager.search($group==group,{orderBy:[catalogId,name]}).array();
 	}
 
 	public static function getRolesFromContract(catalog:db.Catalog):Array<db.VolunteerRole>{
-		return Lambda.array(db.VolunteerRole.manager.search($catalog==catalog,{orderBy:[catalogId,name]}));
+		return db.VolunteerRole.manager.search($catalog==catalog,{orderBy:[catalogId,name]}).array();
 	}
 
 	/**

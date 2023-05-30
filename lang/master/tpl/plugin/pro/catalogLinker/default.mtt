@@ -14,7 +14,7 @@
                     <tr class="darkhead">
                         <td colspan="3">
                             <b>::c.name::</b><br/>
-                            dans le groupe <b>::c._group.name::</b>
+                            dans le ::theme.groupWordingShort:: <b>::c._group.name::</b>
                         </td>
                     </tr>
                     
@@ -26,7 +26,7 @@
                     </tr>
                     ::end::
                 </table>
-                <a href="/p/pro/catalogLinker/selectPcatalog/::c.id::" class="btn btn-primary">Relier ce catalogue</a>
+                <a href="::vendor.getURL()::/catalogLinker/selectPcatalog/::c.id::" class="btn btn-primary">Relier ce catalogue</a>
             </div>
             ::end::
             

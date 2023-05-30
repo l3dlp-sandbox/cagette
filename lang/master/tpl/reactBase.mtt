@@ -56,10 +56,14 @@
 		<meta name="twitter:image:alt" content="::socialShareData.imageAlt::"/>
 		::end::
 
+		<style>
+			.container {
+				flex-grow: 1
+			}
+		</style>
 	</head>
 
-	::if container==null:: ::set container="container":: ::end::
-	<body class="::container::" style="background-color: white;">
+	<body style="background-color: white;">
 		
 		::if DEBUG::
 		<div style="position: absolute;background: #666;padding: 8px;left: 0;bottom:0;color: #FF0;">DEBUG ::session.lang::</div>
@@ -69,10 +73,7 @@
 		<div style="position: absolute;background: #F60;padding: 8px;left:0;bottom:0;color: #FF0;">PREPROD</div>
 		::end::
 		
-		
-		<div id="header"></div>
-		::raw __content__::
-		
+		$$nav(, shopping)
 
 		$$googleTagManagerNoScript(::getVariable("googleTagManagerId")::)
 
@@ -80,6 +81,10 @@
 			window._Cagette = {
 				theme: {
 					id: "::theme.id::",
+					groupWording: "::theme.groupWording::",
+					groupWording_plural: "::theme.groupWording_plural::",
+					groupWordingShort: "::theme.groupWordingShort::",
+					groupWordingShort_plural: "::theme.groupWordingShort_plural::",
 					footer: {
 						bloc1: `::raw theme.footer.bloc1::`,
 						bloc2: `::raw theme.footer.bloc2::`,

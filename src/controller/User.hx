@@ -66,8 +66,6 @@ class User extends Controller
 		
 		var groups = app.user.getGroups();
 		
-		view.noGroup = true; //force template to not display current group
-				
 		if (args!=null && args.group!=null) {
 			//select a group
 			var which = app.session.data==null ? 0 : app.session.data.whichUser ;
@@ -82,25 +80,6 @@ class User extends Controller
 		view.groups = groups;
 		view.wl = db.WaitingList.manager.search($user == app.user, false);
 		
-
-		//vendor accounts
-		var cagettePros = service.VendorService.getCagetteProFromUser(app.user);
-		view.cagettePros = cagettePros;
-		view.discovery = cagettePros.find(cp -> cp.offer==Discovery)!=null;
-
-		//list tmpVendor that are not certified yet
-		view.tmpVendors = sys.db.Manager.cnx.request('select * from TmpVendor where userId = ${app.user.id} and certificationStatus < 2').results();
-		// view.isBlocked = pro.db.PUserCompany.getUserCompanies(app.user).find(uc -> return uc.disabled) != null;
-
-		//find free or invited vendor
-		/*var vendor = db.Vendor.manager.select($email==app.user.email,false);
-		if(vendor!=null){
-			var vs = VendorStats.getOrCreate(vendor);
-			if( vs.type == VTFree || vs.type == VTInvited || vs.type == VTInvitedPro ){
-				view.isFreeVendor = true;
-			}
-		}*/	
-
 		if(app.user!=null){
 			//need to check new ToS
 			if(app.user.tosVersion != sugoi.db.Variable.getInt('tosVersion')){
@@ -108,17 +87,44 @@ class User extends Controller
 			} 
 
 			//need to check new CGS
-			for( cpro in service.VendorService.getCagetteProFromLegalRep(app.user) ){
-				if(cpro.vendor.tosVersion != sugoi.db.Variable.getInt('platformtermsofservice')){
-					throw Redirect("/user/tos");
-				} 
+			// for( cpro in service.VendorService.getCagetteProFromLegalRep(app.user) ){
+			// 	if(cpro.vendor.tosVersion != sugoi.db.Variable.getInt('platformtermsofservice')){
+			// 		throw Redirect("/user/tos");
+			// 	} 
+			// }
+		}
+		
+		if(app.user!=null){
+			view.pageTitle = "Bonjour "+(view.whichUser()==0?app.user.firstName:app.user.firstName2);
+		}else{
+			view.pageTitle = "Bonjour !";
+		}
+		
+	}
+
+	// @logged
+	@tpl("user/myMarkets.mtt")
+	function doMyMarkets(?args: { group:db.Group } ) {
+
+		if(app.user!=null){
+			if (args!=null && args.group!=null) {
+				//select a group
+				var which = app.session.data==null ? 0 : app.session.data.whichUser ;
+				if(app.session.data==null) app.session.data = {};
+				app.session.data.order = null;
+				app.session.data.newGroup = null;
+				app.session.data.amapId = args.group.id;
+				app.session.data.whichUser = which;
+				throw Redirect('/distributions');
 			}
-		}		
+			
+			var userGroups = app.user.getUserGroups().filter(ug -> return ug.getRights().length > 0);
+			view.groups = userGroups.map(ug -> ug.group);
+		}else{
+			view.groups = [];
+		}
 
-		view.isGroupAdmin = app.user.getUserGroups().find(ug -> return ug.isGroupManager()) != null;
-		//view.cagetteProTest = cagettePros.find(cp -> cp.vendor.isTest)!=null;
-		view.memberVendor = cagettePros.find(cp -> cp.offer==Member)!=null;
-
+		view.pageTitle = "Mes "+App.current.getTheme().groupWordingShort_plural;
 	}
 	
 	function doLogout() {
@@ -356,7 +362,7 @@ class User extends Controller
 		var legalRepCagettePros = service.VendorService.getCagetteProFromLegalRep(app.user);
 
 		if(app.user.tosVersion!=sugoi.db.Variable.getInt("tosVersion")){
-			form.addElement(new Html("","Afin de répondre à la réglementation des places de marché en ligne à laquelle nous sommes soumis, nous mettons à jour nos conditions générales d'utilisation et notre politique de confidentialité. Celles-ci s'appliquent à partir du 9 janvier 2023"));
+			form.addElement(new Html("","Afin de répondre à la réglementation des places de "+App.current.getTheme().groupWordingShort+" en ligne à laquelle nous sommes soumis, nous mettons à jour nos conditions générales d'utilisation et notre politique de confidentialité. Celles-ci s'appliquent à partir du 9 janvier 2023"));
 			var c = new sugoi.form.elements.Checkbox("tos","J'accepte les <br/><a href='/tos' target='_blank'>conditions générales d'utilisation</a><br/>et la <a href='/privacypolicy' target='_blank'>politique de confidentialité</a>");
 			form.addElement(c);
 		}
@@ -364,7 +370,7 @@ class User extends Controller
 		for( cpro in legalRepCagettePros ){
 			var vendor = cpro.vendor;
 			if(vendor.tosVersion != sugoi.db.Variable.getInt('platformtermsofservice')){
-				form.addElement(new Html("","Afin de répondre à la réglementation des places de marché en ligne à laquelle nous sommes soumis, nous mettons à jour nos conditions générales de services destinées aux producteurs. Celles-ci s'appliquent à partir du 9 février 2023"));
+				form.addElement(new Html("","Afin de répondre à la réglementation des places de "+App.current.getTheme().groupWordingShort+" en ligne à laquelle nous sommes soumis, nous mettons à jour nos conditions générales de services destinées aux producteurs. Celles-ci s'appliquent à partir du 9 février 2023"));
 				form.addElement(new sugoi.form.elements.Checkbox("cgs"+vendor.id,"J'accepte les <a href='/platformtermsofservice' target='_blank'>Conditions générales de service</a> qui encadrent les services fournis par Cagette.net aux Producteurs (compte \""+vendor.name+"\")"));
 			} 
 		}

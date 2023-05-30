@@ -1,0 +1,15 @@
+::use 'design.mtt'::
+
+<div class="col-md-12" style="margin-bottom: 16px;" >
+	<div id='help-neo-container'/>
+	<script>
+		document.addEventListener("DOMContentLoaded", function(event) {
+			neo.createNeoModule("help-neo-container", "help-and-docs",{
+				hasMarket: ::hasMarket::,
+				hasVendor: ::cagettePros.length > 0::
+			});
+		});
+	</script>
+</div>
+
+::end::

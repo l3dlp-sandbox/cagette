@@ -76,7 +76,7 @@ class PProduct extends Object
 	}
 	
 	public function getOffers(?lock=false){
-		return pro.db.POffer.manager.search($product == this,{orderBy:-quantity}, lock);
+		return pro.db.POffer.manager.search($product == this,{orderBy:-quantity}, lock).array();
 	}
 	
 	public static function getByRef(ref:String,company:pro.db.CagettePro,?lock=false){
@@ -151,7 +151,8 @@ class PProduct extends Object
 			"variablePrice" 	=> "Prix variable selon pesée"/*t._("Variable price based on weight")*/,			
 			"multiWeight" 		=> "Multi-pesée",	
 			"stockStrategy"		=> "Gestion des stocks",
-			"bulk"				=> "Vrac"
+			"bulk"				=> "Vrac",
+			"txpProduct"		=> "Catégorie de produit"
 		];
 	}
 }

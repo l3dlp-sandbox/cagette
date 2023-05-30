@@ -56,7 +56,7 @@
 			<tr>
 				<td>Catalogue</td>
 				<th>
-					<a href="/p/pro/catalog/view/::notifContent.catalogId::">::getCatalog(notifContent.catalogId).name::</a>
+					<a href="::vendor.getURL()::/catalog/view/::notifContent.catalogId::">::getCatalog(notifContent.catalogId).name::</a>
 				</th>
 			</tr>
 			<tr>
@@ -67,7 +67,7 @@
 				<td>$$contact(::user::)</td>
 			</tr>
 			<tr>
-				<td>Groupe :</td>
+				<td>::fluc(theme.groupWordingShort):: :</td>
 				<td>::group.name::</td>
 			</tr>
 			<tr>
@@ -94,8 +94,8 @@
 							<i class="icon icon-alert"></i>
 						</div>
 						<div>
-							<p>Pour pouvoir relier votre premier catalogue à un groupe, vous devez activer le prélèvement des frais de plateforme Cagette.net</p>
-							<a href="/p/pro/upgrade" class="btn btn-primary pull-right">Activer le prélèvement</a>
+							<p>Pour pouvoir relier votre premier catalogue à un ::theme.groupWordingShort::, vous devez activer le prélèvement des frais de plateforme Cagette.net</p>
+							<a href="::vendor.getURL()::/upgrade" class="btn btn-primary pull-right">Activer le prélèvement</a>
 						</div>
 					</div>
 				</td>
@@ -104,12 +104,12 @@
 		</table>
 	
 		<div class="text-center">
-			<a href="/p/pro/catalog/approveImport/::notif.id::" class="btn btn-primary btn-lg ::if vendor.disabled==4::disabled::end::" >
+			<a href="::vendor.getURL()::/catalog/approveImport/::notif.id::" class="btn btn-primary btn-lg ::if vendor.disabled==4::disabled::end::" >
 				<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
 				&nbsp;Approuver
 			</a>
 			
-			<a href="/p/pro/notif/delete/::notif.id::?token=::token::" $$confirm(Supprimer cette demande ?)  class="btn btn-danger btn-lg ::if vendor.disabled==4::disabled::end::" >
+			<a href="::vendor.getURL()::/notif/delete/::notif.id::?token=::token::" $$confirm(Supprimer cette demande ?)  class="btn btn-danger btn-lg ::if vendor.disabled==4::disabled::end::" >
 				<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 				&nbsp;Refuser
 			</a>
@@ -168,12 +168,9 @@
 		</table>
 	
 		<div class="text-center">
-			<a href="/p/pro/catalog/acceptDelivery/::notif.id::" class="btn btn-primary btn-lg" >
-				<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-				&nbsp;Accepter
-			</a>
-			
-			<a href="/p/pro/notif/delete/::notif.id::?token=::token::" $$confirm(Supprimer cette demande ?)  class="btn btn-danger btn-lg" >
+			<div id='participate-neo-container-::notif.id::' style="display: inline-block; margin-right: 8px;"/>
+			<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onload="neo.createNeoModule('participate-neo-container-::notif.id::', 'participate',{multiDistribId: ::multiDistribId::, catalogId: ::catalogId::})"></img> 
+			<a href="::vendor.getURL()::/notif/delete/::notif.id::?token=::token::" $$confirm(Supprimer cette demande ?)  class="btn btn-danger btn-sm" >
 				<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 
 				&nbsp;Refuser
@@ -252,12 +249,12 @@
 		</table>
 	
 		<div class="text-center">
-			<a href="/p/pro/catalog/acceptDeliveryUpdate/::notif.id::" class="btn btn-primary btn-lg" >
+			<a href="::vendor.getURL()::/catalog/acceptDeliveryUpdate/::notif.id::" class="btn btn-primary btn-lg" >
 				<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
 				&nbsp;Accepter
 			</a>
 			
-			<a href="/p/pro/notif/delete/::notif.id::?token=::token::" $$confirm(Supprimer cette demande ?)  class="btn btn-danger btn-lg" >
+			<a href="::vendor.getURL()::/notif/delete/::notif.id::?token=::token::" $$confirm(Supprimer cette demande ?)  class="btn btn-danger btn-lg" >
 				<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 
 				&nbsp;Refuser

@@ -9,20 +9,21 @@ using tools.ObjectListTool;
 
 class Delivery extends controller.Controller
 {
-
 	var company : pro.db.CagettePro;
+	var vendor : db.Vendor;
 	
-	public function new()
+	public function new(company:pro.db.CagettePro) 
 	{
 		super();
-		view.company = company = pro.db.CagettePro.getCurrentCagettePro();
+		view.company = this.company = company;
+		view.vendor = this.vendor = company.vendor;
 		view.nav = ["delivery"];
 	}
 	
 	@tpl('plugin/pro/delivery/default.mtt')
 	public function doDefault(){
 
-		if(!company.captiveGroups) throw Redirect("/p/pro/sales");
+		if(!company.captiveGroups) throw Redirect(vendor.getURL()+"/sales");
 		
 		var remoteCatalogs = connector.db.RemoteCatalog.manager.search($remoteCatalogId in Lambda.map(company.getCatalogs(), function(x) return x.id),false); 
 		
@@ -48,7 +49,7 @@ class Delivery extends controller.Controller
 		var data = [
 			{label:"Par produits", value :"products"},
 			{label:"Par membres", value :"members"},
-			{label:"Par Groupe-produits (CSV)", value :"groups"},
+			{label:"Par "+view.fluc(App.current.getTheme().groupWordingShort_plural)+"-produits (CSV)", value :"groups"},
 		];
 		form.addElement(new sugoi.form.elements.RadioGroup("type","Type",data,data[0].value));
 		var now = DateTime.now();	
@@ -64,13 +65,13 @@ class Delivery extends controller.Controller
 			endDate = new Date(endDate.getFullYear(),endDate.getMonth(),endDate.getDate(),23,59,0);
 			switch(form.getValueOf("type")){
 				case "products":
-					throw Redirect('/p/pro/delivery/exportByProducts/?startDate=${startDate}&endDate=${endDate}');
+					throw Redirect(vendor.getURL()+'/delivery/exportByProducts/?startDate=${startDate}&endDate=${endDate}');
 				case "members" : 
-					throw Redirect('/p/pro/delivery/exportByMembers/?startDate=${startDate}&endDate=${endDate}');
+					throw Redirect(vendor.getURL()+'/delivery/exportByMembers/?startDate=${startDate}&endDate=${endDate}');
 				case "groups" : 
-					throw Redirect('/p/pro/delivery/exportByGroups/?startDate=${startDate}&endDate=${endDate}');
+					throw Redirect(vendor.getURL()+'/delivery/exportByGroups/?startDate=${startDate}&endDate=${endDate}');
 				default :
-					throw Error('/p/pro/delivery', "type d'export inconnu");
+					throw Error(vendor.getURL()+'/delivery', "type d'export inconnu");
 				
 			}
 		}
@@ -91,27 +92,9 @@ class Delivery extends controller.Controller
 			if (messages.length > 0){			
 				App.current.session.addMessage( messages.join("<br/>"),true);	
 			}			
-			throw Ok("/p/pro/delivery", t._("Recurrent deliveries deleted"));
+			throw Ok(vendor.getURL()+"/delivery", t._("Recurrent deliveries deleted"));
 		}
 	}
-	
-	/**
-	 * general entry point to various order exports
-	 */
-	/*public function doExport(args:{startDate:Date, endDate:Date, type:String }){
-		
-		switch(args.type){
-			case "products":
-				throw Redirect('/p/pro/delivery/exportByProducts/?startDate=${args.startDate}&endDate=${args.endDate}');
-			case "members" : 
-				throw Redirect('/p/pro/delivery/exportByMembers/?startDate=${args.startDate}&endDate=${args.endDate}');
-			case "groups" : 
-				throw Redirect('/p/pro/delivery/exportByGroups/?startDate=${args.startDate}&endDate=${args.endDate}');
-			default :
-				throw Error('/p/pro/delivery', "type d'export inconnu");
-			
-		}
-	}*/
 	
 	/**
 	 * export by products
@@ -127,7 +110,7 @@ class Delivery extends controller.Controller
 				view.options = args;	
 			}
 		}catch (e:tink.core.Error){
-			throw Error('/p/pro/delivery', e.message);
+			throw Error(vendor.getURL()+'/delivery', e.message);
 		}
 	}
 	
@@ -145,7 +128,7 @@ class Delivery extends controller.Controller
 				view.options = args;	
 			}
 		}catch (e:tink.core.Error){
-			throw Error('/p/pro/delivery', e.message);
+			throw Error(vendor.getURL()+'/delivery', e.message);
 		}
 	}
 
@@ -276,7 +259,7 @@ class Delivery extends controller.Controller
 	function doExportAdherents(){
 
 		var authorizedCompanies = [3,4,323]; //agapes + corto + givrés
-		var company = pro.db.CagettePro.getCurrentCagettePro();
+		
 		if( !app.user.isAdmin() && !Lambda.has(authorizedCompanies,company.id)) throw "Accès interdit";
 		var headers =  ["groupId","group","firstName", "lastName", "email", "phone", "firstName2", "lastName2", "email2", "phone2", "address1", "address2", "zipCode", "city","ldate"];
 		var data = [];
@@ -357,10 +340,10 @@ class Delivery extends controller.Controller
 
 			}
 			catch(e:tink.core.Error){
-				throw Error("/p/pro/delivery/view/" + d.id, e.message);
+				throw Error(vendor.getURL()+"/delivery/view/" + d.id, e.message);
 			}
 			
-			throw Ok('/p/pro/delivery/view/'+ d.id, t._("The distribution has been recorded") );
+			throw Ok(vendor.getURL()+'/delivery/view/'+ d.id, t._("The distribution has been recorded") );
 			
 		}
 		
@@ -409,7 +392,7 @@ class Delivery extends controller.Controller
 		
 		if (form.isValid()){
 			if (sugoi.Web.getParamValues("client") == null){
-				throw Error("/p/pro/delivery/insert", "Vous devez sélectionner un catalogue");
+				throw Error(vendor.getURL()+"/delivery/insert", "Vous devez sélectionner un catalogue");
 			}
 			
 			var cids : Array<Int> = sugoi.Web.getParamValues("client").map(Std.parseInt);
@@ -423,7 +406,7 @@ class Delivery extends controller.Controller
 			try{
 				for ( id in cids ){
 					var contract = db.Catalog.manager.get(id, false);
-					if(contract.group.getMainPlace()==null) throw new tink.core.Error(500,'Il n\'y a aucun lieu de livraison défini pour le groupe "${contract.group.name}"');
+					if(contract.group.getMainPlace()==null) throw new tink.core.Error(500,'Il n\'y a aucun lieu de livraison défini pour le '+App.current.getTheme().groupWordingShort+' "${contract.group.name}"');
 
 					service.DistributionService.create(
 						contract,
@@ -434,10 +417,10 @@ class Delivery extends controller.Controller
 				}
 			}
 			catch(e:tink.core.Error){
-				throw Error("/p/pro/delivery/insert", e.message);
+				throw Error(vendor.getURL()+"/delivery/insert", e.message);
 			}
 
-			throw Ok("/p/pro/delivery", "Vous venez de créer " + cids.length + " distributions");
+			throw Ok(vendor.getURL()+"/delivery", "Vous venez de créer " + cids.length + " distributions");
 		}
 		
 		view.form = form;
@@ -501,14 +484,14 @@ class Delivery extends controller.Controller
 		
 		if (form.isValid()){
 			if (sugoi.Web.getParamValues("client") == null){
-				throw Error("/p/pro/delivery/insertCycle", "Vous devez sélectionner un catalogue");
+				throw Error(vendor.getURL()+"/delivery/insertCycle", "Vous devez sélectionner un catalogue");
 			}
 			var cids : Array<Int> = sugoi.Web.getParamValues("client").map(Std.parseInt);
 
 			try {
 				for ( cid in cids ){
 					var contract = db.Catalog.manager.get(cid,false);
-					if(contract.group.getMainPlace()==null) throw new tink.core.Error(500,'Il n\'y a aucun lieu de livraison défini pour le groupe "${contract.group.name}"');
+					if(contract.group.getMainPlace()==null) throw new tink.core.Error(500,'Il n\'y a aucun lieu de livraison défini pour le '+App.current.getTheme().groupWordingShort+' "${contract.group.name}"');
 					service.DistributionService.createCycle(
 						contract.group,
 						form.getElement("cycleType").getValue(),
@@ -526,15 +509,15 @@ class Delivery extends controller.Controller
 				}
 			}
 			catch(e:tink.core.Error){
-				throw Error("/p/pro/delivery/insertCycle", e.message);
+				throw Error(vendor.getURL()+"/delivery/insertCycle", e.message);
 			}
 			
-			throw Ok("/p/pro/delivery", "Distributions crées");
+			throw Ok(vendor.getURL()+"/delivery", "Distributions crées");
 		}
 		
 		view.form = form;
 		view.contracts = contracts;
-		view.title = "Créer des distributions récurrentes chez plusieurs groupes";
+		view.title = "Créer des distributions récurrentes chez plusieurs "+App.current.getTheme().groupWordingShort_plural;
 		
 	}
 
@@ -558,10 +541,10 @@ class Delivery extends controller.Controller
 			}
 		}
 		catch(e:tink.core.Error){
-			throw Error("/p/pro/delivery/view/" + distribId, e.message);
+			throw Error(vendor.getURL()+"/delivery/view/" + distribId, e.message);
 		}
 
-		throw Ok("/p/pro/delivery/", "la distribution a bien été effacée");
+		throw Ok(vendor.getURL()+"/delivery/", "la distribution a bien été effacée");
 	}
 	
 	@tpl("plugin/pro/delivery/orders.mtt")

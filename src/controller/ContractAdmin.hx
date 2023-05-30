@@ -61,7 +61,7 @@ class ContractAdmin extends Controller
 		}
 
 		//filter if current user is not manager
-		if (!app.user.isAmapManager()) {
+		if (!app.user.isGroupManager()) {
 			for ( c in Lambda.array(contracts).copy()) {				
 				if(!app.user.canManageContract(c)) contracts.remove(c);				
 			}
@@ -79,7 +79,7 @@ class ContractAdmin extends Controller
 	/**
 	 * Edit a contract/catalog
 	 */
-	 @logged @tpl("form.mtt")
+	 @logged @tpl("contractadmin/form.mtt")
 	 function doEdit( catalog : db.Catalog ) {
 		 
 		view.category = 'contractadmin';
@@ -202,7 +202,7 @@ class ContractAdmin extends Controller
 			
 			view.form = f;
 			view.title = t._("Global view of orders");
-			app.setTemplate("form.mtt");
+			app.setTemplate("contractadmin/form.mtt");
 			
 			if (f.checkToken()) {
 				
@@ -456,7 +456,7 @@ class ContractAdmin extends Controller
 	 * Lists deliveries for this contract
 	 */
 	@tpl("contractadmin/distributions.mtt")
-	function doDistributions(contract:db.Catalog, ?args: { ?participateToAllDistributions:Bool } ) {
+	function doDistributions(contract:db.Catalog ) {
 
 		view.nav.push("distributions");
 		sendNav(contract);
@@ -471,35 +471,12 @@ class ContractAdmin extends Controller
 
 		var multidistribs =  db.MultiDistrib.getFromTimeRange(contract.group,timeframe.from , timeframe.to);
 
-		if(args!=null && args.participateToAllDistributions){
-			for( d in multidistribs){
-				if( d.getDistributionForContract(contract)==null ){
-					try{
-						service.DistributionService.participate(d,contract);
-					}catch(e:Error){
-						app.session.addMessage(e.message,true);
-					}
-				}				
-			}
-			app.session.addMessage(contract.vendor.name+" participe maintenant à toutes les distributions");
-		}
-		
 		view.multidistribs = multidistribs;
 		view.c = contract;
 		view.contract = contract;
 		view.timeframe = timeframe;
 
 				
-	}
-
-	function doParticipate(md:db.MultiDistrib,contract:db.Catalog){
-		try{
-			service.DistributionService.participate(md,contract);
-		}catch(e:tink.core.Error){
-			throw Error("/contractAdmin/distributions/"+contract.id,e.message);
-		}
-		
-		throw Ok('/contractAdmin/distributions/${contract.id}?_from=${app.params.get("_from")}&_to=${app.params.get("_to")}',t._("Distribution date added"));
 	}
 	
 	@tpl("contractadmin/view.mtt")
@@ -533,8 +510,6 @@ class ContractAdmin extends Controller
 		var pids = contract.getProducts().map(function(x) return x.id);
 		switch(args.stat) {
 			case 0 : 
-				//ancienneté des amapiens
-				
 				if(pids.length==0){
 					view.anciennete = new List();
 				}else{

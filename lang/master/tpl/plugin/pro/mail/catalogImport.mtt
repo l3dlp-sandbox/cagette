@@ -8,7 +8,7 @@
 		<td>::user.getName()::</td>
 	</tr>
 	<tr>
-		<td>Groupe :</td>
+		<td>::fluc(theme.groupWordingShort):: :</td>
 		<td>::group.name::</td>
 	</tr>
 	<tr>
@@ -30,7 +30,7 @@
 </table>
 
 <div style="width:50%;max-width:300px;margin: 12px auto;padding: 8px;text-decoration: none;background: #070;border-radius: 3px;text-align: center;">
-	<a href="https://::HOST::/p/pro/?vendor=::catalog._company._vendor.id::" rel="notrack" style="color: white;font-weight: bold;text-decoration: none;font-size:1.2em;">
+	<a href="https://::HOST::/::vendor.getURL()::" rel="notrack" style="color: white;font-weight: bold;text-decoration: none;font-size:1.2em;">
 		&rarr; Acceptez ou refusez cette demande dans votre espace producteur
 	</a>
 </div>

@@ -1,5 +1,6 @@
 package controller;
 
+import service.VolunteerService;
 import db.Basket;
 import Common;
 import db.Distribution;
@@ -21,12 +22,13 @@ class Main extends Controller {
 		// init group breadcrumb
 		var group = App.current.getCurrentGroup();
 		if (group != null)
-			addBc("g" + group.id, "Groupe Cagette : " + group.name, "/home");
+			addBc("g" + group.id, "::theme.groupWording:: : " + group.name, "/home");
 	}
 
 	function doDefault(?permalink:String) {
 		if (permalink == null || permalink == "")
 			throw Redirect("/home");
+		
 		// if permalink is an ID , could use it for group selection ? app.cagette.net/1/contractAdmin ...
 		var p = sugoi.db.Permalink.get(permalink);
 		if (p == null)
@@ -62,12 +64,12 @@ class Main extends Controller {
 			throw Redirect("/user/login");
 		}else if(group.disabled!=null){
 			if(app.user!=null && app.user.isAdmin()){
-				app.session.addMessage('Ce groupe est bloqué, mais en tant que superadmin vous pouvez y accéder (${group.disabled})');
+				app.session.addMessage('Ce '+App.current.getTheme().groupWordingShort+' est bloqué, mais en tant que superadmin vous pouvez y accéder (${group.disabled})');
 			}else{
 				throw Redirect("/group/disabled");
 			}
 		}
-		view.amap = group;
+		view.group = group;
 
 		// freshly created group
 		view.newGroup = app.session.data.newGroup == true;
@@ -88,11 +90,6 @@ class Main extends Controller {
 		view.timeframe = timeframe;
 		view.distribs = distribs;
 
-		// view functions
-		view.getWhosTurn = function(orderId:Int, distrib:Distribution) {
-			return db.UserOrder.manager.get(orderId, false).getWhosTurn(distrib);
-		}
-
 		// register to group without ordering block
 		var isMemberOfGroup = app.user == null ? false : app.user.isMemberOf(group);
 		var registerWithoutOrdering = (!isMemberOfGroup && group.regOption == db.Group.RegOption.Open);
@@ -107,12 +104,12 @@ class Main extends Controller {
 
 		// message if phone is required
 		if (app.user != null && group.flags.has(db.Group.GroupFlags.PhoneRequired) && app.user.phone == null) {
-			app.session.addMessage("Les membres de ce groupe doivent fournir un numéro de téléphone. <a href='/account'>Cliquez ici pour mettre à jour votre compte</a>.",true);
+			app.session.addMessage("Les membres de ce "+App.current.getTheme().groupWordingShort+" doivent fournir un numéro de téléphone. <a href='/account'>Cliquez ici pour mettre à jour votre compte</a>.",true);
 		}
 
 		// message if address is required
 		if (app.user != null && group.flags.has(db.Group.GroupFlags.AddressRequired) && app.user.city == null) {
-			app.session.addMessage("Les membres de ce groupe doivent fournir leur adresse. <a href='/account'>Cliquez ici pour mettre à jour votre compte</a>.",true);
+			app.session.addMessage("Les membres de ce "+App.current.getTheme().groupWordingShort+" doivent fournir leur adresse. <a href='/account'>Cliquez ici pour mettre à jour votre compte</a>.",true);
 		}
 
 		// Delete demo contracts
@@ -127,6 +124,7 @@ class Main extends Controller {
 		}
 
 		view.visibleDocuments = group.getVisibleDocuments(isMemberOfGroup);
+		view.hasRoles = VolunteerService.getRolesFromGroup(group).length>0;
 
 		view.user = app.user;
 	}
@@ -172,32 +170,7 @@ class Main extends Controller {
 		view.users = users;
 	}
 
-	@tpl("form.mtt")
-	function doInstall(d:Dispatch) {
-		d.dispatch(new controller.Install());
-	}
-
 	function doP(d:Dispatch) {
-		/*
-			* Invalid array access
-			Stack (ADMIN|DEBUG)
-
-			Called from C:\HaxeToolkit\haxe\std/haxe/web/Dispatch.hx line 463
-			Called from controller/Main.hx line 117
-			* 
-			var plugin = d.parts.shift();
-			for ( p in App.plugins) {
-				var n = Type.getClassName(Type.getClass(p)).toLowerCase();
-				n = n.split(".").pop();
-				if (plugin == n) {
-					d.dispatch( p.getController() );
-					return;
-				}
-			}
-
-			throw Error("/","Plugin '"+plugin+"' introuvable.");
-		 */
-
 		d.dispatch(new controller.Plugin());
 	}
 
@@ -217,7 +190,6 @@ class Main extends Controller {
 		d.dispatch(new controller.Account());
 	}
 
-	@logged
 	function doVendor(d:Dispatch) {
 		addBc("contractAdmin", "Producteur", "/contractAdmin");
 		d.dispatch(new controller.Vendor());
@@ -250,9 +222,9 @@ class Main extends Controller {
 	}
 
 	@logged
-	function doAmap(d:Dispatch) {
-		addBc("amap", "Producteurs", "/amap");
-		d.dispatch(new controller.Amap());
+	function doMarket(d:Dispatch) {
+		addBc("market", "Producteurs", "/market");
+		d.dispatch(new controller.Market());
 	}
 
 	function doContract(d:Dispatch) {
@@ -278,9 +250,9 @@ class Main extends Controller {
 	}
 
 	@logged
-	function doAmapadmin(d:Dispatch) {
-		addBc("amapadmin", "Paramètres", "/amapadmin");
-		d.dispatch(new AmapAdmin());
+	function doMarketadmin(d:Dispatch) {
+		addBc("marketadmin", "Paramètres", "/marketadmin");
+		d.dispatch(new controller.MarketAdmin());
 	}
 
 	@admin
@@ -328,9 +300,12 @@ class Main extends Controller {
 			view.invitedGroupId = group.id;
 		}
 	}
+	public function doPro(vendor:db.Vendor,d:haxe.web.Dispatch) {		
+		d.dispatch(new pro.controller.Main(vendor));
+	}	
 
 	function doDiscovery(){
-		throw Redirect('/p/pro/signup/discovery');
+		throw Redirect('/vendor/signup/');
 	}
 
 	// TOS (CGU)
@@ -405,8 +380,22 @@ class Main extends Controller {
 			Sys.println("");
 
 			app.rollback();
-
 		}
 	}
+
+	@tpl("help.mtt")
+	public function doHelp() {
+		view.pageTitle = "";
+		if (app.user!=null){
+			var userGroups = app.user.getUserGroups().filter(ug -> return ug.isGroupManager());
+			view.hasMarket = userGroups.length > 0;
+		}
+	}
+
+	public function doCatalog(d:haxe.web.Dispatch){
+		d.dispatch(new controller.Catalog());
+	}
+
+
 
 }

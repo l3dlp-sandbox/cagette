@@ -7,12 +7,13 @@ class Group extends controller.Controller
 {
 
 	var company : pro.db.CagettePro;
+	var vendor : db.Vendor;
 	
-	public function new()
+	public function new(company:pro.db.CagettePro) 
 	{
 		super();
-		view.company = company = pro.db.CagettePro.getCurrentCagettePro();
-		view.nav = ["home"];		
+		view.company = this.company = company;
+		view.vendor = this.vendor = company.vendor;
 	}
 	
 	@tpl('plugin/pro/group/view.mtt')
@@ -30,26 +31,6 @@ class Group extends controller.Controller
 		view.linkages = linkages;
 		checkToken();
 	}
-	
-	/**
-		Delete linkage
-	**/
-	function doDelete(rc:connector.db.RemoteCatalog){
-		
-		if (checkToken()){
-			
-			var c = rc.getContract(true);
-			c.endDate = Date.now();
-			c.update();
-			
-			rc.lock();
-			rc.delete();
-			
-			throw Ok("/p/pro/group/"+c.group.id,"Le catalogue \""+c.name+"\" a été fermé. Il reste consultable dans les anciens contrats du groupe.");
-			
-		}
-		
-	}
 
 	/**
 		Remove a group and all its linkages
@@ -64,21 +45,16 @@ class Group extends controller.Controller
 			data.push( {id:g.id , label:g.name , value:g.id} );
 		}
 		
-		form.addElement( new sugoi.form.elements.IntSelect("group", "Groupe à retirer", cast data, true) );
-		form.addElement( new sugoi.form.elements.Checkbox("stayMember","Rester membre ce groupe",false) );
-		form.addElement( new sugoi.form.elements.Checkbox("deleteDistribs","Supprimer les distributions futures",true) );
+		form.addElement( new sugoi.form.elements.IntSelect("group", App.current.getTheme().groupWordingShort+" à retirer de mon espace producteur", cast data, true) );
+		// form.addElement( new sugoi.form.elements.Checkbox("stayMember","Rester membre ce "+App.current.getTheme().groupWordingShort,false) );
+		// form.addElement( new sugoi.form.elements.Checkbox("deleteDistribs","Supprimer les distributions futures",true) );
+		form.addElement( new sugoi.form.elements.Checkbox("check","Je suis sûr(e) de vouloir quitter ce marché",true) );
 
 		if(form.isValid()){
 
 			var group = db.Group.manager.get(form.getValueOf("group"),false);
 
-			if(form.getValueOf("stayMember")==false){
-				var ua = db.UserGroup.get(app.user,group,true);
-				ua.delete();
-			}
-
-
-			for( rc in connector.db.RemoteCatalog.getFromGroup(company, group)){
+				for( rc in connector.db.RemoteCatalog.getFromGroup(company, group)){
 				var c = rc.getContract(true);
 				c.endDate = Date.now();
 				c.update();
@@ -86,27 +62,20 @@ class Group extends controller.Controller
 				rc.lock();
 				rc.delete();
 
-				if( form.getValueOf("deleteDistribs") == true ){
-
-					for( distrib in c.getDistribs(true) ){
-						try{
-							service.DistributionService.cancelParticipation(distrib,false);
-						}catch(e:tink.core.Error){
-							throw Error(sugoi.Web.getURI(),e.message);
-						}
-						 
+				for( distrib in c.getDistribs(true) ){
+					try{
+						service.DistributionService.cancelParticipation(distrib,false);
+					}catch(e:tink.core.Error){
+						throw Error(sugoi.Web.getURI(),e.message);
 					}
-
 				}
 			}
 
-			throw Ok("/p/pro","Le groupe a été retiré");
-
+			throw Ok(vendor.getURL(),"Vous avez quitté le "+App.current.getTheme().groupWordingShort+".");
 		}
-
 		view.form = form;
-		view.title = "Retirer un groupe";
-
+		view.title = "Quitter un "+App.current.getTheme().groupWordingShort;
+		view.text = "En quittant un "+App.current.getTheme().groupWordingShort+", vous faites le choix de ne plus pouvoir y vendre vos produits.";
 	}
 	
 	@tpl('plugin/pro/form.mtt')
@@ -124,8 +93,8 @@ class Group extends controller.Controller
 		var data = tools.ObjectListTool.deduplicate(data);
 
 		
-		f.addElement( new sugoi.form.elements.IntSelect("group", "Choisissez un groupe à dupliquer", cast data, true) );
-		f.addElement( new sugoi.form.elements.StringInput("name", "Nom du nouveau groupe", null, true) );
+		f.addElement( new sugoi.form.elements.IntSelect("group", "Choisissez un "+App.current.getTheme().groupWordingShort+" à dupliquer", cast data, true) );
+		f.addElement( new sugoi.form.elements.StringInput("name", "Nom du nouveau "+App.current.getTheme().groupWordingShort, null, true) );
 		f.addElement( new sugoi.form.elements.StringInput("place", "Nom du nouveau lieu de livraison", null, true) );
 		
 		if (f.isValid()){
@@ -137,13 +106,10 @@ class Group extends controller.Controller
 				throw Error(sugoi.Web.getURI(),e.message);
 			}
 			
-			throw Ok("/p/pro", "Groupe dupliqué");
+			throw Ok(vendor.getURL(), view.fluc(App.current.getTheme().groupWordingShort)+" dupliqué");
 		}
 		
 		view.form = f;
-		view.title = "Dupliquer un groupe";
-		
+		view.title = "Dupliquer un "+App.current.getTheme().groupWordingShort;
 	}
-	
-	
 }

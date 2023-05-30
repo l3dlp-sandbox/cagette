@@ -1,0 +1,45 @@
+::use 'designMarket.mtt'::
+
+	::if groups.length>0::
+	<div class="col-md-12" >
+		<p>Voici les <b>::theme.groupWording_plural::</b> dont vous êtes administrateur :</p>
+	</div>
+	::end::
+	
+	<!-- groups -->
+	<div class="col-md-12">
+		<div class="row">
+			::foreach group groups::				
+				<div class="col-md-3">
+					<a class="clickable groupBlock"  href="/user/myMarkets?group=::group.id::">					
+						::if group.imageId!=null::
+						<img src="::file(group.imageId)::" class="img-responsive" style="width:92px;float:left;margin-right:12px;" />
+						::end::						
+						<h4>::group.name::</h4>
+					</a>
+				</div>
+			::end::
+			
+			::if groups.length==0::
+			<div class="col-md-12">
+				<div class="article text-center">
+					$$empty(Vous n’êtes pas encore administrateur d’un ::theme.groupWording::)
+				</div>
+			</div>
+			::end::
+		</div>
+		
+	</div>
+
+	<!-- actions -->
+	<div class="col-md-12" style="margin-bottom: 16px;" >
+		<div id='my-markets-neo-container'/>
+		<script>
+			document.addEventListener("DOMContentLoaded", function(event) {
+				neo.createNeoModule("my-markets-neo-container", "my-markets", {
+					hasMarket: ::groups.length > 0::
+				});
+			});
+		</script>
+	</div>
+::end::

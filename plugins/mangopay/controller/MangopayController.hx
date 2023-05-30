@@ -33,7 +33,7 @@ class MangopayController extends controller.Controller
 		
 		//check
 		var product = db.Product.manager.get(tmpBasket.getData().products[0].productId,false);
-		if( product.catalog.group.id != app.getCurrentGroup().id ) throw "Cette commande ne correspond pas au groupe dans lequel vous êtes actuellement.";
+		if( product.catalog.group.id != app.getCurrentGroup().id ) throw "Cette commande ne correspond pas au "+App.current.getTheme().groupWordingShort+" dans lequel vous êtes actuellement.";
 		
 		var user = App.current.user;
 		if(user==null) throw "Vous devez être connecté pour continuer";
@@ -128,7 +128,7 @@ class MangopayController extends controller.Controller
 			},
 			CreditedWalletId: wallet.Id,
 			AuthorId: naturalUserId,
-			ReturnURL: host+"/p/pro/transaction/mangopay/return/"+type+"/"+tmpBasket.id,
+			ReturnURL: host+"/transaction/mangopay/return/"+type+"/"+tmpBasket.id,
 			CardType: "CB_VISA_MASTERCARD",
 			Culture: "FR",
 			SecureMode:"DEFAULT",

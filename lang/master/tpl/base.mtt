@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta charset="utf-8" />
     <title>
-        ::if pageTitle!=null::
+        ::if pageTitle!=null && pageTitle!=""::
             ::pageTitle::
         ::else::
             ::theme.name::
@@ -45,25 +45,14 @@
     ::end::
 </head>
 
-::if container==null:: ::set container="container":: ::end::
+<body>
 
-<body class="::container::">
-
-    ::if DEBUG::
-    <div style="position: fixed;background: #666;padding: 8px;left: 0;bottom:0;color:#FF0;">DEBUG</div>
-    ::end::
-
-    ::if ( HOST.indexOf(".dev.",null)!=-1 )::
-    <div style="position: fixed;background: #600;padding: 8px;left:0;bottom:0;color: #FA0;width: 100%;z-index: 99;text-align: center;">
-        <i class="icon icon-alert"></i> 
-        <b>Ce site est une instance de test.</b> Ne l'utilisez pas pour prendre de vraies commandes.
-    </div>
-    ::end::
+    $$debug()
 
     <!-- Modal window -->
     <div id="myModal" />
 
-    ::raw __content__::
+    $$nav(shopping)
 
     $$googleTagManagerNoScript(::getVariable("googleTagManagerId")::)
 
@@ -73,7 +62,11 @@
 			theme: {
 				id: "::theme.id::",
 				name: "::theme.name::",
-				supportEmail: "::theme.supportEmail::"
+				supportEmail: "::theme.supportEmail::",
+                groupWording: "::theme.groupWording::",
+                groupWording_plural: "::theme.groupWording_plural::",
+                groupWordingShort: "::theme.groupWordingShort::",
+                groupWordingShort_plural: "::theme.groupWordingShort_plural::",
 			}
 		}
         

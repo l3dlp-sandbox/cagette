@@ -13,6 +13,7 @@ class Account extends Controller
 	public function new()
 	{
 		super();
+		view.pageTitle = "Mon compte utilisateur";
 	}
 	
 	/**
@@ -26,8 +27,6 @@ class Account extends Controller
 		if (group!=null) {
 			view.groupId = group.id;
 		}
-
-		view.noGroup = true;//do not display current group name
 
 		//Create the list of links to change the language
 		var langs = App.config.get("langs").split(";");

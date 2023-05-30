@@ -1,28 +1,15 @@
 
-::use 'reactBase.mtt'::
+::use 'base.mtt'::
 
 <div id='shop'></div>
 
     ::set group = getCurrentGroup()::
     <script language="javascript">
         window.addEventListener("DOMContentLoaded", function() {
-            ::if(user!=null)::
-                neo.createNeoModule("header", "pageHeader", {
-                    groupName: "::group.name::",
-                    userName: "::user.getName()::",
-                    userId: "::user.id::"
-                });
-            ::else::
-                neo.createNeoModule("header", "pageHeader", {
-                    groupName: "::group.name::",
-                });
-            ::end::
-
             neo.createNeoModule("shop", "shop", {
                 multiDistribId: ::md.id::,
                 isAuth: ::user != null::
             });
-
         });
     </script>
 

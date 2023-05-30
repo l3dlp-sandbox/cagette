@@ -3,7 +3,7 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" xml:lang="::LANG::" lang="::LANG::" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>Espace producteur - ::theme.name::</title>
+		<title>::if(vendor!=null):: ::vendor.name:: ::end::- ::theme.name::</title>
 
 		$$favicons()
 
@@ -30,17 +30,14 @@
 	</head>
 
 	::if bgcolor==null:: ::set bgcolor="#bad096":: ::end::
-	::if container==null:: ::set container="container":: ::end::
-	<body class="::container:: cpro" style="background-url:none;background: ::raw bgcolor::">
+	<body class="cpro" style="background-url:none;background: ::raw bgcolor::">
 		
-		::if DEBUG::
-		<div style="position: absolute;background: #666;padding: 8px;left: 0;color: #FF0;">DEBUG</div>
-		::end::
+		$$debug()
 		
 		<!-- Modal window -->
 		<div id="myModal" />
 		
-		::raw __content__::
+		$$nav(vendorSpace, ::vendor.id::)
 		
 		$$googleTagManagerNoScript(::getVariable("googleTagManagerId")::)
 		  
@@ -49,7 +46,11 @@
 			theme: {
 				id: "::theme.id::",
 				name: "::theme.name::",
-				supportEmail: "::theme.supportEmail::"
+				supportEmail: "::theme.supportEmail::",
+				groupWording: "::theme.groupWording::",
+				groupWording_plural: "::theme.groupWording_plural::",
+				groupWordingShort: "::theme.groupWordingShort::",
+				groupWordingShort_plural: "::theme.groupWordingShort_plural::",
 			}
 		}	
 		</script>

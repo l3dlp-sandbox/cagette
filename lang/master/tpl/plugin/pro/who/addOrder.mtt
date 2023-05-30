@@ -16,7 +16,7 @@
 	
 	<div class="col-md-8">
 		<p>
-			Saisissez une nouvelle commande pour un adhérent de votre groupe :
+			Saisissez une nouvelle commande pour un adhérent de votre ::theme.groupWordingShort:: :
 		</p>
 		<p>
 			::raw form::

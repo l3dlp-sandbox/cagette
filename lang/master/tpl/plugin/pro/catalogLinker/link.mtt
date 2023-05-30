@@ -25,7 +25,7 @@
                 </th>
                 <th class="col-md-5 grey">
                     <i class="icon icon-book"></i> ::catalog.name:: <br/>
-                    dans le groupe "<a href="/group/::catalog._group.id::" target="_blank">::catalog._group.name::</a>"
+                    dans le ::theme.groupWordingShort:: "<a href="/group/::catalog._group.id::" target="_blank">::catalog._group.name::</a>"
                 </th>
                 <th class="col-md-2">
 
@@ -149,7 +149,7 @@ var createNewOffer = function(productId){
     var pcatalogId = ::pcatalog.id::;
     console.log("create offer for "+productId+" in pcatalog "+pcatalogId);
 
-    let req = new Request('/p/pro/catalogLinker/createNewOffer/'+productId+'/'+pcatalogId);
+    let req = new Request('::vendor.getURL()::/catalogLinker/createNewOffer/'+productId+'/'+pcatalogId);
 
     fetch(req).then(function(res){
         console.log(res);
@@ -288,7 +288,7 @@ document.querySelector("#validate").onclick = function(){
         params.push("token=::token::");
         req += params.join("&");
 
-        document.location.href = "/p/pro/catalogLinker/submitLinkage/::catalog.id::/::pcatalog.id::"+req;
+        document.location.href = "::vendor.getURL()::/catalogLinker/submitLinkage/::catalog.id::/::pcatalog.id::"+req;
     }
 
 };

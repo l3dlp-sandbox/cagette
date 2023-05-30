@@ -1,0 +1,207 @@
+::use 'admin/design.mtt'::
+	<div class="article">
+		<h4>::theme.groupWordingShort:: #::group.id::</h4>
+		<h2>::group.name::</h2>
+
+		<p>Actif : $$bool(::groupStats.active::)</p>
+
+		<p>
+			créé le : ::group.cdate::<br/>
+			::if group._contact!=null::
+			
+				Par <a href="/p/hosted/userGroup/::group._contact.id::/::group.id::">::group._contact.getName()::</a>
+				<p>
+					Tel. <b>::group._contact.phone::</b><br/>
+					Email <b>::group._contact.email::</b><br/>
+					Dernier login ::group._contact.ldate:: <br/>				
+				</p>
+				
+				::set memberof = group._contact.getGroups()::		
+				<div ::cond memberof.length>1:: style="max-height:300px;overflow-y:scroll;">
+					Egalement membre de : 
+					<ul>
+					::foreach x memberof::
+						::if x.id!=group.id::
+						<li><a href="/admin/group/view/::x.id::">#::x.id::-::x.name::</a></li>
+						::end::
+					::end::
+					</ul>
+				</div>
+			::end::
+		</p>
+	<hr/>
+
+
+	<table class="table table-bordered text-center" >
+		<tr>
+			<th data-toggle="tooltip" title="indice de richesse de l'offre">IRO</th>
+			<th>CA 90 jours</th>
+			<th>Nbre de catalogues</th>
+			<th>Nbre de prod.</th>
+			<th>Nbre de clients</th>
+			<th>Type de l'admin.</th>
+		</tr>
+		<tr>
+			<td>::groupStats.iro:: / 9</td>
+			<td>::groupStats.turnover90days:: €</td>
+			<td>::groupStats.contractNum::</td>
+			<td>::groupStats.vendorNum::</td>
+			<td>::groupStats.membersNum::</td>
+			<td>::groupStats.contactType::</td>
+		</tr>
+
+	</table>
+	<a href='?refresh=1' class="btn btn-default btn-xs">Rafraichir</a>
+
+
+
+		<hr/>
+		<h3>Fonctionnalités en beta</h3>
+				
+		Dispatch : $$bool(::group.isDispatch()::)<br/>
+
+		<p>
+		<!--::if(!group.isDispatch())::
+			<a href="?dispatch=1" class="btn btn-default">Passer en Dispatch</a>
+		::end::-->
+		::if( group.disabled=="MOVED")::
+			<a href="?duplicate=1" class="btn btn-default">Dupliquer en mode Marché</a>
+		::end::
+	</p>
+
+		<hr/>
+		<h3>Lieux de livraison</h3>		
+		<p>
+			<ul>
+			::foreach d group.getDeliveries(4)::
+			::set p = d._place::
+			<li>
+				[::p.lat::,::p.lng::]
+				
+				::if p.lat!=0 && p.lat!=null::
+					$$bool(true)
+				::else::
+					$$bool(false)
+				::end::
+				
+				::d._place.getFullAddress()::
+			</li>
+			::end::
+			</ul>
+		</p>
+		
+		<hr/>
+		
+		<a href="/group/::group.id::" class="btn btn-default">Page publique</a>
+		<a href="/admin/group/addMe/::group.id::" class="btn btn-default">Devenir Membre de ce ::theme.groupWordingShort::</a>
+
+		<hr/>
+		
+		<h3>Membres</h3>		
+		<div style="max-height:300px;overflow-y:scroll;">
+		
+				<table class="table table-condensed">
+				::foreach u group.getMembers()::
+				<tr>
+					<td>::u.id::</td>
+					<td><a href="/p/hosted/userGroup/::u.id::/::group.id::">::u.getName()::</a></td>
+				</tr>
+				::end::
+			</table>
+
+		</div>
+		
+		<hr/>
+		
+		<h3>Producteurs</h3>
+		<div style="max-height:300px;overflow-y:scroll;">
+			<table class="table table-condensed table-bordered">
+				<tr>
+					<th>id</th>
+					<th>Nom</th>
+					<th>Statut</th>
+					<th>Compte Stripe Connect (dispatch)</th>
+				</tr>
+				::foreach v vendors::
+
+				::set stats = getVendorStats(v)::
+				<tr>
+					<td>::v.id::</td>
+					<td><a href='/admin/vendor/view/::v.id::'>::v.name::</a></td>
+					<td>$$vendorType(::enumIndex(stats._type)::)</td>
+					<td>
+						::set d = v.getStripeConnectStatus()::
+
+						compte ouvert $$bool(::d.account_open::), compte validé $$bool(::d.details_submitted && d.charges_enabled::)
+						
+					</td>
+				
+				</tr>
+			
+				::end::
+			</table>
+		</div>
+		<a href="/admin/group/syncToHubspot/::group.id::" class="btn btn-default">Synchroniser les producteurs sur Hubspot</a>
+
+
+		<hr/>
+
+
+		<h3>Catalogues</h3>
+		<div style="max-height:300px;overflow-y:scroll;">
+			<table class="table table-condensed">
+				::foreach c group.getActiveContracts(false)::
+				<tr>
+					<td>::c.id::</td>
+					<td>::c.name::</td>
+				</tr>
+				::end::
+			</table>
+			
+		</div>
+
+		<hr/>
+
+		<h3>Paiements</h3>
+		
+		<a href="/admin/group/resetBalances/::group.id::" class="btn btn-default" $$confirm()>Remise à l'équilibre des soldes adhérents</a>
+		<hr/>
+
+		
+		::if(mangopay!=null)::
+		<h3>Mangopay</h3>
+		<div>
+			Structure qui reçoit les paiements : <b>::mangopay._legalUser.name::</b><br/>
+			Legal User Id : <a href="https://dashboard.mangopay.com/User/::mangopay._legalUser.mangopayUserId::/Details">#::mangopay._legalUser.mangopayUserId::</a> <br/>
+			Wallet Id : <a href="https://dashboard.mangopay.com/User/::mangopay._legalUser.mangopayUserId::/Wallets/::mangopay.walletId::">#::mangopay.walletId::</a> <br/>
+			
+			<a href="/transaction/mangopay/group/debug/::mangopay.groupId::">Debug bug de Brigitte</a><br/>
+			<a href="/transaction/mangopay/group/debug2/::mangopay.groupId::">Debug compta au centime près</a><br/>
+			<a href="/debug/neo?hash=::debugLegalUserModule::">Debug Dossier Mangopay (mangopay-legal-user-module)</a><br/>
+			
+			<a href="?removeMangopay=1">Couper la liaison</a>
+
+		</div>
+		::end::
+
+		<hr/>
+
+		<h3>Maintenance et debug</h3>
+		<a href="?roleIds=1" class="btn btn-default">Cocher automatiquement les rôles en fonction des catalogues actifs</a>
+		<a href="/admin/group/geocode/::group.id::" class="btn btn-default">Géocoding</a>
+		<a href="/admin/group/refresh/::group.id::" class="btn btn-default">Revérifier visibilité carte</a>
+		<a href="/admin/group/disableNotifs/::group.id::" class="btn btn-default">Désactiver les notifs</a>
+		<a href="/admin/group/enableNotifs/::group.id::" class="btn btn-default">Activer les notifs</a>
+		<a href="/admin/group/deleteDemoContracts/::group.id::" class="btn btn-default">Effacer contrats de démo</a>
+		<a href="/admin/vendor/fixGroupOps/::group.id::" class="btn btn-default">Fix remoteIds + faux paiements mangopay</a>
+		<a href="/admin/vendor/checkOperations/::group.id::/2021-01-01 00:00:00/2021-02-01 00:00:00" class="btn btn-default">Consistence commandes et operations</a>
+		<hr/>
+
+
+		<a href="/admin/group/deleteGroup/::group.id::?token=::token::" $$confirm(::_("Delete ?")::) class="btn btn-danger" >
+				<i class="icon icon-delete"></i>
+				Supprimer DEFINITIVEMENT le ::theme.groupWordingShort:: (irréversible)
+		</a>
+		
+	</div>
+::end::

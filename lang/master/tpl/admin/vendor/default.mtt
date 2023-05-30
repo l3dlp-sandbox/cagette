@@ -9,14 +9,14 @@
 		<span class="caret"></span>
 	</button>
 	<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-		<li><a href="/p/pro/admin/newVendor">
+		<li><a href="/admin/vendor/newVendor">
 			<span class="glyphicon glyphicon-plus"></span> Nouveau producteur
 		</a></li>
-		<li><a href="/p/pro/admin/importGroup">Import de groupes</a></li>
-		<li><a href="/p/pro/admin/contractToCatalog" >Catalogue -&gt; Espace producteur</a></li>
-		<li><a href="/p/pro/admin/duplicate">Dupliquer un groupe</a></li>
-		<li><a href="/p/pro/admin/moveCatalog">Déplacer un catalogue</a></li>
-		<li><a href="/p/pro/admin/copyProducts">Copier base de référence</a></li>
+		<li><a href="/admin/vendor/importGroup">Import de ::theme.groupWordingShort_plural::</a></li>
+		<li><a href="/admin/vendor/contractToCatalog" >Catalogue -&gt; Espace producteur</a></li>
+		<li><a href="/admin/vendor/duplicate">Dupliquer un ::theme.groupWordingShort::</a></li>
+		<li><a href="/admin/vendor/moveCatalog">Déplacer un catalogue</a></li>
+		<li><a href="/admin/vendor/copyProducts">Copier base de référence</a></li>
 	</ul>
 	</div>
 	

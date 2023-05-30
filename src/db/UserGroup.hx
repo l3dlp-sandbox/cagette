@@ -80,8 +80,8 @@ class UserGroup extends Object
 				});
 			default:
 				rights.push({
-					right:Type.enumConstructor(r).toString(),
-					params:null
+					right : Type.enumConstructor(r).toString(),
+					params : null
 				});			
 		}
 
@@ -159,7 +159,7 @@ class UserGroup extends Object
 		return false;
 	}
 	
-	public function getRightName(r:Right):String {
+	public static function getRightName(r:Right):String {
 		var t = sugoi.i18n.Locale.texts;
 		return switch(r) {
 		case GroupAdmin 	: t._("Administrator");
@@ -167,7 +167,7 @@ class UserGroup extends Object
 		case Membership 	: t._("Members management");
 		case ContractAdmin(cid) : 
 			if (cid == null) {
-				t._("Management of all catalogs");
+				"Gestion des distributions et catalogues";
 			}else {
 				var c = db.Catalog.manager.get(cid);
 				if(c==null) {
@@ -179,7 +179,7 @@ class UserGroup extends Object
 		}
 	}
 
-	public function getJsonRightName(r:{right:String,params:Array<String>}){
+	public static function getJsonRightName(r:{right:String,params:Array<String>}){
 		var t = sugoi.i18n.Locale.texts;
 		return switch(r.right) {
 			case "GroupAdmin" 	: t._("Administrator");
@@ -187,7 +187,7 @@ class UserGroup extends Object
 			case "Membership" 	: t._("Members management");
 			case "ContractAdmin" : 
 				if (r.params == null) {
-					t._("Management of all catalogs");
+					"Gestion des distributions et catalogues";
 				}else {
 					var c = db.Catalog.manager.get(Std.parseInt(r.params[0]));
 					if(c==null) {
@@ -222,16 +222,7 @@ class UserGroup extends Object
 	}
 
 	public function canManageAllContracts(){
-		return hasRight(ContractAdmin(null));
-		/*if (rights == null) return false;
-		for (r in rights) {
-			switch(r) {
-				case Right.ContractAdmin(cid):
-					if(cid==null) return true;
-				default:
-			}
-		}
-		return false;			*/
+		return hasRight(ContractAdmin(null));		
 	}
 
 }

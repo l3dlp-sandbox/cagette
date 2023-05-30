@@ -73,87 +73,29 @@ class App extends sugoi.BaseApp {
 	}
 
 	public function setTheme(){
-		var cagetteTheme: Theme = {
-			id: "cagette",
-			name: "Cagette.net",
-			url: "https://www.cagette.net",
-			supportEmail: "support@cagette.net",			
-			footer: {
-				bloc1: '<a href="https://www.cagette.net" target="_blank">
-							<img src="/theme/cagette/logo.png" alt="logo Cagette.net" style="width:166px;"/>
-						</a>',
-				bloc2: '<ul>
-							<li> 
-								<a href="/charte/" target="_blank">Charte producteurs</a> 
-							</li>
-							<li> 
-								<a href="https://wiki.cagette.net" target="_blank">Documentation</a> 
-							</li>
-							<li>
-								<a href="https://www.facebook.com/groups/EntraideCagette/" target="_blank">Groupe d\'entraide</a> 
-							</li>
-							<li>
-								<a href="http://www.cagette.net/producteurs" target="_blank">Information producteurs</a> 
-							</li>												
-							<li>
-								<a href="/cgu" target="_blank">Conditions générales d\'utilisation</a> 
-							</li>
-							<li>
-								<a href="/privacypolicy" target="_blank">Politique de confidentialité</a> 
-							</li>
-							<li>
-								<a href="/termsofsale" target="_blank">Conditions commerciales (CCP)</a> 
-							</li>	
-							<li>
-								<a href="/mgp" target="_blank">C.G.U Mangopay</a> 
-							</li>
-						</ul>',
-				bloc3: 'SOUTENEZ-NOUS
-						<ul>
-							<li>
-								<a href="http://www.lilo.org/fr/cagette-net/?utm_source=cagette-net" target="_blank">Notre page sur Lilo.org</a>
-							</li>
-						</ul>
-						',
-				bloc4: 'SUIVEZ-NOUS
-						<ul class="cagsocialmedia">
-							<li class="cagfb">
-								<a title="Facebook" href="https://www.facebook.com/cagette" target="_blank"> <i class="icon icon-facebook"></i></a>	
-							</li>
-							<li class="cagyoutube">
-								<a title="Youtube" href="https://www.youtube.com/channel/UC3cvGxAUrbN9oSZmr1oZEaw" target="_blank"> <i class="icon icon-youtube"></i></a> 						
-							</li>							
-						</ul>
-						<br/>
-						Cagette.net est réalisé <br/>
-						par la SCOP Alilo'
-			},
-			email:{
-				senderEmail : 'noreply@mj.cagette.net',
-				brandedEmailLayoutFooter:  '<p>Cagette.net - ALILO SCOP, 4 impasse Durban, 33000 Bordeaux</p>
-				<div style="display: flex; justify-content: center; align-items: center;">
-					<a href="https://www.cagette.net" target="_blank" rel="noreferrer noopener notrack" class="bold-green" style="text-decoration:none !important; padding: 8px; display: flex; align-items: center;">
-						<img src="http://'+ App.config.HOST+'/img/emails/website.png" alt="Site web" height="25" style="width:auto!important; height:25px!important; vertical-align:middle" valign="middle" width="auto"/>Site web
-					</a>
-					<a href="https://www.facebook.com/cagette" target="_blank" rel="noreferrer noopener notrack" class="bold-green" style="text-decoration:none !important; padding: 8px; display: flex; align-items: center;">
-						<img src="http://'+ App.config.HOST+'/img/emails/facebook.png" alt="Facebook" height="25" style="width:auto!important; height:25px!important; vertical-align:middle" valign="middle" width="auto"/>Facebook
-					</a>
-					<a href="https://www.youtube.com/channel/UC3cvGxAUrbN9oSZmr1oZEaw" target="_blank" rel="noreferrer noopener notrack" class="bold-green" style="text-decoration:none !important; padding: 8px; display: flex; align-items: center;">
-						<img src="http://'+ App.config.HOST+'/img/emails/youtube.png" alt="YouTube" height="25" style="width:auto!important; height:25px!important; vertical-align:middle" valign="middle" width="auto"/>YouTube
-					</a>
-				</div>'
+		var defaultTheme: Theme = {
+			id: 'cavea',
+			name: 'CAVEA',
+			groupWording: 'groupe',
+			groupWording_plural: 'groupes',
+			groupWordingShort: 'groupe',
+			groupWordingShort_plural: 'groupes',
+			url: '',
+			supportEmail: '',
+			email: {
+				senderEmail: '',
+				brandedEmailLayoutFooter: '',
 			},
 			terms: {
-				termsOfServiceLink: "https://www.cagette.net/wp-content/uploads/2023/01/Conditions-Generales-dUtilisation-de-Cagette.net.pdf",
-				termsOfSaleLink: "https://www.cagette.net/wp-content/uploads/2023/01/Conditions-Commerciales-de-la-Plateforme.pdf",
-				platformTermsOfServiceLink: "https://www.cagette.net/wp-content/uploads/2023/05/Conditions-Generales-de-Services-de-Cagette.net-mai-2023.pdf",
-				privacyPolicyLink: "https://www.cagette.net/wp-content/uploads/2023/01/Politique-de-confidentialite-Cagette.net.pdf",
-			}
-			
+				termsOfServiceLink: '',
+				termsOfSaleLink: '',
+				platformTermsOfServiceLink: '',
+				privacyPolicyLink: ''
+			},
 		}
 		var res = this.cnx.request("SELECT value FROM Variable WHERE name='whiteLabel'").results();
 		var whiteLabelStringified = res.first()==null ? null : res.first().value;
-		App.theme = whiteLabelStringified != null ? haxe.Json.parse(whiteLabelStringified) : cagetteTheme;
+		App.theme = whiteLabelStringified != null ? haxe.Json.parse(whiteLabelStringified) : defaultTheme;
 	}
 
 	public function setSettings(){
@@ -231,22 +173,15 @@ class App extends sugoi.BaseApp {
 		out.set("city", "commune");
 		out.set("phone", "téléphone");
 		out.set("phone2", "téléphone du conjoint");
-
-
 		out.set("select", "sélectionnez");
 		out.set("contract", "Contrat");
 		out.set("place", "Lieu");
 		out.set("name", "Nom");
-		out.set("cdate", "Date d'entrée dans le groupe");
 		out.set("quantity", "Quantité");
 		out.set("paid", "Payé");
 		out.set("user2", "(facultatif) partagé avec ");
 		out.set("product", "Produit");
 		out.set("user", "Adhérent");
-		out.set("txtIntro", "Texte de présentation du groupe");
-		out.set("txtHome", "Texte en page d'accueil pour les adhérents connectés");
-		out.set("txtDistrib", "Texte à faire figurer sur les listes d'émargement lors des distributions");
-		out.set("extUrl", "URL du site du groupe.");
 		
 		out.set("startDate", "Date de début");
 		out.set("endDate", "Date de fin");
@@ -291,9 +226,6 @@ class App extends sugoi.BaseApp {
 		out.set("membershipPrice", "Adhésions : Coût de l'adhésion");
 		out.set("contact", "Responsable");
 		out.set("fees", "frais");
-		out.set("AmapAdmin", "Administrateur du groupe");
-		out.set("Membership", "Accès à la gestion des membres");
-		out.set("Messages", "Accès à la messagerie");
 		out.set("vat", "TVA");
 		out.set("desc", "Description");
 		
@@ -302,24 +234,18 @@ class App extends sugoi.BaseApp {
 		out.set("HidePhone", "Masquer le téléphone du responsable sur la page publique");
 		out.set("PhoneRequired", "Saisie du numéro de téléphone obligatoire");
 		out.set("AddressRequired", "Saisie de l'adresse obligatoire");
-		out.set("CagetteNetwork", "Lister ce groupe sur la carte et sur les annuaires partenaires");
+		out.set("CagetteNetwork", "Lister ce marché sur la carte et sur les annuaires partenaires"); //out.set("CagetteNetwork", "Lister ce "+App.current.getTheme().groupWordingShort+" sur la carte et sur les annuaires partenaires");
 		out.set("Show3rdCategoryLevel", "Classer les produits de la boutique par catégorie de troisième niveau");	
 
 		out.set("ref", "Référence");
 		out.set("linkText", "Intitulé du lien");
 		out.set("linkUrl", "URL du lien");
 		
-		//group type
-		out.set("Amap", "AMAP");
-		out.set("GroupedOrders", 	"Groupement d'achat");
-		out.set("ProducerDrive", 	"En direct d'un collectif de producteurs");
-		out.set("FarmShop", 		"En direct d'un producteur");
-		
 		out.set("regOption", 	"Inscription de nouveaux membres");
 		out.set("Closed", 		"Fermé : L'administrateur ajoute les nouveaux membres");
 		out.set("WaitingList", 	"Liste d'attente");
 		out.set("Open", 		"Ouvert : tout le monde peut s'inscrire");
-		out.set("Full", 		"Complet : Le groupe n'accepte plus de nouveaux membres");
+		out.set("Full", 		"Complet : N'accepte plus de nouveaux membres");
 
 		out.set("Soletrader"	, "Micro-entreprise");
 		out.set("Organization"	, "Association");
@@ -336,7 +262,7 @@ class App extends sugoi.BaseApp {
 		out.set("htPrice", "Prix H.T");
 		out.set("amount", "Montant");
 		out.set("percent", "Pourcentage");
-		out.set("pinned", "Mets en avant les produits");
+		out.set("pinned", "Mets en avant les produits");		
 		
 		out.set("byMember", "Par adhérent");
 		out.set("byProduct", "Par produit");
@@ -352,7 +278,7 @@ class App extends sugoi.BaseApp {
 		return out;
 	}
 	
-	public function populateAmapMembers() {		
+	public function populateGroupMembers() {		
 		return user.getGroup().getMembersFormElementData();
 	}
 	

@@ -9,21 +9,23 @@ import service.DistributionService;
 class Sales extends controller.Controller
 {
 
-	var company : pro.db.CagettePro;
     var baseUrl : String;
+	var company : pro.db.CagettePro;
+	var vendor : db.Vendor;
 	
-	public function new()
+	public function new(company:pro.db.CagettePro) 
 	{
 		super();
-		view.company = company = pro.db.CagettePro.getCurrentCagettePro();
+		view.company = this.company = company;
+		view.vendor = this.vendor = company.vendor;
 		view.nav = ["delivery"];
-        baseUrl = "/p/pro/sales";
+        baseUrl = vendor.getURL()+"/sales";
 	}
 	
 	@tpl('plugin/pro/sales/default.mtt')
 	public function doDefault(){
 
-        if(company.captiveGroups) throw Redirect("/p/pro/delivery");
+        if(company.captiveGroups) throw Redirect(vendor.getURL()+"/delivery");
 		
 		var now = Date.now();
 		var today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
@@ -31,7 +33,8 @@ class Sales extends controller.Controller
 
         //get multidistribs 
         var distribs = [];
-        for( group in company.getClients()){
+		var groups = company.getClients();
+        for( group in groups){
             for( md in db.MultiDistrib.getFromTimeRange(group, today,sixMonth) ){
                 distribs.push(md);
             }
@@ -46,7 +49,7 @@ class Sales extends controller.Controller
 		var data = [
 			{label:"Par produits", value :"products"},
 			{label:"Par membres", value :"members"},
-			{label:"Par Groupe-produits (CSV)", value :"groups"},
+			{label:"Par "+view.fluc(App.current.getTheme().groupWordingShort)+"-produits (CSV)", value :"groups"},
 		];
 		form.addElement(new sugoi.form.elements.RadioGroup("type","Type",data,data[0].value));
 		var now = DateTime.now();	
@@ -62,32 +65,24 @@ class Sales extends controller.Controller
 			endDate = new Date(endDate.getFullYear(),endDate.getMonth(),endDate.getDate(),23,59,0);
 			switch(form.getValueOf("type")){
 				case "products":
-					throw Redirect('/p/pro/delivery/exportByProducts/?startDate=${startDate}&endDate=${endDate}');
+					throw Redirect(vendor.getURL()+'/delivery/exportByProducts/?startDate=${startDate}&endDate=${endDate}');
 				case "members" : 
-					throw Redirect('/p/pro/delivery/exportByMembers/?startDate=${startDate}&endDate=${endDate}');
+					throw Redirect(vendor.getURL()+'/delivery/exportByMembers/?startDate=${startDate}&endDate=${endDate}');
 				case "groups" : 
-					throw Redirect('/p/pro/delivery/exportByGroups/?startDate=${startDate}&endDate=${endDate}');
+					throw Redirect(vendor.getURL()+'delivery/exportByGroups/?startDate=${startDate}&endDate=${endDate}');
 				default :
-					throw Error('/p/pro/delivery', "type d'export inconnu");
+					throw Error(vendor.getURL()+'/delivery', "type d'export inconnu");
 				
 			}
 		}
 		view.form = form;
 
+		view.groups = groups;
         view.distribs = distribs;
         view.getFromGroup = connector.db.RemoteCatalog.getFromGroup;
 
 		checkToken();
 
-	}
-
-    function doParticipate(md:db.MultiDistrib,contract:db.Catalog){
-		try{
-			service.DistributionService.participate(md,contract);
-		}catch(e:tink.core.Error){
-			throw Error(baseUrl,e.message);
-		}		
-		throw Ok(baseUrl,"Vous participez maintenant à la distribution du "+view.hDate(md.getDate()));
 	}
 
     /**
@@ -131,10 +126,10 @@ class Sales extends controller.Controller
 				d = DistributionService.editAttendance(d,orderStartDate,orderEndDate,false);							
 
 			} catch(e:tink.core.Error){
-				throw Error('/p/pro/sales' , e.message);
+				throw Error(vendor.getURL()+'/sales' , e.message);
 			}
 			
-			throw Ok('/p/pro/sales', "Votre participation à cette distribution a été mise à jour" );
+			throw Ok(vendor.getURL()+'/sales', "Votre participation à cette distribution a été mise à jour" );
 			
 		} else {
 			app.event(PreEditDistrib(d));

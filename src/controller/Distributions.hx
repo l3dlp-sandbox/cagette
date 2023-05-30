@@ -143,7 +143,7 @@ class Distributions extends Controller {
 
 		view.title = 'Saisissez la raison pour laquelle vous vous désistez.';
 		if (App.current.getSettings().unsubscribeVolunteerRoleReasonOnlyForAdmin==true){
-			view.text = "La raison de votre désistement sera uniquement communiquée aux administrateurs de ce groupe";
+			view.text = "La raison de votre désistement sera uniquement communiquée aux administrateurs de ce "+App.current.getTheme().groupWordingShort;
 		}
 		view.form = form;
 	}
@@ -205,7 +205,7 @@ class Distributions extends Controller {
 				throw Error("/distributions/volunteerRoles/" + distrib.id, e.message);
 			}
 
-			throw Ok("/distribution", t._("Volunteer Roles have been saved for this distribution"));
+			throw Ok("/distributions", t._("Volunteer Roles have been saved for this distribution"));
 		}
 
 		view.title = "Sélectionner les rôles nécéssaires à la distribution du " + view.hDate(distrib.getDate());
@@ -245,7 +245,7 @@ class Distributions extends Controller {
 				throw Error("/distributions/volunteers/" + distrib.id, e.message);
 			}
 
-			throw Ok("/distribution", t._("Volunteers have been assigned to roles for this distribution"));
+			throw Ok("/distributions", t._("Volunteers have been assigned to roles for this distribution"));
 		}
 
 		view.title = t._("Select a volunteer for each role for this multidistrib");

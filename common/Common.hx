@@ -307,6 +307,10 @@ typedef SocialShareData = {
 typedef Theme = {
 	var id:String; // theme's id
 	var name:String; // readable name
+	var groupWording: String; // group's wording
+  	var groupWording_plural: String; 
+	var groupWordingShort: String; // a shorten version of a group's wording
+  	var groupWordingShort_plural: String; 
 	var url:String; // company's website
 	var supportEmail:String; // email address of the support	
 	var ?footer:{

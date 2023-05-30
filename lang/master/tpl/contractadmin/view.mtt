@@ -95,26 +95,12 @@
 					::if (cpro==null || cpro.offer==0)::
 						<p>
 							Ventes limitées à 1000€ par an.<br/>
-							<span class="disabled">(hors ventes réalisées dans des groupes en mode AMAP)</span><br/>
 						</p>
 						<p>
 							::set frdate = getDate(vendor.freemiumResetDate)::
 							La date anniversaire de remise à zéro du compteur de chiffre d'affaires
 							est le <b>::frdate.d:: ::frdate.m::</b> 
-						</p>
-						::if(cpro==null)::
-							<p>
-								<a href="/vendor/checkId/::c.id::" class="btn btn-primary">Ouvrir un espace Producteur</a>
-							</p>
-							<p>
-								<div id="discoveryVendorTurnoverLimit"></div>
-								<script>
-									document.addEventListener("DOMContentLoaded", function () {
-										neo.createNeoModule("discoveryVendorTurnoverLimit", "discoveryVendorTurnoverLimit", {vendorId: ::vendor.id::});
-									}); 
-								</script>
-							</p>
-						::end::
+						</p>						
 					::end::
 				</td>
 			</tr>

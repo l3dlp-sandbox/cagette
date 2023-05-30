@@ -46,7 +46,7 @@ class PUserCompany extends Object
 	}
 	
 	public static function getCompanies(user:db.User) : Array<CagettePro> {
-		return Lambda.map(PUserCompany.manager.search($user == user, false),function(x) return x.company).array();
+		return PUserCompany.manager.search($user == user, false).map(x-> x.company).array();
 	}
 
 	public static function getUserCompanies(user:db.User) : Array<PUserCompany> {

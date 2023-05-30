@@ -96,7 +96,7 @@
 			</b>	
 
 			::if(tmpVendor.id!=null)::
-				<a href='/p/pro/admin/certification#/certification/::tmpVendor.id::' target="_blank">( questionnaire )</a><br/>
+				<a href='/admin/vendor/certification#/certification/::tmpVendor.id::' target="_blank">( questionnaire )</a><br/>
 			::end::
 		</p>
 
@@ -126,7 +126,7 @@
 			<a href="/admin/vendor/edit/::vendor.id::" class="btn btn-default btn-sm">Compléter fiche</a>
 			
 			::if(cpro!=null)::
-			<a href="/p/pro?vendor=::vendor.id::" class="btn btn-default btn-sm">se connecter sur son espace producteur</a>
+			<a href="::vendor.getURL()::" class="btn btn-default btn-sm">se connecter sur son espace producteur</a>
 			::end::
 		</p>
 
@@ -227,8 +227,7 @@
 	<table class="table table-bordered">
 		<tr>
 			<th>Type</th>
-			<th>Groupe</th>
-			<th>Mode du groupe</th>
+			<th>::fluc(theme.groupWordingShort)::</th>
 			<th>Catalogue</th>
 			<th>Dates</th>
 			<th>Actions</th>
@@ -246,13 +245,9 @@
 				::else::
 				Catalogue invité					
 				::end::</td>
-				<td><a href="/p/hosted/group/::c._group.id::">::c._group.name::</a></td>
-				<td>
-					Boutique
-				</td>
+				<td><a href="/admin/group/view/::c._group.id::">::c._group.name::</a></td>				
 				<td>::c.name::</td>
 				<td>du ::sDate(c.startDate):: au ::sDate(c.endDate)::</td>
-				
 			</tr>
 		::end::
 		</table>
@@ -290,21 +285,21 @@
 			</button>
 			<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
 				::if(cpro!=null)::
-				<li><a href="/p/pro/admin/delete/::vendor.id::/disable">Désactiver espace producteur ( redevient invité, possibilité de ré-ouvrir plus tard )</a></li>
-				<li><a href="/p/pro/admin/delete/::vendor.id::/deleteCpro">Supprimer espace producteur ( redevient invité )</a></li>
+				<li><a href="/admin/vendor/delete/::vendor.id::/disable">Désactiver espace producteur ( redevient invité, possibilité de ré-ouvrir plus tard )</a></li>
+				<li><a href="/admin/vendor/delete/::vendor.id::/deleteCpro">Supprimer espace producteur ( redevient invité )</a></li>
 				::else::
-				<li><a href="/p/pro/admin/createCpro/::vendor.id::">ouvrir espace producteur</a></li>
+				<li><a href="/admin/vendor/createCpro/::vendor.id::">ouvrir espace producteur</a></li>
 				::end::
-				<li><a href="/p/pro/admin/delete/::vendor.id::/delete" >Supprimer complètement le producteur</a></li>												
-				<li><a href="/p/pro/admin/dedupInfo/::vendor.email::" >Déduplication par email</a></li>
-				<li><a href="/p/pro/admin/findduplicatesbyname/::vendor.name::" >Recherche par nom</a></li>
-				<li><a href="/p/pro/admin/findduplicatesbyzip/::vendor.zipCode::" >Recherche par code postal</a></li>
+				<li><a href="/admin/vendor/delete/::vendor.id::/delete" >Supprimer complètement le producteur</a></li>												
+				<li><a href="/admin/vendor/dedupInfo/::vendor.email::" >Déduplication par email</a></li>
+				<li><a href="/admin/vendor/findduplicatesbyname/::vendor.name::" >Recherche par nom</a></li>
+				<li><a href="/admin/vendor/findduplicatesbyzip/::vendor.zipCode::" >Recherche par code postal</a></li>
 				<li><a href="/db/Vendor/edit/::vendor.id::" >Modifier en BDD</a></li>
 			</ul>
 		</div>
 	</div>
 
-	<a href="?giveAdminRights=1" class="btn btn-default">Donner droits admin à tous ses marchés</a>
+	<a href="?giveAdminRights=1" class="btn btn-default">Donner droits admin à tous ses ::theme.groupWordingShort_plural::</a>
 </p>
 
 ::end::

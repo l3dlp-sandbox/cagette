@@ -108,24 +108,6 @@ class Scripts extends Controller
     }
 
     /**
-        2023-04-04 delete AMAPs datas : 
-        supprime les UserOrder / basket / distributions multdistrib / operations / adhésions / catalog / products des AMAP.  On ne garde que Group/User/UserGroup
-    **/
-    function doDeleteAmapData(){
-
-        for( g in db.Group.manager.search( $flags.has(__ShopMode)==false ,false)){
-
-            print('delete data of #'+g.id+" "+g.name);
-
-            db.MultiDistrib.manager.delete($groupId == g.id);
-            db.Catalog.manager.delete($groupId == g.id);
-            db.Membership.manager.delete($groupId == g.id);
-            db.Operation.manager.delete($groupId == g.id);            
-        }
-    }
-
-
-    /**
         2023-04-17 migrate VRAC groups to differentiated pricing
 
         sourceGroup : the group we empty        

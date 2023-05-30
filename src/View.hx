@@ -292,4 +292,11 @@ class View extends sugoi.BaseView {
 		return App.current.session.sid;
 	}
 
+	/**
+		first letter uppercase
+	**/
+	public function fluc(str:String):String {
+		return str.charAt(0).toUpperCase() + str.substr(1);		
+	}
+
 }

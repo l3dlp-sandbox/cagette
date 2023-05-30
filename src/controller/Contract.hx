@@ -1,4 +1,5 @@
 package controller;
+import pro.db.PCatalog;
 import Common;
 import db.Catalog;
 import db.MultiDistrib;
@@ -40,7 +41,7 @@ class Contract extends Controller
 	@tpl("contract/view.mtt")
 	public function doView( catalog : db.Catalog ) {
 
-		view.category = 'amap';
+		view.category = 'market';
 		view.catalog = catalog;
 	
 		view.visibleDocuments = catalog.getVisibleDocuments( app.user );
@@ -50,7 +51,7 @@ class Contract extends Controller
 		Search a vendor
 	**/
 	@logged @tpl("contractadmin/searchVendor.mtt")
-	function doSearchVendor(?type=1){
+	function doSearchVendor(){
 		if (!app.user.canManageAllContracts()) throw Error('/', t._("Forbidden action"));
 		
 
@@ -90,69 +91,15 @@ class Contract extends Controller
 	}
 
 	/**
-	  2- invite a vendor
-
-	  a Vendor can be specified if we invite a invited vendor to open a discovery vendor
-	**/
+	  invite a vendor
+	*/
 	@logged @tpl("contractadmin/inviteVendor.mtt")
-	public function doInviteVendor(?vendor:db.Vendor) {
+	public function doInviteVendor() {
 		if (App.current.getSettings().noVendorSignup==true) {
 			throw Redirect("/");
 		}
 		view.groupId = app.user.getGroup().id;
-		if(vendor!=null) view.vendor = vendor;
-	}
-
-	@tpl("contract/insertChoose.mtt")
-	function doInsertChoose(vendor:db.Vendor) {
-
-		if (!app.user.canManageAllContracts()) throw Error('/', t._("Forbidden action"));
-		view.vendor = vendor;
-		
-	}
-	
-	/**
-	 * 4 - create the contract
-	 */
-	@logged @tpl("contract/insert.mtt")
-	function doInsert( vendor : db.Vendor, ?type = 1 ) {
-
-		if (!app.user.canManageAllContracts()) throw Error('/', t._("Forbidden action"));
-		
-		t._("Create a catalog");
-		var catalog = new db.Catalog();
-		catalog.group = app.user.getGroup();
-		catalog.vendor = vendor;
-
-		var form = CatalogService.getForm(catalog);
-		
-		if ( form.checkToken() ) {
-
-			form.toSpod( catalog );
-			
-			try {
-				CatalogService.checkFormData(catalog,form);			
-				catalog.insert();
-
-				//Let's add the Volunteer Roles for the number of volunteers needed
-				service.VolunteerService.createRoleForContract( catalog, form.getValueOf("distributorNum") );
-				
-				//right
-				if ( catalog.contact != null ) {
-					var ua = db.UserGroup.get( catalog.contact, app.user.getGroup(), true );
-					ua.giveRight(ContractAdmin( catalog.id ));
-					ua.giveRight(Messages);
-					ua.giveRight(Membership);
-					ua.update();
-				}
-			} catch ( e : Error ) {
-				throw Error( '/contract/insert/' + vendor.id, e.message );
-			}
-			
-			throw Ok( "/contractAdmin/view/" + catalog.id, t._("New catalog created") );
-		}
-		
-		view.form = form;
+		// if(vendor!=null) view.vendor = vendor;
 	}
 
 	/**
@@ -180,5 +127,11 @@ class Contract extends Controller
 		view.date = distrib.getDate();
 		view.md = distrib;
 		view.basket = basket;
+	}
+
+	function doSearchCatalog(cid:Int){
+		var pCatalog = PCatalog.manager.get(cid,false);
+		if(pCatalog==null) throw Error('/contractAdmin','Ce catalogue n\'existe pas');
+		throw Redirect(pCatalog.getURL());
 	}
 }

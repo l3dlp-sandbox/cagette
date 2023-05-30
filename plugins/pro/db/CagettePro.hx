@@ -28,46 +28,22 @@ class CagettePro extends sys.db.Object
 	public function new(){
 		super();
 		setVatRates([
+			{label:"Non assujeti à TVA", value:0},
 			{label:"TVA alimentaire 5,5%",value:5.5},
-			{label:"TVA 20%",value:20},
-			{label:"TVA 10%",value:10},
-			{label:"Non assujeti à TVA", value:0}
+			{label:"TVA 10%",value:10},			
+			{label:"TVA 20%",value:20},						
 		]);
 		offer = Discovery;
 		network = false;		
 		cdate = Date.now();
 	}
 
-	public static function getCurrentVendor():db.Vendor{
-
-		if (App.current.session.data == null || App.current.session.data.vendorId == null) {
-			return null;
-		}else{			
-			var v = db.Vendor.manager.get(App.current.session.data.vendorId, false);	
-			//if (v == null) throw "no vendor selected" else return v;
-			return v;
-		}
-	}
-
 	public static function getFromVendor(vendor:db.Vendor){
 		return manager.select($vendor==vendor,false);
 	}
-
-	/**
-	 * get current connected company 
-	 */
-	public static function getCurrentCagettePro():CagettePro{
-		
-		var v = getCurrentVendor();
-		if(v==null) return null;
-
-		var cpro = manager.select($vendor==v,false);
-		if(cpro==null) return null else return cpro;
-
-	}
 	
 	public function getProducts(){
-		return pro.db.PProduct.manager.search($company == this,{orderBy:name},false);
+		return pro.db.PProduct.manager.search($company == this,{orderBy:name},false).array();
 	}
 	
 	public function getCatalogs(){
@@ -176,14 +152,6 @@ class CagettePro extends sys.db.Object
 		
 	}
 	
-	/**
-		get vendors linked to this company (product reselling/distribution)
-	**/
-	public function getVendors():Array<db.Vendor>{
-		return Lambda.map(pro.db.PVendorCompany.manager.search($company == this, false), x -> x.vendor).array();
-	}
-
-
 	public function getClients():Array<db.Group>{
 
 		var remoteCatalogs = connector.db.RemoteCatalog.manager.search($remoteCatalogId in Lambda.map(this.getCatalogs(), function(x) return x.id), false); 
@@ -208,18 +176,17 @@ class CagettePro extends sys.db.Object
 	/**
 		can this user acces this vendor/cpro account ?
 	**/
-	public static function canLogIn(user:db.User,vendor:db.Vendor){
+	public static function canLogIn(user:db.User,company:pro.db.CagettePro){
+		if(company==null) return false;
 		if(user.isAdmin()) return true;
-
-		var cpro = vendor.getCpro();
-		if(cpro!=null){
-			var cpros = pro.db.PUserCompany.getCompanies(user);
-			return Lambda.exists(cpros, function(a) return a.id == cpro.id);
+		
+		if(company!=null){
+			return pro.db.PUserCompany.manager.select($user==user && $company==company,false)!=null;
 		}else{
 			return false;
 		}
 	}
-	
+
 	public function getGroups(){
 		var remoteCatalogs = connector.db.RemoteCatalog.manager.search($remoteCatalogId in Lambda.map(this.getCatalogs(), function(x) return x.id), false); 
 		var groups = [];

@@ -7,47 +7,43 @@
 	}
 </style>
 
-<div class="col-md-8">
+<div class="col-md-8 col-sm-7">
+
 	::if notifs.length>0::
-	<div class="article">
+	<ul class="list-group">
 		
 			::foreach n notifs::
-			<a href="#" class="clickable" onclick="neo.createNeoModule('myModal', 'dialog-url', { url: '/p/pro/notif/view/::n.id::', title:'Notification' })">
-			<table class="notifs">
-				<tr>
-				<td class="col-md-1">
-					<div class="iconBadge">
-						::switch n._type::
-						<!-- default -->
-						<i class="icon icon-alert"></i>
-						::case::
-						<!-- catalog import -->
-						<i class="icon icon-upload"></i>
-						::case::
-						<!-- delivery request -->
-						<i class="icon icon-truck"></i>
-						::end::
+			<li class="list-group-item">
+				<div class="row" onclick="neo.createNeoModule('myModal', 'dialog-url', { url: '::vendor.getURL()::/notif/view/::n.id::', title:'Notification' })" style="cursor: pointer;">
+					
+					<div class="col-md-1">
+						<div class="iconBadge">
+							::switch n._type::
+							<!-- default -->
+							<i class="icon icon-alert"></i>
+							::case::
+							<!-- catalog import -->
+							<i class="icon icon-upload"></i>
+							::case::
+							<!-- delivery request -->
+							<i class="icon icon-truck"></i>
+							::end::
+						</div>
 					</div>
-				</td>
-				<td class="col-md-3">
+					<div class="col-md-3">
 						::if n._group!=null::
 						<b>::n._group.name::</b>
 						::end::
-					</td>
-				
-				<td class="col-md-8">
-					::n.title::<br/><span class="disabled">::hDate(n.date)::</span>
-				</td>
-			</tr>
-			</table>
-			</a>
+					</div>
+					
+					<div class="col-md-8">
+						::n.title::<br/><span class="disabled">::hDate(n.date)::</span>
+					</div>
+				</div>
+			</li>
 			::end::
-		
-	</div>
+		</ul>
 	::end::
-	
-	
-
 
 	::if(vendor.isDisabled())::
 		::if(vendor.disabled!=3 && vendor.disabled!=4)::
@@ -64,17 +60,8 @@
 		::end::
 	::end::
 
-	<div id="stats-module-container"></div>
-	<script>
-		document.addEventListener("DOMContentLoaded", function () {
-			neo.createNeoModule("stats-module-container", "vendorTurnover", {
-				vendorId: ::vendorId::
-			});
-		});
-	</script>
-
 	<div class="article">
-		<h2 style="margin-top:0">Mes groupes</h2>
+		<h2 style="margin-top:0">Mes ::theme.groupWordingShort_plural::</h2>
 
 		<style>
 			.clickable{
@@ -86,13 +73,13 @@
 			::if(adminClients.length>0)::
 			<div class="col-md-12">
 				<p>
-					Les groupes dont je suis administrateur :
+					Les ::theme.groupWordingShort_plural:: dont je suis administrateur :
 				</p>
 			</div>
 			::end::
 
 			::foreach client adminClients::
-			<div class="col-md-4" data-toggle="tooltip" data-placement="bottom" title="Aller dans ce groupe">
+			<div class="col-lg-3 col-md-4 col-xs-6" data-toggle="tooltip" data-placement="bottom" title="Aller dans ce ::theme.groupWordingShort::">
 				
 				::set group = client[0].getContract(false)._group::
 				<a href="/group/::group.id::" target="_blank" class="clickable" style="height:60px;">
@@ -123,13 +110,13 @@
 			::if(regularClients.length>0)::
 			<div class="col-md-12">
 				<p>
-					Les groupes que j'ai rejoins :
+					Les ::theme.groupWordingShort_plural:: que j'ai rejoins :
 				</p>
 			</div>
 			::end::
 	
 			::foreach client regularClients::
-			<div class="col-md-4" data-toggle="tooltip" data-placement="bottom"  title="Aller dans ce groupe">
+			<div class="col-md-3" data-toggle="tooltip" data-placement="bottom"  title="Aller dans ce marcher">
 				
 				::set group = client[0].getContract(false)._group::
 				<a href="/group/::group.id::" target="_blank" class="clickable" style="height:60px;" >
@@ -160,35 +147,58 @@
 				<div class="col-md-12">			
 					<div class="alert alert-warning">
 						<i class="icon icon-info"></i>
-						Vous avez <b>::unlinkedCatalogs.length:: catalogue(s)</b> créés dans des groupes et qui ne sont pas reliés à votre espace producteur.<br/>
+						Vous avez <b>::unlinkedCatalogs.length:: catalogue(s)</b> créés dans des ::theme.groupWordingShort_plural:: et qui ne sont pas reliés à votre espace producteur.<br/>
 						<ul>
 							::foreach c unlinkedCatalogs::
-							<li><b>::c.name::</b> dans le groupe <a href="/group/::c._group.id::" target="_blank">::c._group.name::</a></li>
+							<li><b>::c.name::</b> dans le ::theme.groupWordingShort:: <a href="/group/::c._group.id::" target="_blank">::c._group.name::</a></li>
 							::end::
 						</ul>
 							
-						<a href="/p/pro/catalogLinker" class="btn btn-default btn-sm">Cliquez-ici pour les relier</a>
+						<a href="::vendor.getURL()::/catalogLinker" class="btn btn-default btn-sm">Cliquez-ici pour les relier</a>
 					</div>
 				</div>
 			::end::	
 			
-			<div class="col-md-12">
-				<a href="/p/pro/group/duplicate" class="btn btn-default btn-sm">
-					<i class="icon icon-plus"></i> Dupliquer un groupe
+			<div class="col-xs-12">
+				::if company.offer==1::
+				<!--<a href="::vendor.getURL()::/group/duplicate" class="btn btn-default btn-sm">
+					<i class="icon icon-plus"></i> Dupliquer un ::theme.groupWordingShort::
+				</a>-->
+				
+				<div class="dropdown" style="display:inline-block;">
+					<button class="btn btn-default btn-sm dropdown-toggle btn-noAntiDoubleClick" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<i class="icon icon-plus"></i> Ouvrir un nouveau ::theme.groupWordingShort::
+					</button>
+					<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">					
+						<li><a href="/user/myMarkets"><i class="icon icon-bank-card"></i> avec paiement en ligne</a></li>
+						<li><a href="::vendor.getURL()::/createGroup"><i class="icon icon-payment-type"></i> avec paiement sur place</a></li>			
+					</ul>
+				</div>
+				::else::
+				<a href="/user/myMarkets" class="btn btn-default btn-sm">
+					<i class="icon icon-plus"></i> Créer un nouveau ::theme.groupWordingShort::
 				</a>
+				::end::
 
-				<a href="/p/pro/group/removeGroup" class="btn btn-default btn-sm">
-					<i class="icon icon-delete"></i> Retirer un groupe
+				<a href="::vendor.getURL()::/group/removeGroup" class="btn btn-default btn-sm">
+					<i class="icon icon-delete"></i> Quitter un ::theme.groupWordingShort::
 				</a>
 			</div>	
-			
-			
 		</div>
-	</div>		
+	</div>
+
+	<div id="stats-module-container" style="max-width: calc(100vw - 30px);"></div>
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			neo.createNeoModule("stats-module-container", "vendorTurnover", {
+				vendorId: ::vendor.id::
+			});
+		});
+	</script>
 	
 </div>
 
-<div class="col-md-4">
+<div class="col-md-4 col-sm-5">
 
 	<div class=" article">
 		<h2 style="margin-top:0">Prochaines distributions</h2>	

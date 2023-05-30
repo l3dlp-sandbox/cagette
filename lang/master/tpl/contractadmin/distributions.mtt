@@ -6,11 +6,14 @@
 		$$timeframe(::timeframe::)
 	</p>
 
-	<p>
-		<a href="/contractAdmin/distributions/::c.id::?participateToAllDistributions=1&_from=::timeframe.from.toString()::&_to=::timeframe.to.toString()::" class="btn btn-default">
-			<i class="icon icon-check"></i> Participer à toutes les distributions
-		</a>		
-	</p>
+	<div class="alert alert-warning">
+		<i class="icon icon-info"></i>
+		Il n'est plus possible de participer aux distributions depuis cette page.<br/>
+		<ul>
+			<li>Si vous êtes administrateur de ::theme.groupWordingShort::, invitez le producteur aux distributions via <a href="/distributions">la page "Distributions"</a>.</li>
+			<li>Si vous êtes producteur, participez aux distributions depuis <a href="::contract._vendor.getURL()::/sales/" >votre page "Ventes".</a></li>
+		</ul>
+	</div>
 
 	<table class="table">
 		::set now = now().getTime()::
@@ -34,9 +37,6 @@
 						du ::hDate(md.getDate())::
 					</td>
 					<td>
-						<a href="/contractAdmin/participate/::md.id::/::c.id::?_from=::timeframe.from.toString()::&_to=::timeframe.to.toString()::" class="btn btn-default btn-sm">
-							<i class="icon icon-plus"></i> ::_("Participate")::
-						</a>
 					</td>
 				::else::
 					<!--<span style="display:none;">::d.populate()::</span>-->
@@ -56,10 +56,6 @@
 
 							<a href="/contractAdmin/orders/::d._catalog.id::?d=::d.id::" class="btn btn-default btn-sm">
 								<i class="icon icon-basket"></i>&nbsp;::_("Orders")::
-							</a>
-
-							<a href="/distributions/delete/::d.id::?_from=::timeframe.from.toString()::&_to=::timeframe.to.toString()::" class="btn btn-default btn-sm">
-								<i class="icon icon-delete"></i>&nbsp;Ne plus participer
 							</a>
 
 						</div>

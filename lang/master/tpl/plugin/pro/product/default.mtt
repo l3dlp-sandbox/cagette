@@ -3,14 +3,13 @@
 <div class="col-md-12">
 	<div class=" article">
 		
-		
-		<h2>Base de références</h2>	
+		<h2>Produits</h2>	
 
 		<div>
 			<p>
-				$$insert(Nouveau produit,/p/pro/product/insert/)
-				<a href="/p/pro/product/import/" class="btn btn-default btn-sm"><i class="icon icon-upload"></i> Import Excel/CSV</a>				
-
+				<a href="::vendor.getURL()::/product/insert/" class="btn btn-primary btn-sm"><i class="icon icon-plus"></i> Nouveau produit</a>
+				<a href="::vendor.getURL()::/product/import/" class="btn btn-default btn-sm"><i class="icon icon-upload"></i> Import Excel/CSV</a>
+				<a href="::vendor.getURL()::/company/vatRates" class="btn btn-default btn-sm"><i class="icon icon-products"></i> Gérer les taux de TVA</a>
 				<a href="https://formation.alilo.fr/mod/page/view.php?id=789" target="_blank" class="btn btn-warning btn-sm">
 					<i class="icon icon-youtube"></i> Tuto vidéo
 				</a>		
@@ -26,11 +25,11 @@
 					<i class="icon icon-info"></i> <b>Vous n'avez défini aucun produit !</b>
 				</p>				
 				<p>					
-					Heureusement, des coordinateurs de groupes ont déjà créé des catalogues à votre nom.<br/>
+					Heureusement, des coordinateurs de ::theme.groupWordingShort_plural:: ont déjà créé des catalogues à votre nom.<br/>
 					Cliquez sur le lien ci-dessous pour choisir un catalogue et le récupérer dans votre espace producteur.
 				</p>
 				<p>
-					<a href="/p/pro/catalogLinker/importFirstCatalog" class="btn btn-primary">Récupérer un catalogue</a>
+					<a href="::vendor.getURL()::/catalogLinker/importFirstCatalog" class="btn btn-primary">Récupérer un catalogue</a>
 				</p>
 				
 			</div>
@@ -38,20 +37,17 @@
 			<div class="col-md-12">
 				$$empty( )
 			</div>
-			
 		</div>			
-			
 		::end::
 
 
 		::if(products.length>0)::
-		<table class="table table-striped table-condensed">
+		<table class="table table-striped table-condensed table-hover">
 			<tr>
 				<th></th>
 				<th>Réf.</th>
 				<th>Nom</th>
 				<th></th>
-				<!--<th>Stock</th>-->
 				<th></th>
 			</tr>
 			::foreach p products::
@@ -74,39 +70,18 @@
 					<td>
 						::if p.organic ::<img src="/img/AB.png"/> ::end::
 					</td>
-					<!--<td>
-					
-						::if p.stock==null::
-							-
-						::else::
-							::if p.stock <= 10::
-								<span style="color:red;font-weight:bold;">							
-									::p.stock::
-								</span>
-							::else::
-								::p.stock::
-							::end::
-							
-							::unit(p._unitType)::
-							
-						::end::
-						
-					
-					</td>-->
 					<td>
 						<div class="btn-group" role="group" aria-label="...">
 							<a href="#row_p::p.id::" id="rowlink_p::p.id::" class="btn btn-default btn-sm" data-toggle="collapse">
                                 <i class="icon icon-chevron-down"></i> Voir les offres
                             </a>
-							$$edit(Modifier,/p/pro/product/edit/::p.id::)
-							
+							$$edit(Modifier,::vendor.getURL()::/product/edit/::p.id::)
 
 							<a class="btn btn-default btn-sm" $$openImageUploader('pproduct', ::p.id::, 300, 300, null, ::company.id::)>
 								<i class="icon icon-image"></i> ::_("Picture")::
 							</a>
 
-
-							$$delete(Supprimer,/p/pro/product/delete/::p.id::?token=::token::)
+							$$delete(Supprimer,::vendor.getURL()::/product/delete/::p.id::?token=::token::)
 
 							<div id="image-uploader-container" />
 						</div>
@@ -116,12 +91,12 @@
 				</tr>
 				::set offers = p.getOffers(false)::
 				::if(offers.length > 0)::
-					::set css="display:none;"::
+					::set cl=""::
 				::else::
-					::set css=""::
+					::set cl="in"::
 				::end::
 
-				<tr id="row_p::p.id::"  class="collapse">
+				<tr id="row_p::p.id::"  class="collapse ::cl::">
 					<td></td>
 					
 					<td colspan="5">
@@ -163,13 +138,13 @@
 									<td>::formatNum(off.price)::&nbsp;::currency()::</td>
 									<td>
 										<div class="btn-group" role="group" aria-label="...">
-											<a onclick="neo.createNeoModule('myModal', 'dialog-url', { url: '/p/pro/offer/preview/::off.id::', title:'::escapeJS(off.getName())::' })"class="btn btn-default btn-sm">
+											<a onclick="neo.createNeoModule('myModal', 'dialog-url', { url: '::vendor.getURL()::/offer/preview/::off.id::', title:'::escapeJS(off.getName())::' })"class="btn btn-default btn-sm">
 												<i class="icon icon-eye"></i> Voir</a>
-											$$edit(Mod.,/p/pro/offer/edit/::off.id::)
+											$$edit(Mod.,::vendor.getURL()::/offer/edit/::off.id::)
 											<a class="btn btn-default btn-sm" $$openImageUploader('poffer', ::off.id::, 300, 300, null, ::company.id::)>
 												<i class="icon icon-image"></i> ::_("Picture")::
 											</a>
-											$$delete( ,/p/pro/offer/delete/::off.id::)
+											$$delete( ,::vendor.getURL()::/offer/delete/::off.id::)
 											<div id="image-uploader-container" />
 										</div>
 									</td>
@@ -177,7 +152,7 @@
 							::end::
 							<tr>
 								<td colspan="6">
-									<a href="/p/pro/offer/insert/::p.id::" class="btn btn-default btn-xs">
+									<a href="::vendor.getURL()::/offer/insert/::p.id::" class="btn btn-default btn-xs">
 										<i class="icon icon-plus"></i> Ajouter une offre
 									</a>
 								</td>
@@ -185,22 +160,13 @@
 							
 						</table>
 					</td>
-					
-					
-					
 				</tr>
-			
-			
 			::end::
 		</table>
 		::end::
 
-
-
-		
 		<script>
 			document.addEventListener("DOMContentLoaded", function(event) {
-
 				var h = document.location.hash;
 				if(h.substr(1,7)=="product") {
 					var pid = h.substr(8);
@@ -214,7 +180,4 @@
 		
 	</div>
 </div>
-
-
-
 ::end::

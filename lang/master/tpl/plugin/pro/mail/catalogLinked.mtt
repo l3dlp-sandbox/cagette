@@ -1,16 +1,19 @@
-:: use 'mail/layout-group.mtt'::
+:: use 'mail/layout-cagette.mtt'::
 
-<h1>Le marché "::group.name::" a relié votre catalogue "::catalog.name::"</h1>
-
+<h2>Le ::theme.groupWordingShort:: "::group.name::" a relié votre catalogue "::catalog.name::"</h2>
 <p>
-Bonne nouvelle, Le marché <b>::group.name::</b> a relié votre catalogue <b>::catalog.name::</b>.
-<br/>
-Vous pouvez dès à présent participer aux ventes qu'ils organisent depuis l'onglet "Vente" de votre espace producteur.
+	Bonne nouvelle, Le ::theme.groupWordingShort:: <b>::group.name::</b> a relié votre catalogue <b>::catalog.name::</b>.
+	<br/>
+	Vous pouvez dès à présent participer aux ventes qu'ils organisent depuis l'onglet "Ventes" de votre espace producteur.
 </p>
 
 <table>
 	<tr>
-		<td>Contact de l'administrateur</td>
+		<td>::theme.groupWordingShort:: :</td>
+		<td><a href="::group.getURL()::">::group.name::</a></td>
+	</tr>
+	<tr>
+		<td>Contact de l'administrateur :</td>
 		<td>::user.getName()::</td>
 	</tr>	
 	<tr>

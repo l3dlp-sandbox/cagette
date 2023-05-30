@@ -1,43 +1,25 @@
 ﻿::use 'base.mtt'::
 		
-		::if getParam('__redirect')!=null::
-			<!-- need to login to go to this page-->
-			<script>
-				if (window.location.pathName =! "/user/login"){
-					window.location.href = '/user/login?__redirect=::raw getParam("__redirect")::';
-				}
-			</script>
-		::end::
+	::if getParam('__redirect')!=null::
+		<!-- need to login to go to this page-->
+		<script>
+			if (window.location.pathName =! "/user/login"){
+				window.location.href = '/user/login?__redirect=::raw getParam("__redirect")::';
+			}
+		</script>
+	::end::
 
-		<div class="row header" style="margin-top:10px;">
-			<div class="col-md-8">
-				::set group = getCurrentGroup()::
-				::if group!=null && noGroup!=true::
-					<h1>::group.name::</h1>
-				::else::
-					<div style="margin-bottom:22px;" >
-							<a href="::theme.url::" target="_blank">
-								<img src="/theme/::theme.id::/logo3.png" alt="logo ::theme.name::" style="height:87px;"/>
-							</a>
-					</div>
-				::end::
-			</div>
-			
-			<div class="col-md-4 accountBlock">					
-				$$userMenu(::user::)
-			</div>				
-		</div>
-
-			::if user!=null && noGroup!=true && group!=null && (group.disabled==null || isAdmin)::
-
+	<main >
+		::set group = getCurrentGroup()::
+		::if user!=null && pageTitle==null && group!=null && (group.disabled==null || isAdmin)::
 			<nav class="navbar navbar-default" ::cond user.getGroup()!=null::>
 					<div class="navbar-header">
-					  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#cagette-navbar">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#cagette-navbar">
 						<span class="sr-only">Toggle navigation</span>						
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
-					  </button>				  
+					</button>				  
 					</div>	
 				
 					<div class="collapse navbar-collapse" id="cagette-navbar">
@@ -54,12 +36,11 @@
 									<i class="icon icon-list"></i> Historique 
 								</a>
 							</li>
-							<li ::attr class if(category=="amap") 		'active' ::>
-								<a href="/amap">
+							<li ::attr class if(category=="market") 		'active' ::>
+								<a href="/market">
 									<i class="icon icon-farmer"></i> ::_("Farmers")::
 								</a>
 							</li>
-							
 						</ul>
 						
 						<ul class="nav navbar-nav navbar-right admin" >
@@ -83,8 +64,8 @@
 									<i class="icon icon-mail"></i>  ::_("Messaging")::
 								</a>
 							</li>
-							<li id="amapadmin" ::attr class if(category=="amapadmin") 	'active' ::>
-								<a href="/amapadmin" ::cond user.isAmapManager()::>
+							<li id="marketadmin" ::attr class if(category=="marketadmin") 	'active' ::>
+								<a href="/marketadmin" ::cond user.isGroupManager()::>
 									<i class="icon icon-cog"></i>  Paramètres
 								</a>
 							</li>							
@@ -93,7 +74,6 @@
 					</div>
 				
 			</nav>
-			
 		::end::
 		
 		<!-- Breadcrumb 
@@ -130,10 +110,10 @@
 			::raw extraNotifBlock::
 		::end::
 		
-		<div class="row">
+		<div class="row">			
 			::raw __content__::
-		</div>	
-	
+		</div>
+
 		$$footer()
 		
 		<div class="row">
@@ -153,9 +133,10 @@
 				</table>
 			</div>
 		</div>
+	</main>
 		
-			::if (user!=null && user.isAmapManager())::
-			<script>
+	::if (user!=null && user.isGroupManager())::
+		<script>
 			// Include the UserVoice JavaScript SDK (only needed once on a page)
 			UserVoice=window.UserVoice||[];(function(){var uv=document.createElement('script');uv.type='text/javascript';uv.async=true;uv.src='//widget.uservoice.com/sayZ1eIZLfSZUa3IwslHCw.js';var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(uv,s)})();
 
@@ -199,6 +180,6 @@
 
 			// Autoprompt for Satisfaction and SmartVote (only displayed under certain conditions)
 			UserVoice.push(['autoprompt', {}]);
-			</script>
-			::end::
+		</script>
+	::end::
 ::end::

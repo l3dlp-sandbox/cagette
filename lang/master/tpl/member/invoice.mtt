@@ -30,7 +30,7 @@
                 ::set vendor = getVendor(orders[0].product.vendorId)::
                 <p>
                     <b>Producteur : </b><br/>
-                    ::vendor.name.toUpperCase()::  (#::vendor.id::)<br/>
+                    ::fluc(vendor.name)::  (#::vendor.id::)<br/>
                     ::vendor.getAddress()::<br/>
                     ::vendor.email::
                 </p>

@@ -3,100 +3,311 @@
 	<div class=" article">
 		
 		<div class="row">
-			<div class="col-md-6">
-				<h4>Informations principales</h4>
+			<div class="col-md-12">
+				<h3>Mon profil</h3>
+
+				::set products = company.getProducts()::
+				::if(products[0]!=null)::
+					::set off = products[0].getOffers(false)[0]::
+				::end::
 				
-				<table class="table table-condensed table-striped table-bordered">
+				<div ::cond off!=null:: style="width:75%;margin:24px auto;padding:24px;border-radius: 8px;border:1px #CCC solid;text-align: center;">
+					<div class="row">
+						<div class="col-md-8">
+							Saisissez avec attention votre profil car il sert à informer les consommateurs lorsqu'ils commandent vos produits. 
+						</div>
+						<div class="col-md-4">
+							<a onclick="neo.createNeoModule('myModal', 'dialog-url', { url: '::vendor.getURL()::/offer/preview/::off.id::', title:'::escapeJS(off.getName())::' })"class="btn btn-default btn-sm">
+								<i class="icon icon-eye"></i> Prévisualiser une fiche produit 
+							</a>
+						</div>
+					</div>
+				</div>
+				
+				<table class="table table-condensed table-bordered">					
 					<tr>
-						<td>N° producteur</td>
-						<td>::vendor.id::</td>
-					</tr>
-					<tr>
-						<td>Nom</td>
+						<th class="col-md-4">Nom de l'entreprise</th>
 						<td>
 							<b>::vendor.name::</b>
 						</td>
+						<td>
+							<i class='icon icon-info' data-toggle="tooltip" title="Si vous souhaitez changer le nom de votre entreprise, contactez le support sur ::theme.supportEmail::"></i> 
+						</td>
 					</tr>
 					<tr>
-						<td>Exploitant(s)</td>
+						<th>Adresse</th>
+						<td>::vendor.getAddress()::</td>
+						<td>
+							<i class='icon icon-info' data-toggle="tooltip" title="Si vous souhaitez changer l'adresse de votre entreprise, contactez le support sur ::theme.supportEmail::"></i> 
+						</td>
+					</tr>
+					<tr>
+						<th>Profession</th>
+						<td>::vendor.getProfessions().join(", ")::</td>
+						<td>
+							<i class='icon icon-info' data-toggle="tooltip" title="Si vous souhaitez changer votre profession, contactez le support sur ::theme.supportEmail::"></i> 
+						</td>
+					</tr>
+					<tr>
+						<th>Nom du ou des producteur(s)</th>
 						<td>
 							::if(vendor.peopleName!=null)::
 								::vendor.peopleName::
 							::end::
 						</td>
-					</tr>
-					<tr>
-						<td></td>
-						<td>$$edit(Modifier,/p/pro/company/edit)</td>
-					</tr>
-				</table>
-			</div>
-			<div class="col-md-6">
-				<h4>Informations légales</h4>
-				<table class="table table-condensed table-striped table-bordered">
-					<tr>
-						<td>SIRET</td>
-						<td>::vendor.companyNumber::</td>
-					</tr>
-					<tr>
-						<td>Métier</td>
-						<td>::vendor.getProfession()::</td>						
-					</tr>
-					<tr>
-						<td>Forme juridique</td>
-						<td>::vendor.getLegalStatus(true)::</td>
-					</tr>
-					<tr>
-						<td>code NAF</td>
 						<td>
-							::set act = vendor.getActivity()::
-							::if(act!=null)::
-								::act.name:: (::act.id::)
-							::end::
+							$$edit(Modifier,::vendor.getURL()::/company/editPeople)
 						</td>
 					</tr>
+					<tr>
+						<td>
+							<b>Email commercial</b>
+							<p class="disabled">
+								Email visible par vos clients
+							</p>
+						</td>
+						<td>
+							::vendor.email::
+						</td>
+						<td>
+							<i class='icon icon-info' data-toggle="tooltip" title="Pour changer l'email commercial de votre entreprise, définissez un utilisateur comme contact commercial sur la page 'Utilisateurs'"></i> 
+							
+						</td>
+					</tr>						
+					::set images = vendor.getImages()::					
+					<tr>
+						<td class="col-md-4">
+							<b>Logo de votre entreprise</b>
+							<div class="disabled">Taille recommandée : 300 x 300 px</div> 
+						</td>
+						<td>
+							::if images.logo!=null::
+							<img src="::file(images.logo)::" style="max-width: 256px;max-height: 128px;" />
+							::end::
+						</td>
+						<td>
+							<a class="btn btn-default btn-sm" $$openImageUploader('company', ::company.id::, 300, 300, 'logo')>
+								<i class="icon icon-image"></i> ::_("Choose a logo")::
+							</a>
+							<div id="image-uploader-container" />
+						</td>
+					</tr>
+
+					<tr>
+						<td class="col-md-4">
+							<b>Portrait du ou des producteur(s)</b>
+							<div class="disabled">Taille recommandée : 300 x 300 px</div> 
+						</td>
+						<td>
+							::if images.portrait!=null::
+							<img src="::file(images.portrait)::" style="max-width: 256px;max-height: 128px;" />
+							::end::
+						</td>
+						<td>
+							<a class="btn btn-default btn-sm" $$openImageUploader('company', ::company.id::, 300, 300, 'portrait')>
+								<i class="icon icon-image"></i> Définir un portrait
+							</a>
+							<div id="image-uploader-container" />
+						</td>
+					</tr>								
+					<tr>
+						<td class="col-md-4">
+							<b>Description courte</b>
+							<p class="disabled">Apparaît dans les fiches produit pour présenter rapidement votre entreprise</p> 
+						</td>
+						<td class="col-md-6">
+							<p ::cond vendor.desc!=null::>
+								<i>::vendor.desc::</i>
+							</p>
+							
+						</td>
+						<td class="col-md-2">$$edit(Modifier,::vendor.getURL()::/company/edit)</td>
+					</tr>
+					<tr>
+						<td>
+							<b>Site web</b>
+							<p class="disabled">
+								Votre site web ou votre page Facebook/Instagram
+							</p>
+						</td>
+						<td>
+							<p ::cond vendor.linkUrl!=null::>
+							::vendor.linkText:: ( <a href="::vendor.linkUrl::" target="_blank">::vendor.linkUrl::</a> )
+							</p>
+						</td>
+						<td>$$edit(Modifier,::vendor.getURL()::/company/editLink)</td>
+					</tr>
 				</table>
-	
-				
 			</div>
 		</div>
 
-		::set images = vendor.getImages()::
-
+		
 		<div class="row">
-			<div class="col-md-3">
-				<p>	
-					<h4>Votre logo</h4>
-					<a class="btn btn-default btn-sm" $$openImageUploader('company', ::company.id::, 300, 300, 'logo')>
-						<i class="icon icon-image"></i> ::_("Choose a logo")::
+			<div class="col-md-12">
+				<h3>Page vitrine</h3>
+
+
+				<div style="width:75%;margin:24px auto;padding:24px;border-radius: 8px;border:1px #CCC solid;text-align: center;">
+					<b>URL de votre page vitrine : </b>
+					::set url = "https://"+HOST+vendor.getLink()::
+					<b>
+						<a id="copy-url" href="::url::" target="_blank">::url::</a>
+					</b>
+					&nbsp;&nbsp;<a id="copy-url-button" class="btn btn-default btn-sm">
+						<i class="icon icon-link"></i> Copier le lien
 					</a>
-					<div id="image-uploader-container" />
-				</p>
-			</div>			
-			<div class="col-md-3">				
-				::if images.logo!=null::
-				<img src="::file(images.logo)::" style="max-width: 256px;max-height: 128px;" class="thumbnail" />
-				::end::
+					<script>
+						var copyTextBtn = document.querySelector('#copy-url-button');
+						var previousText = copyTextBtn.innerHTML;
+						copyTextBtn.addEventListener('click', function(event) {
+							var element = document.querySelector('#copy-url');
+							var storage = document.createElement('textarea');
+							storage.value = element.innerHTML;
+							element.appendChild(storage);
+							storage.select();
+							document.execCommand('copy');
+							element.removeChild(storage);
+
+							copyTextBtn.innerHTML = "✔ copié"
+							setTimeout(function() {
+								copyTextBtn.innerHTML = previousText;
+							}, 1000);
+						});
+					</script>
+				</div>
+
+
+				<table class="table table-condensed table-bordered">					
+					<tr>
+						<td>
+							<b>Description longue de votre entreprise</b>
+							<p class="disabled">
+								Apparaît sur votre page vitrine pour présenter plus en détail votre entreprise, 
+								son histoire, ses modes de production...
+							</p>
+						</td>
+						<td class="col-md-6">
+							<p ::cond vendor.longDesc!=null::>
+								<i>::raw vendor.longDesc::</i>
+							</p>
+							
+						</td>
+						<td class="col-md-2">$$edit(Modifier,::vendor.getURL()::/company/editLongDesc)</td>
+					</tr>
+					<tr>
+						<td>
+							<b>Bannière</b>
+							<p class="disabled">
+								Bandeau utilisé pour l'entête de votre page vitrine.<br/>Taille recommandée : 1500 x 500 px
+							</p> 
+						</td>
+						<td class="col-md-6">				
+							::if images.banner!=null::
+							<img src="::file(images.banner)::" style="max-width: 256px;max-height: 128px;" />
+							::end::			
+							
+						</td>
+						<td class="col-md-2">
+							<div id="image-uploader-container" />
+							<a class="btn btn-default btn-sm" $$openImageUploader('company', ::company.id::, 1500, 500, 'banner')>
+							<i class="icon icon-image"></i> Envoyer une image
+							</a>
+						</td>
+					</tr>
+					
+					
+					<tr>
+						<td>
+							<b>Photo 1</b>
+							<p class="disabled">
+								Pour illustrer votre page vitrine
+								<br/>Taille recommandée : 300 x 300 px
+							</p>
+						</td>
+						<td class="col-md-6">				
+							::if images.farm1!=null::<img src="::file(images.farm1)::" style="max-width: 256px;max-height: 128px;" />::end::									
+						</td>
+						<td class="col-md-2">
+							<a class="btn btn-default btn-sm" $$openImageUploader('company', ::company.id::, 300, 300, 'farm1')>
+								<i class="icon icon-image"></i> ::if images.farm1==null::Envoyer une image ::else:: Modifier l'image ::end::
+							</a>
+							<div id="image-uploader-container" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<b>Photo 2</b>
+							<p class="disabled">
+								Pour illustrer votre page vitrine
+								<br/>Taille recommandée : 300 x 300 px
+							</p>
+						</td>
+						<td class="col-md-6">				
+							::if images.farm2!=null::<img src="::file(images.farm2)::" style="max-width: 256px;max-height: 128px;" />::end::
+						</td>
+						<td class="col-md-2">
+							<a class="btn btn-default btn-sm" $$openImageUploader('company', ::company.id::, 300, 300, 'farm2')>
+								<i class="icon icon-image"></i> ::if images.farm2==null::Envoyer une image ::else:: Modifier l'image ::end::
+							</a>
+							<div id="image-uploader-container" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<b>Photo 3</b>
+							<p class="disabled">
+								Pour illustrer votre page vitrine
+								<br/>Taille recommandée : 300 x 300 px
+							</p>
+						</td>
+						<td class="col-md-6">				
+							::if images.farm3!=null::<img src="::file(images.farm3)::" style="max-width: 256px;max-height: 128px;" />::end::
+						</td>
+						<td class="col-md-2">
+							<a class="btn btn-default btn-sm" $$openImageUploader('company', ::company.id::, 300, 300, 'farm3')>
+								<i class="icon icon-image"></i> ::if images.farm3==null::Envoyer une image ::else:: Modifier l'image ::end::
+							</a>
+							<div id="image-uploader-container" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<b>Photo 4</b>
+							<p class="disabled">
+								Pour illustrer votre page vitrine
+								<br/>Taille recommandée : 300 x 300 px
+							</p>
+						</td>
+						<td class="col-md-6">				
+							::if images.farm4!=null::<img src="::file(images.farm4)::" style="max-width: 256px;max-height: 128px;" />::end::
+						</td>
+						<td class="col-md-2">
+							<a class="btn btn-default btn-sm" $$openImageUploader('company', ::company.id::, 300, 300, 'farm4')>
+								<i class="icon icon-image"></i> ::if images.farm4==null::Envoyer une image ::else:: Modifier l'image ::end::
+							</a>	
+							<div id="image-uploader-container" />
+						</td>
+					</tr>	
+					<tr>
+						<td>
+							<b>En dehors de Cagette.net, où peut-on trouver vos produits ?</b>
+							<p class="disabled">
+								Apparaît sur votre page vitrine pour aider vos clients à vous retrourver sur vos différents points de vente.
+							</p>
+						</td>
+						<td class="col-md-6">
+							<p ::cond vendor.offCagette!=null::>
+								<i>::raw vendor.offCagette::</i>
+							</p>				
+							
+						</td>
+						<td class="col-md-2">
+							$$edit(Modifier,::vendor.getURL()::/company/editOffCagette)
+						</td>
+					</tr>				
+				</table>
 			</div>
-		
-			<div class="col-md-3">
-				<p>	
-					<h4>Votre portrait</h4>				
-					<a class="btn btn-default btn-sm" $$openImageUploader('company', ::company.id::, 300, 300, 'portrait')>
-						<i class="icon icon-image"></i> Définir un portrait
-					</a>
-					<div id="image-uploader-container" />
-				</p>
-			</div>			
-			<div class="col-md-3">				
-				::if images.portrait!=null::
-				<img src="::file(images.portrait)::" style="max-width: 256px;max-height: 128px;" class="thumbnail" />
-				::end::
-			</div>
+
 		</div>
-
-
-		
-
 	</div>
 ::end::

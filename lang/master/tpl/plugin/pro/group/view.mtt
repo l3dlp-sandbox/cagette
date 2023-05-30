@@ -7,7 +7,7 @@
 		$$back() <h2>::group.name::</h2> 
 		
 		<p>
-			<a href="/group/::group.id::" class="btn btn-default btn-sm" target="blank">Aller dans ce groupe</a>			
+			<a href="/group/::group.id::" class="btn btn-default btn-sm" target="blank">Aller dans ce ::theme.groupWordingShort::</a>			
 		</p>
 		
 		<table class="table">
@@ -37,7 +37,7 @@
 					
 				</td>
 				<td>
-					<a href="/p/pro/catalog/view/::cata.id::">::cata.name::</a>
+					<a href="::vendor.getURL()::/catalog/view/::cata.id::">::cata.name::</a>
 				</td>
 				<td>
 					::cont.name::
@@ -46,8 +46,8 @@
 					$$contact(::cont._contact::)
 				</td>
 				<td>
-					::set warning = "Voulez vraiment casser la liaison ?\n\nLe contrat sera archivé et vous ne pourrez plus commercialiser le catalogue '"+cata.name+"' auprès du groupe Cagette '"+group.name+"'.\nLes anciennes commandes seront conservées.\n\nATTENTION cette opération n'est pas annulable."::
-					<a href="/p/pro/group/delete/::l.id::?token=::token::" class="btn btn-danger btn-xs" onclick="return confirm('::escapeJS(warning)::')">
+					::set warning = "Voulez vraiment casser la liaison ?\n\nLe contrat sera archivé et vous ne pourrez plus commercialiser le catalogue '"+cata.name+"' auprès du ::theme.groupWording:: '"+group.name+"'.\nLes anciennes commandes seront conservées.\n\nATTENTION cette opération n'est pas annulable."::
+					<a href="::vendor.getURL()::/group/delete/::l.id::?token=::token::" class="btn btn-danger btn-xs" onclick="return confirm('::escapeJS(warning)::')">
 						<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 						&nbsp;Casser la liaison
 					</a>

@@ -209,6 +209,15 @@ class Vendor extends Object
 		return p.name;
 	}
 
+	public function getProfessions():Array<String>{
+		var out = [];
+		var profs = service.VendorService.getVendorProfessions();
+		if(this.profession!=null) out.push(profs.find(x -> x.id==this.profession).name);
+		if(this.production2!=null) out.push(profs.find(x -> x.id==this.production2).name);
+		if(this.production3!=null) out.push(profs.find(x -> x.id==this.production3).name);
+		return out;
+	}
+
 	public function getGroups():Array<db.Group>{
 		var contracts = getActiveContracts();
 		var groups = Lambda.map(contracts,function(c) return c.group);
@@ -244,10 +253,20 @@ class Vendor extends Object
 		];
 	}
 
-
+	/**
+		Public vendor page link
+	**/
 	public function getLink():String{		
 		var permalink = sugoi.db.Permalink.getByEntity(this.id,"vendor");
-		return permalink==null ? "/p/pro/public/vendor/"+id : "/"+permalink.link;		
+		return permalink==null ? "/vendor/"+id : "/"+permalink.link;		
+	}
+
+	/**
+		cpro URL
+	**/
+	public function getURL(){
+		var protocol = App.config.HOST=="localhost" ? "http" : "https";
+		return protocol+"://"+App.config.HOST+"/pro/"+this.id;
 	}
 
 	public function getAddress(){

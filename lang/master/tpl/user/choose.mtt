@@ -1,145 +1,14 @@
 ::use 'design.mtt'::
 
-	::if(cagettePros!=null && cagettePros.length>0 && theme.id=="cagette")::
 	<div class="col-md-12" >
-		<div class="alert alert-warning" style="background-color: white;">
-			
-			<div style="font-size:1.3em;font-weight:bold;text-align:center;margin:16px;">
-				Ressources techniques et infos
-			</div>			
-		
-			<div class="row">
-				<div class="col-md-6 text-center">	
-					<!--<img src="/img/infos.png" />-->
-					<p>
-						<a href="https://formation.alilo.fr/course/view.php?id=7" class="btn btn-warning" target="_blank">
-							<i class="icon icon-youtube"></i> Guide Découverte
-						</a>
-					</p>				
-					<p><b>Pour prendre en main l’outil c’est par ici !</b><br/>
-						C’est l’espace où vous trouverez tous les tutoriels 
-						pour vous lancer sur ::theme.name::. 
-					</p>	
-				</div>
-				
-				<div class="col-md-6 text-center">
-					<p>											
-						::raw getVariable("homeVendorMessage")::
-					</p>
-				</div>
-			</div>
-				
-			
-		</div>
-	</div>
-	::elseif(isGroupAdmin && theme.id=="cagette")::
-	<div class="col-md-12" >
-		<div class="alert alert-warning" style="background-color: white;">
-			
-			<div style="font-size:1.3em;font-weight:bold;text-align:center;margin:16px;">
-				Ressources techniques et infos
-			</div>			
-		
-			<div class="row">
-				<div class="col-md-6 text-center">
-					<!--<img src="/img/infos.png" />-->
-					<p>
-						<a href="https://formation.alilo.fr/course/view.php?id=8" class="btn btn-warning" target="_blank">
-							<i class="icon icon-youtube"></i> Guide Coordinateur
-						</a>
-					</p>
-					
-					<p>
-						<b>Pour prendre en main l’outil c’est par ici !</b><br/>
-						C’est l’espace où vous trouverez tous les tutoriels<br/> 
-						pour vous lancer sur ::theme.name::.
-					</p>
-				</div>
-				
-				<div class="col-md-6 text-center">
-					<p>
-						::raw getVariable("homeGroupAdminMessage")::
-					</p>				
-				</div>
-			</div>
-		</div>
-	</div>
-	::end::
-
-	<div class="col-md-12">
-		<div id="news-neo-container"></div>
-	</div>
-	<script>
-		document.addEventListener("DOMContentLoaded", function(event) {
-			neo.createNeoModule("news-neo-container", "newsFeed", {
-				userId: ::user.id::
-			});
-		});
-	</script>
-
-	<div class="col-md-12">
-		<h2>::_("Hello")::
-		::if whichUser()==0::
-			::user.firstName::
-		::else::
-			::user.firstName2::
-		::end::
-		 !
-		</h2>				
-	</div>
-
-	<div class="col-md-12" ::cond cagettePros!=null && cagettePros.length>0::>
-		<p>Connectez-vous à votre <b>espace producteur</b> :</p>
-	</div>
-
-	<div class="col-md-12" ::cond cagettePros!=null || tmpVendors.length>0:: >
-		<div class="row">
-		<!-- cpro -->
-		::foreach cp cagettePros::
-			::set v = cp._vendor::
-			<div class="col-md-4">
-				<!--
-				<div class="blockIconBadge">
-					$$publicVendorIcon(::v::)
-				</div>
-				-->
-				
-				<a class="clickable proBlock" href="/p/pro/?vendor=::v.id::">					
-					::if v.imageId!=null::
-					<img src="::file(v.imageId)::" class="img-responsive" style="width:92px;float:left;margin-right:12px;" />
-					::end::						
-					<h4>::v.name::</h4>
-					
-				</a>
-			</div>
-		::end::
-
-		<!-- Tmp vendors -->
-		::foreach tmp tmpVendors::
-		<div class="col-md-4">			
-			<a class="clickable proBlock">												
-				<h4>::tmp.farmName::</h4>
-				<p class="disabled">
-					<i class="icon icon-clock"></i>
-					Demande d'ouverture d'espace producteur en attente de validation par l'équipe ::theme.name::
-				</p>
-			</a>
-		</div>
-		::end::
-
-
-		</div>
-	</div>
-	
-	<div class="col-md-12" >
-		<p>Vous êtes membre des <b>marchés ::theme.name::</b> suivants :</p>
+		<p>Voici vos <b>::theme.groupWording_plural::</b> préférés :</p>
 	</div>
 
 	<!-- groups -->
 	<div class="col-md-12">
 		<div class="row">
 			::foreach group groups::				
-				<div class="col-md-4">
+				<div class="col-md-3">
 					<a class="clickable groupBlock"  href="/user/choose?group=::group.id::">					
 						::if group.imageId!=null::
 						<img src="::file(group.imageId)::" class="img-responsive" style="width:92px;float:left;margin-right:12px;" />
@@ -152,28 +21,27 @@
 			::if groups.length==0::
 			<div class="col-md-12">
 				<div class="article text-center">
-					<p>
-						$$empty(::_("You don't belong to any group yet")::)
-					</p>	
+					$$empty(Vous n'êtes membre d'aucun ::theme.groupWordingShort:: pour l'instant)
 				</div>
 			</div>
 			::end::
 		</div>
 		
 	</div>
-
-	<!-- actions -->
+	
 	<div class="col-md-12 text-center" style="margin-bottom:12px;" >
 		::if session.lang!="de"::
-			<a class="btn btn-default btn-lg" href="/group/map">
-				<i class="icon icon-search"></i> ::_("Find other groups near me")::
+			<a class="btn btn-primary btn-lg" href="/group/map" style="white-space: normal;">
+				<i class="icon icon-search"></i> Voir tous les ::theme.groupWordingShort_plural::
 			</a>
 		::end::
+		<!-- actions 
 		::if settings.onlyVendorsCanCreateGroup==null || settings.onlyVendorsCanCreateGroup==false || (settings.onlyVendorsCanCreateGroup==true && cagettePros!=null && cagettePros.length>0)::
 			<a class="btn btn-default btn-lg" href="/group/create/">
-				<i class="icon icon-plus"></i> Créer un marché
+				<i class="icon icon-plus"></i> Créer un ::theme.groupWordingShort::
 			</a>
 		::end::
+		-->
 	</div>
 
 		

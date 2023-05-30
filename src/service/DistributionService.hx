@@ -288,7 +288,7 @@ class DistributionService
 		} 
 
 		if(md.orderStartDate==null || md.orderEndDate==null){
-			var url = "/distribution/editMd/" + md.id;
+			var url = "/distributions/editMd/" + md.id;
 			throw new Error(t._("You can't participate to this distribution because no order start date has been defined. <a href='::url::' target='_blank'>Please update the general distribution first</a>.",{url:url}));
 		}
 

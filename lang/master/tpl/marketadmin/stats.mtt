@@ -1,0 +1,13 @@
+::use 'marketadmin/design.mtt'::
+    <div id="neo-container" style="margin-bottom: 8px;"></div>
+	<script>
+		document.addEventListener("DOMContentLoaded", function(event) {
+			neo.createNeoModule("neo-container", "group-stats", {
+					groupId: ::groupId::,
+					fromDate: new Date(),
+					toDate: new Date(),
+                    differenciatedPricingSetting: ::settings.differenciatedPricing::
+				});
+		});
+	</script>
+::end::

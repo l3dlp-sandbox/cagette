@@ -15,7 +15,12 @@ class Controller extends sugoi.BaseController
 		//gettext translator
 		this.t = sugoi.i18n.Locale.texts;	
 
-		
+		var cagettePros = service.VendorService.getCagetteProFromUser(App.current.user);
+		view.cagettePros = cagettePros;
+		if (app.user != null){
+			var userGroups = app.user.getUserGroups().filter(ug -> return ug.getRights().length > 0);
+			view.isMarketAdmin = userGroups.length > 0;
+		}
 	}
 
 	public function addBc(id:String,name:String,link:String){

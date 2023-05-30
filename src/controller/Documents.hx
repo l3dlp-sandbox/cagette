@@ -25,7 +25,7 @@ class Documents extends controller.Controller
 		}
 		else { // Documents for a group
 
-			if ( !app.user.isAmapManager() ) throw Error( '/', t._('Access forbidden') );
+			if ( !app.user.isGroupManager() ) throw Error( '/', t._('Access forbidden') );
 			documents = sugoi.db.EntityFile.getByEntity( 'group', app.user.getGroup().id, 'document' );
 		}
 			
@@ -47,8 +47,8 @@ class Documents extends controller.Controller
 		}
 		else { // Documents for a group
 
-			if ( !app.user.isAmapManager() ) throw Error( '/', t._('Access forbidden') );
-			returnPath = '/amapadmin/documents';
+			if ( !app.user.isGroupManager() ) throw Error( '/', t._('Access forbidden') );
+			returnPath = '/marketadmin/documents';
 		}
 		
 		var form = new sugoi.form.Form("documentEdit");
@@ -58,13 +58,12 @@ class Documents extends controller.Controller
 		form.addElement( new StringInput( "name","Nom du document", document.file.name, true ) );
 
 		var options = [ { value : "subscribers", label : "Souscripteurs du contrat" },
-						  { value : "members", label : "Membres du groupe" },
-						  { value : "public", label : "Public" } ];
+						{ value : "members", label : "Membres du "+App.current.getTheme().groupWordingShort },
+						{ value : "public", label : "Public" } ];
 
 		//In case of a group or shop mode
 		if ( catalog == null ) {
-
-			options = [	{ value : "members", label : "Membres du groupe" }, { value : "public", label : "Public" } ];
+			options = [	{ value : "members", label : "Membres du "+App.current.getTheme().groupWordingShort }, { value : "public", label : "Public" } ];
 		}
 		form.addElement( new RadioGroup( 'visibility', 'Visibilité', options, document.data != null ? document.data : 'members' ) );
 	
@@ -94,8 +93,8 @@ class Documents extends controller.Controller
 		}
 		else { // Documents for a group
 
-			if ( !app.user.isAmapManager() ) throw Error( '/', t._('Access forbidden') );
-			returnPath = '/amapadmin/documents';
+			if ( !app.user.isGroupManager() ) throw Error( '/', t._('Access forbidden') );
+			returnPath = '/marketadmin/documents';
 		}
 		
 		if ( checkToken() ) {
@@ -130,9 +129,9 @@ class Documents extends controller.Controller
 		}
 		else { // Documents for a group
 
-			if ( !app.user.isAmapManager() ) throw Error( '/', t._('Access forbidden') );
-			returnPath = '/amapadmin/documents';
-			errorPath = '/amapadmin/documents/insert';
+			if ( !app.user.isGroupManager() ) throw Error( '/', t._('Access forbidden') );
+			returnPath = '/marketadmin/documents';
+			errorPath = '/marketadmin/documents/insert';
 		}
 
 		view.nav.push( 'documents' );

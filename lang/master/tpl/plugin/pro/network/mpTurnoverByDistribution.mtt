@@ -7,18 +7,16 @@
 			Du ::hDate(startDate):: au ::hDate(endDate)::
 		</p>
         
-        
 		<p>
 			<table class="table table-bordered">
 				<tr>
                     <th>Distribution</th>
-                    <th>Groupe</th>
+                    <th>::fluc(theme.groupWordingShort)::</th>
 					<th>C.A TTC</th>
 					<th>Virement correspondant</th>
 				</tr>
 				::foreach md multidistribs::
                     <tr>
-
                         <td>
                             ::hDate(md.getDate())::<br/>                        
                         </td>
@@ -35,13 +33,10 @@
                             ::set payouts = getMangopayGroupPayout(md)::
                             <td>
                             ::foreach payout payouts::
-                            
                                 ::payout.getAmount():: &euro;
-                                                                                                
-                                <a href="/p/pro/transaction/mangopay/group/payOut/::payout.payOutId::" class="btn btn-default btn-sm">Détail virement</a>
-                                <a href="/p/pro/transaction/mangopay/group/multiDistrib/::md.id::" target="_blank" class="btn btn-default btn-sm">Justificatif</a>
+                                <a href="/transaction/mangopay/group/payOut/::payout.payOutId::" class="btn btn-default btn-sm">Détail virement</a>
+                                <a href="/transaction/mangopay/group/multiDistrib/::md.id::" target="_blank" class="btn btn-default btn-sm">Justificatif</a>
                                 <br/>
-                            
                             ::end::
                             </td>                            
 

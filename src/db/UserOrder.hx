@@ -47,26 +47,6 @@ class UserOrder extends Object
 		return App.current.user.getGroup().getMembersFormElementData();
 	}
 	
-	
-	/**
-	 * For shared alternated orders in AMAP contracts
-	 * @param	distrib
-	 * @return	false -> user , true -> user2
-	 */
-	public function getWhosTurn(distrib:Distribution) {
-		if (distrib == null) throw "distribution is null";
-		if (user2 == null) throw "this contract is not shared";
-		
-		//compter le nbre de distrib pour ce contrat
-		var c = Distribution.manager.count( $catalog == product.catalog && $date >= product.catalog.startDate && $date <= distrib.date);		
-		var r = c % 2 == 0;
-		if (flags.has(InvertSharedOrder)){
-			return !r;
-		}else{
-			return r;
-		}
-	}
-	
 	override public function toString() {
 		if(product==null) return quantity +"x produit inconnu";
 		return user.getName()+" : "+tools.FloatTool.clean(quantity) + " x " + product.getName();

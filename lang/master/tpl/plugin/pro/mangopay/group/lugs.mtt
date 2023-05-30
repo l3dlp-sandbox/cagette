@@ -1,4 +1,4 @@
-::use 'amapadmin/design.mtt'::
+::use 'marketadmin/design.mtt'::
 	
 	<div class=" article">
 		
@@ -21,7 +21,7 @@
                 <td>::lug.amount:: €</td>
                 <td>::lug.legalUserId::</td>
                 <td>
-                    <a href="/p/hosted/group/::lug._group.id::" target="_blank">
+                    <a href="/admin/group/view/::lug._group.id::" target="_blank">
                     ::lug._group.name::
                     </a>
                 </td>

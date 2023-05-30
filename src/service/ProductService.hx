@@ -55,14 +55,11 @@ class ProductService{
 		return ttcPrice / (1 + vatRate / 100);
 	}
 
-	public static function getCategorizerHtml(productName:String,categId:Int,formName:String){
-		productName = Formatting.escapeJS(productName);
+	public static function getCategorizerHtml(categId:Int,formName:String){
 		return '<div id="txp-neo-container"></div><script language="javascript">
 			document.addEventListener("DOMContentLoaded", function(event) {
-				document.querySelector("form input[name=\'${formName}_name\']").parentElement.parentElement.remove();
 				document.querySelector("form select[name=\'${formName}_txpProductId\']").parentElement.parentElement.remove();
 				neo.createNeoModule("txp-neo-container", "productCategorizer", {
-					originalProductName: "${productName}",
 					originalTxpProductId: $categId,
 					formName: "${formName}"
 				});
@@ -101,7 +98,7 @@ class ProductService{
 
 		var f = form.CagetteForm.fromSpod(product);
 		f.getElement("bulk").description = "Ce produit est vendu en vrac ( sans conditionnement ). Le poids/volume commandé peut être corrigé après pesée.";		
-		f.getElement("variablePrice").description = "Comme au marché, le prix final sera calculé en fonction du poids réel après pesée.";
+		f.getElement("variablePrice").description = "Comme au "+App.current.getTheme().groupWordingShort+", le prix final sera calculé en fonction du poids réel après pesée.";
 		f.getElement("multiWeight").description = "Permet de peser séparément chaque produit. Idéal pour la volaille par exemple.";
 
 		var group = product.catalog.group;

@@ -15,17 +15,16 @@
         </p>
         ::else::
         <p>
-            $$insert(Créer ma page producteur,/p/pro/company/createLink)
+            $$insert(Créer ma page producteur,::vendor.getURL()::/company/createLink)
         </p>
         ::end::
         
+		::if(link!=null)::
         <hr/>
-
         <p>::raw form::</p>
-        
         <hr/>
-
-        <div class="row">
+		
+        <div class="row" >
 			<div class="col-md-6">
 				<p>	
 					<h4>Bannière</h4>
@@ -40,71 +39,72 @@
 				<img src="::file(images.banner)::" style="max-width: 256px;max-height: 128px;" class="thumbnail" />
 				::end::
 			</div>
-			</div>
+		</div>
 			
-			<div class="row">
-				<div class="col-md-6">
-					<h4>Photos de votre ferme</h4>
-				</div>
+		<div class="row">
+			<div class="col-md-6">
+				<h4>Photos de votre ferme</h4>
 			</div>
+		</div>
 
-			<!-- farm1 -->
-			<div class="row">
-				<div class="col-md-2">Image 1</div>
+		<!-- farm1 -->
+		<div class="row">
+			<div class="col-md-2">Image 1</div>
+			<div class="col-md-4">
+				<a class="btn btn-default btn-sm" $$openImageUploader('company', ::company.id::, 300, 300, 'farm1')>
+					<i class="icon icon-image"></i> ::if images.farm1==null::Envoyer une image ::else:: Modifier l'image ::end::
+				</a>
+				<div id="image-uploader-container" />
+			</div>			
+			<div class="col-md-6">				
+				::if images.farm1!=null::<img src="::file(images.farm1)::" style="max-width: 256px;max-height: 128px;" class="thumbnail" />::end::
+			</div>
+		</div>
+
+		<!-- farm2 -->
+		<div class="row">
+				<div class="col-md-2">Image 2</div>
 				<div class="col-md-4">
-					<a class="btn btn-default btn-sm" $$openImageUploader('company', ::company.id::, 300, 300, 'farm1')>
-						<i class="icon icon-image"></i> ::if images.farm1==null::Envoyer une image ::else:: Modifier l'image ::end::
-					</a>
-					<div id="image-uploader-container" />
-				</div>			
-				<div class="col-md-6">				
-					::if images.farm1!=null::<img src="::file(images.farm1)::" style="max-width: 256px;max-height: 128px;" class="thumbnail" />::end::
-				</div>
+				<a class="btn btn-default btn-sm" $$openImageUploader('company', ::company.id::, 300, 300, 'farm2')>
+					<i class="icon icon-image"></i> ::if images.farm2==null::Envoyer une image ::else:: Modifier l'image ::end::
+				</a>
+				<div id="image-uploader-container" />
+			</div>			
+			<div class="col-md-6">				
+				::if images.farm2!=null::<img src="::file(images.farm2)::" style="max-width: 256px;max-height: 128px;" class="thumbnail" />::end::
 			</div>
+		</div>
 
-			<!-- farm2 -->
-			<div class="row">
-					<div class="col-md-2">Image 2</div>
-					<div class="col-md-4">
-					<a class="btn btn-default btn-sm" $$openImageUploader('company', ::company.id::, 300, 300, 'farm2')>
-						<i class="icon icon-image"></i> ::if images.farm2==null::Envoyer une image ::else:: Modifier l'image ::end::
-					</a>
-					<div id="image-uploader-container" />
-				</div>			
-				<div class="col-md-6">				
-					::if images.farm2!=null::<img src="::file(images.farm2)::" style="max-width: 256px;max-height: 128px;" class="thumbnail" />::end::
-				</div>
+		<!-- farm3 -->
+		<div class="row">
+				<div class="col-md-2">Image 3</div>
+				<div class="col-md-4">
+				<a class="btn btn-default btn-sm" $$openImageUploader('company', ::company.id::, 300, 300, 'farm3')>
+					<i class="icon icon-image"></i> ::if images.farm3==null::Envoyer une image ::else:: Modifier l'image ::end::
+				</a>
+				<div id="image-uploader-container" />
+			</div>			
+			<div class="col-md-6">				
+				::if images.farm3!=null::<img src="::file(images.farm3)::" style="max-width: 256px;max-height: 128px;" class="thumbnail" />::end::
 			</div>
+		</div>
 
-			<!-- farm3 -->
-			<div class="row">
-					<div class="col-md-2">Image 3</div>
-					<div class="col-md-4">
-					<a class="btn btn-default btn-sm" $$openImageUploader('company', ::company.id::, 300, 300, 'farm3')>
-						<i class="icon icon-image"></i> ::if images.farm3==null::Envoyer une image ::else:: Modifier l'image ::end::
-					</a>
-					<div id="image-uploader-container" />
-				</div>			
-				<div class="col-md-6">				
-					::if images.farm3!=null::<img src="::file(images.farm3)::" style="max-width: 256px;max-height: 128px;" class="thumbnail" />::end::
-				</div>
+		<!-- farm4 -->
+		<div class="row">
+				<div class="col-md-2">Image 4</div>
+				<div class="col-md-4">
+				<a class="btn btn-default btn-sm" $$openImageUploader('company', ::company.id::, 300, 300, 'farm4')>
+					<i class="icon icon-image"></i> ::if images.farm4==null::Envoyer une image ::else:: Modifier l'image ::end::
+				</a>
+				<div id="image-uploader-container" />
+			</div>			
+			<div class="col-md-6">				
+				::if images.farm4!=null::<img src="::file(images.farm4)::" style="max-width: 256px;max-height: 128px;" class="thumbnail" />::end::
 			</div>
-
-			<!-- farm4 -->
-			<div class="row">
-					<div class="col-md-2">Image 4</div>
-					<div class="col-md-4">
-					<a class="btn btn-default btn-sm" $$openImageUploader('company', ::company.id::, 300, 300, 'farm4')>
-						<i class="icon icon-image"></i> ::if images.farm4==null::Envoyer une image ::else:: Modifier l'image ::end::
-					</a>
-					<div id="image-uploader-container" />
-				</div>			
-				<div class="col-md-6">				
-					::if images.farm4!=null::<img src="::file(images.farm4)::" style="max-width: 256px;max-height: 128px;" class="thumbnail" />::end::
-				</div>
-			</div>
-		
+		</div>
+		::end::
 	</div>
+	
 
 	<script src="/js/tinymce/tinymce.min.js"></script>
 	<script>

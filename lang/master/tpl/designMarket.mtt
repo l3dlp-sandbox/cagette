@@ -1,0 +1,186 @@
+﻿::use 'baseMarket.mtt'::
+		
+	::if getParam('__redirect')!=null::
+		<!-- need to login to go to this page-->
+		<script>
+			if (window.location.pathName =! "/user/login"){
+				window.location.href = '/user/login?__redirect=::raw getParam("__redirect")::';
+			}
+		</script>
+	::end::
+
+	<main >
+		::set group = getCurrentGroup()::
+		::if user!=null && pageTitle==null && group!=null && (group.disabled==null || isAdmin)::
+			<nav class="navbar navbar-default" ::cond user.getGroup()!=null::>
+					<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#cagette-navbar">
+						<span class="sr-only">Toggle navigation</span>						
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>				  
+					</div>	
+				
+					<div class="collapse navbar-collapse" id="cagette-navbar">
+						::set category = breadcrumb()[1]::
+						::if(category!=null):: ::set category=category.id:: ::end::
+						<ul class="nav navbar-nav navbar-left">
+							<li ::attr class if(category=="home") 		'active' ::>
+								<a href="/">
+									<i class="icon icon-basket"></i>  Commandes
+								</a>
+							</li>
+							<li ::attr class if(category=="history" ) 	'active' ::>
+								<a href="/history">
+									<i class="icon icon-list"></i> Historique 
+								</a>
+							</li>
+							<li ::attr class if(category=="market") 		'active' ::>
+								<a href="/market">
+									<i class="icon icon-farmer"></i> ::_("Farmers")::
+								</a>
+							</li>
+							
+						</ul>
+						
+						<ul class="nav navbar-nav navbar-right admin" >
+							<li id="member" ::attr class if(category=="member") 	'active' ::>								
+								<a href="/member" ::cond user.canAccessMembership()::>
+									<i class="icon icon-users"></i> ::_("Members")::
+								</a>
+							</li>
+							<li id="distributions" ::attr class if(category=="distribution") 	'active' ::>
+								<a href="/distributions" ::cond user.canManageAllContracts()::>
+									<i class="icon icon-calendar"></i>  ::_("Distributions")::
+								</a>
+							</li>
+							<li id="contractadmin" ::attr class if(category=="contract") 'active' ::>
+								<a href="/contractAdmin" ::cond user.isContractManager(null)::>
+									<i class="icon icon-book"></i> ::_("Catalogs")::
+								</a>
+							</li>
+							<li id="messages" ::attr class if(category=="messages") 	'active' ::>
+								<a href="/messages" ::cond user.canAccessMessages()::>
+									<i class="icon icon-mail"></i>  ::_("Messaging")::
+								</a>
+							</li>
+							<li id="marketadmin" ::attr class if(category=="marketadmin") 	'active' ::>
+								<a href="/marketadmin" ::cond user.isGroupManager()::>
+									<i class="icon icon-cog"></i>  Paramètres
+								</a>
+							</li>							
+						</ul>
+						
+					</div>
+				
+			</nav>
+		::end::
+		
+		<!-- Breadcrumb 
+		<div class="row">
+			<div class="col-md-12">
+				<ol class="breadcrumb">
+					<li><a href="/user/choose">Accueil</a></li>
+					::foreach section breadcrumb()::
+						<li id="::section.id::"><a href="::section.link::">::section.name::</a></li>
+					::end::
+				</ol>
+			</div>
+		</div>-->
+		
+		<!-- Notifications -->
+		<div class="row">
+			<div id="content" class="col-md-12">
+				::foreach notification getMessages()::
+				<div class="alert ::if notification.error:: alert-danger ::else:: alert-success ::end::" ::cond notification::>
+					::if notification.error::
+					<i class="icon icon-alert"></i>
+					::else::
+					<i class="icon icon-check"></i>
+					::end::
+					
+					::raw notification.text::					
+				</div>
+				::end::
+			</div>	
+		</div>
+
+		<!-- extra notification block for plugins -->
+		::if extraNotifBlock!=null::
+			::raw extraNotifBlock::
+		::end::
+		
+		<div class="row">			
+			::raw __content__::
+		</div>
+
+		$$footer()
+		
+		<div class="row">
+			<div class="col-md-12">			
+				<!--  SQL LOG -->
+				<table class="sqlLog table table-bordered" ::cond sqlLog::>
+				<tr><th colspan="5">::sqlLog.length:: queries</th></tr>
+				::foreach r sqlLog::
+				<tr ::attr class if(r.bad) 'badSql'::>
+					<td>::r.t::ms</td>
+					<td>::r.length::</td>
+					<td><a href="#" onclick="javascript:alert('::r.explain::');return false;">Exp</a></td>
+					<td><a href="#" onclick="javascript:alert('::r.stack::');return false;">Stack</a></td>
+					<td>::r.sql::</td>
+				</tr>
+				::end::
+				</table>
+			</div>
+		</div>
+	</main>
+		
+	::if (user!=null && user.isGroupManager())::
+		<script>
+			// Include the UserVoice JavaScript SDK (only needed once on a page)
+			UserVoice=window.UserVoice||[];(function(){var uv=document.createElement('script');uv.type='text/javascript';uv.async=true;uv.src='//widget.uservoice.com/sayZ1eIZLfSZUa3IwslHCw.js';var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(uv,s)})();
+
+			//
+			// UserVoice Javascript SDK developer documentation:
+			// https://www.uservoice.com/o/javascript-sdk
+			//
+
+			// Set colors
+			UserVoice.push(['set', {
+			  accent_color: '#6aba2e',
+			  trigger_color: 'white',
+			  trigger_background_color: '#e2753a'
+			}]);
+
+			::set infos = user.getUserVoiceInfos()::
+			// Identify the user and pass traits
+			// To enable, replace sample data with actual user traits and uncomment the line
+			UserVoice.push(['identify', {
+				email:      '::user.email::', 		// User’s email address
+				name:       '::user.getName()::',		// User’s real name
+				created_at: ::(user.cdate.getTime()/1000)::, // Unix timestamp for the date the user signed up
+				id:         ::user.id::, 				// Optional: Unique id of the user (if set, this should not change)
+				type:       '::infos.type::', 		// Optional: segment your users by type
+				//Si cpro : nom de la ferme, sinon nom du groupe
+				account: {
+					id:           ::infos.id::, // Optional: associate multiple users with a single account
+					name:         '::infos.name::', // Account name
+					//  created_at:   1364406966, // Unix timestamp for the date the account was created
+					//  monthly_rate: 9.99, // Decimal; monthly rate of the account
+					//  ltv:          1495.00, // Decimal; lifetime value of the account
+					//  plan:         'Enhanced' // Plan name for the account
+				}
+			}]);
+
+			// Add default trigger to the bottom-right corner of the window:
+			UserVoice.push(['addTrigger', { mode: 'smartvote', trigger_position: 'bottom-right' }]);
+
+			// Or, use your own custom trigger:
+			//UserVoice.push(['addTrigger', '#id', { mode: 'smartvote' }]);
+
+			// Autoprompt for Satisfaction and SmartVote (only displayed under certain conditions)
+			UserVoice.push(['autoprompt', {}]);
+		</script>
+	::end::
+::end::

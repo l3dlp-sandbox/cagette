@@ -1,7 +1,7 @@
 ::if catalog != null::  
     ::set template = 'contractadmin/design.mtt'::
 ::else::
-    ::set template = 'amapadmin/design.mtt'::
+    ::set template = 'marketadmin/design.mtt'::
 ::end::
 
 ::use template::
@@ -13,11 +13,11 @@
         <p>
             ::if(catalog !=null)::
                 Vous pouvez ici envoyer des documents PDF relatifs à ce catalogue.
-                Ils seront visibles sur la page du catalogue (accessible depuis l'onglet "producteurs" pour les membres du groupe) 
+                Ils seront visibles sur la page du catalogue (accessible depuis l'onglet "producteurs" pour les membres du ::theme.groupWordingShort::) 
                 en fonction des paramètres de visibilités que vous aurez choisis.<br/>
-                Si vous êtes administrateur du groupe, il est également possible d'envoyer des documents plus génériques au niveau du groupe dans le menu "Documents" de l'onglet "paramètres".
+                Si vous êtes administrateur du ::theme.groupWordingShort::, il est également possible d'envoyer des documents plus génériques au niveau du ::theme.groupWordingShort:: dans le menu "Documents" de l'onglet "paramètres".
             ::else::
-                Vous pouvez ici envoyer des documents PDF relatifs à votre groupe en général.<br/>
+                Vous pouvez ici envoyer des documents PDF relatifs à votre ::theme.groupWordingShort:: en général.<br/>
                 Ils seront visibles sur votre page publique et sur la page des commandes en fonction des paramètres de visibilités que vous aurez choisis.
                 Il est également possible d'envoyer des documents relatifs à un catalogue/contrat dans le menu "Documents" des catalogues.
             ::end::
@@ -27,7 +27,7 @@
         ::if catalog != null::
             $$insert( Nouveau document, /contractAdmin/documents/insert/::catalog.id:: )
         ::else::
-            $$insert( Nouveau document, /amapadmin/documents/insert )
+            $$insert( Nouveau document, /marketadmin/documents/insert )
         ::end::
 
         <div class="row" style="margin-top: 10px; margin-bottom: 24px;">
@@ -51,7 +51,7 @@
                                     ::if doc.data == "subscribers"::
                                         Souscripteurs du contrat
                                     ::elseif doc.data == "members"::
-                                        Membres du groupe
+                                        Membres du ::theme.groupWordingShort::
                                     ::else::
                                         Public
                                     ::end::
@@ -63,9 +63,9 @@
                                     &nbsp;&nbsp;
                                     $$delete( ::_("Delete")::, /contractAdmin/documents/delete/::doc.id::/::catalog.id::?token=::token:: )
                                 ::else::
-                                    $$edit( ::_("Edit")::, /amapadmin/documents/edit/::doc.id:: )
+                                    $$edit( ::_("Edit")::, /marketadmin/documents/edit/::doc.id:: )
                                     &nbsp;&nbsp;
-                                    $$delete( ::_("Delete")::, /amapadmin/documents/delete/::doc.id::?token=::token:: )
+                                    $$delete( ::_("Delete")::, /marketadmin/documents/delete/::doc.id::?token=::token:: )
                                 ::end::
                             </td>
                         </tr>

@@ -5,22 +5,18 @@ $$browserDetection()
 
 <div id="content" class="col-md-8">
 
-	<!-- Welcoming message + access to tutos-->
+	<!-- Welcoming message + access to tutos
 	::if newGroup::
 	<div class="alert alert-success">
 		<h3>Bienvenue sur ::theme.name:: !</h3>
 		<p>
-			Félicitations, vous venez juste de créer un nouveau groupe !<br/>
-			Vous pouvez maintenant <a href="/contract/defineVendor/" style="font-weight: bold;">inviter des producteurs dans votre groupe</a>, planifier des distributions et inviter des membres.
+			Félicitations, vous venez juste de créer un nouveau ::theme.groupWordingShort:: !<br/>
+			Vous pouvez maintenant <a href="/contract/searchVendor/" style="font-weight: bold;">inviter des producteurs dans votre ::theme.groupWordingShort::</a>, planifier des distributions et inviter des membres.
 		</p>		
-		<!--<p>
-			<a href="/home?action=deleteDemoContracts&token=::token::" class="btn btn-default btn-sm">
-				::_("Delete example orders and catalogs")::
-			</a>
-		</p>-->
+
 	</div>
 	::end::
-
+-->
 	<!-- Empty planning -->
 	::if distribs==null || count(distribs)==0::
 	<div class="homeBlock">
@@ -83,7 +79,7 @@ $$browserDetection()
 					<a onclick="neo.createNeoModule('myModal', 'dialog-url', { url: '/history/basket/::basket.id::', title:'::title::' })" class="btn btn-default btn-sm">
 						<i class="icon icon-basket"></i> ::_("My order"):: : ::formatNum(basket.getOrdersTotal()):: ::currency()::
 					</a>				
-					::if active && !amap.isDispatch() && !basket.hasOnlinePayment()::
+					::if active && !group.isDispatch() && !basket.hasOnlinePayment()::
 						$$edit(Modifier cette commande,/contract/editVarOrders/::md.id::)
 					::end::
 				</div>
@@ -93,7 +89,7 @@ $$browserDetection()
 				<!-- products previews-->
 				::foreach p md.getProductsExcerpt(8)::
 				<div data-toggle="tooltip" data-placement="top" title="::p.name::" style="background-image:url('::p.image::')"
-					class="productImg medium" />
+					class="productImg large" />
 				::end::
 			</div>
 			::end::
@@ -238,7 +234,7 @@ $$browserDetection()
 			<img src="/img/join-a-group.png" />
 		</p>
 		<p>
-			Inscrivez-vous à ce groupe, <br />
+			Inscrivez-vous à ce ::theme.groupWordingShort::, <br />
 			vous recevrez un email pour l'ouverture des prochaines commandes <br />
 			ainsi que des nouvelles des producteurs !
 		</p>
@@ -246,13 +242,13 @@ $$browserDetection()
 		::if (user==null)::		
 		<a href="#" class="btn btn-primary" onclick="neo.createNeoModule('login-registration-container', 'loginRegistration', { redirectUrl: '/user/joingroup', sid: '::loginBoxOptions.sid::', message: null, phoneRequired: ::loginBoxOptions.phoneRequired::, addressRequired: ::loginBoxOptions.addressRequired::, openRegistration:true})" >
 			<span class="glyphicon glyphicon-plus"></span>
-			M'inscrire à ce groupe
+			M'inscrire à ce ::theme.groupWordingShort::
 		</a>
 		<div id='login-registration-container'></div>
 		::else::
 		<a href="/user/joingroup" class="btn btn-primary">
 			<span class="glyphicon glyphicon-plus"></span>
-			M'inscrire à ce groupe
+			M'inscrire à ce ::theme.groupWordingShort::
 		</a>
 		::end::
 	</div>
@@ -266,25 +262,23 @@ $$browserDetection()
 
 	<div class="block">
 
-		::if amap.imageId!=null::
-		::if amap.extUrl!=null && amap.extUrl!=""::
-		<a href="::amap.extUrl::"><img src="::file(amap.imageId)::" style="margin:auto;display: block;width: 100%;"
+		::if group.imageId!=null::
+		::if group.extUrl!=null && group.extUrl!=""::
+		<a href="::group.extUrl::"><img src="::file(group.imageId)::" style="margin:auto;display: block;width: 100%;"
 				class="thumbnail" /><br /></a>
 		::else::
-		<img src="::file(amap.imageId)::" style="margin:auto;display: block;width: 100%;" class="thumbnail" /><br />
+		<img src="::file(group.imageId)::" style="margin:auto;display: block;width: 100%;" class="thumbnail" /><br />
 		::end::
 		::end::
 
-		::if amap.txtHome!=null && amap.txtHome!=""::
-		::raw nl2br(amap.txtHome)::
+		::if group.txtHome!=null && group.txtHome!=""::
+		::raw nl2br(group.txtHome)::
 		::end::		
 	</div>
 
 	<div class="block">
 		
-		<h4>Lien du marché à partager</h4>
-
-		::set group = amap::
+		<h4>Lien du ::theme.groupWordingShort:: à partager</h4>
 		<p>
 			<a id="copy-url" href="http://::HOST::/group/::group.id::" target="_blank">http://::HOST::/group/::group.id::</a><br/>
 		</p>
@@ -314,7 +308,7 @@ $$browserDetection()
 		</script>
 	</div>
 
-	<div class="block hidden-sm hidden-xs">
+	<div class="block hidden-sm hidden-xs" ::cond hasRoles::>
 		<h4>Permanences</h4>
 		<a href="/distributions/volunteersCalendar" class="btn btn-default btn-sm">
 			<i class="icon icon-calendar"></i> ::_("Duty periods calendar")::

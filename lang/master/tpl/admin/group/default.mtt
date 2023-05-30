@@ -1,6 +1,6 @@
 ::use 'admin/design.mtt'::
 
-<h2>Admin Groupes</h2>
+<h2>Admin ::theme.groupWordingShort_plural::</h2>
 
 <p>
 	::raw form::
@@ -28,18 +28,19 @@
 	<tr>
 		<th>Id</th>
 		<th>Nom</th>
-		
-		<th>Type</th>
 		<th>Actif</th>
 		<th>Code postal</th>
-		<th>Pays</th>
+		<th>CA 90 jours</th>
+		<th>Membres</th>
+		<th>Produceurs</th>
+		<th>IRO</th>
 		
 	</tr>
 	::foreach g groups::	
 	<tr>
 		<td>::g.id::</td>
 		<td>
-			<a href="/p/hosted/group/::g.id::" target="_blank">::g.name::</a>			
+			<a href="/admin/group/view/::g.id::" target="_blank">::g.name::</a>			
 		</td>
 		
 		<td>			
@@ -52,7 +53,16 @@
 			::end::
 		</td>
 		<td>
-			::g.country::
+			::g.turnover90days:: €
+		</td>
+		<td>
+			::g.membersNum::
+		</td>
+		<td>
+			::g.vendorNum::
+		</td>
+		<td>
+			::g.iro::
 		</td>
 		
 	</tr>

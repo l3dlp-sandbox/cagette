@@ -53,7 +53,7 @@ class Group extends Object
 	@:relation(userId)
 	public var contact : SNull<User>;	
 	
-	public var txtIntro:SNull<SText>; 	//introduction de l'amap
+	public var txtIntro:SNull<SText>; 	//introduction du marché
 	public var txtHome:SNull<SText>; 	//texte accueil adhérents
 	public var txtDistrib:SNull<SText>; //sur liste d'emargement
 	
@@ -61,8 +61,6 @@ class Group extends Object
 
 	@hideInForms public var membershipRenewalDate : SNull<SDate>;
 	@hideInForms public var membershipFee : SNull<STinyInt>;
-	
-	@hideInForms public var vatRates : SNull<SSmallText>;
 	
 	//options and flags
 	public var flags:SFlags<GroupFlags>;
@@ -102,7 +100,6 @@ class Group extends Object
 		flags = cast 0;
 		flags.set(CagetteNetwork);
 		betaFlags = cast 0;
-		setVatRates([{label:"TVA alimentaire",value:5.5},{label:"TVA standard",value:20}]);
 		cdate = Date.now();
 		regOption = Open;
 		currency = "€";
@@ -357,7 +354,7 @@ class Group extends Object
 		
 		if (txtHome == null){
 			var t = sugoi.i18n.Locale.texts;
-			txtHome = "Bienvenue sur le groupe " + this.name + " !\n Vous pouvez consulter votre planning de distribution ou faire une nouvelle commande.";
+			txtHome = "Bienvenue sur le " + App.current.getTheme().groupWordingShort + " " + this.name + " !\n Vous pouvez consulter votre planning de distribution ou faire une nouvelle commande.";
 		}
 		
 		App.current.event(NewGroup(this,App.current.user));
@@ -375,6 +372,11 @@ class Group extends Object
 		}
 		
 		return currency;		
+	}
+
+	public function getURL():String{
+		var protocol = App.config.HOST=="localhost" ? "http" : "https";		
+		return protocol+"://"+App.config.HOST+"/group/"+id;
 	}
 
 	public function getVisibleDocuments( isMemberOfGroup : Bool ) : List<sugoi.db.EntityFile> {
@@ -428,35 +430,6 @@ class Group extends Object
 			"contact" 		=> t._("Main contact"),
 			"legalRepresentative" => t._("Legal representative")			
 		];
-	}
-
-	public function setVatRates(rates:Array<{value:Float,label:String}>){
-		vatRates = haxe.Json.stringify(rates);
-	}
-
-	public function getVatRates():Array<{value:Float,label:String}>{
-		try{
-			return haxe.Json.parse(vatRates);
-		}catch(e:Dynamic){
-			var rates = [{label:"TVA alimentaire",value:5.5},{label:"TVA standard",value:20}];
-			this.lock();
-			setVatRates(rates);
-			this.update();
-			return rates;
-		}
-	}
-
-	/**
-		get vat rates as map
-	**/
-	public function getVatRatesOld():Map<String,Float>{
-		var map = new Map<String,Float>();
-		var rates = getVatRates();
-		if(rates==null) return null;
-		for( r in rates){
-			map.set(r.label,r.value);
-		}
-		return map;
 	}
 
 	public function setAllowedPaymentTypes(pt:Array<String>){

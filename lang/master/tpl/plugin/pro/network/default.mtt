@@ -16,17 +16,17 @@
 
 <div class="col-md-6">
 	<div class="article">		
-		<h4>Groupes appartenant au réseau :</h4>
+		<h4>::fluc(theme.groupWordingShort_plural):: appartenant au réseau :</h4>
 		<table class="table table-condensed">
 			::foreach g company.getNetworkGroups()::
 			<tr>
 				<td><a href="/group/::g.id::" target="_blank">::g.name::</a></td>
-				<td>$$delete(Suppr., /p/pro/network/removeGroup/::g.id::)</td>
+				<td>$$delete(Suppr., ::vendor.getURL()::/network/removeGroup/::g.id::)</td>
 				  
 			</tr>
 			::end::
 		</table>
-		$$insert(Ajouter un groupe, /p/pro/network/addGroup)
+		$$insert(Ajouter un ::theme.groupWordingShort::, ::vendor.getURL()::/network/addGroup)
 	</div>
 </div>
 

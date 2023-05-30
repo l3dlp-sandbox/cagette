@@ -347,6 +347,11 @@ class PProductService
 
 		var f = form.CagetteForm.fromSpod(d);
 
+		var ref = d.ref;
+		var txId = d.txpProduct == null ? null : d.txpProduct.id;
+		var html = service.ProductService.getCategorizerHtml(txId,f.name);
+		f.addElement(new sugoi.form.elements.Html("html",html, 'Catégorie *'),3);
+
 		if(d.id==null){
 			f.getElement("ref").value = pro.service.PProductService.generateRef(company);
 		}
@@ -356,16 +361,13 @@ class PProductService
 		f.getElement("bulk").description = "Ce produit est vendu en vrac ( sans conditionnement ). Le poids/volume commandé peut être corrigé après pesée.";
 		f.getElement("bulk").docLink = "https://formation.alilo.fr/mod/page/view.php?id=793";		
 	
-		f.getElement("variablePrice").description = "Comme au marché, le prix final sera calculé en fonction du poids réel après pesée.";
+		f.getElement("variablePrice").description = "Comme au "+App.current.getTheme().groupWordingShort+", le prix final sera calculé en fonction du poids réel après pesée.";
 		f.getElement("variablePrice").docLink = "https://formation.alilo.fr/mod/page/view.php?id=792";
 		f.getElement("multiWeight").description = "Permet de peser séparément chaque produit. Idéal pour la volaille par exemple.";
 		f.getElement("multiWeight").docLink = "https://formation.alilo.fr/mod/page/view.php?id=792";
 
-		var ref = d.ref;
-		var txId = d.txpProduct == null ? null : d.txpProduct.id;
-		var html = service.ProductService.getCategorizerHtml(d.name,txId,f.name);
-		f.addElement(new sugoi.form.elements.Html("html",html, 'Nom'),1);
-		f.addElement(new sugoi.form.elements.Html("html","<span class='disabled'>Une catégorie manquante selon vous ? Écrivez au support : "+App.current.getTheme().supportEmail+"</span><br/>",""),2);
+		f.getElement("txpProductId").required = true;
+
 
 		return f;
 	}

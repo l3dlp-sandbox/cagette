@@ -38,7 +38,7 @@ class MangopayGroupController extends controller.Controller
 			wallet = Mangopay.getOrCreateGroupWallet(mgpLegalUser.mangopayUserId,group);
 
 		}catch(error:tink.core.Error){
-			throw Error("/amapadmin",error.message);
+			throw Error("/marketadmin",error.message);
 		}
 
 		view.wallet = wallet;
@@ -53,7 +53,7 @@ class MangopayGroupController extends controller.Controller
 		view.getMultidistribNetTurnover = MangopayPlugin.getMultidistribNetTurnover;
 		view.getMangopayECTotal = MangopayPlugin.getMultidistribNetTurnover; 
 
-        var pageUrl = "/p/pro/transaction/mangopay/group/wallet";
+        var pageUrl = "/transaction/mangopay/group/wallet";
 
 		//trigger a transfer
 		if(checkToken()){
@@ -280,7 +280,7 @@ class MangopayGroupController extends controller.Controller
 			legalUserId = MangopayPlugin.getGroupLegalUserId(group);
 			wallet = Mangopay.getOrCreateGroupWallet(legalUserId,group);
 		}catch(error:tink.core.Error){
-			throw Error("/amapadmin",error.message);
+			throw Error("/marketadmin",error.message);
 		}
 
 		view.wallet = wallet;
@@ -304,7 +304,7 @@ class MangopayGroupController extends controller.Controller
 	public function doModule(){
 		view.nav = nav("groupAdmin");
 		// if(app.params.get("enable")!=null){			
-		// 	throw Redirect("/p/pro/transaction/mangopay/group/module");
+		// 	throw Redirect("/transaction/mangopay/group/module");
 		// }
 	}
 }

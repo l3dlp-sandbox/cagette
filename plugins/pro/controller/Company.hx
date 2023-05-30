@@ -1,4 +1,5 @@
 package pro.controller;
+import pro.db.CagettePro.CagetteProOffer;
 import sugoi.Web;
 import mangopay.Mangopay;
 import pro.db.PVendorCompany;
@@ -13,12 +14,13 @@ class Company extends controller.Controller
 {
 	var company : pro.db.CagettePro;
 	var vendor : db.Vendor;
-
-	public function new() 
+	
+	public function new(company:pro.db.CagettePro) 
 	{
 		super();
-		view.company = company = pro.db.CagettePro.getCurrentCagettePro();
-		view.vendor = vendor = pro.db.CagettePro.getCurrentVendor();
+		view.company = this.company = company;
+		view.vendor = this.vendor = company.vendor;
+
 		view.nav = ["company"];
 		view.navbar = nav("company");
 	}
@@ -28,40 +30,37 @@ class Company extends controller.Controller
 
 		view.nav.push("default");
 
+		//create permalink
+		var link = sugoi.db.Permalink.getByEntity(vendor.id,"vendor");
+		if(link==null){
+			var proposals = sugoi.db.Permalink.propose(vendor.name,[vendor.zipCode.substr(0,2),vendor.city]);
+			if(proposals.length>0){
+				link  = new sugoi.db.Permalink();
+				link.entityType = "vendor";
+				link.entityId = vendor.id;
+				link.link = proposals[0];
+				link.insert();
+			}
+			
+		}
+
 		if(company==null){
 			var groups = Lambda.map(vendor.getActiveContracts(),function(c) return c.group);
 			view.groups = tools.ObjectListTool.deduplicate(groups);
 		}
 	}
 	
-	@tpl('plugin/pro/form.mtt')
+	@tpl('plugin/pro/company/form.mtt')
 	function doEdit() {
 		view.nav.push("default");
 		var theme = App.current.getTheme();
-
-		// var form = VendorService.getForm(vendor, company.offer!=Training );
+		
 		var form = new sugoi.form.Form("company");
-		form.addElement( new Html("html",vendor.name,"Nom"));
-		form.addElement( new Html("html",vendor.getAddress(),"Adresse"));
-		form.addElement( new Html("html","<div class='alert alert-warning'><p><i class='icon icon-info'></i> 
-		Si vous souhaitez changer le nom de votre entreprise, son adresse ou une information légale,   
-		contactez le support sur <a href='mailto:"+theme.supportEmail+"' target='_blank'>"+theme.supportEmail+"</a>
-		</p></div>",""));
 		form.addElement(new TextArea("desc","Description courte de votre ferme",vendor.desc));
-		form.addElement(new StringInput("linkText","Intitulé du lien<br/>(site web, page facebook...)",vendor.linkText));
-		form.addElement(new StringInput("linkUrl","URL du lien",vendor.linkUrl));
+		// form.addElement(new StringInput("linkText","Intitulé du lien<br/>(site web, page facebook...)",vendor.linkText));
+		// form.addElement(new StringInput("linkUrl","URL du lien",vendor.linkUrl));
 		
-		form.addElement( new Html("html",vendor.email,"Email commercial (public)"));
-		form.addElement( new Html("html","<div class='alert alert-warning'><p><i class='icon icon-info'></i> 
-		Pour changer le contact commercial de votre entreprise,   
-		définissez un utilisateur comme contact commercial sur <a href='/p/pro/company/users' target='_blank'>la page \"utilisateurs\"</a>
-		</p></div>",""));
-		
-		view.title = "Modifier les propriétés";
-
-		// if(company.offer!=Training){ 
-		// 	app.session.addMessage("Attention, afin de mieux informer les consommateurs, vous devez maintenant renseigner votre <b>numéro SIRET</b> et confirmer le fait que votre activité est conforme à la <b><a href=\"https://www.cagette.net/charte-producteurs\" target=\"_blank\">Charte Producteurs Cagette.net</a></b>.");
-		// }
+		view.title = "Modifier la description";
 				
 		if (form.isValid()) {
 			vendor.lock();
@@ -71,11 +70,102 @@ class Company extends controller.Controller
 				throw Error(sugoi.Web.getURI(),e.message);
 			}			
 			vendor.update();
-			throw Ok('/p/pro/company','Vos informations ont été mises à jour');
-		}
-		
+			throw Ok(vendor.getURL()+'/company','Votre profil a été mis à jour');
+		}		
 		view.form = form;
-	}	
+	}
+	
+	@tpl('plugin/pro/company/form.mtt')
+	function doEditLink() {
+		view.nav.push("default");
+		var theme = App.current.getTheme();
+		
+		var form = new sugoi.form.Form("company");
+		form.addElement(new StringInput("linkText","Intitulé du lien<br/>(site web, page facebook...)",vendor.linkText));
+		form.addElement(new StringInput("linkUrl","URL du lien",vendor.linkUrl));		
+		view.title = "Modifier le lien de votre site web";
+				
+		if (form.isValid()) {
+			vendor.lock();
+			try{
+				vendor = VendorService.update(vendor,form.getDatasAsObject(),false);
+			}catch(e:tink.core.Error){
+				throw Error(sugoi.Web.getURI(),e.message);
+			}			
+			vendor.update();
+			throw Ok(vendor.getURL()+'/company','Votre profil a été mis à jour');
+		}		
+		view.form = form;
+	}
+
+	@tpl('plugin/pro/company/form.mtt')
+	function doEditPeople() {
+		view.nav.push("default");
+		var theme = App.current.getTheme();
+		
+		var form = new sugoi.form.Form("company");
+		form.addElement(new StringInput("peopleName","Nom du ou des producteur(s)",vendor.peopleName));		
+		view.title = "Modifier le nom du ou des producteur(s)";
+				
+		if (form.isValid()) {
+			vendor.lock();
+			try{
+				vendor = VendorService.update(vendor,form.getDatasAsObject(),false);
+			}catch(e:tink.core.Error){
+				throw Error(sugoi.Web.getURI(),e.message);
+			}			
+			vendor.update();
+			throw Ok(vendor.getURL()+'/company','Votre profil a été mis à jour');
+		}		
+		view.form = form;
+	}
+
+	@tpl('plugin/pro/company/form.mtt')
+	function doEditLongDesc() {
+		view.nav.push("default");
+		var theme = App.current.getTheme();
+		
+		var form = new sugoi.form.Form("company");
+		// form.addElement(new StringInput("peopleName","Nom du ou des producteur(s)",vendor.peopleName));		
+		form.addElement(new sugoi.form.elements.TextArea("longDesc","Description longue de votre exploitation",vendor.longDesc));
+		view.title = "Modifier la description";
+				
+		if (form.isValid()) {
+			vendor.lock();
+			try{
+				vendor = VendorService.update(vendor,form.getDatasAsObject(),false);
+			}catch(e:tink.core.Error){
+				throw Error(sugoi.Web.getURI(),e.message);
+			}			
+			vendor.update();
+			throw Ok(vendor.getURL()+'/company','Votre profil a été mis à jour');
+		}		
+		view.form = form;
+		view.tinymce = true;
+	}
+
+	@tpl('plugin/pro/company/form.mtt')
+	function doEditOffCagette() {
+		view.nav.push("default");
+		var theme = App.current.getTheme();
+		
+		var form = new sugoi.form.Form("company");
+		form.addElement(new sugoi.form.elements.TextArea("offCagette","En dehors de Cagette.net, où peut-on trouver vos produits ?",vendor.offCagette));
+		// view.title = "Modifier la description";
+				
+		if (form.isValid()) {
+			vendor.lock();
+			try{
+				vendor = VendorService.update(vendor,form.getDatasAsObject(),false);
+			}catch(e:tink.core.Error){
+				throw Error(sugoi.Web.getURI(),e.message);
+			}			
+			vendor.update();
+			throw Ok(vendor.getURL()+'/company','Votre profil a été mis à jour');
+		}		
+		view.form = form;
+		view.tinymce = true;
+	}
 	
 	@tpl('plugin/pro/company/users.mtt')
 	public function doUsers(){
@@ -96,11 +186,11 @@ class Company extends controller.Controller
 			var v = new pro.db.PUserCompany();
 			var u = service.UserService.get(f.getValueOf("email"));
 			if(u==null){
-				throw Error('/p/pro/company/users','Il n\'y a aucun compte avec l\'email "${f.getValueOf("email")}". Cette personne doit s\'inscrire avant que vous puissiez lui donner accès à votre espace producteur.');
+				throw Error(vendor.getURL()+'/company/users','Il n\'y a aucun compte avec l\'email "${f.getValueOf("email")}". Cette personne doit s\'inscrire avant que vous puissiez lui donner accès à votre espace producteur.');
 			}
 
 			if(company.getUsers().find(uc -> uc.id==u.id)!=null){
-				throw Error('/p/pro/company/users','Cet utilisateur a déjà accès à votre espace producteur.');
+				throw Error(vendor.getURL()+'/company/users','Cet utilisateur a déjà accès à votre espace producteur.');
 			}
 
 			v.company = company;
@@ -133,7 +223,7 @@ class Company extends controller.Controller
 
 			v.insert();
 			
-			throw Ok("/p/pro/company/users", "Nouvel utilisateur ajouté");
+			throw Ok(vendor.getURL()+"/company/users", "Nouvel utilisateur ajouté");
 		}
 		view.title = "Ajouter un nouvel utilisateur à mon espace producteur";
 		view.form = f;
@@ -177,12 +267,12 @@ class Company extends controller.Controller
 				vendor.update();
 			}else{
 				// Prevent deleting the SalesRepresentative
-				throw Error("/p/pro/company/users", "Vous devez avoir un contact commercial pour votre espace Producteur.");
+				throw Error(vendor.getURL()+"/company/users", "Vous devez avoir un contact commercial pour votre espace Producteur.");
 			}
 
 			uc.update();
 			
-			throw Ok("/p/pro/company/users", "Utilisateur mis à jour");
+			throw Ok(vendor.getURL()+"/company/users", "Utilisateur mis à jour");
 		}
 		view.title = "Gérer un utilisateur de mon espace producteur";
 		view.form = f;
@@ -193,74 +283,30 @@ class Company extends controller.Controller
 		if (checkToken()){
 			
 			if (userToDelete.id == app.user.id && !app.user.isAdmin() ) {
-				throw Error("/p/pro/company/users", "Vous ne pouvez pas vous retirer l'accès à vous même");
+				throw Error(vendor.getURL()+"/company/users", "Vous ne pouvez pas vous retirer l'accès à vous même");
 			}
 
 			if(company.getUsers().count(user -> return userToDelete.id!=user.id)==0){
-				throw Error("/p/pro/company/users", "Vous ne pouvez pas supprimer cet utilisateur. Au moins une personne doit avoir accès à un espace producteur.");
+				throw Error(vendor.getURL()+"/company/users", "Vous ne pouvez pas supprimer cet utilisateur. Au moins une personne doit avoir accès à un espace producteur.");
 			}
 			
 			var uc = pro.db.PUserCompany.get(userToDelete, company);			
 			if (uc != null){
 				if (uc.legalRepresentative){
-					throw Error("/p/pro/company/users", "Vous ne pouvez pas supprimer le représentant légal.");
+					throw Error(vendor.getURL()+"/company/users", "Vous ne pouvez pas supprimer le représentant légal.");
 				}
 				if (uc.salesRepresentative){
-					throw Error("/p/pro/company/users", "Vous ne pouvez pas supprimer le contact commercial.");
+					throw Error(vendor.getURL()+"/company/users", "Vous ne pouvez pas supprimer le contact commercial.");
 				}
 
 				uc.lock();
 				uc.delete();
 			}
 			
-			throw Ok("/p/pro/company/users/", "Utilisateur effacé");
+			throw Ok(vendor.getURL()+"/company/users/", "Utilisateur effacé");
 		}else{
-			throw Redirect("/p/pro/company/users/");
+			throw Redirect(vendor.getURL()+"/company/users/");
 		}
-	}
-	
-	
-	
-	@tpl('plugin/pro/company/vendors.mtt')
-	public function doVendors(){
-		view.nav.push("vendors");
-		checkToken();
-		view.vendors = company.getVendors();
-	}
-
-	public function doDeleteVendor(v:db.Vendor){
-		
-		if (checkToken()){
-			var pv = pro.db.PVendorCompany.manager.search($company==this.company && $vendor==v,true).first();
-			if(pv==null) throw Error("/p/pro/company/vendors/", "Impossible de retrouver ce producteur");
-			pv.delete();
-			throw Ok("/p/pro/company/vendors/", "Producteur effacé");
-		}else{
-			throw Redirect("/p/pro/company/vendors/");
-		}
-	}
-	
-	/**
-		Edit a vendor
-	**/
-	@tpl('plugin/pro/form.mtt')
-	public function doEditVendor(vendor:db.Vendor){
-		view.nav.push("vendors");
-		
-		var form = VendorService.getForm(vendor);
-		
-		if (form.isValid()){
-			vendor.lock();
-			try{
-				vendor = VendorService.update(vendor,form.getDatasAsObject());
-			}catch(e:tink.core.Error){
-				throw Error(sugoi.Web.getURI(),e.message);
-			}			
-			vendor.update();		
-			throw Ok("/p/pro/company/vendors", "Producteur mis à jour");
-		}
-		
-		view.form = form;
 	}
 	
 	@tpl('plugin/pro/form.mtt')
@@ -302,7 +348,7 @@ class Company extends controller.Controller
 				company.setVatRates(vats);
 				company.update();
 			}
-			throw Ok("/p/pro/company/", "Taux mis à jour");
+			throw Ok(vendor.getURL()+"/product/", "Taux mis à jour");
 			
 		}
 		view.title = "Editer les taux de TVA";
@@ -338,7 +384,7 @@ class Company extends controller.Controller
 			vendor.longDesc = f.getValueOf("longDesc");
 			vendor.update();
 			
-			throw Ok("/p/pro/company/publicPage/","Votre page producteur à été mise à jour");
+			throw Ok(vendor.getURL()+"/company/publicPage/","Votre page producteur à été mise à jour");
 		}
 
 		view.form = f;
@@ -355,13 +401,15 @@ class Company extends controller.Controller
 			link.entityId = vendor.id;
 			link.link = app.params.get('link');
 			link.insert();
-			throw Ok("/p/pro/company/publicPage","Félicitations, vous venez de créer votre page producteur.");
+			throw Ok(vendor.getURL()+"/company/publicPage","Félicitations, vous venez de créer votre page producteur.");
 		}
 
 	}
 	
 	@tpl('plugin/pro/company/stripe.mtt')
 	function doStripe(){
+
+		if(company.offer==CagetteProOffer.Training) throw "Les espaces producteurs de formation n'ont pas le droit d'ouvrir de compte Stripe";
 		var vendor = company.vendor;
 		view.vendor = vendor;
 		view.nav.push("stripe");
@@ -419,7 +467,7 @@ class Company extends controller.Controller
 	@tpl('plugin/pro/company/differenciated-pricing.mtt')
 	function doDifferenciatedPricing(){
 		if (App.current.getSettings().differenciatedPricing == false){
-			throw Redirect('/p/pro/');
+			throw Redirect(vendor.getURL());
 		}
 		view.nav.push("differenciatedPricing");
 	}

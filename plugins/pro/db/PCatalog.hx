@@ -15,7 +15,7 @@ class PCatalog extends Object
 	public var startDate : SDateTime;			
 	public var endDate : SDateTime;			
 
-	@hideInForms @:relation(vendorId) @formPopulate("populateVendor") public var vendor : SNull<db.Vendor>;
+	//@hideInForms @:relation(vendorId) @formPopulate("populateVendor") public var vendor : SNull<db.Vendor>;
 
 	@hideInForms public var visible : SBool;
 	
@@ -63,19 +63,6 @@ class PCatalog extends Object
 	}
 	
 	/**
-	 * get a vendor list as form data
-	 * @return
-	 */
-	public function populateVendor():sugoi.form.ListData.FormData<Int>{
-		var vendors = pro.db.CagettePro.getCurrentCagettePro().getVendors();
-		var out = [];
-		for (v in vendors) {
-			out.push({label:v.name, value:v.id });
-		}
-		return out;
-	}
-	
-	/**
 	 * set toSync flag to true with all related contracts
 	 */
 	public function toSync(){
@@ -94,12 +81,16 @@ class PCatalog extends Object
 	public static function getLabels(){
 		var t = sugoi.i18n.Locale.texts;
 		return [
-			"name" 		=> /*t._("Catalog name")*/"Nom du catalogue",
+			"name" 		=> "Nom du catalogue",
 			"startDate"	=> t._("Start date"),
 			"endDate"	=> t._("End date"),
 			"vendor" 	=> t._("Farmer"),						
-			"contractName"	=> "Nom à afficher dans les groupes",
+			"contractName"	=> "Nom à afficher dans les "+App.current.getTheme().groupWordingShort_plural,
 		];
+	}
+
+	public function getURL(){
+		return "https://"+App.config.HOST+"/catalog/"+id;
 	}
 	
 }

@@ -1,11 +1,13 @@
-::use 'design.mtt'::
+::use 'designMarket.mtt'::
 
 <div class="col-md-12">
 
 	::foreach v vendors::		
 		::if(v.isDisabled())::
 			::if(v.disabled!=3 && v.disabled!=6)::			
-			<div class="alert alert-danger"><i class="icon icon-alert"></i> Le producteur <b>::v.name::</b> est désactivé : ::raw v.getDisabledReason()::</div>	
+			<div class="alert alert-danger">
+				<i class="icon icon-alert"></i> Le producteur <b>::v.name::</b> est désactivé : ::raw v.getDisabledReason()::
+			</div>	
 			::end::
 		::end::	
 	::end::
@@ -18,8 +20,55 @@
 			::_("Catalogs")::
 			::end::
 		</h2>
+
+
+		::if user.canManageAllContracts()::
+		<div class="pull-right">
+			<a href="/contractAdmin?old=1" class="btn btn-default"><span class="glyphicon glyphicon-folder-close"></span> Anciens catalogues</a>
+
+			
+			<div class="dropdown" style="display:inline-block;">
+			<button class="btn btn-default dropdown-toggle btn-noAntiDoubleClick" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+				<i class="icon icon-list"></i> ::_("Global orders view")::
+				<span class="caret"></span>
+			</button>
+			<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+				<li><a href="/contractAdmin/ordersByTimeFrame">::_("Timeframe")::</a></li>			
+			</ul>
+			</div>
+		</div>
+		<div style="vertical-align: middle;">
+			<a href="/contract/searchVendor/" class="btn btn-primary"><i class="icon icon-search"></i> Découvrir les producteurs du réseau</a>
+			
+			<!--<a href="/contract/inviteVendor/" class="btn btn-default"><i class="icon icon-mail"></i> Inviter un producteur</a>		-->
+			
+			<script>
+				var searchCatalog = function(){
+					var catId = document.querySelector("#catalogSearchInput").value;
+					catId = parseInt(catId);
+					if(!catId) {
+						window.alert("Saisissez un numéro de catalogue fourni par un producteur dans le champs de recherche.");
+					}else{
+						document.location.href = "/contract/searchCatalog/"+catId;
+					}
+					
+				};				
+			</script>
+
+			<div style="display:inline-block;vertical-align: middle;">
+				<div class="input-group" >
+					<input type="text" class="form-control" id="catalogSearchInput" placeholder="N° de catalogue producteur"/>
+					<span class="input-group-btn">
+					<a class="btn btn-default" onclick="searchCatalog()"><i class="icon icon-search"></i> Chercher</a>
+					</span>
+				</div>
+			</div>
+
+			
+		</div>
+		::end::
 		
-		<table class="table">
+		<table class="table table-hover" style="margin-top:24px;">
 			::foreach c contracts::
 				::if c.endDate!=null && c.endDate.getTime() < now().getTime()::
 					::set class = "disabled"::
@@ -28,7 +77,7 @@
 				::else::
 					::set class = ""::
 				::end::
-				<tr class="::class::" >
+				<tr class="::class::" style="cursor: pointer;" onclick="location.href='/contractAdmin/view/::c.id::'">
 					<td>
 						$$publicVendorIcon(::c._vendor::)		
 					</td>
@@ -58,27 +107,8 @@
 		</table>
 	
 		
-		::if user.canManageAllContracts():: 
-			<a href="/contract/searchVendor/" class="btn btn-primary"><i class="icon icon-search"></i> Découvrir les producteurs du réseau</a>
-			<!--		
-			<a href="/contract/defineVendor/" class="btn btn-primary"><i class="icon icon-mail"></i> Inviter un producteur</a>		
-			<a href="/contract/defineVendor/" class="btn btn-primary"><i class="icon icon-search"></i> Chercher un catalogue</a>		
-			-->
-		::end::
 
-		<a href="/contractAdmin?old=1" class="btn btn-default"><span class="glyphicon glyphicon-folder-close"></span> Anciens catalogues</a>
-
-		::if user.canManageAllContracts():: 
-		<div class="dropdown" style="display:inline-block;">
-		  <button class="btn btn-default dropdown-toggle btn-noAntiDoubleClick" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-			<i class="icon icon-list"></i> ::_("Global orders view")::
-			<span class="caret"></span>
-		  </button>
-		  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-			<li><a href="/contractAdmin/ordersByTimeFrame">::_("Timeframe")::</a></li>			
-		  </ul>
-		</div>
-		::end::
+		
 		
 	</div>
 	

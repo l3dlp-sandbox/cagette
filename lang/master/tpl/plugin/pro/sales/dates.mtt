@@ -16,11 +16,11 @@
             ::if(groupAdmin)::
 
             Vous êtes administrateur de <b>::distribution._catalog._group.name::</b>, si vous souhaitez modifier la distribution dans son ensemble, <br/>
-            <a href="/group/::distribution._catalog._group.id::">allez dans le groupe</a> et modifiez la distribution dans l'onglet "distribution". 
+            <a href="/group/::distribution._catalog._group.id::">allez dans le ::theme.groupWordingShort::</a> et modifiez la distribution dans l'onglet "distribution". 
             
             ::else::
             
-            Vous n'êtes pas administrateur de ce groupe. 
+            Vous n'êtes pas administrateur de ce ::theme.groupWordingShort::. 
             Pour toute autre modification de date pour cette commande, contactez l'administrateur : 
             ::distribution._catalog._contact.getName()::
             ( <a href="mailto: ::distribution._catalog._contact.email::">::distribution._catalog._contact.email::</a> )
