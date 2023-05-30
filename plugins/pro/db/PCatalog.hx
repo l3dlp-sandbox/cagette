@@ -15,12 +15,8 @@ class PCatalog extends Object
 	public var startDate : SDateTime;			
 	public var endDate : SDateTime;			
 
-	//@hideInForms @:relation(vendorId) @formPopulate("populateVendor") public var vendor : SNull<db.Vendor>;
-
 	@hideInForms public var visible : SBool;
-	
 	@hideInForms public var maxDistance : SNull<SInt>; //max distance in km
-	
 	@hideInForms @:relation(companyId) 	public var company : pro.db.CagettePro;
 	@hideInForms public var lastUpdate : SDateTime;
 	
@@ -91,6 +87,10 @@ class PCatalog extends Object
 
 	public function getURL(){
 		return "https://"+App.config.HOST+"/catalog/"+id;
+	}
+
+	public function isDemoCatalog(){
+		return visible==false && name=="demoCatalog";
 	}
 	
 }

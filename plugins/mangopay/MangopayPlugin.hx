@@ -388,17 +388,19 @@ class MangopayPlugin extends PlugIn implements IPlugIn{
 		et n'a donc pas transformé le tmpBasket en vraie commande )
 	**/
 	public static function checkTmpBasket(tmpBasket:db.Basket):Array<db.UserOrder>{
+
 		if(tmpBasket.status!=Std.string(BasketStatus.OPEN)) throw "basket should be OPEN";
 
 		var mpUser = mangopay.db.MangopayUser.get(tmpBasket.user);
-		var conf = getGroupConfig(tmpBasket.multiDistrib.getGroup());
+		var group = tmpBasket.multiDistrib.group;
+		var conf = getGroupConfig(group);
 		if(mpUser!=null && conf!=null && conf.legalUser.disabled==false){
-			//time range : from 24h ago to now+10mn
+			//time range : from 72h ago to now+10mn
 			//warning, dates in mangopay are in UTC, so it may be 1 or 2 hours behind french time.
 			var to   = DateTools.delta(Date.now(), 1000.0 * 60 * 10);//in case of offset system clock
-			var from = DateTools.delta(Date.now(), 1000.0 * 60 * 60 * 24 * -1 );
+			var from = DateTools.delta(Date.now(), 1000.0 * 60 * 60 * 72 * -1 );
 			var mpOps = Mangopay.getUserTransactions(mpUser.mangopayUserId,20,1,from,to,mangopay.Types.TransactionType.Payin);
-			var lastOps = db.Operation.getLastOperations(tmpBasket.user,tmpBasket.multiDistrib.getGroup(),50);
+			var lastOps = db.Operation.getLastOperations(tmpBasket.user,group,50);
 
 			for( mpOp in mpOps){
 				//find related operation in Cagette
@@ -429,12 +431,12 @@ class MangopayPlugin extends PlugIn implements IPlugIn{
 						if(amountEqual && credittedWalletOk){
 
 							//find which Mp payment type is enabled in this group
-							var paymentTypes = service.PaymentService.getPaymentTypes(PCPayment,tmpBasket.multiDistrib.getGroup());
+							var paymentTypes = service.PaymentService.getPaymentTypes(PCPayment, group);
 							
 							var mp_type = Lambda.find(paymentTypes, function(pt) return pt.type==pro.payment.MangopayECPayment.TYPE );
 							
 							if(mp_type==null){
-								throw 'unable to find "mangopay-ec" among '+paymentTypes.map(p -> return p.type)+' for tmpBasket '+tmpBasket.id;
+								throw 'unable to find "mangopay-ec" among '+paymentTypes.map(p -> p.type)+' for tmpBasket '+tmpBasket.id;
 							}
 
 							//OK, process order !

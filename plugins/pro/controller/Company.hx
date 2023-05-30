@@ -1,4 +1,5 @@
 package pro.controller;
+import pro.service.PCatalogService;
 import pro.db.CagettePro.CagetteProOffer;
 import sugoi.Web;
 import mangopay.Mangopay;
@@ -98,12 +99,70 @@ class Company extends controller.Controller
 		view.form = form;
 	}
 
-	@tpl('plugin/pro/company/form.mtt')
+	@tpl('plugin/pro/company/demoProducts.mtt')
 	function doEditDemoCatalog() {
 		view.nav.push("default");
-		var theme = App.current.getTheme();
+
+		//get or create demoCatalog
+		var catalog = PCatalogService.getOrCreateDemoCatalog(company);
+		if(company.demoCatalog==null || company.demoCatalog.id!=catalog.id){
+			company.lock();
+			company.demoCatalog = catalog;
+			company.update();
+		}
+
+		var AllOffers = company.getOffers(); 
+		var selectedOffers = [];		
+		var catalogOffers = catalog.getOffers();
 		
-		var form = new sugoi.form.Form("company");
+		for ( o in  AllOffers){			
+			var checked : Bool  = Lambda.find(catalogOffers, function(cp) return cp.offer.id == o.id) != null;		
+			selectedOffers.push({offer:o,checked:checked});
+		}		
+		
+		view.catalog = catalog;
+		view.products = selectedOffers;
+		
+		if (checkToken()){
+			
+			//sync width existing products			
+			for ( k in app.params.keys()){
+				if (k.substr(0,1) == "p"){
+					var pid = k.substr(1).parseInt();					
+					var cp = Lambda.find(catalogOffers, function(cp) return cp.offer.id == pid);
+					
+					//new products
+					if (cp == null){
+						cp = new pro.db.PCatalogOffer();
+						cp.catalog = catalog;
+						var x = pro.db.POffer.manager.get(pid, false);
+						cp.offer = x;
+						cp.price = x.price;
+						cp.insert();
+					}
+				}
+			}
+			
+			//remove products
+			for ( cp in catalogOffers){
+				var found = false;
+				for ( k in app.params.keys()){
+					if (k.substr(0, 1) == "p"){
+						if (k.substr(1).parseInt() == cp.offer.id) {
+							found = true;
+							break;
+						}
+					}
+				}
+				if (!found){
+					cp.lock();
+					cp.delete();
+				}
+			}
+			throw Ok(vendor.getURL()+'/company','Votre catalogue de démonstration a été mis à jour');
+		}
+
+		/*var form = new sugoi.form.Form("company");
 		var catalogs = sugoi.form.ListData.fromSpod(company.getCatalogs());
 		form.addElement(new sugoi.form.elements.IntSelect("demoCatalogId","Catalogue affiché sur votre page",catalogs,company.demoCatalog==null?null:company.demoCatalog.id));		
 		view.title = "Modifier le catalogue de démonstration";
@@ -118,14 +177,13 @@ class Company extends controller.Controller
 			company.update();
 			throw Ok(vendor.getURL()+'/company','Votre catalogue de démonstration a été mis à jour');
 		}		
-		view.form = form;
+		view.form = form;*/
+		
 	}
 
 	@tpl('plugin/pro/company/form.mtt')
 	function doEditPeople() {
 		view.nav.push("default");
-		var theme = App.current.getTheme();
-		
 		var form = new sugoi.form.Form("company");
 		form.addElement(new StringInput("peopleName","Nom du ou des producteur(s)",vendor.peopleName));		
 		view.title = "Modifier le nom du ou des producteur(s)";

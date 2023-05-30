@@ -1,4 +1,5 @@
 package pro.service;
+import pro.db.PCatalog;
 import pro.db.CagettePro;
 import Common;
 import connector.db.RemoteCatalog;
@@ -394,6 +395,18 @@ class PCatalogService{
 		rc.insert();
 
 		return rc;
+	}
+
+	public static function getOrCreateDemoCatalog(company:pro.db.CagettePro){
+		var cat = PCatalog.manager.select($company==company && $visible==false && $name=="demoCatalog", false);
+		if(cat==null){
+			cat = new PCatalog();
+			cat.name = "demoCatalog";
+			cat.company = company;
+			cat.visible = false;
+			cat.insert();
+		}
+		return cat;
 	}
 
 }

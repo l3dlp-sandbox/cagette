@@ -47,7 +47,8 @@ class CagettePro extends sys.db.Object
 	}
 	
 	public function getCatalogs(){
-		return pro.db.PCatalog.manager.search($company == this, {orderBy:name}, false);
+		var cats = pro.db.PCatalog.manager.search($company == this, {orderBy:name}, false).array();
+		return cats.filter(cat -> !cat.isDemoCatalog());
 	}
 
 

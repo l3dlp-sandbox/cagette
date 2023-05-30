@@ -62,42 +62,43 @@ class GraphService{
         compute basket numbers by period
     **/
     public static function baskets(from:Date,to:Date):Int {        
-		return db.Basket.manager.count($status!=Std.string(BasketStatus.OPEN) && $cdate>=from && $cdate<=to);        
-
-        //select * from MultiDistrib where id in ()
+        return getBasketIds(from,to).length;
     }
 
     public static  function turnover(from:Date,to:Date):Int{
-        var baskets = db.Basket.manager.search( $cdate>=from && $cdate<=to && $status!=Std.string(BasketStatus.OPEN) );
-		var value = 0.0;
-		for( b in baskets){
-            var t  =  b.getOrdersTotal();
-            if(b.total==null){
-                b.lock();
-                b.total = t;
-			    b.update();
-            }
-			value += t;
-		}
-		return Math.round(value);
+        var mdIds:Array<Int> = sys.db.Manager.cnx.request('select id from MultiDistrib where distribStartDate >= "${from.toString()}" and distribStartDate < "${to.toString()}"').results().array().map(r -> Std.parseInt(r.id));
+        if(mdIds.length==0) return 0;
+        var tot = sys.db.Manager.cnx.request('select sum(total) as total from Basket where multiDistribId in (${mdIds.join(",")}) and (status="VALIDATED" or status="CONFIRMED")').getIntResult(0);
+        return Math.round(tot);
     }
 
     public static  function mangopay(from:Date,to:Date):Int{        
-        var ops = Operation.manager.search($type==OperationType.Payment && $date>=from && $date<to);
+        var basketIds = getBasketIds(from,to);
+        var orderOps = Operation.manager.search($type==OperationType.VOrder && ($basketId in basketIds),false).map(o -> o.id);
+        var paymentOps = Operation.manager.search($type==OperationType.Payment && ($relationId in orderOps),false);
 		var value = 0.0;
-		for( op in ops){
+		for( op in paymentOps){
 			if(op.getPaymentType()==MangopayECPayment.TYPE) value += op.amount;
 		}
 		return Math.round(value);
     }
 
-    public static function stripe(from:Date,to:Date):Int{        
-        var ops = Operation.manager.search($type==OperationType.Payment && $date>=from && $date<to);
-		var value = 0.0;
-		for( op in ops){
-			if(op.getPaymentType()==payment.Stripe.TYPE) value += op.amount;
-		}
-		return Math.round(value);
+    public static function stripe(from:Date,to:Date):Int{       
+       var basketIds = getBasketIds(from,to);
+       var orderOps = Operation.manager.search($type==OperationType.VOrder && ($basketId in basketIds),false).map(o -> o.id);
+       var paymentOps = Operation.manager.search($type==OperationType.Payment && ($relationId in orderOps),false);
+       var value = 0.0;
+       for( op in paymentOps){
+           if(op.getPaymentType()==payment.Stripe.TYPE) value += op.amount;
+       }
+       return Math.round(value);
+    }
+
+    static function getBasketIds(from:Date,to:Date):Array<Int>{
+        var mdIds:Array<Int> = sys.db.Manager.cnx.request('select id from MultiDistrib where distribStartDate >= "${from.toString()}" and distribStartDate < "${to.toString()}"').results().array().map(r -> Std.parseInt(r.id));
+        if(mdIds.length==0) return [];
+        var basketIds:Array<Int> = sys.db.Manager.cnx.request('select id from Basket where multiDistribId in (${mdIds.join(",")}) and (status="VALIDATED" or status="CONFIRMED")').results().array().map(r -> Std.parseInt(r.id));
+        return basketIds;
     }
 
     /**

@@ -341,6 +341,7 @@ class App extends sugoi.BaseApp {
 		Reflect.setField(ctx, 'HOST', App.config.HOST);
 		Reflect.setField(ctx, 'theme', this.getTheme());
 		Reflect.setField(ctx, 'hDate', date -> return Formatting.hDate(date) );
+		Reflect.setField(ctx, 'fluc', App.current.view.fluc);
 
 		ctx._ = App.current.view._;
 		ctx.__ = App.current.view.__;
