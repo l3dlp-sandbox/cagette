@@ -99,6 +99,29 @@ class Company extends controller.Controller
 	}
 
 	@tpl('plugin/pro/company/form.mtt')
+	function doEditDemoCatalog() {
+		view.nav.push("default");
+		var theme = App.current.getTheme();
+		
+		var form = new sugoi.form.Form("company");
+		var catalogs = sugoi.form.ListData.fromSpod(company.getCatalogs());
+		form.addElement(new sugoi.form.elements.IntSelect("demoCatalogId","Catalogue affiché sur votre page",catalogs,company.demoCatalog==null?null:company.demoCatalog.id));		
+		view.title = "Modifier le catalogue de démonstration";
+				
+		if (form.isValid()) {
+			company.lock();
+			try{
+				company.demoCatalog = pro.db.PCatalog.manager.get(form.getValueOf("demoCatalogId"));
+			}catch(e:tink.core.Error){
+				throw Error(sugoi.Web.getURI(),e.message);
+			}			
+			company.update();
+			throw Ok(vendor.getURL()+'/company','Votre catalogue de démonstration a été mis à jour');
+		}		
+		view.form = form;
+	}
+
+	@tpl('plugin/pro/company/form.mtt')
 	function doEditPeople() {
 		view.nav.push("default");
 		var theme = App.current.getTheme();

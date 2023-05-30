@@ -49,7 +49,7 @@
 					</td>
 					<td>
 						::foreach r ug.getRights()::
-							::ug.getJsonRightName(r):: - 
+							::getJsonRightName(r):: - 
 						::end::
 					</td>
 				</tr>
