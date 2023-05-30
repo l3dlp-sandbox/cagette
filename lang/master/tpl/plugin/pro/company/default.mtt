@@ -211,7 +211,7 @@
 							::end::			
 						</td>
 						<td class="col-md-2">
-							...
+							$$edit(Modifier,::vendor.getURL()::/company/editDemoCatalog)
 						</td>
 					</tr>
 
