@@ -10,7 +10,7 @@ enum DisabledReason{
 	NotCompliantWithPolicy; //1 : not compliant with policy (charte des producteurs)
 	Banned; 				//2 : banned by network administrateurs
 	TurnoverLimitReached; 	//3 : turnover limit reached
-	MarketplaceNotActivated;//4 : a new marketplace vendor who has not yet activated his subscription
+	___MarketplaceNotActivated;//4 : a new marketplace vendor who has not yet activated his subscription @deprecated
 	MarketplaceDisabled; 	//5 : a marketplace vendor who did not pay, who removed his payment method, etc
 	DisabledInvited;		//6 : invited,free,cproinvited are now disabled
 }
@@ -292,7 +292,7 @@ class Vendor extends Object
 			case DisabledReason.Banned : "Producteur bloqué par les administrateurs";
 			case DisabledReason.TurnoverLimitReached : "Ce producteur a atteint sa limite de chiffre d'affaires annuel";
 			case DisabledReason.MarketplaceDisabled : "Ce producteur est en défaut de paiement";
-			case DisabledReason.MarketplaceNotActivated : "Ce producteur n'a pas encore activé son compte";
+			case DisabledReason.___MarketplaceNotActivated : "Ce producteur n'a pas encore activé son compte";
 			case DisabledReason.DisabledInvited : "Les producteurs invités ne sont plus autorisés et doivent <a href='https://www.cagette.net/producteurs' target='_blank'>ouvrir un espace Producteur</a>";
 		};
 	}

@@ -484,7 +484,7 @@ if (App.current.getSettings().noCourse==true) {
 		switch(vendor.disabled){
 			case DisabledReason.TurnoverLimitReached : vendor.disabled = null;
 			case DisabledReason.DisabledInvited : vendor.disabled = null;
-			case DisabledReason.MarketplaceNotActivated : vendor.disabled = null;
+			// case DisabledReason.___MarketplaceNotActivated : vendor.disabled = null;
 			case DisabledReason.MarketplaceDisabled : vendor.disabled = null;
 			default:
 		}

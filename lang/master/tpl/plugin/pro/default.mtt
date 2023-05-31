@@ -53,7 +53,7 @@
 				<div class="alert alert-danger">
 					<i class="icon icon-alert"></i>
 					Cet espace producteur est bloqué et n'accepte plus de commandes.<br/>
-					Raison : <b>::vendor.getDisabledReason()::</b>
+					Raison : <b>::raw vendor.getDisabledReason()::</b>
 				</div>
 			</div>
 		</div>

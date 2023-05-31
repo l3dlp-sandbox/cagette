@@ -120,18 +120,11 @@
 					
 				</div>
 				<div class="col-md-8">
-					
-					<h2>
-						::group.name::
-					</h2>
-					
 					<p>
 						::if group.txtIntro!=null && group.txtIntro!=""::
 							::raw nl2br(group.txtIntro)::
 						::end::
 					</p>
-					
-					
 					<p>
 						<h3> ::_("Next deliveries")::</h3>
 						

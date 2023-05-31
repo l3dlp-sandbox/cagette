@@ -208,6 +208,7 @@ class Main extends controller.Controller
 
 	@logged @tpl("plugin/pro/upgrade.mtt")
 	public function doUpgrade(){
+		checkRights();
 	}
 
 	/**
