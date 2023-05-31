@@ -141,21 +141,23 @@ class VendorStats extends sys.db.Object
 		}
 		vs.turnover90days = Math.round(vs.turnover90days);
 
-		//turnover 3 months
+		//turnover total
 		vs.turnoverTotal = 0.0;
-		for( d in db.Distribution.manager.search( $catalogId in cids , false)){
-			vs.turnoverTotal += d.getTurnOver();
-		}
-		vs.turnoverTotal = Math.round(vs.turnoverTotal);
+		// for( d in db.Distribution.manager.search( $catalogId in cids , false)){
+		// 	vs.turnoverTotal += d.getTurnOver();
+		// }
+		// vs.turnoverTotal = Math.round(vs.turnoverTotal);
 
 		vs.active = vs.turnover90days > 0;
 
 		//freemium turnover 
 		var from = vendor.freemiumResetDate;
 		vs.marketTurnoverSinceFreemiumResetDate = 0;
-		var cids = vendor.getContracts().array().map(c -> c.id);
-		for( d in db.Distribution.manager.search($date > from && $date < now && ($catalogId in cids), false)){
-			vs.marketTurnoverSinceFreemiumResetDate += d.getTurnOver();
+		if(cpro!=null && cpro.offer==Discovery){
+			var cids = vendor.getContracts().array().map(c -> c.id);
+			for( d in db.Distribution.manager.search($date > from && $date < now && ($catalogId in cids), false)){
+				vs.marketTurnoverSinceFreemiumResetDate += d.getTurnOver();
+			}
 		}
 
 		//a trainee cannot be active

@@ -188,6 +188,15 @@ class Group extends controller.Controller
 			}
 		}
 
+		if( app.params.get("onthespot")=="1" ){
+			group.lock();
+			group.betaFlags.unset(Dispatch);
+			group.setAllowedPaymentTypes([Cash.TYPE,Check.TYPE]);
+			group.update();
+			throw Ok("/admin/group/view/"+group.id,"Marché mise à jour");
+		}
+
+
 		/*if( app.params.get("dispatch")=="1" ){
 			//ENABLE DISPATCH
 			group.lock();

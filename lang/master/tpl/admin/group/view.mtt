@@ -5,6 +5,10 @@
 
 		<p>Actif : $$bool(::groupStats.active::)</p>
 
+		<p ::cond group.disabled!=null::>
+			<b>Désactivé : ::group.disabled::</b>
+		</p>
+
 		<p>
 			créé le : ::group.cdate::<br/>
 			::if group._contact!=null::
@@ -53,21 +57,6 @@
 	</table>
 	<a href='?refresh=1' class="btn btn-default btn-xs">Rafraichir</a>
 
-
-
-		<hr/>
-		<h3>Fonctionnalités en beta</h3>
-				
-		Dispatch : $$bool(::group.isDispatch()::)<br/>
-
-		<p>
-		<!--::if(!group.isDispatch())::
-			<a href="?dispatch=1" class="btn btn-default">Passer en Dispatch</a>
-		::end::-->
-		::if( group.disabled=="MOVED")::
-			<a href="?duplicate=1" class="btn btn-default">Dupliquer en mode Marché</a>
-		::end::
-	</p>
 
 		<hr/>
 		<h3>Lieux de livraison</h3>		
@@ -163,8 +152,19 @@
 		<hr/>
 
 		<h3>Paiements</h3>
-		
-		<a href="/admin/group/resetBalances/::group.id::" class="btn btn-default" $$confirm()>Remise à l'équilibre des soldes adhérents</a>
+		<p>
+			Moyens de paiement : <b>::group.getAllowedPaymentTypes().join(", ")::</b>
+		</p>
+		<p>
+			<!--::if(!group.isDispatch())::
+				<a href="?dispatch=1" class="btn btn-default">Passer en Dispatch</a>
+			::end::-->
+			::if( group.disabled=="MOVED")::
+				<a href="?duplicate=1" class="btn btn-default">Dupliquer en mode Marché</a>
+			::end::
+			<a href="?onthespot=1" class="btn btn-default">Passer en paiement sur place</a>
+			<a href="/admin/group/resetBalances/::group.id::" class="btn btn-default" $$confirm()>Remise à l'équilibre des soldes adhérents</a>
+		</p>
 		<hr/>
 
 		
