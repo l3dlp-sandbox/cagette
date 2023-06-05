@@ -69,7 +69,7 @@ class Sales extends controller.Controller
 				case "members" : 
 					throw Redirect(vendor.getURL()+'/delivery/exportByMembers/?startDate=${startDate}&endDate=${endDate}');
 				case "groups" : 
-					throw Redirect(vendor.getURL()+'delivery/exportByGroups/?startDate=${startDate}&endDate=${endDate}');
+					throw Redirect(vendor.getURL()+'/delivery/exportByGroups/?startDate=${startDate}&endDate=${endDate}');
 				default :
 					throw Error(vendor.getURL()+'/delivery', "type d'export inconnu");
 				

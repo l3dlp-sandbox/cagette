@@ -66,8 +66,9 @@ class Contract extends Controller
 
 		//profession
 		var professions = service.VendorService.getVendorProfessions();
-		professions[0].name = "Toutes";
-		f.addElement(new sugoi.form.elements.IntSelect('profession',t._("Profession"),sugoi.form.ListData.fromSpod(professions),null,false));
+		var el = new sugoi.form.elements.IntSelect('profession',t._("Profession"),sugoi.form.ListData.fromSpod(professions),null,false);
+		el.nullMessage = "Toutes";
+		f.addElement(el);
 
 		// populate form from request
 		f.isValid();

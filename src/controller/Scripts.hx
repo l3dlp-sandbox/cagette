@@ -202,6 +202,50 @@ class Scripts extends Controller
         print("END");
     }
 
+    /**
+        2023-06-01 : certains découvertes passent en Marketplace
+    **/
+    public function doDiscoveryExpiration(){
+
+        var vendors = db.Vendor.manager.unsafeObjects("SELECT v.* FROM Vendor v
+            INNER JOIN CagettePro cp ON cp.vendorId = v.id 
+            WHERE
+            offer = 0
+            and freemiumResetDate < '2023-01-09 00:00:00'
+            and freemiumResetDate > '2022-10-18 00:00:00'",true);
+
+        for(v in vendors){
+            
+            var cpro = v.getCpro();
+            if(cpro==null) continue;
+            if(cpro.offer!=pro.db.CagettePro.CagetteProOffer.Discovery) continue;
+
+            cpro.lock();
+            cpro.offer = pro.db.CagettePro.CagetteProOffer.Marketplace;
+            cpro.update();
+
+            if(v.disabled==db.Vendor.DisabledReason.TurnoverLimitReached){
+                v.disabled = null;           
+            }
+
+            //need to block if has future distrib
+            var cids:Array<Int> = v.getActiveContracts().array().map(c->c.id);
+            var blocked = db.Distribution.manager.count(($catalogId in cids) && $date > Date.now())  > 0;
+
+            if(blocked){
+                if(v.disabled==null){
+                    v.disabled = db.Vendor.DisabledReason.MarketplaceDisabled;
+                    v.update();
+                }                
+            }
+
+
+            print(v.id+";"+v.name+";"+v.email+";"+blocked);
+
+        }
+    }
+    
+
 
     
 }

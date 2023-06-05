@@ -103,9 +103,14 @@ class PNotif extends Object
 						notifs.remove(n);
 						n.delete();
 					}
+					if(n.date.getTime() < DateTools.delta(Date.now(),-1000*60*60*24*30).getTime()){
+						//too old
+						notifs.remove(n);
+						n.delete();
+					}
 
 				case NotifType.NTDeliveryUpdate :
-
+					
 				case NotifType.NTOrdersClosed :
 
 				case NotifType.NTDeliveryRequest :
