@@ -169,7 +169,7 @@
 	
 		<div class="text-center">
 			<div id='participate-neo-container-::notif.id::' style="display: inline-block; margin-right: 8px;"/>
-			<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onload="neo.createNeoModule('participate-neo-container-::notif.id::', 'participate',{multiDistribId: ::multiDistribId::, catalogId: ::catalogId::})"></img> 
+			<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onload="neo.createNeoModule('participate-neo-container-::notif.id::', 'participate',{multiDistribId: ::multiDistribId::, catalogId: ::catalogId::, vendorId: ::vendor.id::, isContained: true})"></img> 
 			<a href="::vendor.getURL()::/notif/delete/::notif.id::?token=::token::" $$confirm(Supprimer cette demande ?)  class="btn btn-danger btn-sm" >
 				<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 
