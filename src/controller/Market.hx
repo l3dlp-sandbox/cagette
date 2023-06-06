@@ -41,14 +41,17 @@ class Market extends Controller
 		var flags = form.getElement("flags");
 		untyped flags.excluded = [0,1,2,3,5,9];
 
+		//contact is compulsory
+		form.getElement("userId").required = true;
+
 		// if(group.isDispatch()){
 		// 	var r = form.getElement("regOption");
 		// 	untyped r.excluded = [1];
 		// } 
 
 		//payment help
-		var html = new sugoi.form.elements.Html("payments","<p class='desc'><a href='https://formation.alilo.fr/mod/page/view.php?id=821' target='_blank'><i class=\"icon icon-info\"></i> En savoir plus sur la gestion des paiements</a></p>","");
-		form.addElement(html ,9);
+		// var html = new sugoi.form.elements.Html("payments","<p class='desc'><a href='https://formation.alilo.fr/mod/page/view.php?id=821' target='_blank'><i class=\"icon icon-info\"></i> En savoir plus sur la gestion des paiements</a></p>","");
+		// form.addElement(html ,9);
 
 		if (form.checkToken()) {
 			
