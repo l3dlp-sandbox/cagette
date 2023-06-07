@@ -118,7 +118,10 @@ class User extends Controller
 				throw Redirect('/distributions');
 			}
 			
-			var userGroups = app.user.getUserGroups().filter(ug -> return ug.getRights().length > 0);
+			var userGroups = app.user.getUserGroups();
+			if (!app.user.isAdmin()){
+				userGroups = userGroups.filter(ug -> return ug.getRights().length > 0);
+			}
 			view.groups = userGroups.map(ug -> ug.group);
 		}else{
 			view.groups = [];
