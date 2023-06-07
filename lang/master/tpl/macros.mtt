@@ -181,6 +181,7 @@
 						});
 					::end::
 
+					::if(cagettePros!=null)::
 					neo.createNeoModule("navigation-neo-container", "navigation", {
 						currentPage: ::if (vendorId):: "::currentPage::::vendorId::" ::else:: "::currentPage::" ::end::,
 						vendors: [
@@ -194,6 +195,7 @@
 							],
 						isMarketAdmin: ::isMarketAdmin::
 					});
+					::end::
 				});
 			</script>
 		</div>

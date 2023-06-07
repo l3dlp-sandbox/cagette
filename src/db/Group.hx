@@ -50,8 +50,7 @@ class Group extends Object
 	public var name : SString<64>;
 	
 	@formPopulate("getMembersFormElementData")
-	@:relation(userId)
-	public var contact : SNull<User>;	
+	@:relation(userId) public var contact : SNull<db.User>;	
 	
 	public var txtIntro:SNull<SText>; 	//introduction du marché
 	public var txtHome:SNull<SText>; 	//texte accueil adhérents
@@ -78,7 +77,7 @@ class Group extends Object
 	@hideInForms public var currency:SString<12>; //name or symbol.
 	@hideInForms public var currencyCode:SString<3>; //https://fr.wikipedia.org/wiki/ISO_4217
 
-	@formPopulate("getMembersFormElementData") @:relation(legalReprId) public var legalRepresentative : SNull<db.User>;
+	// @formPopulate("getMembersFormElementData") @:relation(legalReprId) public var legalRepresentative : SNull<db.User>;
 	
 	//payments
 	@hideInForms public var allowedPaymentsType:SNull<SSmallText>; //Array<String>
