@@ -275,7 +275,14 @@ class Vendor extends Object
 		if(address2!=null) str.add(", "+address2);
 		if(zipCode!=null) str.add(", "+zipCode);
 		if(city!=null) str.add(" "+city);
-		if(country!=null) str.add(", "+country);
+		if (country!=null) {
+			var c = switch (country.toUpperCase()) {
+				case "FR": "France";
+				case "BE": "Belgium";
+				default : "";
+			};
+			str.add(', ' + c);
+		}
 		return str.toString();
 	}
 

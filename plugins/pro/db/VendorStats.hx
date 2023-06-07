@@ -54,30 +54,7 @@ class VendorStats extends sys.db.Object
 	**/
 	public static function updateStats(vendor:db.Vendor){
 
-		//Find lat/lnt if not set
-		if(vendor.lat==null && !vendor.isDisabled()){
-			vendor.lock();
-
-			var address = vendor.getAddress();
-			
-			try{
-				var res = service.Mapbox.geocode(address);
-	
-				if(res!=null){
-					if(res.geometry.coordinates[0]!=null){					
-						vendor.lat = res.geometry.coordinates[1];
-						vendor.lng = res.geometry.coordinates[0];
-						vendor.update();
-					}
-				}else{
-					vendor.lat = 0;
-					vendor.lng = 0;
-					vendor.update();
-				}
-			}catch(e:Dynamic){
-				App.current.logError("Unable to geocode vendor #"+vendor.id+" : "+Std.string(e));
-			}
-		}
+		//note : geocoding is done in TS
 
 		var vs = getOrCreate(vendor);
 		var cpro = pro.db.CagettePro.getFromVendor(vendor);

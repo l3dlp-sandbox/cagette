@@ -51,9 +51,13 @@
 			$$nullSafe(::vendor.address1::)<br/>
 			$$nullSafe(::vendor.address2::)<br/>
 			::vendor.zipCode:: ::vendor.city::<br/>
-			::vendor.country::<br/>
+			::vendor.country::
+		</p>
+		<p>
 			::if(vendor.lat!=null)::
 			<a href="https://www.google.fr/maps/search/+::vendor.lat::,+::vendor.lng::" target="_blank" class="btn btn-default btn-xs">Localiser</a>
+			::else::
+			<span class="alert alert-danger">Non géocodé</span>
 			::end::
 		</p>
 		<p>
